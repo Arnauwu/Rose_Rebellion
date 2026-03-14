@@ -21,34 +21,34 @@ Player::~Player() {
 
 bool Player::Awake() {
 
-	//L03: TODO 2: Initialize Player parameters
+	// Initialize Player parameters
 	position = Vector2D(96, 96);
 	return true;
 }
 
 bool Player::Start() {
 
-	// load
+	// Load
 	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
 	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
 	anims.SetCurrent("idle");
 
-	//L03: TODO 2: Initialize Player parameters
+	// Initialize Player parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
 
-	// L08 TODO 5: Add physics to the player - initialize physics body
+	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	texW = 32;
 	texH = 32;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
-	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
+	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
 
-	// L08 TODO 7: Assign collider type
+	// Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
 
-	//initialize audio effect
+	// Initialize audio
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
 	return true;
@@ -56,31 +56,14 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
-	CheckCollisionsActive();
 	GetPhysicsValues();
 	Move();
-	Jump();
+	Jump(dt);
 	Teleport();
 	ApplyPhysics();
 	Draw(dt);
 
 	return true;
-}
-
-void Player::CheckCollisionsActive()
-{ 
-	if (collisionsActive == false && timerCollsionsActive.ReadMSec() > 800) {
-		//Re-enable collisions after 2 seconds
-		pbody->SetCollisionsActive(true);
-		collisionsActive = true;
-	}
-}
-
-void Player::Teleport() {
-	// Teleport the player to a specific position for testing purposes
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
-		pbody->SetPosition(96, 96);
-	}
 }
 
 void Player::GetPhysicsValues() {
@@ -102,12 +85,44 @@ void Player::Move() {
 	}
 }
 
-void Player::Jump() {
-	// This function can be used for more complex jump logic if needed
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+void Player::Jump(float dt) // TO DO: Jump Sometimes doesn't work: Most probable Cause is Hitbox/Collider detection failing, that causes isJumping to remain true
+							//TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
+{
+	// Base Jump + Double Jump
+	if (  (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) && 
+		( (isJumping == false && onGround == true) // Base Jump
+		|| (secondJumpUsed == false && doubleJumpUnlocked == true && (isJumping == true || onAir == true) ) ) // Double Jump
+		) 
+	{
+
+		if (isJumping == false && onGround == true) 
+		{ 
+			isJumping = true;
+			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+		}
+		else if (isJumping == true || onAir == true)
+		{
+			secondJumpUsed = true; 
+			Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
+			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true); // TO DO: Adjust Second Jump Force
+		}
+
 		anims.SetCurrent("jump");
-		isJumping = true;
+
+
+	//Extra Jump Force
+
+		isJumpKeyDown = true;
+		jumpHoldTime = 0.00f;
+	}
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
+	{
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce * 0.005f, true); //TO DO: Adjust Value
+		jumpHoldTime += dt/1000; //To seconds
+	}
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
+	{
+		isJumpKeyDown = false;
 	}
 }
 
@@ -155,26 +170,24 @@ bool Player::CleanUp()
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
-	case ColliderType::PLATFORM:
+	case ColliderType::GROUND:
 		LOG("Collision PLATFORM");
-		//reset the jump flag when touching the ground
+		// reset the jump flag when touching the ground
 		isJumping = false;
+		secondJumpUsed = false;
+
 		anims.SetCurrent("idle");
 
 		b2BodyId bodyId = pbody->body; // tu id
 
-
+		
+		onGround = true;
 
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
-
-		// Disable  collisions when touching the item and start timer to restore them
-		pbody->SetCollisionsActive(false); 
-		collisionsActive = false;
-		timerCollsionsActive.Start();
 
 		break;
 	case ColliderType::UNKNOWN:
@@ -189,8 +202,13 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {
 	switch (physB->ctype)
 	{
-	case ColliderType::PLATFORM:
-		LOG("End Collision PLATFORM");
+	case ColliderType::WALL:
+		onAir = true;
+		onWall = false;
+		break;
+	case ColliderType::GROUND:
+		onGround = false;
+		onAir = true;
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
@@ -203,3 +221,13 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	}
 }
 
+// DevTools
+
+void Player::Teleport() 
+{
+	// Teleport the player to a specific position for testing purposes
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+	{
+		pbody->SetPosition(96, 96);
+	}
+}

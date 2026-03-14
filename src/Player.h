@@ -24,7 +24,7 @@ public:
 
 	bool CleanUp();
 
-	// L08 TODO 6: Define OnCollision function for the player. 
+	// OnCollision function for the player. 
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
@@ -32,31 +32,55 @@ private:
 
 	void GetPhysicsValues();
 	void Move();
-	void Jump();
-	void Teleport();
+	void Jump(float dt);
 	void ApplyPhysics();
 	void Draw(float dt);
-	void CheckCollisionsActive();
+
+	// DevTools / Debug
+	void Teleport();
 
 public:
 
-	//Declare player parameters
+	// Declare player parameters
 	float speed = 4.0f;
-	SDL_Texture* texture = NULL;
+	int health; 
 
+	// Texture
+	SDL_Texture* texture = NULL;
 	int texW, texH;
+
+	
+	// Physics
+	PhysBody* pbody;
+	
+	// Ground
+	bool onGround = false;
+
+	// Air
+	bool onAir = false;
+
+	// Wall
+	bool onWall = false;
+
+	// Jump
+	float jumpForce = 2.5f; // The force to apply when jumping
+	bool isJumping = false; // Flag to check if the player is currently jumping
+
+	// Extra Jump Force
+	bool isJumpKeyDown = false; // Check if jump key is being pressed
+	float jumpHoldTime = 0.00f; //How long has the jump key being pressed (in seconds)
+	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
+
+	// Double Jump
+	bool doubleJumpUnlocked = true; // TO DO: Change to false
+	bool secondJumpUsed = false;
+
 
 	//Audio fx
 	int pickCoinFxId;
 
-	// L08 TODO 5: Add physics to the player - declare a Physics body
-	PhysBody* pbody;
-	float jumpForce = 2.5f; // The force to apply when jumping
-	bool isJumping = false; // Flag to check if the player is currently jumping
-
 private: 
 	b2Vec2 velocity;
 	AnimationSet anims;
-	Timer timerCollsionsActive; 
-	bool collisionsActive = true;
+
 };
