@@ -41,9 +41,10 @@ private:
 
 public:
 
-	// Declare player parameters
-	float speed = 4.0f;
 	int health; 
+	float speed = 4.0f;
+	bool flipSprite = false;
+
 
 	// Texture
 	SDL_Texture* texture = NULL;
@@ -52,13 +53,10 @@ public:
 	
 	// Physics
 	PhysBody* pbody;
-	
 	// Ground
 	bool onGround = false;
-
 	// Air
 	bool onAir = false;
-
 	// Wall
 	bool onWall = false;
 
