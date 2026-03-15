@@ -88,18 +88,31 @@ bool Map::CleanUp()
 {
     LOG("Unloading map");
 
-    // L06: TODO 2: Make sure you clean up any memory allocated from tilesets/map
+    // Clean up any memory allocated from tilesets/map
     for (const auto& tileset : mapData.tilesets) {
         delete tileset;
     }
     mapData.tilesets.clear();
 
-    // L07 TODO 2: clean up all layer data
+    // Clean up all layer data
     for (const auto& layer : mapData.layers)
     {
         delete layer;
     }
     mapData.layers.clear();
+
+    //Clean up object groups
+    for (const auto& objectGroup : mapData.objectGroups) {
+        objectGroup->objects.clear();
+    }
+    mapData.objectGroups.clear();
+
+    // Clean up collider list
+    for (const auto& collider : colliderList) 
+    {
+        Engine::GetInstance().physics->DeletePhysBody(collider);
+    }
+    colliderList.clear();
 
     return true;
 }
@@ -124,16 +137,14 @@ bool Map::Load(std::string path, std::string fileName)
     }
     else {
 
-        // L06: TODO 3: Implement LoadMap to load the map properties
+        // Load the map properties
         // retrieve the paremeters of the <map> node and store the into the mapData struct
         mapData.width = mapFileXML.child("map").attribute("width").as_int();
         mapData.height = mapFileXML.child("map").attribute("height").as_int();
         mapData.tileWidth = mapFileXML.child("map").attribute("tilewidth").as_int();
         mapData.tileHeight = mapFileXML.child("map").attribute("tileheight").as_int();
 
-        // L06: TODO 4: Implement the LoadTileSet function to load the tileset properties
-       
-        //Iterate the Tileset
+       //Iterate the Tileset
         for(pugi::xml_node tilesetNode = mapFileXML.child("map").child("tileset"); tilesetNode!=NULL; tilesetNode = tilesetNode.next_sibling("tileset"))
 		{
             //Load Tileset attributes
@@ -151,13 +162,37 @@ bool Map::Load(std::string path, std::string fileName)
 			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
             tileSet->texture = Engine::GetInstance().textures->Load((mapPath+imgName).c_str());
 
+            // Load animation
+            for (pugi::xml_node tileNode = tilesetNode.child("tile"); tileNode; tileNode = tileNode.next_sibling("tile"))
+            {
+                int tileId = tileNode.attribute("id").as_int();
+                pugi::xml_node animNode = tileNode.child("animation");
+
+                if (animNode)
+                {
+                    Animation anim;
+
+                    //Iterate all Animation Frames
+                    for (pugi::xml_node frameNode = animNode.child("frame"); frameNode; frameNode = frameNode.next_sibling("frame"))
+                    {
+                        int frameTileId = frameNode.attribute("tileid").as_int();
+                        int duration = frameNode.attribute("duration").as_int();
+
+                        SDL_Rect rect = tileSet->GetRect(tileSet->firstGid + frameTileId);
+                        anim.AddFrame(rect, duration);
+                    }
+
+                    anim.Reset();
+                    tileSet->animations[tileId] = anim; //Save Animation
+                }
+            }
+
 			mapData.tilesets.push_back(tileSet);
 		}
 
-        // L07: TODO 3: Iterate all layers in the TMX and load each of them
+        // Iterate all layers in the TMX and load each of them
         for (pugi::xml_node layerNode = mapFileXML.child("map").child("layer"); layerNode != NULL; layerNode = layerNode.next_sibling("layer")) {
 
-            // L07: TODO 4: Implement the load of a single layer 
             //Load the attributes and saved in a new MapLayer
             MapLayer* mapLayer = new MapLayer();
             mapLayer->id = layerNode.attribute("id").as_int();
@@ -165,41 +200,160 @@ bool Map::Load(std::string path, std::string fileName)
             mapLayer->width = layerNode.attribute("width").as_int();
             mapLayer->height = layerNode.attribute("height").as_int();
 
-            //L09: TODO 6 Call Load Layer Properties
+            // Call Load Layer Properties
             LoadProperties(layerNode, mapLayer->properties);
 
-            //Iterate over all the tiles and assign the values in the data array
+            // Iterate over all the tiles and assign the values in the data array
             for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) {
                 mapLayer->tiles.push_back(tileNode.attribute("gid").as_int());
             }
 
-            //add the layer to the map
+            // Add the layer to the map
             mapData.layers.push_back(mapLayer);
         }
 
-        // L08 TODO 3: Create colliders
-        // L08 TODO 7: Assign collider type
-        // Later you can create a function here to load and create the colliders from the map
+        // Load Object Group
+        for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
 
-        //Iterate the layer and create colliders
-        for (const auto& mapLayer : mapData.layers) {
-            if (mapLayer->name == "Collisions") {
-                for (int i = 0; i < mapData.width; i++) {
-                    for (int j = 0; j < mapData.height; j++) {
-                        int gid = mapLayer->Get(i, j);
-                        if (gid == 49) {
-                            Vector2D mapCoord = MapToWorld(i, j);
-                            PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(mapCoord.getX()+ mapData.tileWidth/2, mapCoord.getY()+ mapData.tileHeight/2, mapData.tileWidth, mapData.tileHeight, STATIC);
-                            c1->ctype = ColliderType::GROUND;
+            ObjectGroup* objectgroup = new ObjectGroup();
+
+            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object")) {
+                ObjectGroup::Object* o = new ObjectGroup::Object;
+
+                // Save all Object attributes
+                o->id = objectNode.attribute("id").as_int();
+                o->x = objectNode.attribute("x").as_float();
+                o->y = objectNode.attribute("y").as_float();
+                o->width = objectNode.attribute("width").as_float();
+                o->height = objectNode.attribute("height").as_float();
+
+                if (objectNode.child("polygon").attribute("points") != NULL)
+                {
+                    std::string pointString = objectNode.child("polygon").attribute("points").as_string();
+                    size_t start = 0;
+
+                    while (start < pointString.length())
+                    {
+                        size_t end = pointString.find(' ', start);
+                        if (end == std::string::npos) { end = pointString.length(); }
+
+                        std::string pair = pointString.substr(start, end - start);
+                        size_t comma = pair.find(',');
+
+                        if (comma != std::string::npos)
+                        {
+                            b2Vec2 pointPos = { stoi(pair.substr(0, comma)) + o->x,  stoi(pair.substr(comma + 1)) + o->y };
+                            o->points.push_back(pointPos);
                         }
+
+                        start = end + 1;
                     }
+                }
+                objectgroup->objects.push_back(o);
+            }
+
+            LoadProperties(objectGroupNode, objectgroup->properties);
+
+            //Add the layer to the map
+            mapData.objectGroups.push_back(objectgroup);
+        }
+
+        // Creation of colliders and assign their type
+        for (const auto& objectsGroups : mapData.objectGroups)
+        {
+            if (objectsGroups->properties.GetProperty("Square") != NULL and objectsGroups->properties.GetProperty("Square")->value) // Square
+            {
+                for (const auto& obj : objectsGroups->objects)
+                {
+                    PhysBody* collider;
+                    if (objectsGroups->properties.GetProperty("Sensor") != NULL and objectsGroups->properties.GetProperty("Sensor")->value) // Trigger
+                    {
+                        collider = Engine::GetInstance().physics.get()->CreateRectangleSensor(obj->x + obj->width / 2, obj->y + obj->height / 2, obj->width, obj->height, STATIC);
+                    }
+                    else
+                    {
+                        collider = Engine::GetInstance().physics.get()->CreateRectangle(obj->x + obj->width / 2, obj->y + obj->height / 2, obj->width, obj->height, STATIC);
+                    }
+
+                    if (objectsGroups->properties.GetProperty("Danger") != NULL and objectsGroups->properties.GetProperty("Danger")->value)
+                    {
+                        collider->ctype = ColliderType::DANGER;
+                    }
+                    else if (objectsGroups->properties.GetProperty("Ground") != NULL and objectsGroups->properties.GetProperty("Ground")->value) 
+                    {
+                        collider->ctype = ColliderType::GROUND;
+                    }
+                    else if (objectsGroups->properties.GetProperty("Wall") != NULL and objectsGroups->properties.GetProperty("Wall")->value) 
+                    {
+                        collider->ctype = ColliderType::WALL;
+                    }
+                    else if (objectsGroups->properties.GetProperty("Ceiling") != NULL and objectsGroups->properties.GetProperty("Ceiling")->value) 
+                    {
+                        collider->ctype = ColliderType::CEILING;
+                    }
+                    else
+                    {
+                        collider->ctype = ColliderType::UNKNOWN;
+                    }
+                    colliderList.push_back(collider);
+                }
+            }
+            else if (objectsGroups->properties.GetProperty("Circle") != NULL and objectsGroups->properties.GetProperty("Circle")->value) // Circle
+            {
+                for (const auto& obj : objectsGroups->objects)
+                {
+                    PhysBody* collider = Engine::GetInstance().physics.get()->CreateCircle(obj->x + obj->width / 2, obj->y + obj->height / 2, obj->width / 2, STATIC);
+
+                    if (objectsGroups->properties.GetProperty("Danger") != NULL and objectsGroups->properties.GetProperty("Danger")->value)
+                    {
+                        collider->ctype = ColliderType::DANGER;
+                    }
+                    else if (objectsGroups->properties.GetProperty("Ground") != NULL and objectsGroups->properties.GetProperty("Ground")->value)
+                    {
+                        collider->ctype = ColliderType::GROUND;
+                    }
+                    else
+                    {
+                        collider->ctype = ColliderType::UNKNOWN;
+                    }
+                    colliderList.push_back(collider);
+                }
+            }
+            else if (objectsGroups->properties.GetProperty("Chain") != NULL and objectsGroups->properties.GetProperty("Triangle")->value) // Triangle / Chain
+            {
+                for (const auto& obj : objectsGroups->objects)
+                {
+                    int* points = new int[obj->points.size() * 2];
+
+                    for (size_t i = 0; i < obj->points.size(); i++)
+                    {
+                        points[i * 2] = obj->points[i].x;
+                        points[i * 2 + 1] = obj->points[i].y;
+                    }
+
+                    PhysBody* collider = Engine::GetInstance().physics.get()->CreateChain(PIXEL_TO_METERS(obj->x / 2), PIXEL_TO_METERS(obj->y / 2), points, obj->points.size() * 2, STATIC);
+
+                    if (objectsGroups->properties.GetProperty("Danger") != NULL and objectsGroups->properties.GetProperty("Danger")->value)
+                    {
+                        collider->ctype = ColliderType::DANGER;
+                    }
+                    else if (objectsGroups->properties.GetProperty("Ground") != NULL and objectsGroups->properties.GetProperty("Ground")->value)
+                    {
+                        collider->ctype = ColliderType::GROUND;
+                    }
+                    else
+                    {
+                        collider->ctype = ColliderType::UNKNOWN;
+                    }
+                    colliderList.push_back(collider);
                 }
             }
         }
 
+
         ret = true;
 
-        // L06: TODO 5: LOG all the data loaded iterate all tilesetsand LOG everything
+        // LOG all the data loaded iterate all tilesetsand LOG everything
         if (ret == true)
         {
             LOG("Successfully parsed map XML file :%s", fileName.c_str());
@@ -220,12 +374,30 @@ bool Map::Load(std::string path, std::string fileName)
                 LOG("id : %d name : %s", layer->id, layer->name.c_str());
 				LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
             }   
+
+            LOG("Objects----");
+
+            for (const auto& objGroups : mapData.objectGroups) {
+                LOG("Properties: ");
+                for (const auto& ogproperties : objGroups->properties.propertyList)
+                {
+                    LOG("name : %s  value : %d ", ogproperties->name.c_str(), ogproperties->value);
+                }
+                LOG("Objects");
+                for (const auto& ogobjects : objGroups->objects)
+                {
+                    LOG("id : %d  points : %d ", ogobjects->id, ogobjects->points);
+                    LOG("x : %d  y : %d ", ogobjects->x, ogobjects->y);
+                    LOG("width : %d  height : %d ", ogobjects->width, ogobjects->height);
+                }
+            }
         }
-        else {
+        else 
+        {
             LOG("Error while parsing map file: %s", mapPathName.c_str());
         }
 
-        if (mapFileXML) mapFileXML.reset();
+        if (mapFileXML) mapFileXML.reset(); //TODO: CHECK THIS
 
     }
 
@@ -233,7 +405,7 @@ bool Map::Load(std::string path, std::string fileName)
     return ret;
 }
 
-// L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
+// Method that translates x,y coordinates from map positions to world positions
 Vector2D Map::MapToWorld(int x, int y) const
 {
     Vector2D ret;
@@ -244,7 +416,17 @@ Vector2D Map::MapToWorld(int x, int y) const
     return ret;
 }
 
-// L09: TODO 6: Load a group of properties from a node and fill a list with it
+Vector2D Map::WorldToMap(int x, int y)
+{
+    Vector2D ret(0, 0);
+
+    ret.setX(floor((float)(x / mapData.tileWidth)));
+    ret.setY(floor((float)(y / mapData.tileHeight)));
+
+    return ret;
+}
+
+// Load a group of properties from a node and fill a list with it
 bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
     bool ret = false;
@@ -253,7 +435,15 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     {
         Properties::Property* p = new Properties::Property();
         p->name = propertieNode.attribute("name").as_string();
-        p->value = propertieNode.attribute("value").as_bool(); // (!!) I'm assuming that all values are bool !!
+
+        if (propertieNode.attribute("type").as_string() == std::string("bool"))
+        {
+            p->value = propertieNode.attribute("value").as_bool();
+        }
+        else
+        {
+            p->value = propertieNode.attribute("value").as_int();
+        }
 
         properties.propertyList.push_back(p);
     }
@@ -261,13 +451,17 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     return ret;
 }
 
-// L10: TODO 7: Create a method to get the map size in pixels
 Vector2D Map::GetMapSizeInPixels()
 {
     Vector2D sizeInPixels;
     sizeInPixels.setX((float)(mapData.width * mapData.tileWidth));
     sizeInPixels.setY((float)(mapData.height * mapData.tileHeight));
     return sizeInPixels;
+}
+
+Vector2D Map::GetMapSizeInTiles()
+{
+    return Vector2D((float)mapData.width, (float)mapData.height);
 }
 
 

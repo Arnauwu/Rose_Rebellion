@@ -58,15 +58,22 @@ bool Player::Update(float dt)
 {
 	GetPhysicsValues();
 	Move();
+	CameraFollows();
+
 	Jump(dt);
+	
 	Teleport();
+	
 	ApplyPhysics();
+
+
 	Draw(dt);
 
 	return true;
 }
 
-void Player::GetPhysicsValues() {
+void Player::GetPhysicsValues() 
+{
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
@@ -74,46 +81,53 @@ void Player::GetPhysicsValues() {
 
 void Player::Move() {
 	
-	// Move left/right
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+	// Move Left
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
+	{
 		velocity.x = -speed;
+		lookingRight = false;
 		anims.SetCurrent("move");
 	}
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+	// Move Right
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
+	{
 		velocity.x = speed;
+		lookingRight = true;
 		anims.SetCurrent("move");
 	}
 }
 
-void Player::Jump(float dt) // TO DO: Jump Sometimes doesn't work: Most probable Cause is Hitbox/Collider detection failing, that causes isJumping to remain true
-							//TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
+void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
 {
-	// Base Jump + Double Jump
-	if (  (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) && 
-		( (isJumping == false && onGround == true) // Base Jump
-		|| (secondJumpUsed == false && doubleJumpUnlocked == true && (isJumping == true || onAir == true) ) ) // Double Jump
-		) 
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-
-		if (isJumping == false && onGround == true) 
-		{ 
+		// Base Jump 
+		if (isJumping == false && onGround == true)
+		{
 			isJumping = true;
 			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+			anims.SetCurrent("jump");
+
+			//Extra Jump Force
+			isJumpKeyDown = true;
+			jumpHoldTime = 0.00f;
+
+			LOG("Jump");
 		}
-		else if (isJumping == true || onAir == true)
+		// Double Jump
+		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
-			secondJumpUsed = true; 
+			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
 			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true); // TO DO: Adjust Second Jump Force
+			anims.SetCurrent("jump");
+
+			//Extra Jump Force
+			isJumpKeyDown = true;
+			jumpHoldTime = 0.00f;
+
+			LOG("Double Jump");
 		}
-
-		anims.SetCurrent("jump");
-
-
-	//Extra Jump Force
-
-		isJumpKeyDown = true;
-		jumpHoldTime = 0.00f;
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
@@ -141,22 +155,35 @@ void Player::Draw(float dt) {
 	anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
+	//SDLFlip
+	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+	if (!lookingRight)
+	{
+		sdlFlip = SDL_FLIP_HORIZONTAL;
+	}
+
 	// Update render position using your PhysBody helper
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
 
-	//L10: TODO 7: Center the camera on the player
+	// Draw the player using the texture and the current animation frame
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, 0, 0, 0, sdlFlip);
+}
+
+void Player::CameraFollows()
+{
+	// Center the camera on the player
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
+	
 	float limitLeft = Engine::GetInstance().render->camera.w / 4;
 	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
-	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
+	
+	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) 
+	{
 		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
 	}
-
-	// L10: TODO 5: Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
 }
 
 bool Player::CleanUp()
@@ -171,18 +198,27 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
 	case ColliderType::GROUND:
-		LOG("Collision PLATFORM");
-		// reset the jump flag when touching the ground
+		LOG("Collision GROUND");
+		// Reset the jump flag when touching the ground
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle");
-
-		b2BodyId bodyId = pbody->body; // tu id
-
-		
+		anims.SetCurrent("idle");	
 		onGround = true;
 
+		break;
+	case ColliderType::WALL:
+		LOG("Collision WALL");
+		// Reset the jump flag
+		isJumping = false;
+		secondJumpUsed = false;
+
+		anims.SetCurrent("idle"); //TODO: On wall anim
+		onWall = true;
+
+		break;
+	case ColliderType::CEILING:
+		LOG("Collision CEILING");
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");

@@ -36,6 +36,9 @@ private:
 	void ApplyPhysics();
 	void Draw(float dt);
 
+	void CameraFollows();
+
+
 	// DevTools / Debug
 	void Teleport();
 
@@ -43,13 +46,13 @@ public:
 
 	int health; 
 	float speed = 4.0f;
-	bool flipSprite = false;
+
 
 
 	// Texture
 	SDL_Texture* texture = NULL;
 	int texW, texH;
-
+	bool lookingRight = true; //False Left -- True Right 
 	
 	// Physics
 	PhysBody* pbody;
