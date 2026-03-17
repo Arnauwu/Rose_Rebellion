@@ -3,6 +3,11 @@
 
 Audio::Audio() {
     name = "audio";
+    device_ = 0;
+    music_stream_ = nullptr;
+    for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
+        sfx_pool_[i] = nullptr;
+    }
 }
 
 Audio::~Audio() {
@@ -76,22 +81,23 @@ bool Audio::EnsureStreams() {
     // Set music volume
     SDL_SetAudioStreamGain(music_stream_, music_volume_);
 
-    if (!sfx_stream_) {
-        sfx_stream_ = SDL_CreateAudioStream(nullptr, &device_spec_);
-        if (!sfx_stream_) {
-            LOG("Audio: SDL_CreateAudioStream (sfx) failed: %s", SDL_GetError());
-            return false;
+    for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
+        if (!sfx_pool_[i]) {
+            sfx_pool_[i] = SDL_CreateAudioStream(nullptr, &device_spec_);
+            if (!sfx_pool_[i]) {
+                LOG("Audio: SDL_CreateAudioStream (sfx pool %d) failed: %s", i, SDL_GetError());
+                return false;
+            }
+            if (!SDL_BindAudioStream(device_, sfx_pool_[i])) {
+                LOG("Audio: SDL_BindAudioStream (sfx pool %d) failed: %s", i, SDL_GetError());
+                SDL_DestroyAudioStream(sfx_pool_[i]);
+                sfx_pool_[i] = nullptr;
+                return false;
+            }
         }
-        if (!SDL_BindAudioStream(device_, sfx_stream_)) {
-            LOG("Audio: SDL_BindAudioStream (sfx) failed: %s", SDL_GetError());
-            SDL_DestroyAudioStream(sfx_stream_);
-            sfx_stream_ = nullptr;
-            return false;
-        }
+        // Set SFX volume for each stream in pool
+        SDL_SetAudioStreamGain(sfx_pool_[i], sfx_volume_);
     }
-
-    // Set SFX volume
-    SDL_SetAudioStreamGain(sfx_stream_, sfx_volume_);
 
     return true;
 }
@@ -117,10 +123,11 @@ bool Audio::CleanUp() {
     // If audio is inactive or already quit elsewhere, don't touch SDL objects.
     if (!active || !SDL_WasInit(SDL_INIT_AUDIO)) {
         music_stream_ = nullptr;
-        sfx_stream_ = nullptr;
         device_ = 0;
         sfx_.clear();
         FreeSound(music_data_);
+        // Clean pool pointers
+        for (int i = 0; i < MAX_SFX_STREAMS; ++i) sfx_pool_[i] = nullptr;
         return true;
     }
 
@@ -136,10 +143,14 @@ bool Audio::CleanUp() {
     }
     FreeSound(music_data_);
 
-    if (sfx_stream_) {
-        SDL_DestroyAudioStream(sfx_stream_);
-        sfx_stream_ = nullptr;
+    // Destroy SFX Pool
+    for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
+        if (sfx_pool_[i]) {
+            SDL_DestroyAudioStream(sfx_pool_[i]);
+            sfx_pool_[i] = nullptr;
+        }
     }
+
     for (auto& s : sfx_) FreeSound(s);
     sfx_.clear();
 
@@ -207,15 +218,26 @@ bool Audio::PlayFx(int id, int repeat) {
 
     const SoundData& s = sfx_[static_cast<size_t>(id - 1)];
 
+    // --- FIND AVAILABLE STREAM IN POOL ---
+    SDL_AudioStream* streamToUse = nullptr;
+    for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
+        if (SDL_GetAudioStreamQueued(sfx_pool_[i]) == 0) {
+            streamToUse = sfx_pool_[i];
+            break;
+        }
+    }
+
+    if (!streamToUse) return false; // All streams busy
+
     // Make sure the SFX stream input format matches this sound
-    if (!SDL_SetAudioStreamFormat(sfx_stream_, &s.spec, &device_spec_)) {
+    if (!SDL_SetAudioStreamFormat(streamToUse, &s.spec, &device_spec_)) {
         LOG("Audio: SDL_SetAudioStreamFormat(sfx) failed: %s", SDL_GetError());
         return false;
     }
 
     // Queue sound 'repeat+1' times
     for (int i = 0; i <= repeat; ++i) {
-        if (!SDL_PutAudioStreamData(sfx_stream_, s.buf, s.len)) {
+        if (!SDL_PutAudioStreamData(streamToUse, s.buf, s.len)) {
             LOG("Audio: SDL_PutAudioStreamData(sfx) failed: %s", SDL_GetError());
             return false;
         }
@@ -239,13 +261,15 @@ void Audio::SetMusicVolume(float volume)
 
 void Audio::SetSFXVolume(float volume)
 {
-    // clamp
+
     if (volume < 0.0f) volume = 0.0f;
     else if (volume > 1.0f) volume = 1.0f;
 
     sfx_volume_ = volume;
 
-    if (sfx_stream_) {
-        SDL_SetAudioStreamGain(sfx_stream_, sfx_volume_);
+    for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
+        if (sfx_pool_[i] != nullptr) {
+            SDL_SetAudioStreamGain(sfx_pool_[i], sfx_volume_);
+        }
     }
 }

@@ -56,7 +56,8 @@ private:
     // Loaded sounds
     SoundData music_data_{};
     std::vector<SoundData> sfx_; // 1-based indexing outwardly
-
+    static const int MAX_SFX_STREAMS = 16; // Maximos sonidos simultaneos
+    SDL_AudioStream* sfx_pool_[MAX_SFX_STREAMS];
     // Volume control
     float music_volume_ = 1.0f; // 0.0 = mute, 1.0 = full
     float sfx_volume_ = 1.0f;
