@@ -21,6 +21,15 @@ public:
     Vector2D operator-(const Vector2D& other) const;
     Vector2D operator*(float scalar) const;
     Vector2D operator/(float scalar) const;
+    bool operator==(const Vector2D& other) const;
+    bool operator!=(const Vector2D& other) const;
+    bool operator<(const Vector2D& other) const;
+    bool operator<=(const Vector2D& other) const;
+    bool operator>(const Vector2D& other) const;
+    bool operator>=(const Vector2D& other) const;
+
+    // Distancia: solo squared
+    float distanceSquared(const Vector2D& other) const;
 
     // Output stream operator
     friend std::ostream& operator<<(std::ostream& os, const Vector2D& vec);

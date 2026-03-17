@@ -27,12 +27,13 @@ public:
 	// Retrieve window scale
 	int GetScale() const;
 
+	void SetFullscreen(bool enabled);
 public:
 	// The window we'll be rendering to
 	SDL_Window* window;
 
 	std::string title;
-	int width = 1280;
-	int height = 720;
-	int scale = 1;
+	int windowWidth = 1280;
+	int windowHeight = 720;
+	int windowScale = 1;
 };

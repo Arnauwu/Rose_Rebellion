@@ -28,6 +28,7 @@ float Vector2D::magnitude() const {
 
 Vector2D Vector2D::normalized() const {
     float mag = magnitude();
+    if (mag == 0) return Vector2D(0, 0);
     return Vector2D(x / mag, y / mag);
 }
 
@@ -51,4 +52,45 @@ Vector2D Vector2D::operator/(float scalar) const {
 std::ostream& operator<<(std::ostream& os, const Vector2D& vec) {
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;
+}
+
+bool Vector2D::operator==(const Vector2D& other) const {
+    return x == other.x && y == other.y;
+}
+
+bool Vector2D::operator!=(const Vector2D& other) const {
+    return x != other.x || y != other.y;
+}
+
+bool Vector2D::operator<(const Vector2D& other) const {
+    if (x != other.x) {
+        return x < other.x;
+    }
+    return y < other.y;
+}
+
+bool Vector2D::operator<=(const Vector2D& other) const {
+    if (x != other.x) {
+        return x <= other.x;
+    }
+    return y <= other.y;
+}
+
+bool Vector2D::operator>(const Vector2D& other) const {
+    if (x != other.x) {
+        return x > other.x;
+    }
+    return y > other.y;
+}
+
+bool Vector2D::operator>=(const Vector2D& other) const {
+    if (x != other.x) {
+        return x >= other.x;
+    }
+    return y >= other.y;
+}
+
+// Distancia: solo squared
+float Vector2D::distanceSquared(const Vector2D& other) const {
+    return std::pow(x - other.x, 2) + std::pow(y - other.y, 2);
 }

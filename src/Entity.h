@@ -17,7 +17,7 @@ class Entity : public std::enable_shared_from_this<Entity>
 public:
 
 	Entity() {}
-	Entity(EntityType type) : type(type), active(true) {}
+	Entity(EntityType type) : type(type), active(true), zOrder(0) {} 
 
 	virtual bool Awake()
 	{
@@ -74,11 +74,12 @@ public:
 
 	std::string name;
 	EntityType type;
+	int zOrder = 0; // zOrder(0) To know when to draw it
 	bool active = true;
 	bool pendingToDelete = false;
 
 	// Possible properties, it depends on how generic we
 	// want our Entity class, maybe it's not renderable...
-	Vector2D position;       
+	Vector2D position;
 	bool renderable = true;
 };

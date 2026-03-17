@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Vector2D.h"
 #include "SDL3/SDL.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 class Render : public Module
 {
@@ -33,14 +34,17 @@ public:
 	// Drawing
 	bool DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX) const;
 	bool DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, double angle, int pivotX, int pivotY, SDL_FlipMode flip) const;
-
-
 	bool DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
 	bool DrawCircle(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
+	// L16: method DrawText to render text on screen. Uses SDL3_ttf
+	bool DrawText(const char* text, int x, int y, int w, int h, SDL_Color color) const;
 
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
+
+	// L19 TODO 4: Create a method to know if a rectangle is inside the camera frustum
+	bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
 
 public:
 
@@ -49,6 +53,13 @@ public:
 	SDL_Rect viewport;
 	SDL_Color background;
 
+	void SetZoom(float zoomValue);
+	float GetZoom() const {
+		return zoomLevel;
+	}
+
 private:
 	bool vsync = false;
+	TTF_Font* font;
+	float zoomLevel = 1.0f;
 };

@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Input.h"
 #include "Window.h"
+#include "render.h"
 #include "Log.h"
 
 #define MAX_KEYS 300
@@ -113,7 +114,7 @@ bool Input::PreUpdate()
 		case SDL_EVENT_MOUSE_MOTION:
 		{
 			int scale = Engine::GetInstance().window->GetScale();
-			mouseMotionX = (int) (event.motion.xrel / scale);
+			mouseMotionX = (int)(event.motion.xrel / scale);
 			mouseMotionY = (int)(event.motion.yrel / scale);
 			mouseX = (int)(event.motion.x / scale);
 			mouseY = (int)(event.motion.y / scale);
@@ -138,14 +139,21 @@ bool Input::GetWindowEvent(EventWindow ev)
 	return windowEvents[ev];
 }
 
-void Input::GetMousePosition(int& x, int& y)
+// Functions to ensure mouse information is not lost when switching from windowed mode to full-screen mode
+Vector2D Input::GetMousePosition()
 {
-	x = mouseX;
-	y = mouseY;
+	float windowX, windowY;
+	SDL_GetMouseState(&windowX, &windowY);
+
+	SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
+
+	float logicalX, logicalY;
+	SDL_RenderCoordinatesFromWindow(renderer, windowX, windowY, &logicalX, &logicalY);
+
+	return Vector2D((int)logicalX, (int)logicalY);
 }
 
-void Input::GetMouseMotion(int& x, int& y)
+Vector2D Input::GetMouseMotion()
 {
-	x = mouseMotionX;
-	y = mouseMotionY;
+	return Vector2D((float)mouseMotionX, (float)mouseMotionY);
 }

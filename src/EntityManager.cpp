@@ -79,7 +79,12 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	}
 
-	entities.push_back(entity);
+	if (entity != nullptr)
+	{
+		// Forzamos la inicialización si el manager ya está en marcha
+		entity->Awake();
+		entities.push_back(entity);
+	}
 
 	return entity;
 }
@@ -101,7 +106,10 @@ bool EntityManager::Update(float dt)
 
 	//List to store entities pending deletion
 	std::list<std::shared_ptr<Entity>> pendingDelete;
-	
+
+	entities.sort([](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) {
+		return a->zOrder < b->zOrder; }); // Compare who draws first 
+
 	//Iterates over the entities and calls Update
 	for(const auto entity : entities)
 	{

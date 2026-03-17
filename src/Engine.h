@@ -18,6 +18,8 @@ class EntityManager;
 class Map;
 //L08 TODO 2: Add Physics module
 class Physics;
+class UIManager;
+class Hud;
 
 class Engine
 {
@@ -100,12 +102,14 @@ public:
 	std::shared_ptr<Map> map;
 	// L08: TODO 2: Add Physics module
 	std::shared_ptr<Physics> physics;
+	// UI module and Hud module
+	std::shared_ptr<UIManager> uiManager;
+	std::shared_ptr<Hud> hud;
 
-
-private: 
+private:
 
 	// Delta time
-	float dt; 
+	float dt;
 	//Frames since startup
 	int frames;
 
@@ -125,9 +129,9 @@ private:
 	//Maximun frame duration in miliseconds.
 	int targetFrameRate = 60;
 
-	std::string gameTitle = "Platformer Game";
+	std::string gameTitle = "Rose Rebellion";
 
-	//L05 TODO 2: Declare a xml_document to load the config file
+	// Declare a xml_document to load the config file
 	pugi::xml_document configFile;
 
 };

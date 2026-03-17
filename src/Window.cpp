@@ -35,16 +35,16 @@ bool Window::Awake()
 		bool fullscreen_window = configParameters.child("fullscreen_window").attribute("value").as_bool();
 
 		//TODO Get the values from the config file
-		width = configParameters.child("resolution").attribute("width").as_int();
-		height = configParameters.child("resolution").attribute("height").as_int();
-		scale = configParameters.child("resolution").attribute("scale").as_int();
+		windowWidth = configParameters.child("resolution").attribute("width").as_int();
+		windowHeight = configParameters.child("resolution").attribute("height").as_int();
+		windowScale = configParameters.child("resolution").attribute("scale").as_int();
 
 		if (fullscreen == true)        flags |= SDL_WINDOW_FULLSCREEN;
 		if (borderless == true)        flags |= SDL_WINDOW_BORDERLESS;
 		if (resizable == true)         flags |= SDL_WINDOW_RESIZABLE;
 
 		// SDL3: SDL_CreateWindow(title, w, h, flags). Set position separately.
-		window = SDL_CreateWindow("Platform Game", width, height, flags);
+		window = SDL_CreateWindow("Platform Game", windowWidth, windowHeight, flags);
 
 		if (window == NULL)
 		{
@@ -90,11 +90,23 @@ void Window::SetTitle(const char* new_title)
 
 void Window::GetWindowSize(int& width, int& height) const
 {
-	width = this->width;
-	height = this->height;
+	width = this->windowWidth;
+	height = this->windowHeight;
 }
 
 int Window::GetScale() const
 {
-	return scale;
+	return windowScale;
+}
+
+void Window::SetFullscreen(bool enabled)
+{
+	if (enabled)
+	{
+		SDL_SetWindowFullscreen(window, true);
+	}
+	else
+	{
+		SDL_SetWindowFullscreen(window, false);
+	}
 }
