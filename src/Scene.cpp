@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Item.h"
+#include "UIManager.h"
 
 Scene::Scene() : Module()
 {

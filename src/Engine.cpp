@@ -13,8 +13,8 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Log.h"
-//#include "UIManager.h"
-//#include "Hud.h"
+#include "UIManager.h"
+#include "Hud.h"
 
 // Constructor
 Engine::Engine() {

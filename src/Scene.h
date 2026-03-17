@@ -32,8 +32,7 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-private:
-
-	//L03: TODO 3b: Declare a Player attribute
 	std::shared_ptr<Player> player;
+
+private:
 };

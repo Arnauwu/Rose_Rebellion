@@ -24,6 +24,7 @@
     <ProjectGuid>{a9c663a5-00a3-466d-94be-bc98bc72effe}</ProjectGuid>
     <RootNamespace>PlatformGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Rose_Rebellion</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -149,6 +150,7 @@
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\Hud.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Log.cpp" />
@@ -161,6 +163,10 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Textures.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\UIButton.cpp" />
+    <ClCompile Include="src\UICheckBox.cpp" />
+    <ClCompile Include="src\UIManager.cpp" />
+    <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
@@ -170,6 +176,7 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\Hud.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Log.h" />
@@ -182,6 +189,11 @@
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\Timer.h" />
+    <ClInclude Include="src\UIButton.h" />
+    <ClInclude Include="src\UICheckBox.h" />
+    <ClInclude Include="src\UIElement.h" />
+    <ClInclude Include="src\UIManager.h" />
+    <ClInclude Include="src\UISlider.h" />
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>

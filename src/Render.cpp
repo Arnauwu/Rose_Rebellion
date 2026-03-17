@@ -54,8 +54,8 @@ bool Render::Awake()
 			}
 		}
 
-		camera.w = Engine::GetInstance().window->width * scale;
-		camera.h = Engine::GetInstance().window->height * scale;
+		camera.w = Engine::GetInstance().window->windowWidth * scale;
+		camera.h = Engine::GetInstance().window->windowHeight * scale;
 		camera.x = 0;
 		camera.y = 0;
 	}
@@ -340,4 +340,53 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 	}
 
 	return ret;
+}
+
+bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color color) const
+{
+	if (!font || !renderer || !text) {
+		LOG("DrawText: invalid font/renderer/text");
+		return false;
+	}
+
+	// Render the text to a surface
+	// SDL3_ttf: length can be 0 for null-terminated strings
+	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	if (!surface) {
+		LOG("DrawText: TTF_RenderText_Solid failed: %s", SDL_GetError());
+		return false;
+	}
+
+	// Create a texture from the surface
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (!texture) {
+		LOG("DrawText: SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+		SDL_DestroySurface(surface);
+		return false;
+	}
+
+	// Optional but often needed when using alpha/text
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	// If w/h are 0, use the text’s natural size
+	float fw = (w > 0) ? (float)w : (float)surface->w;
+	float fh = (h > 0) ? (float)h : (float)surface->h;
+
+	SDL_FRect dstrect = { (float)x, (float)y, fw, fh };
+
+	// Render the texture to the current render target
+	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstrect)) {
+		LOG("DrawText: SDL_RenderTexture failed: %s", SDL_GetError());
+	}
+
+	// Cleanup
+	SDL_DestroyTexture(texture);
+	SDL_DestroySurface(surface);
+
+	return true;
+}
+
+void Render::SetZoom(float zoomValue)
+{
+	zoomLevel = zoomValue;
 }
