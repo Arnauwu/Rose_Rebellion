@@ -14,7 +14,7 @@ struct Properties
     struct Property
     {
         std::string name;
-        int value; //We assume that we are going to work only with bool for the moment
+        int value;
     };
 
     std::list<Property*> propertyList;
@@ -76,9 +76,9 @@ struct MapLayer
     Properties properties;
 
     // Function to get the gid value of i,j
-    unsigned int Get(int i, int j) const
+    unsigned int Get(int x, int y) const
     {
-        return tiles[(j * width) + i];
+        return tiles[(y * width) + x];
     }
 };
 
@@ -156,15 +156,21 @@ public:
     // Load a group of properties 
     bool LoadProperties(pugi::xml_node& node, Properties& properties);
 
+    // Getters
+    MapLayer* GetNavigationLayer(bool ground);
+
 	// Get the map size in pixels
 	Vector2D GetMapSizeInPixels();
     Vector2D GetMapSizeInTiles();
 
 
-    // Getters
     int GetTileWidth() { return mapData.tileWidth;  }
 
     int GetTileHeight() { return mapData.tileHeight; }
+
+    // Entities
+    void SpawnEntities();
+
 
 
 public: 
@@ -174,5 +180,6 @@ public:
 private:
     bool mapLoaded;
     MapData mapData;
+    pugi::xml_document mapFileXML;
     std::list<PhysBody*> colliderList;
 };

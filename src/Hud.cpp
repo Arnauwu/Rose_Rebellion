@@ -25,9 +25,9 @@ bool Hud::Start() {
 
 bool Hud::Update(float dt) {
 
-    if (Engine::GetInstance().scene->player == nullptr) return true;
+    if (Engine::GetInstance().scene->GetPlayer() == nullptr) return true;
 
-    Player* player = Engine::GetInstance().scene->player.get();
+    Player* player = Engine::GetInstance().scene->GetPlayer().get();
 
     return true;
 }

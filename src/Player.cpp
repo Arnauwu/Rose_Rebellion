@@ -63,6 +63,8 @@ bool Player::Update(float dt)
 	Jump(dt);
 	Glide();
 
+	Dash();
+
 	Teleport();
 	
 	ApplyPhysics();
@@ -132,7 +134,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce * 0.005f, true); //TO DO: Adjust Value
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
 		jumpHoldTime += dt/1000; //To seconds
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
@@ -152,6 +154,24 @@ void Player::Glide() // Gliding
 		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
 		{
 			isGliding = false;
+		}
+	}
+}
+
+void Player::Dash()
+{
+	if (dashUnlocked == true)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN && hasDashed == false)
+		{
+			if (lookingRight == true)
+			{
+				velocity.x += dashForce;
+			}
+			else
+			{
+				velocity.x -= dashForce;
+			}
 		}
 	}
 }
@@ -284,6 +304,19 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	default:
 		break;
 	}
+}
+
+Vector2D Player::GetPosition()
+{
+	int x, y;
+	pbody->GetPosition(x, y);
+	// Adjust for center
+	return Vector2D((float)x, (float)y);
+}
+
+void Player::SetPosition(Vector2D pos)
+{
+	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
 }
 
 // DevTools

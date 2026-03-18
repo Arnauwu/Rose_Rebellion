@@ -28,12 +28,15 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
+	Vector2D GetPosition();
+	void SetPosition(Vector2D pos);
 private:
 
 	void GetPhysicsValues();
 	void Move();
 	void Jump(float dt);
 	void Glide();
+	void Dash();
 
 	void ApplyPhysics();
 	void Draw(float dt);
@@ -82,6 +85,8 @@ public:
 
 	// Dash
 	bool dashUnlocked = true;
+	float dashForce = 150.0f;
+	bool hasDashed = false; // Flag to check if the player has dashed
 
 	//Audio fx
 	int pickCoinFxId;
