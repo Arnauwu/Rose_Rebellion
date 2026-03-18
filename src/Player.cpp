@@ -102,10 +102,12 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		// Base Jump 
-		if (isJumping == false && onGround == true)
+		if (onGround == true)
 		{
 			isJumping = true;
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+			//Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+			Engine::GetInstance().physics->SetYVelocity(pbody, -jumpForce * 3); // TO DO: Adjust Second Jump Force
+
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -118,8 +120,8 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			secondJumpUsed = true;
-			Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true); // TO DO: Adjust Second Jump Force
+			//Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
+			Engine::GetInstance().physics->SetYVelocity(pbody, -jumpForce*3); // TO DO: Adjust Second Jump Force
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -142,7 +144,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
-	if (isJumping == true) {
+	if (isJumping == true || secondJumpUsed == true) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	}
 
@@ -245,6 +247,8 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	case ColliderType::GROUND:
 		onGround = false;
 		onAir = true;
+		LOG("On Air");
+
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
