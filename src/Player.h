@@ -33,6 +33,7 @@ private:
 	void GetPhysicsValues();
 	void Move();
 	void Jump(float dt);
+	void Attack(float dt);
 	void ApplyPhysics();
 	void Draw(float dt);
 
@@ -76,7 +77,10 @@ public:
 	bool doubleJumpUnlocked = true; // TO DO: Change to false
 	bool secondJumpUsed = false;
 
-
+	//Attack
+	float AttackTimer = 0.0f;// Attack timer counter 
+	bool Is_Attacking = false;// Check if the player is attacking or not
+	float AttackDuration = 500.0f;// Maximum duration of each attack =0,5s
 	//Audio fx
 	int pickCoinFxId;
 

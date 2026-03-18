@@ -29,7 +29,7 @@ bool Player::Awake() {
 bool Player::Start() {
 
 	// Load
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
+	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"},{33,"attack1"}};
 	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
 	anims.SetCurrent("idle");
 
@@ -57,7 +57,11 @@ bool Player::Start() {
 bool Player::Update(float dt)
 {
 	GetPhysicsValues();
+
 	Move();
+
+	Attack(dt);
+
 	CameraFollows();
 
 	Jump(dt);
@@ -77,6 +81,29 @@ void Player::GetPhysicsValues()
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+}
+
+void Player::Attack(float dt) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_J) == KEY_DOWN && !Is_Attacking && onGround) { //Activates when the player is on the ground and not attacking.
+		Is_Attacking = true;
+		AttackTimer = 0.0f;
+		anims.SetCurrent("jump"); //for test
+		LOG("Basic Attack Triggered");
+
+	}
+
+	if(Is_Attacking){
+		// Attack duration counter to ensure the attack time doesn't exceed the limit
+
+		AttackTimer += dt;
+
+		//When the maximum duration of each attack is reached, the player exits attack mode and returns to idle mode.
+		if (AttackTimer >= AttackDuration) {
+			Is_Attacking = false;
+			anims.SetCurrent("idle");
+			LOG("Basic Attack Ended");
+		}
+	}
 }
 
 void Player::Move() {
