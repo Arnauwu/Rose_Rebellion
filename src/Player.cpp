@@ -61,7 +61,8 @@ bool Player::Update(float dt)
 	CameraFollows();
 
 	Jump(dt);
-	
+	Glide();
+
 	Teleport();
 	
 	ApplyPhysics();
@@ -102,11 +103,10 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		// Base Jump 
-		if (onGround == true)
+		if (isJumping == false && onGround == true)
 		{
 			isJumping = true;
-			//Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
-			Engine::GetInstance().physics->SetYVelocity(pbody, -jumpForce * 3); // TO DO: Adjust Second Jump Force
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
 			anims.SetCurrent("jump");
 
@@ -120,8 +120,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			secondJumpUsed = true;
-			//Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
-			Engine::GetInstance().physics->SetYVelocity(pbody, -jumpForce*3); // TO DO: Adjust Second Jump Force
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -142,10 +141,36 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 }
 
+void Player::Glide() // Gliding
+{
+	if (glideUnlocked)
+	{
+		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+		{
+			isGliding = true;
+		}
+		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
+		{
+			isGliding = false;
+		}
+	}
+}
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true || secondJumpUsed == true) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
+	}
+
+
+	if (isGliding)
+	{
+		int maxFallSpeed = 1;
+		if (velocity.y >= maxFallSpeed)
+		{
+			LOG("Gliding");
+			velocity.y = maxFallSpeed;
+		}
 	}
 
 	// Apply velocity via helper
