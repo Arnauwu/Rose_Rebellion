@@ -79,7 +79,7 @@ public:
 
 	//ATTACK
 	bool isAttacking = false;
-	float attackDuration = 0.25f; // Duración del ataque en segundos
+	float attackDuration = 0.25f; //attack duration
 	float currentAttackTime = 0.0f;
 	PhysBody* attackCollider = nullptr;
 
