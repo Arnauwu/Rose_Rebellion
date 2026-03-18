@@ -33,6 +33,7 @@ private:
 	void GetPhysicsValues();
 	void Move();
 	void Jump(float dt);
+	void Attack(float dt);
 	void ApplyPhysics();
 	void Draw(float dt);
 
@@ -76,6 +77,11 @@ public:
 	bool doubleJumpUnlocked = true; // TO DO: Change to false
 	bool secondJumpUsed = false;
 
+	//ATTACK
+	bool isAttacking = false;
+	float attackDuration = 0.25f; // Duración del ataque en segundos
+	float currentAttackTime = 0.0f;
+	PhysBody* attackCollider = nullptr;
 
 	//Audio fx
 	int pickCoinFxId;

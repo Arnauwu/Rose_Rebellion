@@ -61,6 +61,8 @@ bool Player::Update(float dt)
 	CameraFollows();
 
 	Jump(dt);
+
+	Attack(dt);
 	
 	Teleport();
 	
@@ -140,6 +142,56 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 }
 
+void Player::Attack(float dt)
+{
+	// 1. Iniciar el ataque (ejemplo: usando la tecla F o Enter)
+	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		isAttacking = true;
+		currentAttackTime = 0.0f;
+
+		// Calcular la posición del collider basada en hacia dónde mira el jugador
+		int attackOffsetX = lookingRight ? 32 : -32;
+		int attackX = position.getX() + attackOffsetX;
+		int attackY = position.getY();
+
+		// Crear el collider del ataque como un sensor kinemático (ancho 20, alto 32)
+		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, 20, 32, bodyType::KINEMATIC);
+		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+		attackCollider->listener = this;
+
+		// Opcional: Cambiar animación anims.SetCurrent("attack");
+		LOG("Attack started");
+	}
+
+	// 2. Controlar la duración del ataque
+	if (isAttacking)
+	{
+		currentAttackTime += dt / 1000.0f; // Convertir dt a segundos
+
+		// Actualizar la posición del collider para que siga al jugador mientras ataca
+		if (attackCollider != nullptr) {
+			int attackOffsetX = lookingRight ? 32 : -32;
+			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
+		}
+
+		// Finalizar el ataque cuando pase el tiempo
+		if (currentAttackTime >= attackDuration)
+		{
+			isAttacking = false;
+
+			// Destruir el collider
+			if (attackCollider != nullptr)
+			{
+				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+				attackCollider = nullptr;
+			}
+
+			LOG("Attack ended");
+		}
+	}
+}
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true) {
@@ -170,6 +222,20 @@ void Player::Draw(float dt) {
 
 	// Draw the player using the texture and the current animation frame
 	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, 0, 0, 0, sdlFlip);
+
+	if (isAttacking && attackCollider != nullptr)
+	{
+		int attackX, attackY;
+		attackCollider->GetPosition(attackX, attackY);
+
+		// Box2D devuelve la posición desde el centro del collider. 
+		// Calculamos la esquina superior izquierda (Restamos la mitad del ancho(20) y alto(32) que le dimos)
+		SDL_Rect attackRect = { attackX - 10, attackY - 16, 20, 32 };
+
+		// Dibuja un rectángulo rojo (R=255, G=0, B=0, Alpha=150)
+		// Nota: Dependiendo de tu Render.h, puede que te pida más parámetros al final como (..., true, true) para 'filled' y 'use_camera'
+		Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
+	}
 }
 
 void Player::CameraFollows()
@@ -190,6 +256,10 @@ bool Player::CleanUp()
 {
 	LOG("Cleanup player");
 	Engine::GetInstance().textures->UnLoad(texture);
+	if (attackCollider != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+		attackCollider = nullptr;
+	}
 	return true;
 }
 

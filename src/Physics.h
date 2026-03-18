@@ -26,6 +26,7 @@ enum bodyType {
 
 enum class ColliderType {
     PLAYER,
+    PLAYER_ATTACK,
     ITEM,
     CEILING,
     WALL,
