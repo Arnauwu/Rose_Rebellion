@@ -144,43 +144,43 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 
 void Player::Attack(float dt)
 {
-	// 1. Iniciar el ataque (ejemplo: usando la tecla F o Enter)
+	// 1. Start the attack 
 	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
 		isAttacking = true;
 		currentAttackTime = 0.0f;
 
-		// Calcular la posición del collider basada en hacia dónde mira el jugador
+		// Calculate the collider's position based on the direction the player is facing
 		int attackOffsetX = lookingRight ? 32 : -32;
 		int attackX = position.getX() + attackOffsetX;
 		int attackY = position.getY();
 
-		// Crear el collider del ataque como un sensor kinemático (ancho 20, alto 32)
+		// Create the attack collider as a kinematic sensor(width 20, height 32)
 		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, 20, 32, bodyType::KINEMATIC);
 		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
 		attackCollider->listener = this;
 
-		// Opcional: Cambiar animación anims.SetCurrent("attack");
+		// Optional: Change animation anims.SetCurrent(‘attack’);
 		LOG("Attack started");
 	}
 
-	// 2. Controlar la duración del ataque
+	// 2. Control the duration of the attack
 	if (isAttacking)
 	{
-		currentAttackTime += dt / 1000.0f; // Convertir dt a segundos
+		currentAttackTime += dt / 1000.0f; 
 
-		// Actualizar la posición del collider para que siga al jugador mientras ataca
-		if (attackCollider != nullptr) {
+		// Update the collider's position so that it follows the player whilst attacking
+			if (attackCollider != nullptr) {
 			int attackOffsetX = lookingRight ? 32 : -32;
 			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
 		}
 
-		// Finalizar el ataque cuando pase el tiempo
+		// End the attack when the time runs out
 		if (currentAttackTime >= attackDuration)
 		{
 			isAttacking = false;
 
-			// Destruir el collider
+			// Destroy the collider
 			if (attackCollider != nullptr)
 			{
 				Engine::GetInstance().physics->DeletePhysBody(attackCollider);

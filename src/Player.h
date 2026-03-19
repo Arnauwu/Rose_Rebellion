@@ -48,8 +48,6 @@ public:
 	int health; 
 	float speed = 4.0f;
 
-
-
 	// Texture
 	SDL_Texture* texture = NULL;
 	int texW, texH;
@@ -77,16 +75,16 @@ public:
 	bool doubleJumpUnlocked = true; // TO DO: Change to false
 	bool secondJumpUsed = false;
 
-	//ATTACK
+	//Attack
 	bool isAttacking = false;
 	float attackDuration = 0.25f; //attack duration
 	float currentAttackTime = 0.0f;
-	PhysBody* attackCollider = nullptr;
 
 	//Audio fx
 	int pickCoinFxId;
 
 private: 
+	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 	AnimationSet anims;
 
