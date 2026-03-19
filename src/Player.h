@@ -38,6 +38,7 @@ private:
 	void GetPhysicsValues();
 	void Move();
 	void Jump(float dt);
+	void Attack(float dt);
 	void Glide();
 	void Dash();
 
@@ -84,6 +85,10 @@ public:
 	bool doubleJumpUnlocked = true; // TO DO: Change to false
 	bool secondJumpUsed = false;
 
+	//Attack
+	bool isAttacking = false;
+	float attackDuration = 0.25f; //attack duration
+	float currentAttackTime = 0.0f;
 	bool OffensiveSkills[3] = { false, false, false };
 	bool DefensiveSkills[3] = { false, false, false };
 	bool UtilitySkills[3] = { false, false, false };
@@ -100,6 +105,7 @@ public:
 	int pickCoinFxId;
 
 private: 
+	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 	AnimationSet anims;
 
