@@ -3,8 +3,11 @@
 #include "Entity.h"
 #include "Animation.h"
 #include <box2d/box2d.h>
+#include <unordered_map>
 #include <SDL3/SDL.h>
 #include "Timer.h"
+#include <iostream>
+
 
 struct SDL_Texture;
 
@@ -47,7 +50,7 @@ public:
 	int health; 
 	float speed = 4.0f;
 
-
+	int currentForceOrbs = 0;
 
 	// Texture
 	SDL_Texture* texture = NULL;
@@ -76,6 +79,9 @@ public:
 	bool doubleJumpUnlocked = true; // TO DO: Change to false
 	bool secondJumpUsed = false;
 
+	bool OffensiveSkills[3] = { false, false, false };
+	bool DefensiveSkills[3] = { false, false, false };
+	bool UtilitySkills[3] = { false, false, false };
 
 	//Audio fx
 	int pickCoinFxId;

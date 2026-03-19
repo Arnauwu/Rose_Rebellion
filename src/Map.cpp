@@ -291,6 +291,10 @@ bool Map::Load(std::string path, std::string fileName)
                     {
                         collider->ctype = ColliderType::CEILING;
                     }
+                    else if (objectsGroups->properties.GetProperty("Ceiling") != NULL and objectsGroups->properties.GetProperty("Ceiling")->value)
+                    {
+                        collider->ctype = ColliderType::DOOR;
+                    }
                     else
                     {
                         collider->ctype = ColliderType::UNKNOWN;

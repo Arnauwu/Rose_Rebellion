@@ -32,7 +32,8 @@ enum class ColliderType {
     GROUND,
     DANGER,
     ENEMY,
-    UNKNOWN
+    UNKNOWN,
+    DOOR
     // ..
 };
 
