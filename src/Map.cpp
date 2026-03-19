@@ -262,15 +262,17 @@ bool Map::Load(std::string path, std::string fileName)
         // Creation of colliders and assign their type
         for (const auto& objectsGroups : mapData.objectGroups)
         {
-            LOG("SUCCESS: Found SavePoint Layer in Tiled!");
-               
-                if (objectsGroups->properties.GetProperty("SavePoint") != NULL && objectsGroups->properties.GetProperty("SavePoint")->value)
+            
+            //Comprova si existe una capa de objeto llamando savepoint que contiene una propiedad llamando save point activada
+                if (objectsGroups->properties.GetProperty("SavePoint") != NULL && objectsGroups->properties.GetProperty("SavePoint")->value)//SavePoint
                 {
+                    //usamos un bucle for pra extraer el posicion de cada savepoint que esta marcada en ela capa savepiont
                     for (const auto& obj : objectsGroups->objects)
                     {
+                        //llamar entity manager para crear unaa nueva entity de tipo savepoint
                         std::shared_ptr<Entity> newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::SAVEPOINT);
-                        SavePoint* sp = (SavePoint*)newEntity.get();
-
+                        SavePoint* sp = (SavePoint*)newEntity.get();    
+                        //y donar el valor del posici¨®n donde esta situada el savepoint dentro del app tiled
                         sp->position = Vector2D(obj->x, obj->y);
                     }
                 }

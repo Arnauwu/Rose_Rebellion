@@ -210,9 +210,22 @@ void Player::CameraFollows()
 	float limitLeft = Engine::GetInstance().render->camera.w / 4;
 	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
 	
-	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) 
+	// Position the camera differently based on the case.
+	// Case 1: If the player is in the center of the map, use normal camera tracking.
+	if (position.getX() > limitLeft && position.getX() < limitRight)
 	{
 		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
+	}
+	// If the player is at the far left, the camera locks at the map's left boundary to avoid showing the area outside the map.
+	// When in the left zone, the camera will stay positioned at the leftmost part of the map.
+	else if (position.getX() <= limitLeft)
+	{
+		Engine::GetInstance().render->camera.x = 0;
+	}
+	// Case: Player at rightmost position. Clamp camera to the right map edge.
+	else if (position.getX() >= limitRight)
+	{
+		Engine::GetInstance().render->camera.x = -(mapSize.getX() - Engine::GetInstance().render->camera.w);
 	}
 }
 
@@ -259,11 +272,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::SAVEPOINT:
 	{
 		LOG("Collision SavePoint");
-		SavePoint* sp = (SavePoint*)physB->listener;
+		// Get savepoint info and update its state. For example, toggle between different animations depending on whether it is activated or not.
+		SavePoint* sp = (SavePoint*)physB->listener;//obtener estado del savepoint
 		sp->Activate();
 
+		// Savepoint world position.
 		int spX, spY;
 		physB->GetPosition(spX, spY);
+
+		// When the player respawns, they will start at the last savepoint they passed.
 		respawnPosition = Vector2D((float)spX, (float)spY);
 		break;
 	}
@@ -311,7 +328,12 @@ void Player::Teleport()
 	}
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+
+		// Teleport the player to the position of the last savepoint they passed.
 		pbody->SetPosition(respawnPosition.getX(), respawnPosition.getY());
+
+		// Update the camera position to ensure it follows the player after they respawn.
+		position = respawnPosition;
 		LOG("Player respawned at last save point!");
 
 
