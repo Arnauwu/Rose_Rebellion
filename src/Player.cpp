@@ -234,10 +234,10 @@ void Player::Attack(float dt)
 	// 2. Control the duration of the attack
 	if (isAttacking)
 	{
-		currentAttackTime += dt / 1000.0f; 
+		currentAttackTime += dt / 1000.0f;
 
 		// Update the collider's position so that it follows the player whilst attacking
-			if (attackCollider != nullptr) {
+		if (attackCollider != nullptr) {
 			int attackOffsetX = lookingRight ? 32 : -32;
 			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
 		}
@@ -255,6 +255,9 @@ void Player::Attack(float dt)
 			}
 
 			LOG("Attack ended");
+		}
+	}
+}
 void Player::Glide() // Gliding
 {
 	if (glideUnlocked)
