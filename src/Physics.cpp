@@ -350,6 +350,11 @@ void Physics::ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool w
     b2Body_ApplyLinearImpulseToCenter(p->body, imp, wake);
 }
 
+void Physics::SetGravityScale(PhysBody* pbody, float scale)
+{
+    b2Body_SetGravityScale(pbody->body, scale);
+}
+
 //
 //--------------- PhysBody --------------------
 //

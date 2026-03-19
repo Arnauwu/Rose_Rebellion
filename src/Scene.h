@@ -32,7 +32,13 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-	std::shared_ptr<Player> player;
+	// Return the player position
+	Vector2D GetPlayerPosition();
+
+	std::shared_ptr<Player> GetPlayer() const { return player; };
+	void SetPlayer(std::shared_ptr<Player> p) { player = p; };
 
 private:
+	std::shared_ptr<Player> player;
+
 };

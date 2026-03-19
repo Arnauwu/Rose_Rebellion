@@ -9,6 +9,10 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include <iostream>
+#include <unordered_map>
+
+using namespace std;
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -51,6 +55,8 @@ bool Player::Start() {
 	// Initialize audio
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
+
+
 	return true;
 }
 
@@ -64,12 +70,73 @@ bool Player::Update(float dt)
 
 	Attack(dt);
 	
+	Glide();
+
+	Dash();
+
 	Teleport();
 	
 	ApplyPhysics();
 
 
 	Draw(dt);
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+	{
+		currentForceOrbs++;
+		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0) 
+		{
+			if (OffensiveSkills[2] == false)
+			{
+				LOG("Unlocking Offensive Skill:");
+				if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
+				else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
+				else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Offensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (DefensiveSkills[2] == false)
+			{
+				LOG("Unlocking Defensive Skill:");
+				if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
+				else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
+				else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Defensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (UtilitySkills[2] == false)
+			{
+				LOG("Unlocking Utility Skill:");
+				if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
+				else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
+				else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Utility Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
 
 	return true;
 }
@@ -107,7 +174,8 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		if (isJumping == false && onGround == true)
 		{
 			isJumping = true;
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
+
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -120,8 +188,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			secondJumpUsed = true;
-			Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true); // TO DO: Adjust Second Jump Force
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -133,7 +200,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce * 0.005f, true); //TO DO: Adjust Value
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
 		jumpHoldTime += dt/1000; //To seconds
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
@@ -160,7 +227,7 @@ void Player::Attack(float dt)
 		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
 		attackCollider->listener = this;
 
-		// Optional: Change animation anims.SetCurrent(‘attack’);
+		// Optional: Change animation anims.SetCurrent(ï¿½attackï¿½);
 		LOG("Attack started");
 	}
 
@@ -188,14 +255,54 @@ void Player::Attack(float dt)
 			}
 
 			LOG("Attack ended");
+void Player::Glide() // Gliding
+{
+	if (glideUnlocked)
+	{
+		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+		{
+			isGliding = true;
+		}
+		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
+		{
+			isGliding = false;
+		}
+	}
+}
+
+void Player::Dash()
+{
+	if (dashUnlocked == true)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN && hasDashed == false)
+		{
+			if (lookingRight == true)
+			{
+				velocity.x += dashForce;
+			}
+			else
+			{
+				velocity.x -= dashForce;
+			}
 		}
 	}
 }
 
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
-	if (isJumping == true) {
+	if (isJumping == true || secondJumpUsed == true) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
+	}
+
+
+	if (isGliding)
+	{
+		int maxFallSpeed = 1;
+		if (velocity.y >= maxFallSpeed)
+		{
+			LOG("Gliding");
+			velocity.y = maxFallSpeed;
+		}
 	}
 
 	// Apply velocity via helper
@@ -228,12 +335,12 @@ void Player::Draw(float dt) {
 		int attackX, attackY;
 		attackCollider->GetPosition(attackX, attackY);
 
-		// Box2D devuelve la posición desde el centro del collider. 
+		// Box2D devuelve la posiciï¿½n desde el centro del collider. 
 		// Calculamos la esquina superior izquierda (Restamos la mitad del ancho(20) y alto(32) que le dimos)
 		SDL_Rect attackRect = { attackX - 10, attackY - 16, 20, 32 };
 
-		// Dibuja un rectángulo rojo (R=255, G=0, B=0, Alpha=150)
-		// Nota: Dependiendo de tu Render.h, puede que te pida más parámetros al final como (..., true, true) para 'filled' y 'use_camera'
+		// Dibuja un rectï¿½ngulo rojo (R=255, G=0, B=0, Alpha=150)
+		// Nota: Dependiendo de tu Render.h, puede que te pida mï¿½s parï¿½metros al final como (..., true, true) para 'filled' y 'use_camera'
 		Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
 	}
 }
@@ -315,6 +422,8 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	case ColliderType::GROUND:
 		onGround = false;
 		onAir = true;
+		LOG("On Air");
+
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
@@ -325,6 +434,19 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	default:
 		break;
 	}
+}
+
+Vector2D Player::GetPosition()
+{
+	int x, y;
+	pbody->GetPosition(x, y);
+	// Adjust for center
+	return Vector2D((float)x, (float)y);
+}
+
+void Player::SetPosition(Vector2D pos)
+{
+	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
 }
 
 // DevTools
