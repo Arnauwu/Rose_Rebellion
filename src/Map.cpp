@@ -8,6 +8,13 @@
 
 #include <math.h>
 
+#include "Scene.h"
+
+
+#include "EntityManager.h"
+#include "Test.h"
+#include "Item.h"
+
 Map::Map() : Module(), mapLoaded(false)
 {
     name = "map";
@@ -35,30 +42,116 @@ bool Map::Update(float dt)
 {
     bool ret = true;
 
-    if (mapLoaded) {
+    if (mapLoaded) 
+    {
+        //Update all Animated Tiles
+        for (auto& tileset : mapData.tilesets)
+        {
+            for (auto it = tileset->animations.begin(); it != tileset->animations.end(); ++it)
+            {
+                it->second.Update(dt);
+            }
+        }
 
-        // L07 TODO 5: Prepare the loop to draw all tiles in a layer + DrawTexture()
-        // iterate all tiles in a layer
-        for (const auto& mapLayer : mapData.layers) {
-            //L09 TODO 7: Check if the property Draw exist get the value, if it's true draw the lawyer
-            if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true) {
-				for (int i = 0; i < mapData.width; i++) {
-					for (int j = 0; j < mapData.height; j++) {
-						// L07 TODO 9: Complete the draw function
+
+        // Loop to draw all tiles in a layer + DrawTexture()
+        for (const auto& mapLayer : mapData.layers) 
+        {
+            if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true) 
+            {
+				for (int x = 0; x < mapData.width; x++) 
+                {
+                    if (x < 0 || x >= mapData.width) // FailSave
+                    {
+                        continue;
+                    }
+
+					for (int y = 0; y < mapData.height; y++) 
+                    {
+                        if (y < 0 || y >= mapData.height) //FailSave
+                        {
+                            continue;
+                        }
+
                         //Get the gid from tile
-                        int gid = mapLayer->Get(i, j);
+                        int gid = mapLayer->Get(x, y);
 
                         //Check if the gid is different from 0 - some tiles are empty
-                        if (gid != 0) {
-                            //L09: TODO 3: Obtain the tile set using GetTilesetFromTileId
-                            TileSet* tileSet = GetTilesetFromTileId(gid);
-                            if (tileSet != nullptr) {
+                        if (gid != 0)
+                        {
+                            // Decode flip flags from GID
+                            const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+                            const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
+                            const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+                            const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
+
+                            //Get Flip Variables and Correct Tile GID
+                            bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
+                            bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
+                            bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
+                            uint32_t tileId = gid & TILE_ID_MASK;
+
+                            // Determine rotation and final horizontal flip
+                            float rotation = 0.0f;
+                            SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+
+                            if (!flipD)
+                            {
+                                if (flipH && flipV) { rotation = 180.0f; }
+                                else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
+                                else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
+                            }
+                            else // Diagonal Flip  == True
+                            {
+                                if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+                                else if (flipH && !flipV) { rotation = 90.0f; }
+                                else if (!flipH && flipV) { rotation = 270.0f; }
+                                else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+                            }
+
+                            // Obtain the tile set using GetTilesetFromTileId
+                            TileSet* tileSet = GetTilesetFromTileId(tileId);
+
+                            if (tileSet != nullptr)
+                            {
                                 //Get the Rect from the tileSetTexture;
-                                SDL_Rect tileRect = tileSet->GetRect(gid);
-                                //Get the screen coordinates from the tile coordinates
-                                Vector2D mapCoord = MapToWorld(i, j);
+                                SDL_Rect tileRect;
+
+                                if (tileSet->animations.count(tileSet->firstGid - tileId))
+                                {
+                                    // Animated Tile
+
+                                    tileRect.x = tileSet->animations[tileSet->firstGid - tileId].GetCurrentFrame().x;
+                                    tileRect.y = tileSet->animations[tileSet->firstGid - tileId].GetCurrentFrame().y;
+                                    tileRect.w = tileSet->animations[tileSet->firstGid - tileId].GetCurrentFrame().w;
+                                    tileRect.h = tileSet->animations[tileSet->firstGid - tileId].GetCurrentFrame().h;
+                                }
+                                else
+                                {
+                                    // Static Tile
+
+                                    tileRect.x = tileSet->GetRect(tileId).x;
+                                    tileRect.y = tileSet->GetRect(tileId).y;
+                                    tileRect.w = tileSet->GetRect(tileId).w;
+                                    tileRect.h = tileSet->GetRect(tileId).h;
+                                }
+
+                                // Get the screen coordinates from the tile coordinates
+                                Vector2D mapCoord = MapToWorld(x, y);
+
+                                // Center point for rotation
+                                SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+                                // Destination rectangle
+                                SDL_Rect dstRect = {
+                                    (int)mapCoord.getX() + tileRect.w / 2,
+                                    (int)mapCoord.getY() + tileRect.h / 2,
+                                    tileRect.w,
+                                    tileRect.h
+                                };
+
                                 //Draw the texture
-                                Engine::GetInstance().render->DrawTexture(tileSet->texture, (int)mapCoord.getX(), (int)mapCoord.getY(), &tileRect);
+                                Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, rotation, center.x, center.y, sdlFlip);
                             }
                         }
                     }
@@ -127,7 +220,6 @@ bool Map::Load(std::string path, std::string fileName)
     mapPath = path;
     std::string mapPathName = mapPath + mapFileName;
 
-    pugi::xml_document mapFileXML;
     pugi::xml_parse_result result = mapFileXML.load_file(mapPathName.c_str());
 
     if(result == NULL)
@@ -135,8 +227,8 @@ bool Map::Load(std::string path, std::string fileName)
 		LOG("Could not load map xml file %s. pugi error: %s", mapPathName.c_str(), result.description());
 		ret = false;
     }
-    else {
-
+    else 
+    {
         // Load the map properties
         // retrieve the paremeters of the <map> node and store the into the mapData struct
         mapData.width = mapFileXML.child("map").attribute("width").as_int();
@@ -400,9 +492,6 @@ bool Map::Load(std::string path, std::string fileName)
         {
             LOG("Error while parsing map file: %s", mapPathName.c_str());
         }
-
-        if (mapFileXML) mapFileXML.reset(); //TODO: CHECK THIS
-
     }
 
     mapLoaded = ret;
@@ -455,6 +544,30 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     return ret;
 }
 
+MapLayer* Map::GetNavigationLayer(bool ground)
+{
+    for (const auto& layer : mapData.layers) {
+        if (layer->properties.GetProperty("Navigation") != NULL &&
+            layer->properties.GetProperty("Navigation")->value)
+        {
+            if (ground &&
+                layer->properties.GetProperty("Ground") != NULL &&
+                layer->properties.GetProperty("Ground")->value)
+            {
+                return layer;
+            }
+            else  if (!ground &&
+                layer->properties.GetProperty("Fly") != NULL &&
+                layer->properties.GetProperty("Fly")->value)
+            {
+                return layer;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 Vector2D Map::GetMapSizeInPixels()
 {
     Vector2D sizeInPixels;
@@ -466,6 +579,72 @@ Vector2D Map::GetMapSizeInPixels()
 Vector2D Map::GetMapSizeInTiles()
 {
     return Vector2D((float)mapData.width, (float)mapData.height);
+}
+
+void Map::SpawnEntities()
+{
+    for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
+    {
+        if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
+        {
+            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
+            {
+                std::string entityType = objectNode.attribute("type").as_string();
+                float x = objectNode.attribute("x").as_float();
+                float y = objectNode.attribute("y").as_float();
+
+                if (entityType == std::string("Player"))
+                {
+                    std::shared_ptr<Player> player = Engine::GetInstance().scene->GetPlayer();
+
+                    if (player == NULL) //if player doesnt exist
+                    {
+                        player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
+                        player->position = Vector2D(x, y);
+                    }
+                    else // if player exists
+                    {
+                        player->position = (Vector2D(x, y));
+                    }
+                    Engine::GetInstance().scene->SetPlayer(player);
+                }
+                else if (entityType == std::string("Test"))
+                {
+                    std::shared_ptr<Test> test = std::dynamic_pointer_cast<Test>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+                    test->position = Vector2D(x, y);
+                }
+            }
+        }
+    }
+    for (const auto& mapLayer : mapData.layers)
+    {
+        for (int i = 0; i < mapData.width; i++)
+        {
+            for (int j = 0; j < mapData.height; j++)
+            {
+                //Get the gid from tile
+                uint32_t gid = mapLayer->Get(i, j);
+
+                //Check if the gid is different from 0 - some tiles are empty
+                if (gid != 0)
+                {
+                    TileSet* tileSet = GetTilesetFromTileId(gid);
+
+                    if (tileSet != nullptr)
+                    {
+                        // If it's a goldcoin
+                        if (tileSet->name == "goldCoin")
+                        {
+                            // Create new Coin
+                            std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+                            item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 }
 
 

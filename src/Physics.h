@@ -95,8 +95,14 @@ public:
     void   SetXVelocity(PhysBody* p, float vx) const;
     void   SetYVelocity(PhysBody* p, float vy) const;
 
+    // Get Debug
+    bool GetDebug() { return debug; };
+
     // --- Impulse helper (handy for jumps/dashes)
     void   ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool wake = true) const;
+
+    // Gravity
+    void SetGravityScale(PhysBody* pbody, float scale);
 
 private:
     // helpers

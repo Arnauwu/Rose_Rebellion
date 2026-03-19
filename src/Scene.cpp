@@ -28,12 +28,7 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 
-	//L04: TODO 3b: Instantiate the player using the entity manager
-	player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
 	
-	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
-	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-	item->position = Vector2D(264, 500);
 
 	return ret;
 }
@@ -46,7 +41,8 @@ bool Scene::Start()
 
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
-	
+	Engine::GetInstance().map->SpawnEntities();
+
 	return true;
 }
 
@@ -94,4 +90,9 @@ bool Scene::CleanUp()
 	LOG("Freeing scene");
 
 	return true;
+}
+
+Vector2D Scene::GetPlayerPosition()
+{
+	return player->GetPosition();
 }

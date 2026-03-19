@@ -7,6 +7,7 @@ enum class EntityType
 {
 	PLAYER,
 	ITEM,
+	ENEMY,
 	UNKNOWN
 };
 
@@ -19,30 +20,17 @@ public:
 	Entity() {}
 	Entity(EntityType type) : type(type), active(true), zOrder(0) {} 
 
-	virtual bool Awake()
-	{
-		return true;
-	}
+	virtual bool Awake() { return true;	}
 
-	virtual bool Start()
-	{
-		return true;
-	}
+	virtual bool Start() { return true;	}
 
-	virtual bool Update(float dt)
-	{
-		return true;
-	}
+	virtual bool Update(float dt) { return true; }
 
-	virtual bool CleanUp()
-	{
-		return true;
-	}
+	virtual bool PostUpdate() { return true; }
 
-	virtual bool Destroy()
-	{
-		return true;
-	}
+	virtual bool CleanUp() { return true; }
+
+	virtual bool Destroy() { return true; }
 
 	void Enable()
 	{
