@@ -61,7 +61,10 @@ bool Player::Update(float dt)
 	CameraFollows();
 
 	Jump(dt);
-	
+	Glide();
+
+	Dash();
+
 	Teleport();
 	
 	ApplyPhysics();
@@ -105,7 +108,8 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		if (isJumping == false && onGround == true)
 		{
 			isJumping = true;
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
+
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -118,8 +122,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			secondJumpUsed = true;
-			Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true); // TO DO: Adjust Second Jump Force
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -131,7 +134,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce * 0.005f, true); //TO DO: Adjust Value
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
 		jumpHoldTime += dt/1000; //To seconds
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
@@ -140,10 +143,54 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 }
 
+void Player::Glide() // Gliding
+{
+	if (glideUnlocked)
+	{
+		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+		{
+			isGliding = true;
+		}
+		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
+		{
+			isGliding = false;
+		}
+	}
+}
+
+void Player::Dash()
+{
+	if (dashUnlocked == true)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN && hasDashed == false)
+		{
+			if (lookingRight == true)
+			{
+				velocity.x += dashForce;
+			}
+			else
+			{
+				velocity.x -= dashForce;
+			}
+		}
+	}
+}
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
-	if (isJumping == true) {
+	if (isJumping == true || secondJumpUsed == true) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
+	}
+
+
+	if (isGliding)
+	{
+		int maxFallSpeed = 1;
+		if (velocity.y >= maxFallSpeed)
+		{
+			LOG("Gliding");
+			velocity.y = maxFallSpeed;
+		}
 	}
 
 	// Apply velocity via helper
@@ -245,6 +292,8 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	case ColliderType::GROUND:
 		onGround = false;
 		onAir = true;
+		LOG("On Air");
+
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
@@ -255,6 +304,19 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	default:
 		break;
 	}
+}
+
+Vector2D Player::GetPosition()
+{
+	int x, y;
+	pbody->GetPosition(x, y);
+	// Adjust for center
+	return Vector2D((float)x, (float)y);
+}
+
+void Player::SetPosition(Vector2D pos)
+{
+	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
 }
 
 // DevTools

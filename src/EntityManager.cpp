@@ -4,7 +4,9 @@
 #include "Textures.h"
 #include "Scene.h"
 #include "Log.h"
+
 #include "Item.h"
+#include "Test.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -75,6 +77,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::ITEM:
 		entity = std::make_shared<Item>();
 		break;
+	case EntityType::ENEMY:
+		entity = std::make_shared<Test>();
+		break;
 	default:
 		break;
 	}
@@ -129,5 +134,16 @@ bool EntityManager::Update(float dt)
 		DestroyEntity(entity);
 	}
 
+	return ret;
+}
+
+bool EntityManager::PostUpdate()
+{
+	bool ret = true;
+	for (const auto entity : entities)
+	{
+		if (entity->active == false) continue;
+		ret = entity->PostUpdate();
+	}
 	return ret;
 }
