@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "SavePoint.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -51,6 +52,8 @@ bool Player::Start() {
 	// Initialize audio
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
+	//
+	respawnPosition = position;
 	return true;
 }
 
@@ -253,6 +256,17 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		physB->listener->Destroy();
 
 		break;
+	case ColliderType::SAVEPOINT:
+	{
+		LOG("Collision SavePoint");
+		SavePoint* sp = (SavePoint*)physB->listener;
+		sp->Activate();
+
+		int spX, spY;
+		physB->GetPosition(spX, spY);
+		respawnPosition = Vector2D((float)spX, (float)spY);
+		break;
+	}
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
@@ -275,6 +289,8 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
+		break;	
+	case ColliderType::SAVEPOINT:
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
@@ -292,5 +308,13 @@ void Player::Teleport()
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
 	{
 		pbody->SetPosition(96, 96);
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+		pbody->SetPosition(respawnPosition.getX(), respawnPosition.getY());
+		LOG("Player respawned at last save point!");
+
+
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f,0.0f });
 	}
 }

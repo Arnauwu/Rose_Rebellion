@@ -169,6 +169,7 @@
     <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\SavePoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
@@ -186,6 +187,7 @@
     <ClInclude Include="src\Physics.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
+    <ClInclude Include="src\SavePoint.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\Timer.h" />

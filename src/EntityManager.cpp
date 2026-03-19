@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Item.h"
+#include "SavePoint.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -75,13 +76,16 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::ITEM:
 		entity = std::make_shared<Item>();
 		break;
+	case EntityType::SAVEPOINT:
+		entity =  std::make_shared<SavePoint>();
+		break;
 	default:
 		break;
 	}
 
 	if (entity != nullptr)
 	{
-		// Forzamos la inicialización si el manager ya está en marcha
+		// Forzamos la inicialización si el manager ya est?en marcha
 		entity->Awake();
 		entities.push_back(entity);
 	}

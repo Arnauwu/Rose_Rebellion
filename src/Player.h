@@ -84,6 +84,8 @@ public:
 	//Audio fx
 	int pickCoinFxId;
 
+	//Save player position
+	Vector2D respawnPosition;
 private: 
 	b2Vec2 velocity;
 	AnimationSet anims;

@@ -5,7 +5,8 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
-
+#include "SavePoint.h"
+#include "EntityManager.h"
 #include <math.h>
 
 Map::Map() : Module(), mapLoaded(false)
@@ -261,7 +262,20 @@ bool Map::Load(std::string path, std::string fileName)
         // Creation of colliders and assign their type
         for (const auto& objectsGroups : mapData.objectGroups)
         {
-            if (objectsGroups->properties.GetProperty("Square") != NULL and objectsGroups->properties.GetProperty("Square")->value) // Square
+            LOG("SUCCESS: Found SavePoint Layer in Tiled!");
+               
+                if (objectsGroups->properties.GetProperty("SavePoint") != NULL && objectsGroups->properties.GetProperty("SavePoint")->value)
+                {
+                    for (const auto& obj : objectsGroups->objects)
+                    {
+                        std::shared_ptr<Entity> newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::SAVEPOINT);
+                        SavePoint* sp = (SavePoint*)newEntity.get();
+
+                        sp->position = Vector2D(obj->x, obj->y);
+                    }
+                }
+
+                else if (objectsGroups->properties.GetProperty("Square") != NULL and objectsGroups->properties.GetProperty("Square")->value) // Square
             {
                 for (const auto& obj : objectsGroups->objects)
                 {
