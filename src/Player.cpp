@@ -9,6 +9,10 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include <iostream>
+#include <unordered_map>
+
+using namespace std;
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -51,6 +55,8 @@ bool Player::Start() {
 	// Initialize audio
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
+
+
 	return true;
 }
 
@@ -71,6 +77,63 @@ bool Player::Update(float dt)
 
 
 	Draw(dt);
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+	{
+		currentForceOrbs++;
+		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0) 
+		{
+			if (OffensiveSkills[2] == false)
+			{
+				LOG("Unlocking Offensive Skill:");
+				if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
+				else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
+				else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Offensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (DefensiveSkills[2] == false)
+			{
+				LOG("Unlocking Defensive Skill:");
+				if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
+				else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
+				else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Defensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (UtilitySkills[2] == false)
+			{
+				LOG("Unlocking Utility Skill:");
+				if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
+				else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
+				else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Utility Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
 
 	return true;
 }
