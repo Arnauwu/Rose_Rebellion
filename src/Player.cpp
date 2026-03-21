@@ -9,6 +9,10 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include <iostream>
+#include <unordered_map>
+
+using namespace std;
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -51,6 +55,8 @@ bool Player::Start() {
 	// Initialize audio
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
+
+
 	return true;
 }
 
@@ -61,6 +67,9 @@ bool Player::Update(float dt)
 	CameraFollows();
 
 	Jump(dt);
+
+	Attack(dt);
+	
 	Glide();
 
 	Dash();
@@ -71,6 +80,63 @@ bool Player::Update(float dt)
 
 
 	Draw(dt);
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+	{
+		currentForceOrbs++;
+		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0) 
+		{
+			if (OffensiveSkills[2] == false)
+			{
+				LOG("Unlocking Offensive Skill:");
+				if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
+				else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
+				else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Offensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (DefensiveSkills[2] == false)
+			{
+				LOG("Unlocking Defensive Skill:");
+				if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
+				else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
+				else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Defensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (UtilitySkills[2] == false)
+			{
+				LOG("Unlocking Utility Skill:");
+				if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
+				else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
+				else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Utility Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
 
 	return true;
 }
@@ -143,6 +209,55 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 }
 
+void Player::Attack(float dt)
+{
+	// 1. Start the attack 
+	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		isAttacking = true;
+		currentAttackTime = 0.0f;
+
+		// Calculate the collider's position based on the direction the player is facing
+		int attackOffsetX = lookingRight ? 32 : -32;
+		int attackX = position.getX() + attackOffsetX;
+		int attackY = position.getY();
+
+		// Create the attack collider as a kinematic sensor(width 20, height 32)
+		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, 20, 32, bodyType::KINEMATIC);
+		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+		attackCollider->listener = this;
+
+		// Optional: Change animation anims.SetCurrent(�attack�);
+		LOG("Attack started");
+	}
+
+	// 2. Control the duration of the attack
+	if (isAttacking)
+	{
+		currentAttackTime += dt / 1000.0f;
+
+		// Update the collider's position so that it follows the player whilst attacking
+		if (attackCollider != nullptr) {
+			int attackOffsetX = lookingRight ? 32 : -32;
+			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
+		}
+
+		// End the attack when the time runs out
+		if (currentAttackTime >= attackDuration)
+		{
+			isAttacking = false;
+
+			// Destroy the collider
+			if (attackCollider != nullptr)
+			{
+				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+				attackCollider = nullptr;
+			}
+
+			LOG("Attack ended");
+		}
+	}
+}
 void Player::Glide() // Gliding
 {
 	if (glideUnlocked)
@@ -217,6 +332,20 @@ void Player::Draw(float dt) {
 
 	// Draw the player using the texture and the current animation frame
 	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, 0, 0, 0, sdlFlip);
+
+	if (isAttacking && attackCollider != nullptr)
+	{
+		int attackX, attackY;
+		attackCollider->GetPosition(attackX, attackY);
+
+		// Box2D devuelve la posici�n desde el centro del collider. 
+		// Calculamos la esquina superior izquierda (Restamos la mitad del ancho(20) y alto(32) que le dimos)
+		SDL_Rect attackRect = { attackX - 10, attackY - 16, 20, 32 };
+
+		// Dibuja un rect�ngulo rojo (R=255, G=0, B=0, Alpha=150)
+		// Nota: Dependiendo de tu Render.h, puede que te pida m�s par�metros al final como (..., true, true) para 'filled' y 'use_camera'
+		Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
+	}
 }
 
 void Player::CameraFollows()
@@ -237,6 +366,10 @@ bool Player::CleanUp()
 {
 	LOG("Cleanup player");
 	Engine::GetInstance().textures->UnLoad(texture);
+	if (attackCollider != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+		attackCollider = nullptr;
+	}
 	return true;
 }
 
