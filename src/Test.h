@@ -8,12 +8,12 @@
 
 struct SDL_Texture;
 
-class Test : public Enemy
+class TestEnemy : public Enemy
 {
 public:
 
-	Test();
-	virtual ~Test();
+	TestEnemy();
+	virtual ~TestEnemy();
 	bool Awake();
 	bool Start();
 	bool Update(float dt);

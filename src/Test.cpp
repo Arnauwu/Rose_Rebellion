@@ -12,20 +12,20 @@
 
 
 
-Test::Test() : Enemy(EntityType::ENEMY)
+TestEnemy::TestEnemy() : Enemy(EntityType::ENEMY)
 {
 	name = "Test";
 }
 
-Test::~Test() {
+TestEnemy::~TestEnemy() {
 
 }
 
-bool Test::Awake() {
+bool TestEnemy::Awake() {
 	return true;
 }
 
-bool Test::Start()
+bool TestEnemy::Start()
 {
 	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
 	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
@@ -68,7 +68,7 @@ bool Test::Start()
 	return true;
 }
 
-bool Test::Update(float dt)
+bool TestEnemy::Update(float dt)
 {
 
 	if (!active) return true;
@@ -89,7 +89,7 @@ bool Test::Update(float dt)
 	return true;
 }
 
-void Test::PerformPathfinding()
+void TestEnemy::PerformPathfinding()
 {
 	//Reset path
 	pathfinding->ResetPath(GetTilePos());
@@ -110,13 +110,13 @@ void Test::PerformPathfinding()
 	}
 }
 
-void Test::GetPhysicsValues() {
+void TestEnemy::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	velocity = { 0, velocity.y };
 }
 
-void Test::Move() {
+void TestEnemy::Move() {
 
 	Vector2D tilePos = GetTilePos();
 
@@ -168,14 +168,14 @@ void Test::Move() {
 	return;
 }
 
-void Test::ApplyPhysics() {
+void TestEnemy::ApplyPhysics() {
 
 	// Apply velocity via helper
 	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
 }
 
-void Test::Draw(float dt) 
+void TestEnemy::Draw(float dt) 
 {
 
 
@@ -198,7 +198,7 @@ void Test::Draw(float dt)
 	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
 }
 
-Vector2D Test::GetTilePos()
+Vector2D TestEnemy::GetTilePos()
 {
 	//Get the position of the enemy
 	Vector2D pos = GetPosition();
@@ -208,7 +208,7 @@ Vector2D Test::GetTilePos()
 }
 
 //Define OnCollision function for the enemy. 
-void Test::OnCollision(PhysBody* physA, PhysBody* physB) {
+void TestEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
 	case ColliderType::GROUND:
@@ -219,7 +219,7 @@ void Test::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void Test::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void TestEnemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {
 	switch (physB->ctype)
 	{

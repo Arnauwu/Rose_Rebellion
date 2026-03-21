@@ -291,6 +291,17 @@ void Player::Dash()
 	}
 }
 
+void Player::Interact()
+{
+	if (canInteract)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		{
+			// TODO: Call Other Class through body?
+		}
+	}
+}
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true || secondJumpUsed == true) {
@@ -373,7 +384,7 @@ bool Player::CleanUp()
 	return true;
 }
 
-// L08 TODO 6: Define OnCollision function for the player. 
+// Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
@@ -396,6 +407,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		anims.SetCurrent("idle"); //TODO: On wall anim
 		onWall = true;
 
+		break;
+	case ColliderType::DOOR:
+		canInteract = true;
 		break;
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
@@ -428,12 +442,16 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		LOG("On Air");
 
 		break;
+	case ColliderType::DOOR:
+		canInteract = false;
+		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
+	case ColliderType::CEILING:
 	default:
 		break;
 	}

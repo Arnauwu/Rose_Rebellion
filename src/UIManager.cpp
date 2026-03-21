@@ -22,7 +22,7 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 {
 	std::shared_ptr<UIElement> uiElement = std::make_shared<UIElement>();
 
-	// L16: TODO 1: Implement CreateUIElement function that instantiates a new UIElement according to the UIElementType and add it to the list of UIElements
+	// CreateUIElement function that instantiates a new UIElement according to the UIElementType and add it to the list of UIElements
 	switch (type)
 	{
 	case UIElementType::BUTTON:

@@ -426,13 +426,14 @@ void PhysBody::SetCollisionsActive(bool active)
     if (shapeCount > 0)
     {
         b2ShapeId shapeId;
-        // pedimos solo 1
+
+        // We take one
         b2Body_GetShapes(body, &shapeId, 1);
 
         // aquí ya puedes tocar el filtro
         b2Filter filter = b2Shape_GetFilter(shapeId);
-        if(active) filter.maskBits = 0xFFFF;              // no colisiona con nada
-        else filter.maskBits = 0x0000;			  // colisiona con todo
+        if(active) filter.maskBits = 0xFFFF;              // does NOT collide
+        else filter.maskBits = 0x0000;			  // collision with everything
         b2Shape_SetFilter(shapeId, filter);
     }
 }

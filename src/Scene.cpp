@@ -39,7 +39,7 @@ bool Scene::Start()
 
 	//Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
-	//L06 TODO 3: Call the function to load the map. 
+	//Load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 	Engine::GetInstance().map->SpawnEntities();
 
@@ -55,7 +55,7 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	//L03 TODO 3: Make the camera movement independent of framerate
+	// Make the camera movement independent of framerate
 	float camSpeed = 1;
 
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)

@@ -163,7 +163,7 @@ bool Map::Update(float dt)
     return ret;
 }
 
-// L09: TODO 2: Implement function to the Tileset based on a tile id
+// Implement function to the Tileset based on a tile id
 TileSet* Map::GetTilesetFromTileId(int gid) const
 {
 	TileSet* set = nullptr;
@@ -383,9 +383,16 @@ bool Map::Load(std::string path, std::string fileName)
                     {
                         collider->ctype = ColliderType::CEILING;
                     }
-                    else if (objectsGroups->properties.GetProperty("Ceiling") != NULL and objectsGroups->properties.GetProperty("Ceiling")->value)
+                    else if (objectsGroups->properties.GetProperty("Door") != NULL and objectsGroups->properties.GetProperty("Door")->value)
                     {
                         collider->ctype = ColliderType::DOOR;
+                        //TODO: LoadProperties(obj,obj.teleportTo)
+                        /*
+                         <objectgroup id="13" name="Door">
+                          <object id="28" x="1841" y="656" width="31" height="47.5">
+                             <properties>
+                             <property name="TeleportTo" type="file" value="Test.tmx"/>
+                        */
                     }
                     else
                     {
@@ -610,7 +617,7 @@ void Map::SpawnEntities()
                 }
                 else if (entityType == std::string("Test"))
                 {
-                    std::shared_ptr<Test> test = std::dynamic_pointer_cast<Test>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+                    std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
                     test->position = Vector2D(x, y);
                 }
             }

@@ -68,7 +68,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 {
 	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 
-	//L04: TODO 3a: Instantiate entity according to the type and add the new entity to the list of Entities
+	// Instantiate entity according to the type and add the new entity to the list of Entities
 	switch (type)
 	{
 	case EntityType::PLAYER:
@@ -78,7 +78,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<Item>();
 		break;
 	case EntityType::ENEMY:
-		entity = std::make_shared<Test>();
+		entity = std::make_shared<TestEnemy>();
 		break;
 	default:
 		break;
