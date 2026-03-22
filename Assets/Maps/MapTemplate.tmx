@@ -3156,6 +3156,11 @@
   </data>
  </layer>
  <objectgroup id="13" name="Door">
+  <properties>
+   <property name="Door" type="bool" value="true"/>
+   <property name="Sensor" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
   <object id="28" x="1841" y="656" width="31" height="47.5">
    <properties>
     <property name="TeleportTo" type="file" value="Test.tmx"/>

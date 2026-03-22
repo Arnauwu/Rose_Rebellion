@@ -296,7 +296,8 @@ bool Map::Load(std::string path, std::string fileName)
             LoadProperties(layerNode, mapLayer->properties);
 
             // Iterate over all the tiles and assign the values in the data array
-            for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) {
+            for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) 
+            {
                 mapLayer->tiles.push_back(tileNode.attribute("gid").as_int());
             }
 
@@ -305,11 +306,12 @@ bool Map::Load(std::string path, std::string fileName)
         }
 
         // Load Object Group
-        for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
-
+        for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup")) 
+        {
             ObjectGroup* objectgroup = new ObjectGroup();
 
-            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object")) {
+            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object")) 
+            {
                 ObjectGroup::Object* o = new ObjectGroup::Object;
 
                 // Save all Object attributes
@@ -341,9 +343,14 @@ bool Map::Load(std::string path, std::string fileName)
                         start = end + 1;
                     }
                 }
+
+                // Load Individual Object Properties
+                LoadProperties(objectNode, o->properties);
+
                 objectgroup->objects.push_back(o);
             }
 
+            // Load Object Layer Properties
             LoadProperties(objectGroupNode, objectgroup->properties);
 
             //Add the layer to the map
@@ -386,13 +393,13 @@ bool Map::Load(std::string path, std::string fileName)
                     else if (objectsGroups->properties.GetProperty("Door") != NULL and objectsGroups->properties.GetProperty("Door")->value)
                     {
                         collider->ctype = ColliderType::DOOR;
-                        //TODO: LoadProperties(obj,obj.teleportTo)
-                        /*
-                         <objectgroup id="13" name="Door">
-                          <object id="28" x="1841" y="656" width="31" height="47.5">
-                             <properties>
-                             <property name="TeleportTo" type="file" value="Test.tmx"/>
-                        */
+
+                        // TODO: Assign Listener
+
+                        Door* newDoor = new Door;
+                        newDoor->body = collider;
+                        newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+                        mapData.doors.push_back(newDoor);
                     }
                     else
                     {
@@ -540,9 +547,13 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
         {
             p->value = propertieNode.attribute("value").as_bool();
         }
-        else
+        else if (propertieNode.attribute("type").as_string() == std::string("int") )
         {
             p->value = propertieNode.attribute("value").as_int();
+        }
+        else if (propertieNode.attribute("type").as_string() == std::string("file"))
+        {
+            p->value2 = propertieNode.attribute("value").as_string();
         }
 
         properties.propertyList.push_back(p);
