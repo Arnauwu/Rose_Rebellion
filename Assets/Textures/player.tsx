@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="player" tilewidth="256" tileheight="256" tilecount="64" columns="8">
- <image source="princess.png" trans="ffffff" width="2048" height="2048"/>
+ <image source="princessSpriteSheet.tga" width="2048" height="2048"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>

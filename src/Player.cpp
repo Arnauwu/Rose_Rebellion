@@ -47,7 +47,7 @@ bool Player::Start()
 	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
 	anims.SetCurrent("front");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.tga");
 
 
 
