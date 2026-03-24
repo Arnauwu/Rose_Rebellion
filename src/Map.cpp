@@ -151,7 +151,7 @@ bool Map::Update(float dt)
                                 };
 
                                 //Draw the texture
-                                Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, rotation, center.x, center.y, sdlFlip);
+                                Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, 1, rotation, center.x, center.y, sdlFlip);
                             }
                         }
                     }

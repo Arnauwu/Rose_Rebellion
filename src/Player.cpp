@@ -19,26 +19,38 @@ Player::Player() : Entity(EntityType::PLAYER)
 	name = "Player";
 }
 
-Player::~Player() {
+Player::~Player() 
+{
 
 }
 
-bool Player::Awake() {
+bool Player::Awake() 
+{
 
 	// Initialize Player parameters
 	position = Vector2D(96, 96);
 	return true;
 }
 
-bool Player::Start() {
+bool Player::Start() 
+{
+	// Initialize Player parameters
 
 	// Load
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
-	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
-	anims.SetCurrent("idle");
+	//std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
+	//anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
+	//anims.SetCurrent("idle");
 
-	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+	//texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+
+	std::unordered_map<int, std::string> aliases = { {0,"move_right"},{11,"front"},{12,"move_left"} };
+	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
+	anims.SetCurrent("front");
+
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
+
+
+
 
 	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
@@ -155,14 +167,18 @@ void Player::Move() {
 	{
 		velocity.x = -speed;
 		lookingRight = false;
-		anims.SetCurrent("move");
+		anims.SetCurrent("move_left");
 	}
 	// Move Right
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 	{
 		velocity.x = speed;
 		lookingRight = true;
-		anims.SetCurrent("move");
+		anims.SetCurrent("move_right");
+	}
+	else
+	{
+		anims.SetCurrent("front");
 	}
 }
 
@@ -176,7 +192,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			anims.SetCurrent("jump");
+			anims.SetCurrent("front");
 
 			//Extra Jump Force
 			isJumpKeyDown = true;
@@ -328,11 +344,12 @@ void Player::Draw(float dt) {
 	anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
+
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
 	if (!lookingRight)
 	{
-		sdlFlip = SDL_FLIP_HORIZONTAL;
+		//sdlFlip = SDL_FLIP_HORIZONTAL;
 	}
 
 	// Update render position using your PhysBody helper
@@ -342,7 +359,7 @@ void Player::Draw(float dt) {
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, 0, 0, 0, sdlFlip);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-10, &animFrame, 0.25f , 0, 0, 0, sdlFlip);
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -394,7 +411,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle");	
+		anims.SetCurrent("front");	
 		onGround = true;
 
 		break;
@@ -404,7 +421,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle"); //TODO: On wall anim
+		anims.SetCurrent("front"); //TODO: On wall anim
 		onWall = true;
 
 		break;
