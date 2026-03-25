@@ -35,8 +35,13 @@ public:
 	// Return the player position
 	Vector2D GetPlayerPosition();
 
+	//Load
+	void LoadMap(std::string mapFile);
+
 	std::shared_ptr<Player> GetPlayer() const { return player; };
 	void SetPlayer(std::shared_ptr<Player> p) { player = p; };
+
+	bool setNewMap = false;
 
 private:
 	std::shared_ptr<Player> player;

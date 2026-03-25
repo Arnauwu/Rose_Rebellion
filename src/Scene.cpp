@@ -81,6 +81,11 @@ bool Scene::PostUpdate()
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 
+	if (setNewMap == true)
+	{
+		LoadMap("");
+	}
+
 	return ret;
 }
 
@@ -95,4 +100,21 @@ bool Scene::CleanUp()
 Vector2D Scene::GetPlayerPosition()
 {
 	return player->GetPosition();
+}
+
+void Scene::LoadMap(std::string mapFile)
+{
+	//Load the map. 
+	if (mapFile == "")
+	{
+		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
+	}
+	Engine::GetInstance().entityManager->CleanUp();
+	player = NULL;
+	Engine::GetInstance().map->CleanUp();
+	setNewMap = false;
+	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
+	Engine::GetInstance().map->SpawnEntities();
+	Engine::GetInstance().entityManager->Start();
+
 }

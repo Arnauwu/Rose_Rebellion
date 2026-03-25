@@ -37,12 +37,6 @@ bool Player::Start()
 	// Initialize Player parameters
 
 	// Load
-	//std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
-	//anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
-	//anims.SetCurrent("idle");
-
-	//texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
-
 	std::unordered_map<int, std::string> aliases = { {0,"move_right"},{11,"front"},{12,"move_left"} };
 	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
 	anims.SetCurrent("front");
@@ -68,6 +62,7 @@ bool Player::Start()
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
 
+	Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
 
 	return true;
 }
@@ -89,7 +84,6 @@ bool Player::Update(float dt)
 	Teleport();
 	
 	ApplyPhysics();
-
 
 	Draw(dt);
 
@@ -150,6 +144,12 @@ bool Player::Update(float dt)
 		else { LOG("Not Enough Skill Points"); }
 	}
 
+	return true;
+}
+
+bool Player::PostUpdate()
+{
+	Interact();
 	return true;
 }
 
@@ -313,7 +313,7 @@ void Player::Interact()
 	{
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 		{
-			// TODO: Call Other Class through body?
+			Engine::GetInstance().scene->setNewMap = true;
 		}
 	}
 }
@@ -398,6 +398,7 @@ bool Player::CleanUp()
 		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 		attackCollider = nullptr;
 	}
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	return true;
 }
 
@@ -427,6 +428,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::DOOR:
 		canInteract = true;
+		interactuableBody = physB;
 		break;
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
@@ -461,6 +463,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::DOOR:
 		canInteract = false;
+		interactuableBody = nullptr;
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");

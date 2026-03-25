@@ -665,6 +665,18 @@ void Map::SpawnEntities()
     }
 }
 
+std::string Map::DoorInfo(PhysBody* door)
+{
+    for (const auto& ndoor : mapData.doors) 
+    {
+        if (ndoor->body == door)
+        {
+            return ndoor->teleportTo;
+        }
+    }
+    return std::string();
+}
+
 
 
 

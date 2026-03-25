@@ -182,7 +182,8 @@ public:
     // Entities
     void SpawnEntities();
 
-
+    //Door
+    std::string DoorInfo(PhysBody* door);
 
 public: 
     std::string mapFileName;

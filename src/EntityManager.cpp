@@ -56,10 +56,8 @@ bool EntityManager::CleanUp()
 	for(const auto entity : entities)
 	{
 		if (entity->active == false) continue;
-		ret = entity->CleanUp();
+		ret = entity->Destroy();
 	}
-
-	entities.clear();
 
 	return ret;
 }
@@ -122,6 +120,7 @@ bool EntityManager::Update(float dt)
 		if (entity->pendingToDelete)
 		{
 			pendingDelete.push_back(entity);
+			continue;
 		}
 		//If the entity is not active, skip it
 		if (entity->active == false) continue;
