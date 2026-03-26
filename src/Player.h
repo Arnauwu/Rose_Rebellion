@@ -24,6 +24,7 @@ public:
 	bool Start();
 
 	bool Update(float dt);
+	bool PostUpdate();
 
 	bool CleanUp();
 
@@ -41,6 +42,8 @@ private:
 	void Attack(float dt);
 	void Glide();
 	void Dash();
+
+	void Interact();
 
 	void ApplyPhysics();
 	void Draw(float dt);
@@ -65,10 +68,13 @@ public:
 	
 	// Physics
 	PhysBody* pbody;
+	
 	// Ground
 	bool onGround = false;
+	
 	// Air
 	bool onAir = false;
+
 	// Wall
 	bool onWall = false;
 
@@ -89,9 +95,7 @@ public:
 	bool isAttacking = false;
 	float attackDuration = 0.25f; //attack duration
 	float currentAttackTime = 0.0f;
-	bool OffensiveSkills[3] = { false, false, false };
-	bool DefensiveSkills[3] = { false, false, false };
-	bool UtilitySkills[3] = { false, false, false };
+	
 	// Gliding
 	bool glideUnlocked = true; // TO DO: Change to false
 	bool isGliding = false; // Flag
@@ -100,6 +104,15 @@ public:
 	bool dashUnlocked = true;
 	float dashForce = 150.0f;
 	bool hasDashed = false; // Flag to check if the player has dashed
+
+	// Skills
+	bool OffensiveSkills[3] = { false, false, false };
+	bool DefensiveSkills[3] = { false, false, false };
+	bool UtilitySkills[3] = { false, false, false };
+
+	// Interact
+	bool canInteract = false;
+	PhysBody* interactuableBody = nullptr;
 
 	//Audio fx
 	int pickCoinFxId;

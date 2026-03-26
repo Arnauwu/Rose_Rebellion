@@ -151,7 +151,7 @@ bool Map::Update(float dt)
                                 };
 
                                 //Draw the texture
-                                Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, rotation, center.x, center.y, sdlFlip);
+                                Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, sdlFlip, 1, rotation, center.x, center.y);
                             }
                         }
                     }
@@ -163,7 +163,7 @@ bool Map::Update(float dt)
     return ret;
 }
 
-// L09: TODO 2: Implement function to the Tileset based on a tile id
+// Implement function to the Tileset based on a tile id
 TileSet* Map::GetTilesetFromTileId(int gid) const
 {
 	TileSet* set = nullptr;
@@ -296,7 +296,8 @@ bool Map::Load(std::string path, std::string fileName)
             LoadProperties(layerNode, mapLayer->properties);
 
             // Iterate over all the tiles and assign the values in the data array
-            for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) {
+            for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) 
+            {
                 mapLayer->tiles.push_back(tileNode.attribute("gid").as_int());
             }
 
@@ -305,11 +306,12 @@ bool Map::Load(std::string path, std::string fileName)
         }
 
         // Load Object Group
-        for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
-
+        for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup")) 
+        {
             ObjectGroup* objectgroup = new ObjectGroup();
 
-            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object")) {
+            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object")) 
+            {
                 ObjectGroup::Object* o = new ObjectGroup::Object;
 
                 // Save all Object attributes
@@ -341,9 +343,14 @@ bool Map::Load(std::string path, std::string fileName)
                         start = end + 1;
                     }
                 }
+
+                // Load Individual Object Properties
+                LoadProperties(objectNode, o->properties);
+
                 objectgroup->objects.push_back(o);
             }
 
+            // Load Object Layer Properties
             LoadProperties(objectGroupNode, objectgroup->properties);
 
             //Add the layer to the map
@@ -383,9 +390,16 @@ bool Map::Load(std::string path, std::string fileName)
                     {
                         collider->ctype = ColliderType::CEILING;
                     }
-                    else if (objectsGroups->properties.GetProperty("Ceiling") != NULL and objectsGroups->properties.GetProperty("Ceiling")->value)
+                    else if (objectsGroups->properties.GetProperty("Door") != NULL and objectsGroups->properties.GetProperty("Door")->value)
                     {
                         collider->ctype = ColliderType::DOOR;
+
+                        // TODO: Assign Listener
+
+                        Door* newDoor = new Door;
+                        newDoor->body = collider;
+                        newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+                        mapData.doors.push_back(newDoor);
                     }
                     else
                     {
@@ -533,9 +547,13 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
         {
             p->value = propertieNode.attribute("value").as_bool();
         }
-        else
+        else if (propertieNode.attribute("type").as_string() == std::string("int") )
         {
             p->value = propertieNode.attribute("value").as_int();
+        }
+        else if (propertieNode.attribute("type").as_string() == std::string("file"))
+        {
+            p->value2 = propertieNode.attribute("value").as_string();
         }
 
         properties.propertyList.push_back(p);
@@ -610,41 +628,53 @@ void Map::SpawnEntities()
                 }
                 else if (entityType == std::string("Test"))
                 {
-                    std::shared_ptr<Test> test = std::dynamic_pointer_cast<Test>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+                    std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
                     test->position = Vector2D(x, y);
                 }
             }
         }
     }
-    for (const auto& mapLayer : mapData.layers)
+    //for (const auto& mapLayer : mapData.layers)
+    //{
+    //    for (int i = 0; i < mapData.width; i++)
+    //    {
+    //        for (int j = 0; j < mapData.height; j++)
+    //        {
+    //            //Get the gid from tile
+    //            uint32_t gid = mapLayer->Get(i, j);
+
+    //            //Check if the gid is different from 0 - some tiles are empty
+    //            if (gid != 0)
+    //            {
+    //                TileSet* tileSet = GetTilesetFromTileId(gid);
+
+    //                if (tileSet != nullptr)
+    //                {
+    //                    // If it's a goldcoin
+    //                    if (tileSet->name == "goldCoin")
+    //                    {
+    //                        // Create new Coin
+    //                        std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+    //                        item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
+    //                    }
+    //                }
+
+    //            }
+    //        }
+    //    }
+    //}
+}
+
+std::string Map::DoorInfo(PhysBody* door)
+{
+    for (const auto& ndoor : mapData.doors) 
     {
-        for (int i = 0; i < mapData.width; i++)
+        if (ndoor->body == door)
         {
-            for (int j = 0; j < mapData.height; j++)
-            {
-                //Get the gid from tile
-                uint32_t gid = mapLayer->Get(i, j);
-
-                //Check if the gid is different from 0 - some tiles are empty
-                if (gid != 0)
-                {
-                    TileSet* tileSet = GetTilesetFromTileId(gid);
-
-                    if (tileSet != nullptr)
-                    {
-                        // If it's a goldcoin
-                        if (tileSet->name == "goldCoin")
-                        {
-                            // Create new Coin
-                            std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-                            item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
-                        }
-                    }
-
-                }
-            }
+            return ndoor->teleportTo;
         }
     }
+    return std::string();
 }
 
 

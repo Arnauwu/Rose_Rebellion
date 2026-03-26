@@ -39,7 +39,7 @@ bool Scene::Start()
 
 	//Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
-	//L06 TODO 3: Call the function to load the map. 
+	//Load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 	Engine::GetInstance().map->SpawnEntities();
 
@@ -55,7 +55,7 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	//L03 TODO 3: Make the camera movement independent of framerate
+	// Make the camera movement independent of framerate
 	float camSpeed = 1;
 
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
@@ -81,6 +81,11 @@ bool Scene::PostUpdate()
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 
+	if (setNewMap == true)
+	{
+		LoadMap("");
+	}
+
 	return ret;
 }
 
@@ -95,4 +100,21 @@ bool Scene::CleanUp()
 Vector2D Scene::GetPlayerPosition()
 {
 	return player->GetPosition();
+}
+
+void Scene::LoadMap(std::string mapFile)
+{
+	//Load the map. 
+	if (mapFile == "")
+	{
+		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
+	}
+	Engine::GetInstance().entityManager->CleanUp();
+	player = NULL;
+	Engine::GetInstance().map->CleanUp();
+	setNewMap = false;
+	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
+	Engine::GetInstance().map->SpawnEntities();
+	Engine::GetInstance().entityManager->Start();
+
 }

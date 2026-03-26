@@ -30,7 +30,7 @@ bool Render::Awake()
 	int scale = Engine::GetInstance().window->GetScale();
 	SDL_Window* window = Engine::GetInstance().window->window;
 
-	//L05 TODO 5 - Load the configuration of the Render module
+	// Load the configuration of the Render module
 	
 	// SDL3: no flags; create default renderer and set vsync separately
 	renderer = SDL_CreateRenderer(window, nullptr);
@@ -176,10 +176,10 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 	return ret;
 }
 
-bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, double angle, int pivotX, int pivotY, SDL_FlipMode flip) const
+bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, SDL_FlipMode flip, float adjustableScale, double angle, int pivotX, int pivotY) const
 {
 	bool ret = true;
-	int scale = Engine::GetInstance().window->GetScale();
+	float scale = Engine::GetInstance().window->GetScale();
 
 
 	// SDL3 uses float rects for rendering
@@ -189,8 +189,8 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 
 	if (section != NULL)
 	{
-		rect.w = (float)(section->w * scale);
-		rect.h = (float)(section->h * scale);
+		rect.w = (float)(section->w * scale * adjustableScale);
+		rect.h = (float)(section->h * scale * adjustableScale);
 	}
 	else
 	{
@@ -200,8 +200,8 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 			LOG("SDL_GetTextureSize failed: %s", SDL_GetError());
 			return false;
 		}
-		rect.w = tw * scale;
-		rect.h = th * scale;
+		rect.w = tw * scale * adjustableScale;
+		rect.h = th * scale * adjustableScale;
 	}
 
 	rect.x -= rect.w / 2;

@@ -30,7 +30,12 @@ public:
 
 	virtual bool CleanUp() { return true; }
 
-	virtual bool Destroy() { return true; }
+	bool Destroy() 
+	{
+		active = false;
+		pendingToDelete = true;
+		return true; 
+	}
 
 	void Enable()
 	{

@@ -56,10 +56,8 @@ bool EntityManager::CleanUp()
 	for(const auto entity : entities)
 	{
 		if (entity->active == false) continue;
-		ret = entity->CleanUp();
+		ret = entity->Destroy();
 	}
-
-	entities.clear();
 
 	return ret;
 }
@@ -68,7 +66,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 {
 	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 
-	//L04: TODO 3a: Instantiate entity according to the type and add the new entity to the list of Entities
+	// Instantiate entity according to the type and add the new entity to the list of Entities
 	switch (type)
 	{
 	case EntityType::PLAYER:
@@ -78,7 +76,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<Item>();
 		break;
 	case EntityType::ENEMY:
-		entity = std::make_shared<Test>();
+		entity = std::make_shared<TestEnemy>();
 		break;
 	default:
 		break;
@@ -122,6 +120,7 @@ bool EntityManager::Update(float dt)
 		if (entity->pendingToDelete)
 		{
 			pendingDelete.push_back(entity);
+			continue;
 		}
 		//If the entity is not active, skip it
 		if (entity->active == false) continue;

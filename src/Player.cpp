@@ -19,26 +19,38 @@ Player::Player() : Entity(EntityType::PLAYER)
 	name = "Player";
 }
 
-Player::~Player() {
+Player::~Player() 
+{
 
 }
 
-bool Player::Awake() {
+bool Player::Awake() 
+{
 
 	// Initialize Player parameters
 	position = Vector2D(96, 96);
 	return true;
 }
 
-bool Player::Start() {
+bool Player::Start() 
+{
+	// Initialize Player parameters
 
 	// Load
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
-	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
-	anims.SetCurrent("idle");
+	std::unordered_map<int, std::string> aliases = { {0,"start_move_right"},
+													 {8,"move_right"},
+													 {16,"idle"},
+													 {17,"start_move_left"},
+													 {24,"move_left" },
+													 {32,"left_to_right" } ,
+	};
+	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
+	anims.SetCurrent("front");
 
-	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
+
+
+
 
 	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
@@ -56,6 +68,7 @@ bool Player::Start() {
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
 
+	Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
 
 	return true;
 }
@@ -77,7 +90,6 @@ bool Player::Update(float dt)
 	Teleport();
 	
 	ApplyPhysics();
-
 
 	Draw(dt);
 
@@ -141,6 +153,12 @@ bool Player::Update(float dt)
 	return true;
 }
 
+bool Player::PostUpdate()
+{
+	Interact();
+	return true;
+}
+
 void Player::GetPhysicsValues() 
 {
 	// Read current velocity
@@ -155,14 +173,47 @@ void Player::Move() {
 	{
 		velocity.x = -speed;
 		lookingRight = false;
-		anims.SetCurrent("move");
+		anims.SetCurrent("move_left");
+
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_left");
+		//}
+		//else if (currentAnim == "start_move_left" || currentAnim == "move_left")
+		//{
+		//	anims.SetCurrent("move_left");
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("right_to_left");
+		//}
 	}
 	// Move Right
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 	{
 		velocity.x = speed;
 		lookingRight = true;
-		anims.SetCurrent("move");
+
+		anims.SetCurrent("move_right");
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_right");
+		//}
+		//else if (currentAnim == "start_move_right" || currentAnim == "move_right")
+		//{
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("left_to_right");
+		//}
+	}
+	else
+	{
+		anims.SetCurrent("idle");
 	}
 }
 
@@ -176,7 +227,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			anims.SetCurrent("jump");
+			anims.SetCurrent("front");
 
 			//Extra Jump Force
 			isJumpKeyDown = true;
@@ -258,6 +309,7 @@ void Player::Attack(float dt)
 		}
 	}
 }
+
 void Player::Glide() // Gliding
 {
 	if (glideUnlocked)
@@ -291,6 +343,17 @@ void Player::Dash()
 	}
 }
 
+void Player::Interact()
+{
+	if (canInteract)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		{
+			Engine::GetInstance().scene->setNewMap = true;
+		}
+	}
+}
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true || secondJumpUsed == true) {
@@ -317,11 +380,13 @@ void Player::Draw(float dt) {
 	anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
+
+
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
 	if (!lookingRight)
 	{
-		sdlFlip = SDL_FLIP_HORIZONTAL;
+		//sdlFlip = SDL_FLIP_HORIZONTAL;
 	}
 
 	// Update render position using your PhysBody helper
@@ -331,7 +396,7 @@ void Player::Draw(float dt) {
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, 0, 0, 0, sdlFlip);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 0.75f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -370,10 +435,11 @@ bool Player::CleanUp()
 		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 		attackCollider = nullptr;
 	}
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	return true;
 }
 
-// L08 TODO 6: Define OnCollision function for the player. 
+// Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
@@ -383,7 +449,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle");	
+		anims.SetCurrent("front");	
 		onGround = true;
 
 		break;
@@ -393,9 +459,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle"); //TODO: On wall anim
+		anims.SetCurrent("front"); //TODO: On wall anim
 		onWall = true;
 
+		break;
+	case ColliderType::DOOR:
+		canInteract = true;
+		interactuableBody = physB;
 		break;
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
@@ -428,12 +498,17 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		LOG("On Air");
 
 		break;
+	case ColliderType::DOOR:
+		canInteract = false;
+		interactuableBody = nullptr;
+		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
+	case ColliderType::CEILING:
 	default:
 		break;
 	}
