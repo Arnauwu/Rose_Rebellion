@@ -151,7 +151,7 @@ bool Map::Update(float dt)
                                 };
 
                                 //Draw the texture
-                                Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, 1, rotation, center.x, center.y, sdlFlip);
+                                Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, sdlFlip, 1, rotation, center.x, center.y);
                             }
                         }
                     }
@@ -634,35 +634,35 @@ void Map::SpawnEntities()
             }
         }
     }
-    for (const auto& mapLayer : mapData.layers)
-    {
-        for (int i = 0; i < mapData.width; i++)
-        {
-            for (int j = 0; j < mapData.height; j++)
-            {
-                //Get the gid from tile
-                uint32_t gid = mapLayer->Get(i, j);
+    //for (const auto& mapLayer : mapData.layers)
+    //{
+    //    for (int i = 0; i < mapData.width; i++)
+    //    {
+    //        for (int j = 0; j < mapData.height; j++)
+    //        {
+    //            //Get the gid from tile
+    //            uint32_t gid = mapLayer->Get(i, j);
 
-                //Check if the gid is different from 0 - some tiles are empty
-                if (gid != 0)
-                {
-                    TileSet* tileSet = GetTilesetFromTileId(gid);
+    //            //Check if the gid is different from 0 - some tiles are empty
+    //            if (gid != 0)
+    //            {
+    //                TileSet* tileSet = GetTilesetFromTileId(gid);
 
-                    if (tileSet != nullptr)
-                    {
-                        // If it's a goldcoin
-                        if (tileSet->name == "goldCoin")
-                        {
-                            // Create new Coin
-                            std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-                            item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
-                        }
-                    }
+    //                if (tileSet != nullptr)
+    //                {
+    //                    // If it's a goldcoin
+    //                    if (tileSet->name == "goldCoin")
+    //                    {
+    //                        // Create new Coin
+    //                        std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+    //                        item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
+    //                    }
+    //                }
 
-                }
-            }
-        }
-    }
+    //            }
+    //        }
+    //    }
+    //}
 }
 
 std::string Map::DoorInfo(PhysBody* door)

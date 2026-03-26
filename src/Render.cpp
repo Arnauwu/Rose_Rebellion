@@ -176,7 +176,7 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 	return ret;
 }
 
-bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float adjustableScale, double angle, int pivotX, int pivotY, SDL_FlipMode flip) const
+bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, SDL_FlipMode flip, float adjustableScale, double angle, int pivotX, int pivotY) const
 {
 	bool ret = true;
 	float scale = Engine::GetInstance().window->GetScale();

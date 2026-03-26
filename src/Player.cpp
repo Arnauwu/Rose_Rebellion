@@ -37,11 +37,17 @@ bool Player::Start()
 	// Initialize Player parameters
 
 	// Load
-	std::unordered_map<int, std::string> aliases = { {0,"move_right"},{11,"front"},{12,"move_left"} };
+	std::unordered_map<int, std::string> aliases = { {0,"start_move_right"},
+													 {8,"move_right"},
+													 {16,"idle"},
+													 {17,"start_move_left"},
+													 {24,"move_left" },
+													 {32,"left_to_right" } ,
+	};
 	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
 	anims.SetCurrent("front");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.tga");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
 
 
 
@@ -168,17 +174,46 @@ void Player::Move() {
 		velocity.x = -speed;
 		lookingRight = false;
 		anims.SetCurrent("move_left");
+
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_left");
+		//}
+		//else if (currentAnim == "start_move_left" || currentAnim == "move_left")
+		//{
+		//	anims.SetCurrent("move_left");
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("right_to_left");
+		//}
 	}
 	// Move Right
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 	{
 		velocity.x = speed;
 		lookingRight = true;
+
 		anims.SetCurrent("move_right");
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_right");
+		//}
+		//else if (currentAnim == "start_move_right" || currentAnim == "move_right")
+		//{
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("left_to_right");
+		//}
 	}
 	else
 	{
-		anims.SetCurrent("front");
+		anims.SetCurrent("idle");
 	}
 }
 
@@ -274,6 +309,7 @@ void Player::Attack(float dt)
 		}
 	}
 }
+
 void Player::Glide() // Gliding
 {
 	if (glideUnlocked)
@@ -345,6 +381,7 @@ void Player::Draw(float dt) {
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 
+
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
 	if (!lookingRight)
@@ -359,7 +396,7 @@ void Player::Draw(float dt) {
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-10, &animFrame, 0.25f , 0, 0, 0, sdlFlip);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 0.75f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{
