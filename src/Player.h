@@ -62,12 +62,12 @@ public:
 	int currentForceOrbs = 0;
 
 	// Texture
-	SDL_Texture* texture = NULL;
+	SDL_Texture* texture = nullptr;
 	int texW, texH;
 	bool lookingRight = true; //False Left -- True Right 
 	
 	// Physics
-	PhysBody* pbody;
+	PhysBody* pbody = nullptr;
 	
 	// Ground
 	bool onGround = false;

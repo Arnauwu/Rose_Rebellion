@@ -36,12 +36,7 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-
-	//Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
-
-	//Load the map. 
-	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
-	Engine::GetInstance().map->SpawnEntities();
+	LoadScene(currentScene);
 
 	return true;
 }
@@ -55,6 +50,40 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+	switch (currentScene)
+	{
+	case SceneID::INTRO:
+		UpdateIntro(dt);
+
+		break;
+	case SceneID::MENU:
+		UpdateMainMenu(dt);
+
+		break;
+	case SceneID::CASTLE:
+		UpdateCastle(dt);
+
+		break;
+	case SceneID::LEVEL2:
+		UpdateLevel2(dt);
+
+		break;
+	case SceneID::LEVEL_TRANSITION:
+		UpdateLevelTransition(dt);
+
+		break;
+	case SceneID::WIN:
+		UpdateWin(dt);
+
+		break;
+	case SceneID::GAMEOVER:
+		UpdateGameOver(dt);
+
+		break;
+	default:
+		break;
+	}
+
 	// Make the camera movement independent of framerate
 	float camSpeed = 1;
 
@@ -78,8 +107,24 @@ bool Scene::PostUpdate()
 {
 	bool ret = true;
 
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
-		ret = false;
+	switch (currentScene)
+	{
+	case SceneID::MENU:
+
+		break;
+	case SceneID::CASTLE:
+		PostUpdateCastle();
+
+		break;
+	case SceneID::LEVEL2:
+		PostUpdateLevel2();
+		break;
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
+		if (currentScene != SceneID::MENU) ChangeScene(SceneID::MENU);
+		else return false;
+	}
 
 	if (setNewMap == true)
 	{
@@ -93,6 +138,7 @@ bool Scene::PostUpdate()
 bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
+	UnloadCurrentScene();
 
 	return true;
 }
@@ -104,17 +150,283 @@ Vector2D Scene::GetPlayerPosition()
 
 void Scene::LoadMap(std::string mapFile)
 {
+
 	//Load the map. 
 	if (mapFile == "")
 	{
 		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
 	}
-	Engine::GetInstance().entityManager->CleanUp();
-	player = NULL;
-	Engine::GetInstance().map->CleanUp();
 	setNewMap = false;
+	
+	Engine::GetInstance().entityManager->CleanUp();
+	player = nullptr;
+
+	Engine::GetInstance().map->CleanUp();
+	
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
 	Engine::GetInstance().map->SpawnEntities();
+
 	Engine::GetInstance().entityManager->Start();
 
+}
+
+// *********************************************
+// Scene change functions
+// *********************************************
+
+void Scene::LoadScene(SceneID newScene)
+{
+	auto& engine = Engine::GetInstance();
+
+	switch (newScene)
+	{
+	case SceneID::INTRO:
+		LoadIntro();
+
+		break;
+	case SceneID::MENU:
+		LoadMainMenu();
+
+		break;
+	case SceneID::CASTLE:
+		LoadCastle();
+
+		break;
+	case SceneID::LEVEL2:
+		LoadLevel2();
+
+		break;
+	case SceneID::LEVEL_TRANSITION:
+		LoadLevelTransition();
+		break;
+	case SceneID::WIN:
+		LoadWin();
+		break;
+	case SceneID::GAMEOVER:
+		LoadGameOver();
+		break;
+	}
+}
+
+void Scene::ChangeScene(SceneID newScene)
+{
+	UnloadCurrentScene();
+	currentScene = newScene;
+	LoadScene(currentScene);
+}
+
+void Scene::UnloadCurrentScene() {
+
+	switch (currentScene)
+	{
+	case SceneID::INTRO:
+		UnloadIntro();
+
+		break;
+	case SceneID::MENU:
+		UnloadMainMenu();
+		break;
+
+	case SceneID::CASTLE:
+		UnloadCastle();
+		break;
+
+	case SceneID::LEVEL2:
+		UnloadLevel2();
+		break;
+	case SceneID::LEVEL_TRANSITION:
+		break;
+	case SceneID::WIN:
+		UnloadWin();
+		break;
+	case SceneID::GAMEOVER:
+		UnloadGameOver();
+		break;
+	}
+
+}
+
+// *********************************************
+// General Helpers
+// *********************************************
+
+
+
+// *********************************************
+//					INTRO
+// *********************************************
+
+void Scene::LoadIntro()
+{
+	introTexture = Engine::GetInstance().textures->Load("Assets/Textures/Intro_Menus/Intro.jpg");
+	introTimer = 3000.0f;
+}
+
+void Scene::UpdateIntro(float dt)
+{
+	introTimer -= dt;
+
+	if (introTimer <= 0.0f || Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
+		ChangeScene(SceneID::MENU);
+	}
+
+	if (introTexture != nullptr) {
+
+		Engine::GetInstance().render->DrawTexture(introTexture, 0, 0);
+	}
+}
+
+void Scene::UnloadIntro()
+{
+	// Descargar textura para liberar memoria
+	if (introTexture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(introTexture);
+		introTexture = nullptr;
+	}
+}
+
+// *********************************************
+//					MENU 
+// *********************************************
+
+void Scene::LoadMainMenu()
+{
+	menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/Intro_Menus/Menu.jpg");
+}
+
+void Scene::UpdateMainMenu(float dt)
+{
+	if (menuBackground) Engine::GetInstance().render->DrawTexture(menuBackground, 0, 0);
+
+	// Texto indicativo para el usuario
+	//Engine::GetInstance().render->DrawText("PRESIONA ESPACIO PARA EMPEZAR", 200, 400, 400, 40, { 255,255,255,255 });
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
+		ChangeScene(SceneID::CASTLE);
+	}
+}
+
+void Scene::UnloadMainMenu()
+{
+	Engine::GetInstance().uiManager->CleanUp();
+
+	if (menuBackground != nullptr) {
+		Engine::GetInstance().textures->UnLoad(menuBackground);
+		menuBackground = nullptr;
+	}
+}
+
+void Scene::LoadCastle()
+{
+	lastLevelPlayed = SceneID::CASTLE;
+	LoadMap("MapTemplate.tmx");
+	if (player != nullptr) {
+		player->position.setX(10);
+		player->position.setY(10);
+	}
+}
+
+void Scene::UpdateCastle(float dt)
+{
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) {
+		ChangeScene(SceneID::LEVEL_TRANSITION);
+	}
+}
+
+void Scene::PostUpdateCastle()
+{
+
+}
+
+void Scene::UnloadCastle() {
+
+	// Clean up map and entities
+	Engine::GetInstance().entityManager->CleanUp();
+	Engine::GetInstance().map->CleanUp();
+}
+
+void Scene::LoadLevel2()
+{
+
+}
+
+void Scene::UpdateLevel2(float dt)
+{
+
+}
+
+void Scene::PostUpdateLevel2()
+{
+
+}
+
+void Scene::UnloadLevel2()
+{
+
+}
+
+void Scene::LoadLevelTransition() {
+	transitionTimer = 2000.0f;
+}
+
+void Scene::UpdateLevelTransition(float dt) {
+	transitionTimer -= dt;
+	Engine::GetInstance().render->DrawText("NIVEL COMPLETADO - CARGANDO...", 100, 300, 600, 50, { 0,255,0,255 });
+
+	if (transitionTimer <= 0.0f) ChangeScene(SceneID::LEVEL2);
+}
+
+void Scene::LoadGameOver() {
+	gameOverTimer = 2000.0f;
+}
+
+void Scene::UpdateGameOver(float dt) {
+	gameOverTimer -= dt;
+	Engine::GetInstance().render->DrawText("GAME OVER - REINTENTANDO", 200, 300, 400, 50, { 255,0,0,255 });
+
+	if (gameOverTimer <= 0.0f) ChangeScene(lastLevelPlayed);
+}
+
+void Scene::UnloadGameOver()
+{
+	Engine::GetInstance().uiManager->CleanUp();
+}
+
+void Scene::LoadWin()
+{
+	//outroTexture = Engine::GetInstance().textures->Load("Assets/Textures/Intro_Menus/Outro.png");
+	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Ambient_Music_Cave.wav");
+
+	Engine::GetInstance().render->camera.x = 0;
+	Engine::GetInstance().render->camera.y = 0;
+	Engine::GetInstance().render->SetZoom(1.0f);
+
+	int w, h;
+	Engine::GetInstance().window->GetWindowSize(w, h);
+
+	float currentZoom = 1.0f;
+	int btnW = 150;
+	int btnH = 40;
+
+	int centerX = (int)((w / 2) / currentZoom) - (btnW / 2);
+	int centerY = (int)((h - 150) / currentZoom);
+
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 21, "MENU", { centerX, centerY, btnW, btnH }, this);
+}
+
+void Scene::UpdateWin(float dt)
+{
+	/*if (outroTexture != nullptr)
+	{
+		Engine::GetInstance().render->DrawTexture(outroTexture, 0, 0);
+	}*/
+}
+
+void Scene::UnloadWin()
+{
+	Engine::GetInstance().uiManager->CleanUp();
+	/*if (outroTexture) {
+		Engine::GetInstance().textures->UnLoad(outroTexture);
+		outroTexture = nullptr;
+	}*/
 }

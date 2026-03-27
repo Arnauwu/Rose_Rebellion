@@ -17,6 +17,8 @@ using namespace std;
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
+	pbody = nullptr;
+	texture = nullptr;
 }
 
 Player::~Player() 
@@ -75,6 +77,8 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
+	if (pbody == nullptr) return true;
+
 	GetPhysicsValues();
 	Move();
 	CameraFollows();
@@ -430,12 +434,16 @@ void Player::CameraFollows()
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
+	if (pbody != nullptr) {
+		pbody->listener = nullptr;
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
 	Engine::GetInstance().textures->UnLoad(texture);
 	if (attackCollider != nullptr) {
 		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 		attackCollider = nullptr;
 	}
-	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	return true;
 }
 
