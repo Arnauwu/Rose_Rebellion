@@ -13,6 +13,7 @@
 
 #include "EntityManager.h"
 #include "Test.h"
+#include "SpiderEnemy.h"
 #include "Item.h"
 
 Map::Map() : Module(), mapLoaded(false)

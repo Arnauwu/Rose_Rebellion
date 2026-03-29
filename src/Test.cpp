@@ -178,7 +178,6 @@ void TestEnemy::ApplyPhysics() {
 void TestEnemy::Draw(float dt) 
 {
 
-
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 	// Update render position using your PhysBody helper
@@ -192,7 +191,6 @@ void TestEnemy::Draw(float dt)
 	{
 		pathfinding->DrawPath();
 	}
-
 
 	//Draw the player using the texture and the current animation frame
 	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);

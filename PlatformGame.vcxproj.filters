@@ -126,6 +126,9 @@
     <ClCompile Include="src\Test.cpp">
       <Filter>Source Files\Game\Enemies</Filter>
     </ClCompile>
+    <ClCompile Include="SpiderEnemy.cpp">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -210,6 +213,9 @@
       <Filter>Source Files\Game\Enemies</Filter>
     </ClInclude>
     <ClInclude Include="src\Test.h">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="SpiderEnemy.h">
       <Filter>Source Files\Game\Enemies</Filter>
     </ClInclude>
   </ItemGroup>
