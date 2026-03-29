@@ -17,28 +17,42 @@ using namespace std;
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
+	pbody = nullptr;
+	texture = nullptr;
 }
 
-Player::~Player() {
+Player::~Player() 
+{
 
 }
 
-bool Player::Awake() {
+bool Player::Awake() 
+{
 
 	// Initialize Player parameters
 	position = Vector2D(96, 96);
 	return true;
 }
 
-bool Player::Start() {
+bool Player::Start() 
+{
+	// Initialize Player parameters
 
 	// Load
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
-	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
-	anims.SetCurrent("idle");
+	std::unordered_map<int, std::string> aliases = { {0,"start_move_right"},
+													 {8,"move_right"},
+													 {16,"idle"},
+													 {17,"start_move_left"},
+													 {24,"move_left" },
+													 {32,"left_to_right" } ,
+	};
+	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
+	anims.SetCurrent("front");
 
-	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
+
+
+
 
 	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
@@ -56,17 +70,23 @@ bool Player::Start() {
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
 
+	Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
 
 	return true;
 }
 
 bool Player::Update(float dt)
 {
+	if (pbody == nullptr) return true;
+
 	GetPhysicsValues();
 	Move();
 	CameraFollows();
 
 	Jump(dt);
+
+	Attack(dt);
+	
 	Glide();
 
 	Dash();
@@ -74,7 +94,6 @@ bool Player::Update(float dt)
 	Teleport();
 	
 	ApplyPhysics();
-
 
 	Draw(dt);
 
@@ -138,6 +157,12 @@ bool Player::Update(float dt)
 	return true;
 }
 
+bool Player::PostUpdate()
+{
+	Interact();
+	return true;
+}
+
 void Player::GetPhysicsValues() 
 {
 	// Read current velocity
@@ -152,14 +177,47 @@ void Player::Move() {
 	{
 		velocity.x = -speed;
 		lookingRight = false;
-		anims.SetCurrent("move");
+		anims.SetCurrent("move_left");
+
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_left");
+		//}
+		//else if (currentAnim == "start_move_left" || currentAnim == "move_left")
+		//{
+		//	anims.SetCurrent("move_left");
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("right_to_left");
+		//}
 	}
 	// Move Right
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 	{
 		velocity.x = speed;
 		lookingRight = true;
-		anims.SetCurrent("move");
+
+		anims.SetCurrent("move_right");
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_right");
+		//}
+		//else if (currentAnim == "start_move_right" || currentAnim == "move_right")
+		//{
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("left_to_right");
+		//}
+	}
+	else
+	{
+		anims.SetCurrent("idle");
 	}
 }
 
@@ -173,7 +231,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			anims.SetCurrent("jump");
+			anims.SetCurrent("front");
 
 			//Extra Jump Force
 			isJumpKeyDown = true;
@@ -203,6 +261,56 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
 		isJumpKeyDown = false;
+	}
+}
+
+void Player::Attack(float dt)
+{
+	// 1. Start the attack 
+	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		isAttacking = true;
+		currentAttackTime = 0.0f;
+
+		// Calculate the collider's position based on the direction the player is facing
+		int attackOffsetX = lookingRight ? 32 : -32;
+		int attackX = position.getX() + attackOffsetX;
+		int attackY = position.getY();
+
+		// Create the attack collider as a kinematic sensor(width 20, height 32)
+		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, 20, 32, bodyType::KINEMATIC);
+		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+		attackCollider->listener = this;
+
+		// Optional: Change animation anims.SetCurrent(�attack�);
+		LOG("Attack started");
+	}
+
+	// 2. Control the duration of the attack
+	if (isAttacking)
+	{
+		currentAttackTime += dt / 1000.0f;
+
+		// Update the collider's position so that it follows the player whilst attacking
+		if (attackCollider != nullptr) {
+			int attackOffsetX = lookingRight ? 32 : -32;
+			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
+		}
+
+		// End the attack when the time runs out
+		if (currentAttackTime >= attackDuration)
+		{
+			isAttacking = false;
+
+			// Destroy the collider
+			if (attackCollider != nullptr)
+			{
+				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+				attackCollider = nullptr;
+			}
+
+			LOG("Attack ended");
+		}
 	}
 }
 
@@ -239,6 +347,17 @@ void Player::Dash()
 	}
 }
 
+void Player::Interact()
+{
+	if (canInteract)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		{
+			Engine::GetInstance().scene->setNewMap = true;
+		}
+	}
+}
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true || secondJumpUsed == true) {
@@ -265,11 +384,13 @@ void Player::Draw(float dt) {
 	anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
+
+
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
 	if (!lookingRight)
 	{
-		sdlFlip = SDL_FLIP_HORIZONTAL;
+		//sdlFlip = SDL_FLIP_HORIZONTAL;
 	}
 
 	// Update render position using your PhysBody helper
@@ -279,7 +400,21 @@ void Player::Draw(float dt) {
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, 0, 0, 0, sdlFlip);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 0.75f); // -20 0.25f
+
+	if (isAttacking && attackCollider != nullptr)
+	{
+		int attackX, attackY;
+		attackCollider->GetPosition(attackX, attackY);
+
+		// Box2D devuelve la posici�n desde el centro del collider. 
+		// Calculamos la esquina superior izquierda (Restamos la mitad del ancho(20) y alto(32) que le dimos)
+		SDL_Rect attackRect = { attackX - 10, attackY - 16, 20, 32 };
+
+		// Dibuja un rect�ngulo rojo (R=255, G=0, B=0, Alpha=150)
+		// Nota: Dependiendo de tu Render.h, puede que te pida m�s par�metros al final como (..., true, true) para 'filled' y 'use_camera'
+		Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
+	}
 }
 
 void Player::CameraFollows()
@@ -299,11 +434,20 @@ void Player::CameraFollows()
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
+	if (pbody != nullptr) {
+		pbody->listener = nullptr;
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
 	Engine::GetInstance().textures->UnLoad(texture);
+	if (attackCollider != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+		attackCollider = nullptr;
+	}
 	return true;
 }
 
-// L08 TODO 6: Define OnCollision function for the player. 
+// Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
@@ -313,7 +457,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle");	
+		anims.SetCurrent("front");	
 		onGround = true;
 
 		break;
@@ -323,9 +467,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle"); //TODO: On wall anim
+		anims.SetCurrent("front"); //TODO: On wall anim
 		onWall = true;
 
+		break;
+	case ColliderType::DOOR:
+		canInteract = true;
+		interactuableBody = physB;
 		break;
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
@@ -358,12 +506,17 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		LOG("On Air");
 
 		break;
+	case ColliderType::DOOR:
+		canInteract = false;
+		interactuableBody = nullptr;
+		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
+	case ColliderType::CEILING:
 	default:
 		break;
 	}

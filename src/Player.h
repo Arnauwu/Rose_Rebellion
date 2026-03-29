@@ -24,6 +24,7 @@ public:
 	bool Start();
 
 	bool Update(float dt);
+	bool PostUpdate();
 
 	bool CleanUp();
 
@@ -38,8 +39,11 @@ private:
 	void GetPhysicsValues();
 	void Move();
 	void Jump(float dt);
+	void Attack(float dt);
 	void Glide();
 	void Dash();
+
+	void Interact();
 
 	void ApplyPhysics();
 	void Draw(float dt);
@@ -58,16 +62,19 @@ public:
 	int currentForceOrbs = 0;
 
 	// Texture
-	SDL_Texture* texture = NULL;
+	SDL_Texture* texture = nullptr;
 	int texW, texH;
 	bool lookingRight = true; //False Left -- True Right 
 	
 	// Physics
-	PhysBody* pbody;
+	PhysBody* pbody = nullptr;
+	
 	// Ground
 	bool onGround = false;
+	
 	// Air
 	bool onAir = false;
+
 	// Wall
 	bool onWall = false;
 
@@ -84,9 +91,11 @@ public:
 	bool doubleJumpUnlocked = true; // TO DO: Change to false
 	bool secondJumpUsed = false;
 
-	bool OffensiveSkills[3] = { false, false, false };
-	bool DefensiveSkills[3] = { false, false, false };
-	bool UtilitySkills[3] = { false, false, false };
+	//Attack
+	bool isAttacking = false;
+	float attackDuration = 0.25f; //attack duration
+	float currentAttackTime = 0.0f;
+	
 	// Gliding
 	bool glideUnlocked = true; // TO DO: Change to false
 	bool isGliding = false; // Flag
@@ -96,10 +105,20 @@ public:
 	float dashForce = 150.0f;
 	bool hasDashed = false; // Flag to check if the player has dashed
 
+	// Skills
+	bool OffensiveSkills[3] = { false, false, false };
+	bool DefensiveSkills[3] = { false, false, false };
+	bool UtilitySkills[3] = { false, false, false };
+
+	// Interact
+	bool canInteract = false;
+	PhysBody* interactuableBody = nullptr;
+
 	//Audio fx
 	int pickCoinFxId;
 
 private: 
+	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 	AnimationSet anims;
 

@@ -123,7 +123,7 @@ void Pathfinding::PropagateAStar()
         Vector2D frontierTile = frontierAStar.top().second;
         if (frontierTile == playerPosTile) {
             foundDestination = true;
-            // L12: TODO 2: When the destination is reach, call the function ComputePath
+            // When the destination is reach, call the function ComputePath
             ComputePath(frontierTile.getX(), frontierTile.getY());
         }
     }
@@ -188,14 +188,17 @@ int Pathfinding::MovementCost(int x, int y)
 
 void Pathfinding::ComputePath(int x, int y)
 {
-    // L12: TODO 2: Follow the breadcrumps to goal back to the origin
-    // at each step, add the point into "pathTiles" (it will then draw automatically)
+    // Follow the breadcrumps to goal back to the origin at each step, add the point into "pathTiles" (it will then draw automatically)
+    
     //Clear the pathTiles list
     pathTiles.clear();
+    
     // Save tile position received and stored in current tile
     Vector2D currentTile = Vector2D(x, y);
+    
     // Add the current tile to the pathTiles list (is the first element in the path)
     pathTiles.push_back(currentTile);
+    
     // Find the position of the current tile in the visited list
     int index = Find(visited, currentTile);
 

@@ -15,6 +15,7 @@ struct Properties
     {
         std::string name;
         int value;
+        std::string value2;
     };
 
     std::list<Property*> propertyList;
@@ -45,13 +46,22 @@ struct Properties
 
 };
 
+struct Door
+{
+    PhysBody* body;
+    std::string teleportTo;
+};
+
+
 struct ObjectGroup
 {
     struct Object
     {
         float id, x, y, width, height;
         std::vector<b2Vec2> points;
+        Properties properties;
     };
+    
     std::list<Object*> objects;
     Properties properties;
 
@@ -119,6 +129,7 @@ struct MapData
 	int tileHeight;
     std::list<TileSet*> tilesets;
     std::list<ObjectGroup*> objectGroups;
+    std::list<Door*> doors;
     std::list<MapLayer*> layers;
 };
 
@@ -171,7 +182,8 @@ public:
     // Entities
     void SpawnEntities();
 
-
+    //Door
+    std::string DoorInfo(PhysBody* door);
 
 public: 
     std::string mapFileName;
