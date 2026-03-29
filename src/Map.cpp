@@ -620,7 +620,6 @@ void Map::SpawnEntities()
                     {
                         player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
                         player->position = Vector2D(x, y);
-                        player->Start();
                     }
                     else // if player exists
                     {
@@ -632,7 +631,11 @@ void Map::SpawnEntities()
                 {
                     std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
                     test->position = Vector2D(x, y);
-                    test->Start();
+                }
+                else if (entityType == std::string("Spider"))
+                {
+                    std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
+                    spider->position = Vector2D(x, y);
                 }
             }
         }

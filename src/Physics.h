@@ -31,6 +31,7 @@ enum class ColliderType {
     CEILING,
     WALL,
     GROUND,
+    AIR,
     DANGER,
     ENEMY,
     UNKNOWN,
@@ -104,6 +105,8 @@ public:
 
     // Gravity
     void SetGravityScale(PhysBody* pbody, float scale);
+
+    bool RayCast(b2Vec2 start, b2Vec2 end);
 
 private:
     // helpers

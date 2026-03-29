@@ -178,6 +178,7 @@ void TestEnemy::ApplyPhysics() {
 void TestEnemy::Draw(float dt) 
 {
 
+	anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 	// Update render position using your PhysBody helper

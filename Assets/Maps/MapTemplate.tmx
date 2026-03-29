@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="29">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="30">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3172,7 +3172,7 @@
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="8" x="0" y="704" width="542.182" height="64"/>
+  <object id="8" x="0" y="704" width="544" height="64"/>
   <object id="9" x="641.5" y="704" width="1406.5" height="64"/>
   <object id="10" x="225.5" y="544" width="252" height="32"/>
   <object id="11" x="354.5" y="384" width="123.5" height="32"/>
@@ -3215,6 +3215,9 @@
    <point/>
   </object>
   <object id="27" name="Test" type="Test" x="445.437" y="533.903">
+   <point/>
+  </object>
+  <object id="29" name="Spider" type="Spider" x="382.272" y="383.996">
    <point/>
   </object>
  </objectgroup>

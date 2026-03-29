@@ -2,9 +2,11 @@
 
 #include "Enemy.h"
 #include "Animation.h"
+#include <box2d/box2d.h>
 #include <SDL3/SDL.h>
 #include "Pathfinding.h"
 
+enum class Facing { DOWN, LEFT, UP, RIGHT };
 
 struct SDL_Texture;
 
@@ -18,13 +20,21 @@ public:
     bool Update(float dt);
 
     void OnCollision(PhysBody* physA, PhysBody* physB) override;
+    void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
 
 private:
     void PerformPathfinding();
-    void GetPhysicsValues() override {}
+    void GetPhysicsValues() override;
     void Move() override;
-    void ApplyPhysics() override {}
+    void CheckOuterCorners();
+    void RotateFacing();
+    void ApplyPhysics() override;
     void Draw(float dt);
     Vector2D GetTilePos();
 
+    Facing currentFacing = Facing::DOWN; // Where he's stepping
+    float angle = 0.0f;                  // Rotation
+    int moveSpeed = 100;
+    bool isStuck = false;
 };
+
