@@ -33,8 +33,9 @@ enum class ColliderType {
     GROUND,
     DANGER,
     ENEMY,
-    UNKNOWN,
-    DOOR
+    SAVEPOINT,
+    DOOR,
+    UNKNOWN
     // ..
 };
 
@@ -98,12 +99,16 @@ public:
 
     // Get Debug
     bool GetDebug() { return debug; };
+    bool Raycast(Vector2D start, Vector2D end);
 
     // --- Impulse helper (handy for jumps/dashes)
     void   ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool wake = true) const;
 
     // Gravity
     void SetGravityScale(PhysBody* pbody, float scale);
+
+    // GodMode
+    void SetBodyType(PhysBody* p, bodyType type) const;
 
 private:
     // helpers

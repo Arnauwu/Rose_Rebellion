@@ -35,6 +35,9 @@
     <Filter Include="Source Files\Game\Enemies">
       <UniqueIdentifier>{baab7345-41be-492a-b7ac-aaa53568ff7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils\UI">
+      <UniqueIdentifier>{efb5028b-95e3-4773-be50-6f8bcfa0dc5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -84,20 +87,11 @@
     <ClCompile Include="src\Item.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\UISlider.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UICheckBox.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hud.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\UIManager.cpp">
       <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UIButton.cpp">
-      <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Animation.cpp">
       <Filter>Source Files\Utils\Animation</Filter>
@@ -125,6 +119,18 @@
     </ClCompile>
     <ClCompile Include="src\Test.cpp">
       <Filter>Source Files\Game\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIButton.cpp">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UICheckBox.cpp">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UISlider.cpp">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SavePoint.cpp">
+      <Filter>Source Files\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,23 +170,11 @@
     <ClInclude Include="src\Item.h">
       <Filter>Source Files\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\UISlider.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UICheckBox.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\UIManager.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Hud.h">
       <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UIElement.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UIButton.h">
-      <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Animation.h">
       <Filter>Source Files\Utils\Animation</Filter>
@@ -211,6 +205,21 @@
     </ClInclude>
     <ClInclude Include="src\Test.h">
       <Filter>Source Files\Game\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UIButton.h">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UICheckBox.h">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UIElement.h">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UISlider.h">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SavePoint.h">
+      <Filter>Source Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

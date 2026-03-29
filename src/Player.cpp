@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "SavePoint.h"
 #include <iostream>
 #include <unordered_map>
 
@@ -67,10 +68,12 @@ bool Player::Start()
 	pbody->ctype = ColliderType::PLAYER;
 
 	// Initialize audio
-	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
+	//pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
 
 	Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
+
+	respawnPosition = position;
 
 	return true;
 }
@@ -96,6 +99,18 @@ bool Player::Update(float dt)
 	ApplyPhysics();
 
 	Draw(dt);
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
+		if (!godMode) {
+			LOG("GodMode - Active");
+			Engine::GetInstance().physics->SetBodyType(pbody, bodyType::KINEMATIC);
+		}
+		else {
+			LOG("GodMode - Desactive");
+			Engine::GetInstance().physics->SetBodyType(pbody, bodyType::DYNAMIC);
+		}
+		godMode = !godMode;
+	}
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
 	{
@@ -153,7 +168,28 @@ bool Player::Update(float dt)
 		}
 		else { LOG("Not Enough Skill Points"); }
 	}
+	if (godMode)
+	{
+		GodModeMove(dt);
+	}
 
+	// TO DO: Revisar esto a fondo
+	if (onGround && onWall && !isJumping && !isdead)
+	{
+		safePositionTimer += dt / 1000.0f;
+		if (safePositionTimer >= 0.2f)
+		{
+		
+			Vector2D start = position;
+			Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+
+			if (Engine::GetInstance().physics->Raycast(start, end))
+			{
+				lastSafePosition = position;
+				safePositionTimer = 0.0f;
+			}
+		}
+	}
 	return true;
 }
 
@@ -220,7 +256,45 @@ void Player::Move() {
 		anims.SetCurrent("idle");
 	}
 }
+void Player::Respawn() {
+	if (isdead) {
+		// Clean Attack 
+		isAttacking = false;
+		if (attackCollider != nullptr) {
+			Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+			attackCollider = nullptr;
+		}
 
+		// Use RespawnPosition
+		SetPosition(respawnPosition);
+		currentHealth = maxHealth;
+
+		isJumping = false;
+		isdead = false;
+		deathTimer = 0.0f;
+		anims.SetCurrent("idle");
+	}
+}
+
+void Player::RespawnFromVoid() { 
+	//TO DO: Aplicar daño 
+
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
+
+	if (isAttacking && attackCollider != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+		attackCollider = nullptr;
+		isAttacking = false;
+	}
+
+	SetPosition(lastSafePosition);
+
+	isJumping = false;
+	secondJumpUsed = false;
+	anims.SetCurrent("idle");
+
+	LOG("Player reset to last safe position: %.2f, %.2f", lastSafePosition.getX(), lastSafePosition.getY());
+}
 void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
 {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
@@ -451,6 +525,13 @@ bool Player::CleanUp()
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
+	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
+		LOG("Collision with DANGER zone!");
+		if (!godMode && !isdead) {
+			RespawnFromVoid();
+		}
+		break;
+
 	case ColliderType::GROUND:
 		LOG("Collision GROUND");
 		// Reset the jump flag when touching the ground
@@ -459,8 +540,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		anims.SetCurrent("front");	
 		onGround = true;
-
 		break;
+
 	case ColliderType::WALL:
 		LOG("Collision WALL");
 		// Reset the jump flag
@@ -469,24 +550,39 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		anims.SetCurrent("front"); //TODO: On wall anim
 		onWall = true;
-
 		break;
+
 	case ColliderType::DOOR:
 		canInteract = true;
 		interactuableBody = physB;
 		break;
+
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
 		break;
+
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
+		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
-
 		break;
+
+	case ColliderType::SAVEPOINT:
+	{
+		LOG("Collision SavePoint");
+		SavePoint* sp = (SavePoint*)physB->listener;
+		sp->Activate();
+
+		int spX, spY;
+		physB->GetPosition(spX, spY);
+		respawnPosition = Vector2D((float)spX, (float)spY);
+		break;
+	}
+
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
+
 	default:
 		break;
 	}
@@ -543,5 +639,52 @@ void Player::Teleport()
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
 	{
 		pbody->SetPosition(96, 96);
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+		pbody->SetPosition(respawnPosition.getX(), respawnPosition.getY());
+		LOG("Player respawned at last save point!");
+
+
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f,0.0f });
+	}
+}
+
+void Player::GodModeMove(float dt)
+{
+	//Fly con el GodMode activo
+	b2Vec2 godVelocity = { 0.0f, 0.0f };
+	float godSpeed = speed * 2.0f;
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+		godVelocity.x = -godSpeed;
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		godVelocity.x = godSpeed;
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+		godVelocity.y = -godSpeed;
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+		godVelocity.y = godSpeed;
+	}
+
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, godVelocity);
+}
+
+void Player::TakeDamage(int damage) {
+	if (godMode || isdead ) return;
+
+	currentHealth -= damage;
+
+	if (currentHealth <= 0) {
+		currentHealth = 0;
+		isdead = true;
+	}
+}
+
+void Player::TakeHealth(int health) {
+	if (godMode || isdead ) return;
+
+	if (currentHealth <= 80) {
+		currentHealth += health;
 	}
 }
