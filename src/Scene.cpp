@@ -319,7 +319,7 @@ void Scene::UnloadMainMenu()
 void Scene::LoadCastle()
 {
 	lastLevelPlayed = SceneID::CASTLE;
-	LoadMap("MapTemplate.tmx");
+	LoadMap("Castle.tmx");
 	if (player != nullptr) {
 		player->position.setX(10);
 		player->position.setY(10);
