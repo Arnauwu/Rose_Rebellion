@@ -70,6 +70,14 @@ bool SpiderEnemy::Update(float dt) {
 
     Draw(dt);
 
+    if (isStuck) {
+        time += dt;
+        if (time > 100) {
+            isStuck = false;
+            time = 0;
+        }
+	}
+
     return true;
 }
 
@@ -125,6 +133,14 @@ void SpiderEnemy::Move() {
         angle = 90.0f;
         break;
     }
+}
+
+void SpiderEnemy::RotateFacing() {
+    // Ciclo de rotación: DOWN -> LEFT -> UP -> RIGHT -> DOWN
+    int next = (int)currentFacing + 1;
+    if (next > 3) next = 0;
+    currentFacing = (Facing)next;
+    LOG("Outer corner detected! New facing: %d", currentFacing);
 }
 
 void SpiderEnemy::ApplyPhysics() {
@@ -183,25 +199,39 @@ Vector2D SpiderEnemy::GetTilePos()
 
 void SpiderEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 
+	
     switch (physB->ctype)
     {
     case ColliderType::WALL:
-        if (velocity.y <= 0) {
+        if (velocity.y >= 0 && rule == 1 && !isStuck) {
             currentFacing = Facing::RIGHT;
-            LOG("Spider rotating to WALL_RIGHT");
+			isStuck = true;
+            LOG("Spider rotating to WALL_RIGHT %d", rule);
+            rule = 2;
         }
-        if (velocity.y >= 0) {
+        if (velocity.y <= 0 && rule == 3 && !isStuck) {
             currentFacing = Facing::LEFT;
-            LOG("Spider rotating to WALL_LEFT");
+            isStuck = true;
+            LOG("Spider rotating to WALL_LEFT %d", rule);
+            rule = 0;
         }
         break;
     case ColliderType::GROUND:
+        if (rule == 0 && !isStuck) {
         currentFacing = Facing::DOWN;
-        LOG("Spider rotating to GROUND");
+        isStuck = true;
+        LOG("Spider rotating to GROUND %d", rule);
+        rule = 1;
+        }
         break;
     case ColliderType::CEILING:
+        if (rule == 2 && !isStuck) {
         currentFacing = Facing::UP;
-        LOG("Spider rotating to CEILING");
+        isStuck = true;
+        LOG("Spider rotating to CEILING %d", rule);
+        rule = 3;
+        }
+        break;
     default:
         //currentFacing = Facing::DOWN;
         break;

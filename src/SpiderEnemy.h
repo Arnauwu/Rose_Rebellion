@@ -36,5 +36,7 @@ private:
     float angle = 0.0f;                  // Rotation
     int moveSpeed = 100;
     bool isStuck = false;
+    int rule = 0;
+	float time = 0.0f;
 };
 
