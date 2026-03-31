@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="31">
+<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="33">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3155,6 +3155,17 @@
    <tile gid="49"/>
   </data>
  </layer>
+ <objectgroup id="14" name="SavePoint">
+  <properties>
+   <property name="SavePoint" type="bool" value="true"/>
+  </properties>
+  <object id="31" x="443" y="697">
+   <point/>
+  </object>
+  <object id="32" x="840" y="700">
+   <point/>
+  </object>
+ </objectgroup>
  <objectgroup id="13" name="Door">
   <properties>
    <property name="Door" type="bool" value="true"/>
