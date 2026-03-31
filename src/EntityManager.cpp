@@ -6,6 +6,7 @@
 #include "Log.h"
 
 #include "Item.h"
+#include "SavePoint.h"
 #include "Test.h"
 #include "SpiderEnemy.h"
 
@@ -75,6 +76,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::ITEM:
 		entity = std::make_shared<Item>();
+		break;
+	case EntityType::SAVEPOINT:
+		entity = std::make_shared<SavePoint>();
 		break;
 	case EntityType::ENEMY:
 		entity = std::make_shared<TestEnemy>();

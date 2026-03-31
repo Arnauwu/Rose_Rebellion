@@ -9,6 +9,7 @@ enum class EntityType
 	ITEM,
 	ENEMY,
 	SPIDER,
+	SAVEPOINT,
 	UNKNOWN
 };
 
