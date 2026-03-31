@@ -14,7 +14,8 @@ struct Properties
     struct Property
     {
         std::string name;
-        int value; //We assume that we are going to work only with bool for the moment
+        int value;
+        std::string value2;
     };
 
     std::list<Property*> propertyList;
@@ -45,13 +46,22 @@ struct Properties
 
 };
 
+struct Door
+{
+    PhysBody* body;
+    std::string teleportTo;
+};
+
+
 struct ObjectGroup
 {
     struct Object
     {
         float id, x, y, width, height;
         std::vector<b2Vec2> points;
+        Properties properties;
     };
+    
     std::list<Object*> objects;
     Properties properties;
 
@@ -76,9 +86,9 @@ struct MapLayer
     Properties properties;
 
     // Function to get the gid value of i,j
-    unsigned int Get(int i, int j) const
+    unsigned int Get(int x, int y) const
     {
-        return tiles[(j * width) + i];
+        return tiles[(y * width) + x];
     }
 };
 
@@ -119,6 +129,7 @@ struct MapData
 	int tileHeight;
     std::list<TileSet*> tilesets;
     std::list<ObjectGroup*> objectGroups;
+    std::list<Door*> doors;
     std::list<MapLayer*> layers;
 };
 
@@ -156,16 +167,23 @@ public:
     // Load a group of properties 
     bool LoadProperties(pugi::xml_node& node, Properties& properties);
 
+    // Getters
+    MapLayer* GetNavigationLayer(bool ground);
+
 	// Get the map size in pixels
 	Vector2D GetMapSizeInPixels();
     Vector2D GetMapSizeInTiles();
 
 
-    // Getters
     int GetTileWidth() { return mapData.tileWidth;  }
 
     int GetTileHeight() { return mapData.tileHeight; }
 
+    // Entities
+    void SpawnEntities();
+
+    //Door
+    std::string DoorInfo(PhysBody* door);
 
 public: 
     std::string mapFileName;
@@ -174,5 +192,6 @@ public:
 private:
     bool mapLoaded;
     MapData mapData;
+    pugi::xml_document mapFileXML;
     std::list<PhysBody*> colliderList;
 };

@@ -54,14 +54,14 @@ public:
 		return true;
 	}
 
-	//L05 TODO 4a: Declare a function to read the XML parameters	
+	// Declare a function to read the XML parameters	
 	virtual bool LoadParameters(pugi::xml_node parameters)
 	{
 		configParameters = parameters;
 		return true;
 	}
 
-	//L16 TODO 2: Declare a virtual function to receive GUI events
+	// Declare a virtual function to receive GUI events
 	virtual bool OnUIMouseClickEvent(UIElement* uiElement)
 	{
 		return true;
@@ -71,7 +71,7 @@ public:
 
 	std::string name;
 	bool active;
-	//L05 TODO 4a: Declare a pugi::xml_node to store the module configuration parameters
+	// Declare a pugi::xml_node to store the module configuration parameters
 	pugi::xml_node configParameters;
 
 };

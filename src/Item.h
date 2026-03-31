@@ -32,6 +32,6 @@ private:
 	const char* texturePath;
 	int texW, texH;
 
-	//L08 TODO 4: Add a physics to an item
+	// Add a physics to an item
 	PhysBody* pbody;
 };

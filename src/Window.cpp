@@ -27,14 +27,14 @@ bool Window::Awake()
 	else
 	{
 		// Create window
-		//L05 TODO 6: Get the values from the config file
+		// Get the values from the config file
 		Uint32 flags = 0;
 		bool fullscreen = configParameters.child("fullscreen").attribute("value").as_bool();
 		bool borderless = configParameters.child("borderless").attribute("value").as_bool();
 		bool resizable = configParameters.child("resizable").attribute("value").as_bool();
 		bool fullscreen_window = configParameters.child("fullscreen_window").attribute("value").as_bool();
 
-		//TODO Get the values from the config file
+		// Get the values from the config file
 		windowWidth = configParameters.child("resolution").attribute("width").as_int();
 		windowHeight = configParameters.child("resolution").attribute("height").as_int();
 		windowScale = configParameters.child("resolution").attribute("scale").as_int();

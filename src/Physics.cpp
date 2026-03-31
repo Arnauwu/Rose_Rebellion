@@ -280,7 +280,7 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
 	if (B2_IS_NULL(world)) return; // world already destroyed
-    if (physBody && !B2_IS_NULL(physBody->body) && physBody->listener->active)
+    if (physBody && !B2_IS_NULL(physBody->body) && physBody->listener && physBody->listener->active)
     {
         // Don’t change contact/sensor flags here (can mismatch event buffers).
         // Just clear user data so late events won’t dereference a dangling PhysBody*.
@@ -348,6 +348,17 @@ void Physics::ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool w
 {
     b2Vec2 imp = { ix, iy };
     b2Body_ApplyLinearImpulseToCenter(p->body, imp, wake);
+}
+
+// --- Gravity helpers
+void Physics::SetGravityScale(PhysBody* pbody, float scale)
+{
+    b2Body_SetGravityScale(pbody->body, scale);
+}
+
+void Physics::SetBodyType(PhysBody* p, bodyType type) const
+{
+    b2Body_SetType(p->body, ToB2Type(type));
 }
 
 //
@@ -421,13 +432,14 @@ void PhysBody::SetCollisionsActive(bool active)
     if (shapeCount > 0)
     {
         b2ShapeId shapeId;
-        // pedimos solo 1
+
+        // We take one
         b2Body_GetShapes(body, &shapeId, 1);
 
         // aqu?ya puedes tocar el filtro
         b2Filter filter = b2Shape_GetFilter(shapeId);
-        if(active) filter.maskBits = 0xFFFF;              // no colisiona con nada
-        else filter.maskBits = 0x0000;			  // colisiona con todo
+        if(active) filter.maskBits = 0xFFFF;              // does NOT collide
+        else filter.maskBits = 0x0000;			  // collision with everything
         b2Shape_SetFilter(shapeId, filter);
     }
 }
@@ -491,8 +503,33 @@ void Physics::DrawSolidCircleCb(b2Transform xf, float radius, b2HexColor color, 
     DrawCircleCb(xf.p, radius, color, ctx);
 }
 
+bool Physics::Raycast(Vector2D start, Vector2D end)
+{
+    const b2Vec2 p1 = { PIXEL_TO_METERS(start.getX()), PIXEL_TO_METERS(start.getY()) };
+    const b2Vec2 p2 = { PIXEL_TO_METERS(end.getX()), PIXEL_TO_METERS(end.getY()) };
+
+    const b2Vec2 direction = { p2.x - p1.x, p2.y - p1.y };
+    b2QueryFilter filter = b2DefaultQueryFilter();
+    b2RayResult res = b2World_CastRayClosest(world, p1, direction, filter);
+
+    return res.hit;
+}
+
 // ---- No-op stubs to avoid null calls -----------------------
 void Physics::DrawSolidCapsuleStub(b2Vec2, b2Vec2, float, b2HexColor, void*) {}
 void Physics::DrawPointStub(b2Vec2, float, b2HexColor, void*) {}
 void Physics::DrawStringStub(b2Vec2, const char*, b2HexColor, void*) {}
 void Physics::DrawTransformStub(b2Transform, void*) {}
+
+bool Physics::RayCast(b2Vec2 start, b2Vec2 end)
+{
+    if (B2_IS_NULL(world)) return false;
+
+    b2Vec2 d = { end.x - start.x, end.y - start.y };
+
+    b2QueryFilter qf = b2DefaultQueryFilter();
+
+    b2RayResult res = b2World_CastRayClosest(world, start, d, qf);
+
+    return res.hit;
+}

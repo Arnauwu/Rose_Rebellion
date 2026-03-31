@@ -3,8 +3,11 @@
 #include "Entity.h"
 #include "Animation.h"
 #include <box2d/box2d.h>
+#include <unordered_map>
 #include <SDL3/SDL.h>
 #include "Timer.h"
+#include <iostream>
+
 
 struct SDL_Texture;
 
@@ -21,6 +24,7 @@ public:
 	bool Start();
 
 	bool Update(float dt);
+	bool PostUpdate();
 
 	bool CleanUp();
 
@@ -28,17 +32,34 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
+	Vector2D GetPosition();
+	void SetPosition(Vector2D pos);
+	Vector2D lastSafePosition;
+	float safePositionTimer = 0.0f;
+	const float safePositionInterval = 0.2f; 
 private:
+
+	void GodModeMove(float dt);
 
 	void GetPhysicsValues();
 	void Move();
+	void Respawn();
+	void RespawnFromVoid();
 	void Jump(float dt);
 	void Attack(float dt);
+	void Glide();
+	void Dash();
+
+	void TakeDamage(int damage);
+	void TakeHealth(int health);
+	void Died();
+
+	void Interact();
+
 	void ApplyPhysics();
 	void Draw(float dt);
 
 	void CameraFollows();
-
 
 	// DevTools / Debug
 	void Teleport();
@@ -48,15 +69,25 @@ public:
 	int health; 
 	float speed = 4.0f;
 
-
-
 	// Texture
-	SDL_Texture* texture = NULL;
+	SDL_Texture* texture = nullptr;
 	int texW, texH;
 	bool lookingRight = true; //False Left -- True Right 
-	
+
+	/*--- PLAYER VARIABLES ---*/
+	//Live variables
+	int maxHealth = 100;
+	int currentHealth = 100;
+
 	// Physics
-	PhysBody* pbody;
+	PhysBody* pbody = nullptr;
+
+	//Death variables
+	bool isdead = false;
+	float deathTimer = 0.0f;
+	float deathDelay = 1.0f; 
+
+	/*--- PLAYER STATES INFO --- */
 	// Ground
 	bool onGround = false;
 	// Air
@@ -64,8 +95,12 @@ public:
 	// Wall
 	bool onWall = false;
 
+	// GodMode
+	bool godMode = false;
+
+	/*--- PLAYER SKILLS --- */
 	// Jump
-	float jumpForce = 2.5f; // The force to apply when jumping
+	float jumpForce = -7.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
 	// Extra Jump Force
@@ -76,18 +111,39 @@ public:
 	// Double Jump
 	bool doubleJumpUnlocked = true; // TO DO: Change to false
 	bool secondJumpUsed = false;
+	
+	// Gliding
+	bool glideUnlocked = true; // TO DO: Change to false
+	bool isGliding = false; // Flag
+
+	// Dash
+	bool dashUnlocked = true;
+	float dashForce = 150.0f;
+	bool hasDashed = false; // Flag to check if the player has dashed
+
+	/*--- PLAYER SKILL TREE --- */
+	int currentForceOrbs = 0;
+
+	bool OffensiveSkills[3] = { false, false, false };
+	bool DefensiveSkills[3] = { false, false, false };
+	bool UtilitySkills[3] = { false, false, false };
+
+	// Interact
+	bool canInteract = false;
+	PhysBody* interactuableBody = nullptr;
 
 	//Attack
-	float AttackTimer = 0.0f;// Attack timer counter 
-	bool Is_Attacking = false;// Check if the player is attacking or not
-	float AttackDuration = 500.0f;// Maximum duration of each attack =0,5s
-	//Audio fx
-	int pickCoinFxId;
+	bool isAttacking = false;
+	float attackDuration = 0.25f; //attack duration
+	float currentAttackTime = 0.0f;
 
-	//Save player position
-	Vector2D respawnPosition;
+	//Audio fx
+	//int pickCoinFxId;
+
 private: 
+	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 	AnimationSet anims;
+	Vector2D respawnPosition;
 
 };

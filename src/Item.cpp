@@ -25,11 +25,11 @@ bool Item::Start() {
 	//initilize textures
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/goldCoin.png");
 	
-	// L08 TODO 4: Add a physics to an item - initialize the physics body
+	// Add a physics to an item - initialize the physics body
 	Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
-	// L08 TODO 7: Assign collider type
+	// Assign collider type
 	pbody->ctype = ColliderType::ITEM;
 
 	// Set this class as the listener of the pbody
@@ -42,7 +42,7 @@ bool Item::Update(float dt)
 {
 	if (!active) return true;
 
-	// L08 TODO 4: Add a physics to an item - update the position of the object from the physics.  
+	// Add a physics to an item - update the position of the object from the physics.  
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);

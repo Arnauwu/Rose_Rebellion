@@ -4,8 +4,11 @@
 #include "Textures.h"
 #include "Scene.h"
 #include "Log.h"
+
 #include "Item.h"
 #include "SavePoint.h"
+#include "Test.h"
+#include "SpiderEnemy.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -55,10 +58,8 @@ bool EntityManager::CleanUp()
 	for(const auto entity : entities)
 	{
 		if (entity->active == false) continue;
-		ret = entity->CleanUp();
+		ret = entity->Destroy();
 	}
-
-	entities.clear();
 
 	return ret;
 }
@@ -67,7 +68,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 {
 	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 
-	//L04: TODO 3a: Instantiate entity according to the type and add the new entity to the list of Entities
+	// Instantiate entity according to the type and add the new entity to the list of Entities
 	switch (type)
 	{
 	case EntityType::PLAYER:
@@ -77,7 +78,13 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<Item>();
 		break;
 	case EntityType::SAVEPOINT:
-		entity =  std::make_shared<SavePoint>();
+		entity = std::make_shared<SavePoint>();
+		break;
+	case EntityType::ENEMY:
+		entity = std::make_shared<TestEnemy>();
+		break;
+	case EntityType::SPIDER:
+		entity = std::make_shared<SpiderEnemy>();
 		break;
 	default:
 		break;
@@ -85,7 +92,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 	if (entity != nullptr)
 	{
-		// Forzamos la inicialización si el manager ya est?en marcha
+		// Forzamos la inicialización si el manager ya está en marcha
 		entity->Awake();
 		entities.push_back(entity);
 	}
@@ -121,6 +128,7 @@ bool EntityManager::Update(float dt)
 		if (entity->pendingToDelete)
 		{
 			pendingDelete.push_back(entity);
+			continue;
 		}
 		//If the entity is not active, skip it
 		if (entity->active == false) continue;
@@ -133,5 +141,16 @@ bool EntityManager::Update(float dt)
 		DestroyEntity(entity);
 	}
 
+	return ret;
+}
+
+bool EntityManager::PostUpdate()
+{
+	bool ret = true;
+	for (const auto entity : entities)
+	{
+		if (entity->active == false) continue;
+		ret = entity->PostUpdate();
+	}
 	return ret;
 }

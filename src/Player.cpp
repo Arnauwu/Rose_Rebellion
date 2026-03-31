@@ -10,32 +10,50 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "SavePoint.h"
+#include <iostream>
+#include <unordered_map>
+
+using namespace std;
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
+	pbody = nullptr;
+	texture = nullptr;
 }
 
-Player::~Player() {
+Player::~Player() 
+{
 
 }
 
-bool Player::Awake() {
+bool Player::Awake() 
+{
 
 	// Initialize Player parameters
 	position = Vector2D(96, 96);
 	return true;
 }
 
-bool Player::Start() {
+bool Player::Start() 
+{
+	// Initialize Player parameters
 
 	// Load
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"},{33,"attack1"}};
-	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
-	anims.SetCurrent("idle");
+	std::unordered_map<int, std::string> aliases = { {0,"start_move_right"},
+													 {8,"move_right"},
+													 {16,"idle"},
+													 {17,"start_move_left"},
+													 {24,"move_left" },
+													 {32,"left_to_right" } ,
+	};
+	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
+	anims.SetCurrent("front");
 
-	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
+
+
+
 
 	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
@@ -50,32 +68,134 @@ bool Player::Start() {
 	pbody->ctype = ColliderType::PLAYER;
 
 	// Initialize audio
-	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
+	//pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
-	//
+
+	Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
+
 	respawnPosition = position;
+
 	return true;
 }
 
 bool Player::Update(float dt)
 {
+	if (pbody == nullptr) return true;
+
 	GetPhysicsValues();
-
 	Move();
-
-	Attack(dt);
-
 	CameraFollows();
 
 	Jump(dt);
+
+	Attack(dt);
 	
+	Glide();
+
+	Dash();
+
 	Teleport();
 	
 	ApplyPhysics();
 
-
 	Draw(dt);
 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
+		if (!godMode) {
+			LOG("GodMode - Active");
+			Engine::GetInstance().physics->SetBodyType(pbody, bodyType::KINEMATIC);
+		}
+		else {
+			LOG("GodMode - Desactive");
+			Engine::GetInstance().physics->SetBodyType(pbody, bodyType::DYNAMIC);
+		}
+		godMode = !godMode;
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+	{
+		currentForceOrbs++;
+		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0) 
+		{
+			if (OffensiveSkills[2] == false)
+			{
+				LOG("Unlocking Offensive Skill:");
+				if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
+				else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
+				else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Offensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (DefensiveSkills[2] == false)
+			{
+				LOG("Unlocking Defensive Skill:");
+				if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
+				else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
+				else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Defensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (UtilitySkills[2] == false)
+			{
+				LOG("Unlocking Utility Skill:");
+				if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
+				else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
+				else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Utility Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
+	if (godMode)
+	{
+		GodModeMove(dt);
+	}
+
+	// TO DO: Revisar esto a fondo
+	if (onGround && onWall && !isJumping && !isdead)
+	{
+		safePositionTimer += dt / 1000.0f;
+		if (safePositionTimer >= 0.2f)
+		{
+		
+			Vector2D start = position;
+			Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+
+			if (Engine::GetInstance().physics->Raycast(start, end))
+			{
+				lastSafePosition = position;
+				safePositionTimer = 0.0f;
+			}
+		}
+	}
+	return true;
+}
+
+bool Player::PostUpdate()
+{
+	Interact();
 	return true;
 }
 
@@ -86,29 +206,6 @@ void Player::GetPhysicsValues()
 	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
 }
 
-void Player::Attack(float dt) {
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_J) == KEY_DOWN && !Is_Attacking && onGround) { //Activates when the player is on the ground and not attacking.
-		Is_Attacking = true;
-		AttackTimer = 0.0f;
-		anims.SetCurrent("jump"); //for test
-		LOG("Basic Attack Triggered");
-
-	}
-
-	if(Is_Attacking){
-		// Attack duration counter to ensure the attack time doesn't exceed the limit
-
-		AttackTimer += dt;
-
-		//When the maximum duration of each attack is reached, the player exits attack mode and returns to idle mode.
-		if (AttackTimer >= AttackDuration) {
-			Is_Attacking = false;
-			anims.SetCurrent("idle");
-			LOG("Basic Attack Ended");
-		}
-	}
-}
-
 void Player::Move() {
 	
 	// Move Left
@@ -116,17 +213,88 @@ void Player::Move() {
 	{
 		velocity.x = -speed;
 		lookingRight = false;
-		anims.SetCurrent("move");
+		anims.SetCurrent("move_left");
+
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_left");
+		//}
+		//else if (currentAnim == "start_move_left" || currentAnim == "move_left")
+		//{
+		//	anims.SetCurrent("move_left");
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("right_to_left");
+		//}
 	}
 	// Move Right
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 	{
 		velocity.x = speed;
 		lookingRight = true;
-		anims.SetCurrent("move");
+
+		anims.SetCurrent("move_right");
+
+		//std::string currentAnim = anims.GetCurrentName();
+		//if (currentAnim == "idle")
+		//{
+		//	anims.SetCurrent("start_move_right");
+		//}
+		//else if (currentAnim == "start_move_right" || currentAnim == "move_right")
+		//{
+		//}
+		//else
+		//{
+		//	anims.SetCurrent("left_to_right");
+		//}
+	}
+	else
+	{
+		anims.SetCurrent("idle");
+	}
+}
+void Player::Respawn() {
+	if (isdead) {
+		// Clean Attack 
+		isAttacking = false;
+		if (attackCollider != nullptr) {
+			Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+			attackCollider = nullptr;
+		}
+
+		// Use RespawnPosition
+		SetPosition(respawnPosition);
+		currentHealth = maxHealth;
+
+		isJumping = false;
+		isdead = false;
+		deathTimer = 0.0f;
+		anims.SetCurrent("idle");
 	}
 }
 
+void Player::RespawnFromVoid() { 
+	//TO DO: Aplicar daño 
+
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
+
+	if (isAttacking && attackCollider != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+		attackCollider = nullptr;
+		isAttacking = false;
+	}
+
+	SetPosition(lastSafePosition);
+
+	isJumping = false;
+	secondJumpUsed = false;
+	anims.SetCurrent("idle");
+
+	LOG("Player reset to last safe position: %.2f, %.2f", lastSafePosition.getX(), lastSafePosition.getY());
+}
 void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
 {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
@@ -135,8 +303,9 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		if (isJumping == false && onGround == true)
 		{
 			isJumping = true;
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
-			anims.SetCurrent("jump");
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
+
+			anims.SetCurrent("front");
 
 			//Extra Jump Force
 			isJumpKeyDown = true;
@@ -148,8 +317,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			secondJumpUsed = true;
-			Engine::GetInstance().physics->SetYVelocity(pbody, 0); // Stop MidAir
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true); // TO DO: Adjust Second Jump Force
+			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 			anims.SetCurrent("jump");
 
 			//Extra Jump Force
@@ -161,7 +329,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce * 0.005f, true); //TO DO: Adjust Value
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
 		jumpHoldTime += dt/1000; //To seconds
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
@@ -170,10 +338,115 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 }
 
+void Player::Attack(float dt)
+{
+	// 1. Start the attack 
+	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		isAttacking = true;
+		currentAttackTime = 0.0f;
+
+		// Calculate the collider's position based on the direction the player is facing
+		int attackOffsetX = lookingRight ? 32 : -32;
+		int attackX = position.getX() + attackOffsetX;
+		int attackY = position.getY();
+
+		// Create the attack collider as a kinematic sensor(width 20, height 32)
+		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, 20, 32, bodyType::KINEMATIC);
+		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+		attackCollider->listener = this;
+
+		// Optional: Change animation anims.SetCurrent(�attack�);
+		LOG("Attack started");
+	}
+
+	// 2. Control the duration of the attack
+	if (isAttacking)
+	{
+		currentAttackTime += dt / 1000.0f;
+
+		// Update the collider's position so that it follows the player whilst attacking
+		if (attackCollider != nullptr) {
+			int attackOffsetX = lookingRight ? 32 : -32;
+			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
+		}
+
+		// End the attack when the time runs out
+		if (currentAttackTime >= attackDuration)
+		{
+			isAttacking = false;
+
+			// Destroy the collider
+			if (attackCollider != nullptr)
+			{
+				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+				attackCollider = nullptr;
+			}
+
+			LOG("Attack ended");
+		}
+	}
+}
+
+void Player::Glide() // Gliding
+{
+	if (glideUnlocked)
+	{
+		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+		{
+			isGliding = true;
+		}
+		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
+		{
+			isGliding = false;
+		}
+	}
+}
+
+void Player::Dash()
+{
+	if (dashUnlocked == true)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN && hasDashed == false)
+		{
+			if (lookingRight == true)
+			{
+				velocity.x += dashForce;
+			}
+			else
+			{
+				velocity.x -= dashForce;
+			}
+		}
+	}
+}
+
+void Player::Interact()
+{
+	if (canInteract)
+	{
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		{
+			Engine::GetInstance().scene->setNewMap = true;
+		}
+	}
+}
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
-	if (isJumping == true) {
+	if (isJumping == true || secondJumpUsed == true) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
+	}
+
+
+	if (isGliding)
+	{
+		int maxFallSpeed = 1;
+		if (velocity.y >= maxFallSpeed)
+		{
+			LOG("Gliding");
+			velocity.y = maxFallSpeed;
+		}
 	}
 
 	// Apply velocity via helper
@@ -185,11 +458,13 @@ void Player::Draw(float dt) {
 	anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
+
+
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
 	if (!lookingRight)
 	{
-		sdlFlip = SDL_FLIP_HORIZONTAL;
+		//sdlFlip = SDL_FLIP_HORIZONTAL;
 	}
 
 	// Update render position using your PhysBody helper
@@ -199,7 +474,21 @@ void Player::Draw(float dt) {
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, 0, 0, 0, sdlFlip);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 0.75f); // -20 0.25f
+
+	if (isAttacking && attackCollider != nullptr)
+	{
+		int attackX, attackY;
+		attackCollider->GetPosition(attackX, attackY);
+
+		// Box2D devuelve la posici�n desde el centro del collider. 
+		// Calculamos la esquina superior izquierda (Restamos la mitad del ancho(20) y alto(32) que le dimos)
+		SDL_Rect attackRect = { attackX - 10, attackY - 16, 20, 32 };
+
+		// Dibuja un rect�ngulo rojo (R=255, G=0, B=0, Alpha=150)
+		// Nota: Dependiendo de tu Render.h, puede que te pida m�s par�metros al final como (..., true, true) para 'filled' y 'use_camera'
+		Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
+	}
 }
 
 void Player::CameraFollows()
@@ -210,83 +499,90 @@ void Player::CameraFollows()
 	float limitLeft = Engine::GetInstance().render->camera.w / 4;
 	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
 	
-	// Position the camera differently based on the case.
-	// Case 1: If the player is in the center of the map, use normal camera tracking.
-	if (position.getX() > limitLeft && position.getX() < limitRight)
+	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) 
 	{
 		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
-	}
-	// If the player is at the far left, the camera locks at the map's left boundary to avoid showing the area outside the map.
-	// When in the left zone, the camera will stay positioned at the leftmost part of the map.
-	else if (position.getX() <= limitLeft)
-	{
-		Engine::GetInstance().render->camera.x = 0;
-	}
-	// Case: Player at rightmost position. Clamp camera to the right map edge.
-	else if (position.getX() >= limitRight)
-	{
-		Engine::GetInstance().render->camera.x = -(mapSize.getX() - Engine::GetInstance().render->camera.w);
 	}
 }
 
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
+	if (pbody != nullptr) {
+		pbody->listener = nullptr;
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
 	Engine::GetInstance().textures->UnLoad(texture);
+	if (attackCollider != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+		attackCollider = nullptr;
+	}
 	return true;
 }
 
-// L08 TODO 6: Define OnCollision function for the player. 
+// Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
+	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
+		LOG("Collision with DANGER zone!");
+		if (!godMode && !isdead) {
+			RespawnFromVoid();
+		}
+		break;
+
 	case ColliderType::GROUND:
 		LOG("Collision GROUND");
 		// Reset the jump flag when touching the ground
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle");	
+		anims.SetCurrent("front");	
 		onGround = true;
-
 		break;
+
 	case ColliderType::WALL:
 		LOG("Collision WALL");
 		// Reset the jump flag
 		isJumping = false;
 		secondJumpUsed = false;
 
-		anims.SetCurrent("idle"); //TODO: On wall anim
+		anims.SetCurrent("front"); //TODO: On wall anim
 		onWall = true;
-
 		break;
+
+	case ColliderType::DOOR:
+		canInteract = true;
+		interactuableBody = physB;
+		break;
+
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
 		break;
+
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
+		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
-
 		break;
+
 	case ColliderType::SAVEPOINT:
 	{
 		LOG("Collision SavePoint");
-		// Get savepoint info and update its state. For example, toggle between different animations depending on whether it is activated or not.
-		SavePoint* sp = (SavePoint*)physB->listener;//obtener estado del savepoint
+		SavePoint* sp = (SavePoint*)physB->listener;
 		sp->Activate();
 
-		// Savepoint world position.
 		int spX, spY;
 		physB->GetPosition(spX, spY);
-
-		// When the player respawns, they will start at the last savepoint they passed.
 		respawnPosition = Vector2D((float)spX, (float)spY);
 		break;
 	}
+
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
+
 	default:
 		break;
 	}
@@ -303,18 +599,36 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	case ColliderType::GROUND:
 		onGround = false;
 		onAir = true;
+		LOG("On Air");
+
+		break;
+	case ColliderType::DOOR:
+		canInteract = false;
+		interactuableBody = nullptr;
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
-		break;	
-	case ColliderType::SAVEPOINT:
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
+	case ColliderType::CEILING:
 	default:
 		break;
 	}
+}
+
+Vector2D Player::GetPosition()
+{
+	int x, y;
+	pbody->GetPosition(x, y);
+	// Adjust for center
+	return Vector2D((float)x, (float)y);
+}
+
+void Player::SetPosition(Vector2D pos)
+{
+	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
 }
 
 // DevTools
@@ -326,17 +640,51 @@ void Player::Teleport()
 	{
 		pbody->SetPosition(96, 96);
 	}
-
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
-
-		// Teleport the player to the position of the last savepoint they passed.
 		pbody->SetPosition(respawnPosition.getX(), respawnPosition.getY());
-
-		// Update the camera position to ensure it follows the player after they respawn.
-		position = respawnPosition;
 		LOG("Player respawned at last save point!");
 
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f,0.0f });
+	}
+}
+
+void Player::GodModeMove(float dt)
+{
+	//Fly con el GodMode activo
+	b2Vec2 godVelocity = { 0.0f, 0.0f };
+	float godSpeed = speed * 2.0f;
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+		godVelocity.x = -godSpeed;
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		godVelocity.x = godSpeed;
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+		godVelocity.y = -godSpeed;
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+		godVelocity.y = godSpeed;
+	}
+
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, godVelocity);
+}
+
+void Player::TakeDamage(int damage) {
+	if (godMode || isdead ) return;
+
+	currentHealth -= damage;
+
+	if (currentHealth <= 0) {
+		currentHealth = 0;
+		isdead = true;
+	}
+}
+
+void Player::TakeHealth(int health) {
+	if (godMode || isdead ) return;
+
+	if (currentHealth <= 80) {
+		currentHealth += health;
 	}
 }

@@ -26,13 +26,16 @@ enum bodyType {
 
 enum class ColliderType {
     PLAYER,
+    PLAYER_ATTACK,
     ITEM,
     CEILING,
     WALL,
     GROUND,
+    AIR,
     DANGER,
     ENEMY,
     SAVEPOINT,
+    DOOR,
     UNKNOWN
     // ..
 };
@@ -95,8 +98,19 @@ public:
     void   SetXVelocity(PhysBody* p, float vx) const;
     void   SetYVelocity(PhysBody* p, float vy) const;
 
+    // Get Debug
+    bool GetDebug() { return debug; };
+    bool Raycast(Vector2D start, Vector2D end);
+
     // --- Impulse helper (handy for jumps/dashes)
     void   ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool wake = true) const;
+
+    // Gravity
+    void SetGravityScale(PhysBody* pbody, float scale);
+
+    bool RayCast(b2Vec2 start, b2Vec2 end);
+    // GodMode
+    void SetBodyType(PhysBody* p, bodyType type) const;
 
 private:
     // helpers

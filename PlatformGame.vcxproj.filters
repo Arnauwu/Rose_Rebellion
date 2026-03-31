@@ -17,6 +17,27 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{eaf9226b-488a-4c6a-9d1a-2222fdb48e0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils\Animation">
+      <UniqueIdentifier>{8561ee16-f0f6-4440-be72-32725a12268c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Log">
+      <UniqueIdentifier>{542af9bc-e656-4448-8c63-d9b8daf19f7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Vector2D">
+      <UniqueIdentifier>{c96317a2-f0fa-4b4c-9acf-19b6e485ca8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Timers">
+      <UniqueIdentifier>{8d1f540a-6649-46c4-839c-612fcdf5c61d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Entities">
+      <UniqueIdentifier>{8bea1a1f-dee6-490f-a719-81df0e62886f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Enemies">
+      <UniqueIdentifier>{baab7345-41be-492a-b7ac-aaa53568ff7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\UI">
+      <UniqueIdentifier>{efb5028b-95e3-4773-be50-6f8bcfa0dc5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -51,23 +72,8 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Log.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Vector2D.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\Scene.cpp">
       <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Timer.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PerfTimer.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EntityManager.cpp">
-      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Player.cpp">
       <Filter>Source Files\Game</Filter>
@@ -81,23 +87,52 @@
     <ClCompile Include="src\Item.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\Animation.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UISlider.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UICheckBox.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="src\Hud.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\UIManager.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Animation.cpp">
+      <Filter>Source Files\Utils\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Log.cpp">
+      <Filter>Source Files\Utils\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PerfTimer.cpp">
+      <Filter>Source Files\Utils\Timers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Timer.cpp">
+      <Filter>Source Files\Utils\Timers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector2D.cpp">
+      <Filter>Source Files\Utils\Vector2D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EntityManager.cpp">
+      <Filter>Source Files\Engine\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pathfinding.cpp">
+      <Filter>Source Files\Engine\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Enemy.cpp">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Test.cpp">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpiderEnemy.cpp">
+      <Filter>Source Files\Game\Enemies</Filter>
     <ClCompile Include="src\UIButton.cpp">
-      <Filter>Source Files\Utils</Filter>
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UICheckBox.cpp">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UISlider.cpp">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SavePoint.cpp">
+      <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="src\SavePoint.cpp">
       <Filter>Source Files\Game</Filter>
@@ -125,26 +160,8 @@
     <ClInclude Include="src\Window.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Log.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vector2D.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene.h">
       <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Timer.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PerfTimer.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Entity.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityManager.h">
-      <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Player.h">
       <Filter>Source Files\Game</Filter>
@@ -158,26 +175,58 @@
     <ClInclude Include="src\Item.h">
       <Filter>Source Files\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\Animation.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UISlider.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UICheckBox.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\UIManager.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Hud.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIElement.h">
-      <Filter>Source Files\Utils</Filter>
+    <ClInclude Include="src\Animation.h">
+      <Filter>Source Files\Utils\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="src\Log.h">
+      <Filter>Source Files\Utils\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PerfTimer.h">
+      <Filter>Source Files\Utils\Timers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Timer.h">
+      <Filter>Source Files\Utils\Timers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vector2D.h">
+      <Filter>Source Files\Utils\Vector2D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entity.h">
+      <Filter>Source Files\Engine\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EntityManager.h">
+      <Filter>Source Files\Engine\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pathfinding.h">
+      <Filter>Source Files\Engine\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Enemy.h">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Test.h">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpiderEnemy.h">
+      <Filter>Source Files\Game\Enemies</Filter>
     <ClInclude Include="src\UIButton.h">
-      <Filter>Source Files\Utils</Filter>
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UICheckBox.h">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UIElement.h">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UISlider.h">
+      <Filter>Source Files\Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SavePoint.h">
+      <Filter>Source Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\SavePoint.h">
       <Filter>Source Files\Game</Filter>
