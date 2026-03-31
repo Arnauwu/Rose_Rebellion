@@ -49,5 +49,6 @@ void SavePoint::Activate() {
 	if (!isActivated) {
 		isActivated = true;
 		LOG("SavePoint Activated");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/test.png");
 	}
 }

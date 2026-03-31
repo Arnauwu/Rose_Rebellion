@@ -436,7 +436,7 @@ void PhysBody::SetCollisionsActive(bool active)
         // We take one
         b2Body_GetShapes(body, &shapeId, 1);
 
-        // aquí ya puedes tocar el filtro
+        // aqu?ya puedes tocar el filtro
         b2Filter filter = b2Shape_GetFilter(shapeId);
         if(active) filter.maskBits = 0xFFFF;              // does NOT collide
         else filter.maskBits = 0x0000;			  // collision with everything

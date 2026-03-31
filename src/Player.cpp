@@ -81,7 +81,6 @@ bool Player::Start()
 bool Player::Update(float dt)
 {
 	if (pbody == nullptr) return true;
-
 	GetPhysicsValues();
 	Move();
 	CameraFollows();
@@ -287,13 +286,13 @@ void Player::RespawnFromVoid() {
 		isAttacking = false;
 	}
 
-	SetPosition(lastSafePosition);
+	SetPosition(respawnPosition);
 
-	isJumping = false;
+	isJumping = false;	
 	secondJumpUsed = false;
 	anims.SetCurrent("idle");
 
-	LOG("Player reset to last safe position: %.2f, %.2f", lastSafePosition.getX(), lastSafePosition.getY());
+	LOG("Player reset to last safe position: %.2f, %.2f", respawnPosition.getX(), respawnPosition.getY());
 }
 void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
 {
@@ -502,6 +501,16 @@ void Player::CameraFollows()
 	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) 
 	{
 		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
+	}
+	// If player is at the far left, lock camera to the map's left edge to hide the outside area.
+	else if (position.getX() <= limitLeft)
+	{
+		Engine::GetInstance().render->camera.x = 0;
+	}
+	// Player at far right: Lock camera to the right boundary.
+	else if (position.getX() >= limitRight)
+	{
+		Engine::GetInstance().render->camera.x = -(mapSize.getX() - Engine::GetInstance().render->camera.w);
 	}
 }
 
