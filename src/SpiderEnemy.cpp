@@ -59,24 +59,30 @@ bool SpiderEnemy::Update(float dt) {
     
     if (!active) return true;
 
-    if (pathFindingCooldown.ReadMSec() > 500) {
-        PerformPathfinding();
-        pathFindingCooldown.Start();
-    }
+    if (Engine::GetInstance().scene->isGamePaused == false)
+    {
+        if (pathFindingCooldown.ReadMSec() > 500) {
+            PerformPathfinding();
+            pathFindingCooldown.Start();
+        }
 
-    GetPhysicsValues();
-    Move();
-    ApplyPhysics();
+        GetPhysicsValues();
+        Move();
+        ApplyPhysics();
+    }
 
     Draw(dt);
 
-    if (isStuck) {
-        time += dt;
-        if (time > 100) {
-            isStuck = false;
-            time = 0;
-        }
-	}
+    if (Engine::GetInstance().scene->isGamePaused == false)
+    {
+        if (isStuck) {
+            time += dt;
+            if (time > 100) {
+                isStuck = false;
+                time = 0;
+            }
+	    }
+    }
 
     return true;
 }
@@ -151,8 +157,10 @@ void SpiderEnemy::ApplyPhysics() {
 
 void SpiderEnemy::Draw(float dt)
 {
-
-    anims.Update(dt);
+    if (Engine::GetInstance().scene->isGamePaused == false)
+    {
+        anims.Update(dt);
+    }
     const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
     // Update render position using your PhysBody helper

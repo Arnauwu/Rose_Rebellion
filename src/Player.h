@@ -62,7 +62,7 @@ private:
 	void CameraFollows();
 
 	// DevTools / Debug
-	void Teleport();
+	void DevTools(float dt);
 
 public:
 

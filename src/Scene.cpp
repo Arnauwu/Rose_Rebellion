@@ -50,6 +50,9 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN)
+		isGamePaused = !isGamePaused;
+
 	switch (currentScene)
 	{
 	case SceneID::INTRO:

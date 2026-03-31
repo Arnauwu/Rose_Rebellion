@@ -73,16 +73,18 @@ bool TestEnemy::Update(float dt)
 
 	if (!active) return true;
 
-
-	if (pathFindingCooldown.ReadMSec() > 500)
+	if (Engine::GetInstance().scene->isGamePaused == false)
 	{
-		PerformPathfinding();
-		pathFindingCooldown.Start();
-	}
+		if (pathFindingCooldown.ReadMSec() > 500)
+		{
+			PerformPathfinding();
+			pathFindingCooldown.Start();
+		}
 
-	GetPhysicsValues();
-	Move();
-	ApplyPhysics();
+		GetPhysicsValues();
+		Move();
+		ApplyPhysics();
+	}
 
 	Draw(dt);
 
@@ -177,8 +179,10 @@ void TestEnemy::ApplyPhysics() {
 
 void TestEnemy::Draw(float dt) 
 {
-
-	anims.Update(dt);
+	if (Engine::GetInstance().scene->isGamePaused == false)
+	{
+		anims.Update(dt);
+	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 	// Update render position using your PhysBody helper
