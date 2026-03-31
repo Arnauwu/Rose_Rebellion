@@ -520,3 +520,16 @@ void Physics::DrawSolidCapsuleStub(b2Vec2, b2Vec2, float, b2HexColor, void*) {}
 void Physics::DrawPointStub(b2Vec2, float, b2HexColor, void*) {}
 void Physics::DrawStringStub(b2Vec2, const char*, b2HexColor, void*) {}
 void Physics::DrawTransformStub(b2Transform, void*) {}
+
+bool Physics::RayCast(b2Vec2 start, b2Vec2 end)
+{
+    if (B2_IS_NULL(world)) return false;
+
+    b2Vec2 d = { end.x - start.x, end.y - start.y };
+
+    b2QueryFilter qf = b2DefaultQueryFilter();
+
+    b2RayResult res = b2World_CastRayClosest(world, start, d, qf);
+
+    return res.hit;
+}

@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "SavePoint.h"
 #include "Test.h"
+#include "SpiderEnemy.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -81,6 +82,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::ENEMY:
 		entity = std::make_shared<TestEnemy>();
+		break;
+	case EntityType::SPIDER:
+		entity = std::make_shared<SpiderEnemy>();
 		break;
 	default:
 		break;
