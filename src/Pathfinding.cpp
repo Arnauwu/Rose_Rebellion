@@ -13,7 +13,9 @@ Pathfinding::Pathfinding(bool ground)
     pathTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/MapMetadata.png");
     tileX = Engine::GetInstance().textures.get()->Load("Assets/Maps/x.png");
     map = Engine::GetInstance().map.get();
-    layerNav = map->GetNavigationLayer(ground);
+
+    layerNav = map->GetNavigationLayer(ground,&blockedGid,&highCostGid);
+
 
     // Initialize the costSoFar with all elements set to 0
     costSoFar = std::vector<std::vector<int>>(map->GetMapSizeInTiles().getX(), std::vector<int>(map->GetMapSizeInTiles().getY(), 0));

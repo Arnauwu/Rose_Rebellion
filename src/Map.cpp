@@ -579,8 +579,19 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 	return ret;
 }
 
-MapLayer* Map::GetNavigationLayer(bool ground)
+MapLayer* Map::GetNavigationLayer(bool ground, int* blockedGID, int* highGID)
 {
+
+	for (const auto& tileset : mapData.tilesets)
+	{
+		if (tileset->name == "MapMetadata")
+		{
+			*blockedGID = tileset->firstGid;
+			*highGID = tileset->firstGid + 1;
+			break;
+		}
+	}
+
 	for (const auto& layer : mapData.layers) {
 		if (layer->properties.GetProperty("Navigation") != NULL &&
 			layer->properties.GetProperty("Navigation")->value)

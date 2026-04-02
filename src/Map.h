@@ -168,7 +168,7 @@ public:
     bool LoadProperties(pugi::xml_node& node, Properties& properties);
 
     // Getters
-    MapLayer* GetNavigationLayer(bool ground);
+    MapLayer* GetNavigationLayer(bool ground, int* blockedGID, int* highGID);
 
 	// Get the map size in pixels
 	Vector2D GetMapSizeInPixels();
