@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
+    <ClCompile Include="src\CameraController.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
@@ -176,6 +177,7 @@
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
+    <ClInclude Include="src\CameraController.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
