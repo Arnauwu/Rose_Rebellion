@@ -33,7 +33,7 @@ public:
 	SDL_Window* window;
 
 	std::string title;
-	int windowWidth = 1280;
-	int windowHeight = 720;
+	int windowWidth = 1920;
+	int windowHeight = 1080;
 	int windowScale = 1;
 };

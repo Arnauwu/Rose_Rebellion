@@ -12,6 +12,8 @@
 #include "Map.h"
 #include "Item.h"
 #include "UIManager.h"
+#include "UICheckBox.h"
+#include "UISlider.h"
 
 Scene::Scene() : Module()
 {
@@ -258,12 +260,17 @@ void Scene::UnloadCurrentScene() {
 
 void Scene::LoadIntro()
 {
-	introTexture = Engine::GetInstance().textures->Load("Assets/Textures/Intro_Menus/Intro.jpg");
+	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
+	screenRect = { 0, 0, windowW, windowH };
+
+	//introTexture = Engine::GetInstance().textures->Load("Assets/Textures/Intro_Menus/Intro.jpg");
 	introTimer = 3000.0f;
 }
 
 void Scene::UpdateIntro(float dt)
 {
+	Engine::GetInstance().render->DrawRectangle(screenRect, 10, 70, 45, 255, true, false); //Intro Verde mismo
+
 	introTimer -= dt;
 
 	if (introTimer <= 0.0f || Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
@@ -291,15 +298,55 @@ void Scene::UnloadIntro()
 
 void Scene::LoadMainMenu()
 {
-	menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/Intro_Menus/Menu.jpg");
+	mainMenuElements.clear();
+	settingsMenuElements.clear();
+
+	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
+	screenRect = { 0, 0, windowW, windowH };
+
+	int btnW = 150;
+	int btnH = 40;
+
+	int sliderW = 200;
+	int sliderH = 20;
+	int spacing = 20; // Espacio entre botones
+
+	int mainX = (windowW / 2) - (btnW / 2);
+	int currentY = (int)(windowH * 0.4f);
+	
+	// MENÚ PRINCIPAL
+	// ID 1. PLAY
+	auto btnPlay = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "PLAY", { mainX, currentY, btnW, btnH }, this);
+	mainMenuElements.push_back(btnPlay);
+	currentY += btnH + spacing; // Bajamos la Y para el siguiente botón
+
+	// ID 2. CONTINUE
+	auto btnContinue = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, "CONTINUE", { mainX, currentY, btnW, btnH }, this);
+	//if (!CanContinueGame()) btnContinue->state = UIElementState::DISABLED;
+	mainMenuElements.push_back(btnContinue);
+	currentY += btnH + spacing;
+
+	// ID 3. SETTINGS
+	auto btnSettings = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 3, "SETTINGS", { mainX, currentY, btnW, btnH }, this);
+	mainMenuElements.push_back(btnSettings);
+	currentY += btnH + spacing;
+
+	// ID 4. CREDITS
+	auto btnCredits = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 4, "CREDITS", { mainX, currentY, btnW, btnH }, this);
+	mainMenuElements.push_back(btnCredits);
+	currentY += btnH + spacing;
+
+	// ID 5. EXIT
+	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 5, "EXIT", { mainX, currentY, btnW, btnH }, this);
+	mainMenuElements.push_back(btnExit);
+
+
 }
 
 void Scene::UpdateMainMenu(float dt)
 {
-	if (menuBackground) Engine::GetInstance().render->DrawTexture(menuBackground, 0, 0);
-
-	// Texto indicativo para el usuario
-	//Engine::GetInstance().render->DrawText("PRESIONA ESPACIO PARA EMPEZAR", 200, 400, 400, 40, { 255,255,255,255 });
+	
+	Engine::GetInstance().render->DrawRectangle(screenRect, 30, 40,25, 255, true, false); //Menu
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
 		ChangeScene(SceneID::CASTLE);

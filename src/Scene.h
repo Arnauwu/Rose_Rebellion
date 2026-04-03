@@ -2,6 +2,9 @@
 
 #include "Module.h"
 #include "Player.h"
+#include "UIButton.h"
+#include "UICheckBox.h"
+#include "UISlider.h"
 
 enum class SceneID {
 	INTRO,
@@ -13,6 +16,15 @@ enum class SceneID {
 	GAMEOVER
 };
 
+enum class MenuState {
+	MAIN,
+	SETTINGS,
+	CREDITS,
+
+	NONE,
+	PAUSE,
+	PAUSE_SETTINGS,
+};
 struct SDL_Texture;
 
 class Scene : public Module
@@ -110,8 +122,19 @@ private:
 	void LoadLevelTransition();
 	void UpdateLevelTransition(float dt);
 
+
 private:
 	// Private Variables
+	MenuState menuState = MenuState::MAIN;
+
+	std::vector<std::shared_ptr<UIElement>> mainMenuElements;
+	std::vector<std::shared_ptr<UIElement>> settingsMenuElements;
+	std::vector<std::shared_ptr<UIElement>> creditsMenuElements;
+	std::vector<std::shared_ptr<UIElement>> pauseMenuElements;
+
+	int windowW = 0;
+	int windowH = 0;
+	SDL_Rect screenRect = { 0, 0, 0, 0 };
 
 	float introTimer = 0.0f;
 	float transitionTimer = 0.0f;
