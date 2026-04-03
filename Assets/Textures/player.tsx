@@ -73,10 +73,6 @@
    <frame tileid="61" duration="100"/>
    <frame tileid="62" duration="100"/>
    <frame tileid="63" duration="100"/>
-   <frame tileid="64" duration="100"/>
-   <frame tileid="65" duration="100"/>
-   <frame tileid="66" duration="100"/>
-   <frame tileid="67" duration="100"/>
   </animation>
  </tile>
 </tileset>

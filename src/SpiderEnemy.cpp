@@ -40,16 +40,7 @@ bool SpiderEnemy::Start() {
     pbody->ctype = ColliderType::ENEMY;
     b2Body_SetGravityScale(pbody->body, 0.0f);
 
-    // Initialize pathfinding
-    pathfinding = std::make_shared<Pathfinding>(true);
-
-    //Reset pathfinding
-    pathfinding->ResetPath(GetTilePos());
-
-    pathFindingCooldown.Start();
-
     //Stats
-    vision = 10;
     speed = 2.0f;
 
     return true;
@@ -61,11 +52,6 @@ bool SpiderEnemy::Update(float dt) {
 
     if (Engine::GetInstance().scene->isGamePaused == false)
     {
-        if (pathFindingCooldown.ReadMSec() > 500) {
-            PerformPathfinding();
-            pathFindingCooldown.Start();
-        }
-
         GetPhysicsValues();
         Move();
         ApplyPhysics();
@@ -85,27 +71,6 @@ bool SpiderEnemy::Update(float dt) {
     }
 
     return true;
-}
-
-void SpiderEnemy::PerformPathfinding()
-{
-    ////Reset path
-    //pathfinding->ResetPath(GetTilePos());
-
-    ////Get the position of the enemy
-    //Vector2D pos = GetPosition();
-
-    ////Get the position of the player
-    //Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
-
-    //playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
-    //int iter = 0;
-
-    //while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
-    //{
-    //    pathfinding->PropagateAStar();
-    //    iter++;
-    //}
 }
 
 void SpiderEnemy::GetPhysicsValues() {
@@ -170,8 +135,6 @@ void SpiderEnemy::Draw(float dt)
     // Draw pathfinding debug
     if (Engine::GetInstance().physics->GetDebug())
     {
-        pathfinding->DrawPath();
-
         b2Vec2 pos = b2Body_GetPosition(pbody->body);
         float rayLength = 0.8f;
         float aheadOffset = 0.6f;

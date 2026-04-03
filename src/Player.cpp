@@ -85,7 +85,9 @@ bool Player::Update(float dt)
 	if (Engine::GetInstance().scene->isGamePaused == false)
 	{
 		GetPhysicsValues();
+		
 		Move();
+		
 		CameraFollows();
 
 		Jump(dt);
@@ -139,7 +141,7 @@ void Player::GetPhysicsValues()
 void Player::Move() {
 	
 	// Move Left
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false) 
 	{
 		velocity.x = -speed;
 		lookingRight = false;
@@ -149,7 +151,7 @@ void Player::Move() {
 		}
 	}
 	// Move Right
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
 	{
 		velocity.x = speed;
 		lookingRight = true;
@@ -316,18 +318,41 @@ void Player::Glide() // Gliding
 
 void Player::Dash()
 {
-	if (dashUnlocked == true)
+	// Start Dash
+	if (dashUnlocked == true 
+		&& Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN
+		&& isDashing == false 
+		&& dashCooldownTimer.ReadMSec() > dashCooldownMS)
 	{
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN && hasDashed == false)
+		if (lookingRight == true)
 		{
-			if (lookingRight == true)
-			{
-				velocity.x += dashForce;
-			}
-			else
-			{
-				velocity.x -= dashForce;
-			}
+			velocity.x = dashForce;
+		}
+		else
+		{
+			velocity.x = -dashForce;
+		}
+
+		isDashing = true;
+		dashTimer.Start();
+	}
+	
+	// While Dash
+	if (isDashing)
+	{
+		if (lookingRight == true)
+		{
+			velocity.x = dashForce;
+		}
+		else
+		{
+			velocity.x = -dashForce;
+		}
+
+		if (dashTimer.ReadMSec() > dashDurationMS)
+		{
+			isDashing = false;
+			dashCooldownTimer.Start();
 		}
 	}
 }

@@ -16,7 +16,6 @@ Pathfinding::Pathfinding(bool ground)
 
     layerNav = map->GetNavigationLayer(ground,&blockedGid,&highCostGid);
 
-
     // Initialize the costSoFar with all elements set to 0
     costSoFar = std::vector<std::vector<int>>(map->GetMapSizeInTiles().getX(), std::vector<int>(map->GetMapSizeInTiles().getY(), 0));
 }
@@ -84,11 +83,10 @@ void Pathfinding::DrawPath() {
         Vector2D pathTileWorld = map->MapToWorld(pathTile.getX(), pathTile.getY());
         Engine::GetInstance().render.get()->DrawTexture(tileX, pathTileWorld.getX(), pathTileWorld.getY());
     }
-
 }
 
-bool Pathfinding::IsWalkable(int x, int y) {
-
+bool Pathfinding::IsWalkable(int x, int y) 
+{
     bool isWalkable = false;
 
     // Return true only if x and y are within map limits
