@@ -52,9 +52,6 @@ bool Player::Start()
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
 
-
-
-
 	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	texW = 32;
