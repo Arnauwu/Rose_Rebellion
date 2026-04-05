@@ -23,10 +23,8 @@ public:
     void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
 
 private:
-    void PerformPathfinding();
     void GetPhysicsValues() override;
     void Move() override;
-    void CheckOuterCorners();
     void RotateFacing();
     void ApplyPhysics() override;
     void Draw(float dt);

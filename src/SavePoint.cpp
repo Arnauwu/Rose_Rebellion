@@ -39,8 +39,10 @@ bool SavePoint::Update(float dt) {
 	return true;
 }
 
-bool SavePoint::CleanUp() {
+bool SavePoint::CleanUp() 
+{
 	Engine::GetInstance().textures->UnLoad(texture);
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	return true;
 }
 

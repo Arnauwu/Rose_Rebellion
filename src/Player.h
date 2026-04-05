@@ -62,7 +62,7 @@ private:
 	void CameraFollows();
 
 	// DevTools / Debug
-	void Teleport();
+	void DevTools(float dt);
 
 public:
 
@@ -118,8 +118,15 @@ public:
 
 	// Dash
 	bool dashUnlocked = true;
-	float dashForce = 150.0f;
-	bool hasDashed = false; // Flag to check if the player has dashed
+	bool isDashing = false; // Flag to check if the player has dashed
+	float dashForce = 15.0f;
+
+	Timer dashTimer;
+	float dashDurationMS = 300;
+
+	Timer dashCooldownTimer;
+	float dashCooldownMS = 300;
+
 
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
