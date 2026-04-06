@@ -7,6 +7,7 @@
 #include <SDL3/SDL.h>
 #include "Timer.h"
 #include <iostream>
+#include "CameraController.h"
 
 
 struct SDL_Texture;
@@ -151,6 +152,7 @@ private:
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 	AnimationSet anims;
+	CameraController cameraController;
 	Vector2D respawnPosition;
 
 };

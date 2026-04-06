@@ -67,8 +67,9 @@ bool Player::Start()
 	// Initialize audio
 	//pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
-
-	Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
+	
+	cameraController.SetSmoothSpeed(0.15f);      // 0.05f - 0.3f
+	cameraController.SetVerticalOffset(-25.0f);  // Offset vertixal 
 
 	respawnPosition = position;
 
@@ -429,8 +430,16 @@ void Player::Draw(float dt)
 
 void Player::CameraFollows()
 {
-	// Center the camera on the player
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
+	int screenW = Engine::GetInstance().render->camera.w;
+	int screenH = Engine::GetInstance().render->camera.h;
+
+	cameraController.Update(0, position, screenW, screenH, mapSize.getX(), mapSize.getY());
+
+	float camX, camY;
+	cameraController.GetCameraPosition(camX, camY);
+	Engine::GetInstance().render->camera.x = (int)camX;
+	Engine::GetInstance().render->camera.y = (int)camY;
 	
 	float limitLeft = Engine::GetInstance().render->camera.w / 4;
 	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
