@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="29">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="37">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3155,6 +3155,17 @@
    <tile gid="49"/>
   </data>
  </layer>
+ <objectgroup id="14" name="SavePoint">
+  <properties>
+   <property name="SavePoint" type="bool" value="true"/>
+  </properties>
+  <object id="31" x="373" y="698">
+   <point/>
+  </object>
+  <object id="32" x="840" y="700">
+   <point/>
+  </object>
+ </objectgroup>
  <objectgroup id="13" name="Door">
   <properties>
    <property name="Door" type="bool" value="true"/>
@@ -3172,12 +3183,19 @@
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="8" x="0" y="704" width="542.182" height="64"/>
+  <object id="8" x="0" y="704" width="544" height="64"/>
   <object id="9" x="641.5" y="704" width="1406.5" height="64"/>
   <object id="10" x="225.5" y="544" width="252" height="32"/>
-  <object id="11" x="354.5" y="384" width="123.5" height="32"/>
+  <object id="11" x="355.625" y="384" width="123.281" height="1.5"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#ff0000" id="15" name="Danger">
+  <properties>
+   <property name="Danger" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="35" x="544" y="736" width="96" height="32"/>
+ </objectgroup>
+ <objectgroup color="#ffff00" id="7" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -3186,8 +3204,9 @@
   <object id="14" x="1984" y="0" width="64" height="704"/>
   <object id="16" x="533.333" y="705.273" width="10.6667" height="61.3939"/>
   <object id="17" x="640" y="705.5" width="16.6667" height="62.5"/>
-  <object id="18" x="352" y="386.5" width="128" height="56.75"/>
+  <object id="18" x="478.875" y="385.594" width="1.125" height="61.2847"/>
   <object id="19" x="224" y="548.5" width="256" height="57.5"/>
+  <object id="30" x="351.75" y="385.593" width="2.25" height="59.3132"/>
  </objectgroup>
  <objectgroup color="#00aaff" id="8" name="Ceiling">
   <properties>
@@ -3195,7 +3214,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
   <object id="20" x="64" y="-0.459506" width="1920" height="64.919"/>
-  <object id="21" x="354.667" y="416" width="122.667" height="32"/>
+  <object id="21" x="353.113" y="446.375" width="124.721" height="1.625"/>
   <object id="22" x="227.5" y="576" width="249" height="32"/>
  </objectgroup>
  <objectgroup id="9" name="CircleTest">
@@ -3215,6 +3234,9 @@
    <point/>
   </object>
   <object id="27" name="Test" type="Test" x="445.437" y="533.903">
+   <point/>
+  </object>
+  <object id="29" name="Spider" type="Spider" x="375.897" y="359.871">
    <point/>
   </object>
  </objectgroup>

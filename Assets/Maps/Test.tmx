@@ -3176,7 +3176,7 @@
   <object id="11" x="354.5" y="384" width="123.5" height="32"/>
   <object id="32" x="0" y="704" width="2048" height="64"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#ffff00" id="7" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
