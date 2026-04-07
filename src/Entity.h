@@ -9,6 +9,7 @@ enum class EntityType
 	ITEM,
 	ENEMY,
 	SPIDER,
+	CUCAFERA,
 	SAVEPOINT,
 	UNKNOWN
 };
@@ -77,4 +78,5 @@ public:
 	// want our Entity class, maybe it's not renderable...
 	Vector2D position;
 	bool renderable = true;
+	bool lookingRight = true; //False Left -- True Right 
 };

@@ -13,10 +13,11 @@
 #include "EntityManager.h"
 #include "Test.h"
 #include "SpiderEnemy.h"
+#include "Cucafera.h"
+
 #include "SavePoint.h"
 #include "Item.h"
 
-#include "Test.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -666,6 +667,11 @@ void Map::SpawnEntities()
                     std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
                     spider->position = Vector2D(x, y);
                 }
+				else if (entityType == std::string("Cucafera"))
+				{
+					std::shared_ptr<Cucafera> cucafera = std::dynamic_pointer_cast<Cucafera>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA));
+					cucafera->position = Vector2D(x, y);
+				}
             }
         }
     }

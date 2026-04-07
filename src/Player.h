@@ -73,7 +73,6 @@ public:
 	// Texture
 	SDL_Texture* texture = nullptr;
 	int texW, texH;
-	bool lookingRight = true; //False Left -- True Right 
 
 	/*--- PLAYER VARIABLES ---*/
 	//Live variables
