@@ -10,6 +10,7 @@ enum class EntityType
 	ENEMY,
 	SPIDER,
 	CUCAFERA,
+	SWORD_KNIGHT,
 	SAVEPOINT,
 	UNKNOWN
 };

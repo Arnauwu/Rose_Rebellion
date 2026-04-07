@@ -141,6 +141,9 @@
     <ClCompile Include="src\Cucafera.cpp">
       <Filter>Source Files\Game\Enemies</Filter>
     </ClCompile>
+    <ClCompile Include="src\SwordKnight.cpp">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -235,6 +238,9 @@
       <Filter>Source Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\Cucafera.h">
+      <Filter>Source Files\Game\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SwordKnight.h">
       <Filter>Source Files\Game\Enemies</Filter>
     </ClInclude>
   </ItemGroup>

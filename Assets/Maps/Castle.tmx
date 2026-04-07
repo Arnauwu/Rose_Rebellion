@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="37">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="37">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3208,7 +3208,7 @@
   <object id="25" name="Player" type="Player" x="906.498" y="694.947">
    <point/>
   </object>
-  <object id="26" name="Test" type="Test" x="1629.15" y="682.974">
+  <object id="26" name="SwordKnight" type="SwordKnight" x="1629.15" y="682.974">
    <point/>
   </object>
   <object id="27" name="Cucafera" type="Cucafera" x="330.285" y="685.418">
