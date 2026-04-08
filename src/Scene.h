@@ -96,6 +96,15 @@ private:
 	void LoadMainMenu();
 	void UpdateMainMenu(float dt);
 	void UnloadMainMenu();
+	void HandleMainMenuUIEvents(UIElement* uiElement);
+	
+	//Show
+	void ShowSettings(bool show);
+	void ShowCredits(bool show);
+	void LoadPauseUI();
+	void ShowPauseMenu(bool show);
+	void ShowPauseSettings(bool show);
+	void HandlePauseMenuUIEvents(UIElement* uiElement);
 
 	//Levels
 	void LoadCastle();
@@ -131,6 +140,9 @@ private:
 	std::vector<std::shared_ptr<UIElement>> settingsMenuElements;
 	std::vector<std::shared_ptr<UIElement>> creditsMenuElements;
 	std::vector<std::shared_ptr<UIElement>> pauseMenuElements;
+
+	bool exitGame = false;
+
 
 	int windowW = 0;
 	int windowH = 0;
