@@ -122,6 +122,7 @@
     </ClCompile>
     <ClCompile Include="src\CameraController.cpp">
       <Filter>Source Files</Filter>
+	</ClCompile>
     <ClCompile Include="src\SpiderEnemy.cpp">
       <Filter>Source Files\Game\Enemies</Filter>
 	</ClCompile>
