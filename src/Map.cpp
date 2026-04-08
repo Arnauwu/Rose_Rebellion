@@ -579,8 +579,19 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 	return ret;
 }
 
-MapLayer* Map::GetNavigationLayer(bool ground)
+MapLayer* Map::GetNavigationLayer(bool ground, int* blockedGID, int* highGID)
 {
+
+	for (const auto& tileset : mapData.tilesets)
+	{
+		if (tileset->name == "MapMetadata")
+		{
+			*blockedGID = tileset->firstGid;
+			*highGID = tileset->firstGid + 1;
+			break;
+		}
+	}
+
 	for (const auto& layer : mapData.layers) {
 		if (layer->properties.GetProperty("Navigation") != NULL &&
 			layer->properties.GetProperty("Navigation")->value)
@@ -636,6 +647,7 @@ void Map::SpawnEntities()
                     {
                         player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
                         player->position = Vector2D(x, y);
+                        //player->Start();
                     }
                     else // if player exists
                     {
@@ -647,6 +659,7 @@ void Map::SpawnEntities()
                 {
                     std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
                     test->position = Vector2D(x, y);
+                    //test->Start();
                 }
                 else if (entityType == std::string("Spider"))
                 {

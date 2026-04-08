@@ -92,7 +92,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 	if (entity != nullptr)
 	{
-		// Forzamos la inicialización si el manager ya está en marcha
+		// Forzamos la inicialización si el manager ya est?en marcha
 		entity->Awake();
 		entities.push_back(entity);
 	}

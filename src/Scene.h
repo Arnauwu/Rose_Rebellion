@@ -72,6 +72,7 @@ public:
 
 	std::shared_ptr<Player> player;
 
+	bool isGamePaused = false;
 
 private:
 	
