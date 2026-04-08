@@ -11,7 +11,6 @@
 #include "Scene.h"
 
 #include "EntityManager.h"
-#include "Test.h"
 #include "SpiderEnemy.h"
 #include "Cucafera.h"
 #include "SwordKnight.h"
@@ -656,12 +655,6 @@ void Map::SpawnEntities()
                         player->position = (Vector2D(x, y));
                     }
                     Engine::GetInstance().scene->SetPlayer(player);
-                }
-                else if (entityType == std::string("Test"))
-                {
-                    std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-                    test->position = Vector2D(x, y);
-                    //test->Start();
                 }
                 else if (entityType == std::string("Spider"))
                 {

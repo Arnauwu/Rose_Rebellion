@@ -59,6 +59,18 @@ public:
 		}
 	}
 
+	void TakeDamage(int damage)
+	{
+		if (godMode || isdead) return;
+
+		currentHealth -= damage;
+
+		if (currentHealth <= 0) {
+			currentHealth = 0;
+			isdead = true;
+		}
+	}
+
 	virtual void OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	};
@@ -71,13 +83,27 @@ public:
 
 	std::string name;
 	EntityType type;
+
 	int zOrder = 0; // zOrder(0) To know when to draw it
+	
 	bool active = true;
 	bool pendingToDelete = false;
 
-	// Possible properties, it depends on how generic we
-	// want our Entity class, maybe it's not renderable...
+
+	// Possible properties, it depends on how generic we want our Entity class
 	Vector2D position;
+	int maxHealth;
+	int currentHealth;
+
+	int damage;
+
+	//Death variables
+	bool isdead = false;
+
+	// GodMode
+	bool godMode = false;
+
+	// Draw
 	bool renderable = true;
 	bool lookingRight = true; //False Left -- True Right 
 };

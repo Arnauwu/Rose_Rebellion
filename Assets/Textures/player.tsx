@@ -61,10 +61,10 @@
    <frame tileid="53" duration="100"/>
    <frame tileid="54" duration="100"/>
    <frame tileid="55" duration="100"/>
-   <frame tileid="56" duration="100"/>
-   <frame tileid="57" duration="100"/>
-   <frame tileid="58" duration="100"/>
-   <frame tileid="59" duration="100"/>
+   <frame tileid="56" duration="200"/>
+   <frame tileid="57" duration="200"/>
+   <frame tileid="58" duration="200"/>
+   <frame tileid="59" duration="500"/>
   </animation>
  </tile>
  <tile id="60">

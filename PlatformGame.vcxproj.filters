@@ -117,9 +117,6 @@
     <ClCompile Include="src\Enemy.cpp">
       <Filter>Source Files\Game\Enemies</Filter>
     </ClCompile>
-    <ClCompile Include="src\Test.cpp">
-      <Filter>Source Files\Game\Enemies</Filter>
-    </ClCompile>
     <ClCompile Include="src\CameraController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -213,9 +210,6 @@
       <Filter>Source Files\Engine\Entities</Filter>
     </ClInclude>
     <ClInclude Include="src\Enemy.h">
-      <Filter>Source Files\Game\Enemies</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Test.h">
       <Filter>Source Files\Game\Enemies</Filter>
     </ClInclude>
     <ClInclude Include="src\CameraController.h" />

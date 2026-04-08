@@ -182,7 +182,6 @@ void Player::Respawn() {
 
 		isJumping = false;
 		isdead = false;
-		deathTimer = 0.0f;
 		anims.SetCurrent("idle");
 	}
 }
@@ -263,6 +262,7 @@ void Player::Attack(float dt)
 		int attackY = position.getY();
 
 		// Create the attack collider as a kinematic sensor(width 20, height 32)
+		damage = 10;
 		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, 20, 32, bodyType::KINEMATIC);
 		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
 		attackCollider->listener = this;
@@ -589,26 +589,6 @@ void Player::SetPosition(Vector2D pos)
 {
 	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
 }
-
-void Player::TakeDamage(int damage) {
-	if (godMode || isdead) return;
-
-	currentHealth -= damage;
-
-	if (currentHealth <= 0) {
-		currentHealth = 0;
-		isdead = true;
-	}
-}
-
-void Player::TakeHealth(int health) {
-	if (godMode || isdead) return;
-
-	if (currentHealth <= 80) {
-		currentHealth += health;
-	}
-}
-
 
 // DevTools
 

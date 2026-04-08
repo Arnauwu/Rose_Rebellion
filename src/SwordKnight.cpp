@@ -73,6 +73,9 @@ bool SwordKnight::Start()
 	vision = 10;
 	speed = 1.0f;
 
+	maxHealth = 50;
+	currentHealth = maxHealth;
+
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
@@ -89,7 +92,7 @@ bool SwordKnight::Update(float dt)
 
 	if (!active) return true;
 
-	if (Engine::GetInstance().scene->isGamePaused == false)
+	if (Engine::GetInstance().scene->isGamePaused == false && isdead == false)
 	{
 		if (pathFindingCooldown.ReadMSec() > 500)
 		{
@@ -100,6 +103,18 @@ bool SwordKnight::Update(float dt)
 		GetPhysicsValues();
 		Move();
 		ApplyPhysics();
+	}
+
+	if (isdead && anims.GetCurrentName() != "dead")
+	{
+		if (attackHitbox != nullptr)
+		{
+			Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
+			attackHitbox = nullptr;
+		}
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+		anims.SetCurrent("dead");
+		pbody->ctype = ColliderType::UNKNOWN;
 	}
 
 	Draw(dt);
@@ -267,6 +282,10 @@ void SwordKnight::Attack()
 void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
+	case ColliderType::PLAYER_ATTACK:
+		TakeDamage(physB->listener->damage);
+		break;
+
 	default:
 		break;
 	}

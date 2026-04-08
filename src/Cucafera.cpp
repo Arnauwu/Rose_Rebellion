@@ -60,6 +60,9 @@ bool Cucafera::Start()
 	vision = 10;
 	speed = 2.0f;
 
+	maxHealth = 30;
+	currentHealth = 30;
+
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
@@ -73,7 +76,7 @@ bool Cucafera::Update(float dt)
 
 	if (!active) return true;
 
-	if (Engine::GetInstance().scene->isGamePaused == false)
+	if (Engine::GetInstance().scene->isGamePaused == false && isdead == false)
 	{
 		if (pathFindingCooldown.ReadMSec() > 500)
 		{
@@ -84,6 +87,13 @@ bool Cucafera::Update(float dt)
 		GetPhysicsValues();
 		Move();
 		ApplyPhysics();
+	}
+	
+	if (isdead && anims.GetCurrentName() != "dead")
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
+		anims.SetCurrent("dead");
+		pbody->ctype = ColliderType::UNKNOWN;
 	}
 
 	Draw(dt);
@@ -239,9 +249,11 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::WALL:
 	case ColliderType::PLAYER:
 	case ColliderType::ENEMY:
-
-
 		isRolling = false;
+		break;
+
+	case ColliderType::PLAYER_ATTACK:
+		TakeDamage(physB->listener->damage);
 		break;
 
 	default:

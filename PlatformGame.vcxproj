@@ -168,7 +168,6 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\SpiderEnemy.cpp" />
     <ClCompile Include="src\SwordKnight.cpp" />
-    <ClCompile Include="src\Test.cpp" />
     <ClCompile Include="src\Textures.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UIButton.cpp" />
@@ -202,7 +201,6 @@
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\SpiderEnemy.h" />
     <ClInclude Include="src\SwordKnight.h" />
-    <ClInclude Include="src\Test.h" />
     <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\UIButton.h" />

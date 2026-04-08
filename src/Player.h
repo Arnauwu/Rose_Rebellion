@@ -51,10 +51,6 @@ private:
 	void Glide();
 	void Dash();
 
-	void TakeDamage(int damage);
-	void TakeHealth(int health);
-	void Died();
-
 	void Interact();
 
 	void ApplyPhysics();
@@ -66,8 +62,6 @@ private:
 	void DevTools(float dt);
 
 public:
-
-	int health; 
 	float speed = 4.0f;
 
 	// Texture
@@ -75,17 +69,10 @@ public:
 	int texW, texH;
 
 	/*--- PLAYER VARIABLES ---*/
-	//Live variables
-	int maxHealth = 100;
-	int currentHealth = 100;
-
 	// Physics
 	PhysBody* pbody = nullptr;
 
-	//Death variables
-	bool isdead = false;
-	float deathTimer = 0.0f;
-	float deathDelay = 1.0f; 
+
 
 	/*--- PLAYER STATES INFO --- */
 	// Ground
@@ -95,8 +82,7 @@ public:
 	// Wall
 	bool onWall = false;
 
-	// GodMode
-	bool godMode = false;
+
 
 	/*--- PLAYER SKILLS --- */
 	// Jump
