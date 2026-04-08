@@ -122,7 +122,9 @@
     </ClCompile>
     <ClCompile Include="src\SpiderEnemy.cpp">
       <Filter>Source Files\Game\Enemies</Filter>
-    <ClCompile Include="src\UIButton.cpp">
+	</ClCompile>
+
+	<ClCompile Include="src\UIButton.cpp">
       <Filter>Source Files\Utils\UI</Filter>
     </ClCompile>
     <ClCompile Include="src\UICheckBox.cpp">
@@ -210,7 +212,8 @@
     </ClInclude>
     <ClInclude Include="src\SpiderEnemy.h">
       <Filter>Source Files\Game\Enemies</Filter>
-    <ClInclude Include="src\UIButton.h">
+	</ClInclude>
+	<ClInclude Include="src\UIButton.h">
       <Filter>Source Files\Utils\UI</Filter>
     </ClInclude>
     <ClInclude Include="src\UICheckBox.h">
