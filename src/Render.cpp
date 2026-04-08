@@ -27,6 +27,12 @@ bool Render::Awake()
 	LOG("Create SDL rendering context");
 	bool ret = true;
 
+	if (TTF_Init() == -1)
+	{
+		LOG("SDL_ttf could not initialize! SDL_ttf Error: %s\n", SDL_GetError());
+		ret = false;
+	}
+
 	int scale = Engine::GetInstance().window->GetScale();
 	SDL_Window* window = Engine::GetInstance().window->window;
 
@@ -67,6 +73,13 @@ bool Render::Awake()
 bool Render::Start()
 {
 	LOG("render start");
+
+	font = TTF_OpenFont("Assets/Fonts/alagard.ttf", 24);
+	if (font == nullptr)
+	{
+		LOG("Failed to load font! SDL_ttf Error: %s\n", SDL_GetError());
+	}
+
 	// back background
 	if (!SDL_GetRenderViewport(renderer, &viewport))
 	{
@@ -98,6 +111,17 @@ bool Render::PostUpdate()
 bool Render::CleanUp()
 {
 	LOG("Destroying SDL render");
+
+	//Liberamos la fuente
+	if (font != nullptr)
+	{
+		TTF_CloseFont(font);
+		font = nullptr;
+	}
+
+	//Cerramos la librería
+	TTF_Quit();
+
 	SDL_DestroyRenderer(renderer);
 	return true;
 }
