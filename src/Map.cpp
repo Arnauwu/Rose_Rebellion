@@ -639,7 +639,7 @@ void Map::SpawnEntities()
                 float x = objectNode.attribute("x").as_float();
                 float y = objectNode.attribute("y").as_float();
 
-                if (entityType == std::string("Player"))
+                if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
                 {
                     std::shared_ptr<Player> player = Engine::GetInstance().scene->GetPlayer();
 

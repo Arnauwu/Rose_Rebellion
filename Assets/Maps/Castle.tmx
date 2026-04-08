@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="37">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="42">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3173,7 +3173,7 @@
   </object>
   <object id="30" x="1999.5" y="656.25" width="31" height="47.5">
    <properties>
-    <property name="TeleportTo" type="file" value="Test.tmx"/>
+    <property name="TeleportTo" type="file" value="MapTemplate.tmx"/>
    </properties>
   </object>
  </objectgroup>
@@ -3205,13 +3205,31 @@
   <object id="36" x="1988.08" y="-1.62617" width="61.1667" height="221.919"/>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
-  <object id="25" name="Player" type="Player" x="906.498" y="694.947">
+  <object id="25" name="Player" type="Player" x="958.498" y="696.947">
+   <point/>
+  </object>
+  <object id="37" name="Player" type="Player" x="958.498" y="696.947">
+   <properties>
+    <property name="OriginMap" value="Castle"/>
+   </properties>
    <point/>
   </object>
   <object id="26" name="Test" type="Test" x="1629.15" y="682.974">
    <point/>
   </object>
   <object id="27" name="Test" type="Test" x="330.285" y="685.418">
+   <point/>
+  </object>
+  <object id="40" name="Player" type="Player" x="104" y="694">
+   <properties>
+    <property name="OriginMap" value="Test"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="41" name="Player" type="Player" x="1940" y="696">
+   <properties>
+    <property name="OriginMap" value="MapTemplate"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
