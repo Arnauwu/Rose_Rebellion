@@ -30,8 +30,6 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 
-	
-
 	return ret;
 }
 
@@ -60,27 +58,9 @@ bool Scene::Update(float dt)
 		break;
 	case SceneID::MENU:
 		UpdateMainMenu(dt);
-
-		break;
-	case SceneID::CASTLE:
-		UpdateCastle(dt);
-
-		break;
-	case SceneID::LEVEL2:
-		UpdateLevel2(dt);
-
-		break;
-	case SceneID::LEVEL_TRANSITION:
-		UpdateLevelTransition(dt);
-
-		break;
-	case SceneID::WIN:
-		UpdateWin(dt);
-
 		break;
 	case SceneID::GAMEOVER:
 		UpdateGameOver(dt);
-
 		break;
 	default:
 		break;
@@ -114,12 +94,8 @@ bool Scene::PostUpdate()
 	case SceneID::MENU:
 
 		break;
-	case SceneID::CASTLE:
+	case SceneID::GAME:
 		PostUpdateCastle();
-
-		break;
-	case SceneID::LEVEL2:
-		PostUpdateLevel2();
 		break;
 	}
 
@@ -190,20 +166,9 @@ void Scene::LoadScene(SceneID newScene)
 		LoadMainMenu();
 
 		break;
-	case SceneID::CASTLE:
+	case SceneID::GAME:
 		LoadCastle();
 
-		break;
-	case SceneID::LEVEL2:
-		LoadLevel2();
-
-		break;
-	case SceneID::LEVEL_TRANSITION:
-		LoadLevelTransition();
-		break;
-	case SceneID::WIN:
-		LoadWin();
-		break;
 	case SceneID::GAMEOVER:
 		LoadGameOver();
 		break;
@@ -227,19 +192,6 @@ void Scene::UnloadCurrentScene() {
 		break;
 	case SceneID::MENU:
 		UnloadMainMenu();
-		break;
-
-	case SceneID::CASTLE:
-		UnloadCastle();
-		break;
-
-	case SceneID::LEVEL2:
-		UnloadLevel2();
-		break;
-	case SceneID::LEVEL_TRANSITION:
-		break;
-	case SceneID::WIN:
-		UnloadWin();
 		break;
 	case SceneID::GAMEOVER:
 		UnloadGameOver();
@@ -543,7 +495,7 @@ void Scene::HandleMainMenuUIEvents(UIElement* uiElement)
 	case 1: // PLAY
 		LOG("Boton Play presionado");
 		//Player::ResetSavedCheckpoint();
-		ChangeScene(SceneID::CASTLE);
+		ChangeScene(SceneID::GAME);
 		break;
 
 	case 2: // CONTINUE
@@ -738,7 +690,7 @@ void Scene::ShowCredits(bool show) {
 
 void Scene::LoadCastle()
 {
-	lastLevelPlayed = SceneID::CASTLE;
+	lastLevelPlayed = SceneID::GAME;
 	LoadMap("MapTemplate.tmx");
 	if (player != nullptr) {
 		player->position.setX(10);
@@ -749,7 +701,6 @@ void Scene::LoadCastle()
 void Scene::UpdateCastle(float dt)
 {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) {
-		ChangeScene(SceneID::LEVEL_TRANSITION);
 	}
 }
 
@@ -793,7 +744,6 @@ void Scene::UpdateLevelTransition(float dt) {
 	transitionTimer -= dt;
 	Engine::GetInstance().render->DrawText("NIVEL COMPLETADO - CARGANDO...", 100, 300, 600, 50, { 0,255,0,255 });
 
-	if (transitionTimer <= 0.0f) ChangeScene(SceneID::LEVEL2);
 }
 
 void Scene::LoadGameOver() {
