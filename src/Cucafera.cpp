@@ -92,6 +92,7 @@ bool Cucafera::Update(float dt)
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
+		anims.GetAnim("dead")->SetLoop(false);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 	}

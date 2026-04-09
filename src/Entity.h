@@ -92,6 +92,8 @@ public:
 
 	// Possible properties, it depends on how generic we want our Entity class
 	Vector2D position;
+
+
 	int maxHealth;
 	int currentHealth;
 

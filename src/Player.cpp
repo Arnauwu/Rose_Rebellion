@@ -45,7 +45,8 @@ bool Player::Start()
 													 {24,"idle"},
 													 {36,"attack" },
 													 {48,"death" } ,
-													 {60,"jump"}
+													 {60,"jump"},
+													 {72,"fall" }
 	};
 	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
 	anims.SetCurrent("front");
@@ -67,7 +68,10 @@ bool Player::Start()
 	// Initialize audio
 	//pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
-	
+	maxHealth = 100;
+	currentHealth = maxHealth;
+
+
 	cameraController.SetSmoothSpeed(0.15f);      // 0.05f - 0.3f
 	cameraController.SetVerticalOffset(-25.0f);  // Offset vertixal 
 
@@ -80,14 +84,12 @@ bool Player::Update(float dt)
 {
 	if (pbody == nullptr) return true;
 
-	if (Engine::GetInstance().scene->isGamePaused == false)
+	if (Engine::GetInstance().scene->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
 		
 		Move();
 		
-		CameraFollows();
-
 		Jump(dt);
 
 		Attack(dt);
@@ -98,6 +100,21 @@ bool Player::Update(float dt)
 	
 		ApplyPhysics();
 	}
+
+	if (isdead && anims.GetCurrentName() != "death")
+	{
+		anims.GetAnim("death")->SetLoop(false);
+		anims.SetCurrent("death");
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+		if (attackCollider != nullptr)
+		{
+			Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+			attackCollider = nullptr;
+		}
+		
+	}
+
+	CameraFollows();
 
 	Draw(dt);
 
@@ -125,7 +142,10 @@ bool Player::Update(float dt)
 
 bool Player::PostUpdate()
 {
-	Interact();
+	if (Engine::GetInstance().scene->isGamePaused == false && !isdead)
+	{
+		Interact();
+	}
 	return true;
 }
 
@@ -143,7 +163,7 @@ void Player::Move() {
 	{
 		velocity.x = -speed;
 		lookingRight = false;
-		if (anims.GetCurrentName() != "jump")
+		if (anims.GetCurrentName() != "jump" && anims.GetCurrentName() != "attack")
 		{
 			anims.SetCurrent("move_left");
 		}
@@ -153,21 +173,22 @@ void Player::Move() {
 	{
 		velocity.x = speed;
 		lookingRight = true;
-		if (anims.GetCurrentName() != "jump")
+		if (anims.GetCurrentName() != "jump" && anims.GetCurrentName() != "attack")
 		{
 			anims.SetCurrent("move_right");
 		}
 	}
 	else
 	{
-		if (anims.GetCurrentName() != "jump")
+		if (anims.GetCurrentName() != "jump" && anims.GetCurrentName() != "attack")
 		{
 			anims.SetCurrent("idle");
 		}
 	}
 }
 
-void Player::Respawn() {
+void Player::Respawn() 
+{
 	if (isdead) {
 		// Clean Attack 
 		isAttacking = false;
@@ -254,6 +275,7 @@ void Player::Attack(float dt)
 	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
 		isAttacking = true;
+		anims.SetCurrent("attack");
 		currentAttackTime = 0.0f;
 
 		// Calculate the collider's position based on the direction the player is facing
@@ -286,6 +308,7 @@ void Player::Attack(float dt)
 		if (currentAttackTime >= attackDuration)
 		{
 			isAttacking = false;
+			anims.SetCurrent("idle");
 
 			// Destroy the collider
 			if (attackCollider != nullptr)
@@ -381,6 +404,11 @@ void Player::ApplyPhysics() {
 			LOG("Gliding");
 			velocity.y = maxFallSpeed;
 		}
+	}
+
+	if (velocity.y > 10 && anims.GetCurrentName() != "fall")
+	{
+		anims.SetCurrent("fall");
 	}
 
 	// Apply velocity via helper
@@ -537,7 +565,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		respawnPosition = Vector2D((float)spX, (float)spY);
 		break;
 	}
-
+	case ColliderType::ENEMY:
+		TakeDamage(10); // Contact Damage
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;

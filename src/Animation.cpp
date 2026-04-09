@@ -144,3 +144,8 @@ const std::string& AnimationSet::GetCurrentName() const {
 bool AnimationSet::Has(const std::string& name) const {
     return clips_.find(name) != clips_.end();
 }
+
+Animation* AnimationSet::GetAnim(std::string name)
+{
+    return &clips_.find(name)->second;
+}

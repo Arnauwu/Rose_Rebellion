@@ -113,6 +113,8 @@ bool SwordKnight::Update(float dt)
 			attackHitbox = nullptr;
 		}
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+		anims.GetAnim("dead")->SetLoop(false);
+
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 	}
