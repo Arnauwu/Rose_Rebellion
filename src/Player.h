@@ -7,6 +7,7 @@
 #include <SDL3/SDL.h>
 #include "Timer.h"
 #include <iostream>
+#include "CameraController.h"
 
 
 struct SDL_Texture;
@@ -50,10 +51,6 @@ private:
 	void Glide();
 	void Dash();
 
-	void TakeDamage(int damage);
-	void TakeHealth(int health);
-	void Died();
-
 	void Interact();
 
 	void ApplyPhysics();
@@ -62,30 +59,20 @@ private:
 	void CameraFollows();
 
 	// DevTools / Debug
-	void Teleport();
+	void DevTools(float dt);
 
 public:
-
-	int health; 
 	float speed = 4.0f;
 
 	// Texture
 	SDL_Texture* texture = nullptr;
 	int texW, texH;
-	bool lookingRight = true; //False Left -- True Right 
 
 	/*--- PLAYER VARIABLES ---*/
-	//Live variables
-	int maxHealth = 100;
-	int currentHealth = 100;
-
 	// Physics
 	PhysBody* pbody = nullptr;
 
-	//Death variables
-	bool isdead = false;
-	float deathTimer = 0.0f;
-	float deathDelay = 1.0f; 
+
 
 	/*--- PLAYER STATES INFO --- */
 	// Ground
@@ -95,8 +82,7 @@ public:
 	// Wall
 	bool onWall = false;
 
-	// GodMode
-	bool godMode = false;
+
 
 	/*--- PLAYER SKILLS --- */
 	// Jump
@@ -118,8 +104,15 @@ public:
 
 	// Dash
 	bool dashUnlocked = true;
-	float dashForce = 150.0f;
-	bool hasDashed = false; // Flag to check if the player has dashed
+	bool isDashing = false; // Flag to check if the player has dashed
+	float dashForce = 15.0f;
+
+	Timer dashTimer;
+	float dashDurationMS = 300;
+
+	Timer dashCooldownTimer;
+	float dashCooldownMS = 300;
+
 
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
@@ -144,6 +137,7 @@ private:
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 	AnimationSet anims;
+	CameraController cameraController;
 	Vector2D respawnPosition;
 
 };

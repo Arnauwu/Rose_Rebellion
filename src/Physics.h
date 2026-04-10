@@ -34,6 +34,7 @@ enum class ColliderType {
     AIR,
     DANGER,
     ENEMY,
+    ENEMY_ATTACK,
     SAVEPOINT,
     DOOR,
     UNKNOWN

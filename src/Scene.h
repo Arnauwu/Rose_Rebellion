@@ -65,6 +65,9 @@ public:
 	SceneID currentScene = SceneID::INTRO; // Start in INTRO
 	SceneID lastLevelPlayed = SceneID::CASTLE;
 
+	std::string lastMap;
+	std::string currentMap;
+
 	SDL_Texture* introTexture = nullptr;
 	SDL_Texture* menuBackground = nullptr;
 	SDL_Texture* gameOverTexture = nullptr;
@@ -72,6 +75,7 @@ public:
 
 	std::shared_ptr<Player> player;
 
+	bool isGamePaused = false;
 
 private:
 	

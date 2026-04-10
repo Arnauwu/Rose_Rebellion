@@ -8,13 +8,14 @@
 
 struct SDL_Texture;
 
-class TestEnemy : public Enemy
+class SwordKnight : public Enemy
 {
 public:
 
-	TestEnemy();
-	virtual ~TestEnemy();
+	SwordKnight();
+	virtual ~SwordKnight();
 	bool Awake();
+	bool CleanUp() override;
 	bool Start();
 	bool Update(float dt);
 	void OnCollision(PhysBody* physA, PhysBody* physB);
@@ -26,11 +27,18 @@ private:
 	void Move() override;
 	void ApplyPhysics() override;
 	void Draw(float dt);
-	Vector2D GetTilePos();
+
+	void Attack();
 
 public:
 
 	//Declare enemy parameters
-	bool onGround = false;
-	int splashSoundId;
+	bool isAttacking = false;
+	Timer startAttack; // Windup
+	Timer attackDuration; // Hitbox Duration
+	Timer attackCooldown;
+
+	PhysBody* attackHitbox = nullptr;
+
+	int deathSoundId;
 };

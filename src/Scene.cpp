@@ -50,6 +50,9 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN)
+		isGamePaused = !isGamePaused;
+
 	switch (currentScene)
 	{
 	case SceneID::INTRO:
@@ -286,7 +289,7 @@ void Scene::UnloadIntro()
 }
 
 // *********************************************
-//					MENU 
+//					MENU?
 // *********************************************
 
 void Scene::LoadMainMenu()
@@ -319,7 +322,7 @@ void Scene::UnloadMainMenu()
 void Scene::LoadCastle()
 {
 	lastLevelPlayed = SceneID::CASTLE;
-	LoadMap("MapTemplate.tmx");
+	LoadMap("Castle.tmx");
 	if (player != nullptr) {
 		player->position.setX(10);
 		player->position.setY(10);

@@ -16,7 +16,7 @@ bool SavePoint::Awake(){
 }
 
 bool SavePoint::Start() {
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player1.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/GoldCoin.png");
 	//std::unordered_map<int, std::string>aliase = { {0,"off"},{1,"on"} };
 
 	// Savepoint sensor: Activates when the player passes through it. The physics engine sends an OnCollision / OnTrigger notification
@@ -39,8 +39,10 @@ bool SavePoint::Update(float dt) {
 	return true;
 }
 
-bool SavePoint::CleanUp() {
+bool SavePoint::CleanUp() 
+{
 	Engine::GetInstance().textures->UnLoad(texture);
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	return true;
 }
 
@@ -49,5 +51,6 @@ void SavePoint::Activate() {
 	if (!isActivated) {
 		isActivated = true;
 		LOG("SavePoint Activated");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/test.png");
 	}
 }

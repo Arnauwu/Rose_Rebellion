@@ -5,6 +5,7 @@
 #include "math.h"
 #include <SDL3/SDL_keycode.h>
 #include "Render.h"
+#include "Scene.h"
 #include "Player.h"
 #include "Window.h"
 #include <vector>
@@ -39,6 +40,11 @@ bool Physics::Start()
 bool Physics::PreUpdate()
 {
     bool ret = true;
+
+    if (Engine::GetInstance().scene->isGamePaused == true)
+    {
+        return ret;
+    }
 
     // Step (update) the World
     // Get the dt from the engine. Note that dt is in milliseconds and Box2D steps in seconds
@@ -436,7 +442,7 @@ void PhysBody::SetCollisionsActive(bool active)
         // We take one
         b2Body_GetShapes(body, &shapeId, 1);
 
-        // aquí ya puedes tocar el filtro
+        // aqu?ya puedes tocar el filtro
         b2Filter filter = b2Shape_GetFilter(shapeId);
         if(active) filter.maskBits = 0xFFFF;              // does NOT collide
         else filter.maskBits = 0x0000;			  // collision with everything

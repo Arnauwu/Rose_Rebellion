@@ -11,12 +11,14 @@
 #include "Scene.h"
 
 #include "EntityManager.h"
-#include "Test.h"
 #include "SpiderEnemy.h"
+#include "Cucafera.h"
+#include "SwordKnight.h"
+#include "ShieldKnight.h"
+
 #include "SavePoint.h"
 #include "Item.h"
 
-#include "Test.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -579,8 +581,19 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 	return ret;
 }
 
-MapLayer* Map::GetNavigationLayer(bool ground)
+MapLayer* Map::GetNavigationLayer(bool ground, int* blockedGID, int* highGID)
 {
+
+	for (const auto& tileset : mapData.tilesets)
+	{
+		if (tileset->name == "MapMetadata")
+		{
+			*blockedGID = tileset->firstGid;
+			*highGID = tileset->firstGid + 1;
+			break;
+		}
+	}
+
 	for (const auto& layer : mapData.layers) {
 		if (layer->properties.GetProperty("Navigation") != NULL &&
 			layer->properties.GetProperty("Navigation")->value)
@@ -628,7 +641,7 @@ void Map::SpawnEntities()
                 float x = objectNode.attribute("x").as_float();
                 float y = objectNode.attribute("y").as_float();
 
-                if (entityType == std::string("Player"))
+                if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
                 {
                     std::shared_ptr<Player> player = Engine::GetInstance().scene->GetPlayer();
 
@@ -636,6 +649,7 @@ void Map::SpawnEntities()
                     {
                         player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
                         player->position = Vector2D(x, y);
+                        //player->Start();
                     }
                     else // if player exists
                     {
@@ -643,16 +657,26 @@ void Map::SpawnEntities()
                     }
                     Engine::GetInstance().scene->SetPlayer(player);
                 }
-                else if (entityType == std::string("Test"))
-                {
-                    std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-                    test->position = Vector2D(x, y);
-                }
                 else if (entityType == std::string("Spider"))
                 {
                     std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
                     spider->position = Vector2D(x, y);
                 }
+				else if (entityType == std::string("Cucafera"))
+				{
+					std::shared_ptr<Cucafera> cucafera = std::dynamic_pointer_cast<Cucafera>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA));
+					cucafera->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("SwordKnight"))
+				{
+					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
+					swordKnight->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("ShieldKnight"))
+				{
+					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
+					shieldKnight->position = Vector2D(x, y);
+				}
             }
         }
     }
@@ -685,70 +709,6 @@ void Map::SpawnEntities()
     //        }
     //    }
     //}
-	for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
-	{
-		if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
-		{
-			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
-			{
-				std::string entityType = objectNode.attribute("type").as_string();
-				float x = objectNode.attribute("x").as_float();
-				float y = objectNode.attribute("y").as_float();
-
-				if (entityType == std::string("Player"))
-				{
-					std::shared_ptr<Player> player = Engine::GetInstance().scene->GetPlayer();
-
-					if (player == NULL) //if player doesnt exist
-					{
-						player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
-						player->position = Vector2D(x, y);
-						player->Start();
-					}
-					else // if player exists
-					{
-						player->position = (Vector2D(x, y));
-					}
-					Engine::GetInstance().scene->SetPlayer(player);
-				}
-				else if (entityType == std::string("Test"))
-				{
-					std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-					test->position = Vector2D(x, y);
-					test->Start();
-				}
-			}
-		}
-	}
-	//for (const auto& mapLayer : mapData.layers)
-	//{
-	//    for (int i = 0; i < mapData.width; i++)
-	//    {
-	//        for (int j = 0; j < mapData.height; j++)
-	//        {
-	//            //Get the gid from tile
-	//            uint32_t gid = mapLayer->Get(i, j);
-
-	//            //Check if the gid is different from 0 - some tiles are empty
-	//            if (gid != 0)
-	//            {
-	//                TileSet* tileSet = GetTilesetFromTileId(gid);
-
-	//                if (tileSet != nullptr)
-	//                {
-	//                    // If it's a goldcoin
-	//                    if (tileSet->name == "goldCoin")
-	//                    {
-	//                        // Create new Coin
-	//                        std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-	//                        item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
-	//                    }
-	//                }
-
-	//            }
-	//        }
-	//    }
-	//}
 }
 
 std::string Map::DoorInfo(PhysBody* door)
