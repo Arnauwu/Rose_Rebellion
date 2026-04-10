@@ -1,4 +1,4 @@
-#include "SwordKnight.h"
+#include "ShieldKnight.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -12,22 +12,22 @@
 
 
 
-SwordKnight::SwordKnight() : Enemy(EntityType::SWORD_KNIGHT)
+ShieldKnight::ShieldKnight() : Enemy(EntityType::SHIELD_KNIGHT)
 {
 	name = "SwordKnight";
 }
 
-SwordKnight::~SwordKnight() {
+ShieldKnight::~ShieldKnight() {
 
 }
 
-bool SwordKnight::Awake() {
+bool ShieldKnight::Awake() {
 	return true;
 }
 
-bool SwordKnight::CleanUp()
+bool ShieldKnight::CleanUp()
 {
-	LOG("Cleanup SwordKnight");
+	LOG("Cleanup ShieldKnight");
 	active = false;
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().physics->DeletePhysBody(pbody);
@@ -38,7 +38,7 @@ bool SwordKnight::CleanUp()
 	return true;
 }
 
-bool SwordKnight::Start()
+bool ShieldKnight::Start()
 {
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{8,"hurt"},{16,"dead"} };
 	anims.LoadFromTSX("Assets/Textures/Cucafera.tsx", aliases);
@@ -70,10 +70,10 @@ bool SwordKnight::Start()
 	pathFindingCooldown.Start();
 
 	//Stats
-	vision = 10;
-	speed = 1.0f;
+	vision = 15;
+	speed = 0.7f;
 
-	maxHealth = 50;
+	maxHealth = 100;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -87,7 +87,7 @@ bool SwordKnight::Start()
 	return true;
 }
 
-bool SwordKnight::Update(float dt)
+bool ShieldKnight::Update(float dt)
 {
 
 	if (!active) return true;
@@ -124,7 +124,7 @@ bool SwordKnight::Update(float dt)
 	return true;
 }
 
-void SwordKnight::PerformPathfinding()
+void ShieldKnight::PerformPathfinding()
 {
 	//Reset path
 	pathfinding->ResetPath(GetTilePos());
@@ -145,13 +145,13 @@ void SwordKnight::PerformPathfinding()
 	}
 }
 
-void SwordKnight::GetPhysicsValues() {
+void ShieldKnight::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	velocity = { 0, velocity.y };
 }
 
-void SwordKnight::Move() {
+void ShieldKnight::Move() {
 
 	Vector2D tilePos = GetTilePos();
 
@@ -162,7 +162,7 @@ void SwordKnight::Move() {
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 3 && isAttacking == false)
+	else if (playerTileDist >= 5 && isAttacking == false)
 	{
 		anims.SetCurrent("spin"); // TO DO: CHANGE TO WALK
 
@@ -201,14 +201,14 @@ void SwordKnight::Move() {
 	return;
 }
 
-void SwordKnight::ApplyPhysics() {
+void ShieldKnight::ApplyPhysics() {
 
 	// Apply velocity via helper
 	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
 }
 
-void SwordKnight::Draw(float dt)
+void ShieldKnight::Draw(float dt)
 {
 	if (Engine::GetInstance().scene->isGamePaused == false)
 	{
@@ -237,7 +237,7 @@ void SwordKnight::Draw(float dt)
 
 	//Draw the player using the texture and the current animation frame
 	Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
-	Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 10, 10);
+	Engine::GetInstance().render->SetColorMod(texture, r, g, b, 10, 10, 250);
 
 	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 1);
 
@@ -245,7 +245,7 @@ void SwordKnight::Draw(float dt)
 	delete r; delete g; delete b;
 }
 
-void SwordKnight::Attack()
+void ShieldKnight::Attack()
 {
 	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000)
 	{
@@ -265,7 +265,7 @@ void SwordKnight::Attack()
 	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr)
 	{
 		anims.SetCurrent("hurt"); //Attack
-		
+
 		//CreateHitbox
 		float attackX = position.getX();
 		float attackY = position.getY();
@@ -288,13 +288,22 @@ void SwordKnight::Attack()
 		attackDuration.Start();
 	}
 
+	if (lookingRight == false)
+	{
+		velocity.x = speed * 3;
+	}
+	else
+	{
+		velocity.x = -speed * 3;
+	}
+
 	return;
 }
 
 
 
 //Define OnCollision function for the enemy. 
-void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
+void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
@@ -306,7 +315,7 @@ void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void SwordKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void ShieldKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {
 	switch (physB->ctype)
 	{

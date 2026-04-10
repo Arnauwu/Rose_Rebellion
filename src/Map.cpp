@@ -14,6 +14,7 @@
 #include "SpiderEnemy.h"
 #include "Cucafera.h"
 #include "SwordKnight.h"
+#include "ShieldKnight.h"
 
 #include "SavePoint.h"
 #include "Item.h"
@@ -670,6 +671,11 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
 					swordKnight->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("ShieldKnight"))
+				{
+					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
+					shieldKnight->position = Vector2D(x, y);
 				}
             }
         }

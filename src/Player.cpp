@@ -564,10 +564,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		physB->GetPosition(spX, spY);
 		respawnPosition = Vector2D((float)spX, (float)spY);
 		break;
-	}
+	}  
 	case ColliderType::ENEMY:
 		TakeDamage(10); // Contact Damage
 		break;
+	case ColliderType::ENEMY_ATTACK:
+		TakeDamage(physB->listener->damage);
+			break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
