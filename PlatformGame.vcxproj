@@ -149,6 +149,7 @@
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
+    <ClCompile Include="src\Cucafera.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
@@ -165,8 +166,9 @@
     <ClCompile Include="src\Render.cpp" />
     <ClCompile Include="src\SavePoint.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\ShieldKnight.cpp" />
     <ClCompile Include="src\SpiderEnemy.cpp" />
-    <ClCompile Include="src\Test.cpp" />
+    <ClCompile Include="src\SwordKnight.cpp" />
     <ClCompile Include="src\Textures.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UIButton.cpp" />
@@ -180,6 +182,7 @@
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\CameraController.h" />
+    <ClInclude Include="src\Cucafera.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
@@ -197,8 +200,9 @@
     <ClInclude Include="src\Render.h" />
     <ClInclude Include="src\SavePoint.h" />
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\ShieldKnight.h" />
     <ClInclude Include="src\SpiderEnemy.h" />
-    <ClInclude Include="src\Test.h" />
+    <ClInclude Include="src\SwordKnight.h" />
     <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\UIButton.h" />
