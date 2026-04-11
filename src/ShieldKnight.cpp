@@ -336,8 +336,11 @@ void ShieldKnight::Attack()
 void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
+	if (physA == attackHitbox) { return; }
+
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
+		isKnockedback = true; // To DO:: Knockback Resistant/Inmune??
 		break;
 
 	default:

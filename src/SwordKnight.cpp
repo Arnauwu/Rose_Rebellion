@@ -324,11 +324,16 @@ void SwordKnight::Attack()
 
 
 //Define OnCollision function for the enemy. 
-void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
+void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) 
+{
+	if (physA == attackHitbox) { return; }
+
+
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
+		isKnockedback = true;
 		break;
 
 	default:

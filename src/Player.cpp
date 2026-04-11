@@ -539,6 +539,8 @@ bool Player::CleanUp()
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
+		if (physA == attackCollider) {  return; }
+
 	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead) {
@@ -602,6 +604,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY_ATTACK:
 		TakeDamage(physB->listener->damage);
+		isKnockedback = true;
 			break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
