@@ -72,6 +72,7 @@ bool SwordKnight::Start()
 	//Stats
 	vision = 10;
 	speed = 1.0f;
+	knockbackForce = 5.0f;
 
 	maxHealth = 50;
 	currentHealth = maxHealth;
@@ -102,6 +103,7 @@ bool SwordKnight::Update(float dt)
 
 		GetPhysicsValues();
 		Move();
+		Knockback();
 		ApplyPhysics();
 	}
 
@@ -199,6 +201,34 @@ void SwordKnight::Move() {
 		Attack();
 	}
 	return;
+}
+
+void SwordKnight::Knockback()
+{
+	if (isdead) return;
+
+	if (isKnockedback)
+	{
+		isAttacking = false;
+		anims.SetCurrent("hurt");
+		if (lookingRight)
+		{
+			velocity.x = knockbackForce;
+		}
+		else
+		{
+			velocity.x = -knockbackForce;
+		}
+	}
+	if (knockbackTime <= 0)
+	{
+		isKnockedback = false;
+		knockbackTime = 500.0f;
+	}
+	else
+	{
+		knockbackTime -= Engine::GetInstance().GetDt();
+	}
 }
 
 void SwordKnight::ApplyPhysics() {

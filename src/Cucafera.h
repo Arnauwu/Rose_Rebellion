@@ -24,6 +24,7 @@ private:
 	void PerformPathfinding();
 	void GetPhysicsValues() override;
 	void Move() override;
+	void Knockback() override;
 	void ApplyPhysics() override;
 	void Draw(float dt);
 	

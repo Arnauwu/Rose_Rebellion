@@ -30,6 +30,7 @@ protected:
 	void PerformPathfinding();
 	virtual void GetPhysicsValues() = 0;
 	virtual void Move() = 0;
+	virtual void Knockback() = 0;
 	virtual void ApplyPhysics() = 0;
 	void Draw(float dt);
 	Vector2D GetTilePos();
@@ -40,6 +41,9 @@ public:
 	int vision; //Max tile distance
 	float speed;
 	int playerTileDist = 999;
+	float knockbackForce;
+	bool isKnockedback = false;
+	float knockbackTime = 500.0f;
 
 	SDL_Texture* texture = NULL;
 	int texW, texH;

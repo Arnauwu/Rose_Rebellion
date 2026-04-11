@@ -72,6 +72,7 @@ bool ShieldKnight::Start()
 	//Stats
 	vision = 15;
 	speed = 0.7f;
+	knockbackForce = 2.0f;
 
 	maxHealth = 100;
 	currentHealth = maxHealth;
@@ -102,6 +103,7 @@ bool ShieldKnight::Update(float dt)
 
 		GetPhysicsValues();
 		Move();
+		Knockback();
 		ApplyPhysics();
 	}
 
@@ -199,6 +201,34 @@ void ShieldKnight::Move() {
 		Attack();
 	}
 	return;
+}
+
+void ShieldKnight::Knockback()
+{
+	if (isdead) return;
+
+	if (isKnockedback)
+	{
+		isAttacking = false;
+		anims.SetCurrent("hurt");
+		if (lookingRight)
+		{
+			velocity.x = knockbackForce;
+		}
+		else
+		{
+			velocity.x = -knockbackForce;
+		}
+	}
+	if (knockbackTime <= 0)
+	{
+		isKnockedback = false;
+		knockbackTime = 500.0f;
+	}
+	else
+	{
+		knockbackTime -= Engine::GetInstance().GetDt();
+	}
 }
 
 void ShieldKnight::ApplyPhysics() {
