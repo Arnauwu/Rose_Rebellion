@@ -35,9 +35,7 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
-	Vector2D lastSafePosition;
-	float safePositionTimer = 0.0f;
-	const float safePositionInterval = 0.2f; 
+
 private:
 
 	void GodModeMove(float dt);
@@ -57,6 +55,9 @@ private:
 	void Draw(float dt);
 
 	void CameraFollows();
+
+	// Unlocks
+	void UnlockCape();
 
 	// DevTools / Debug
 	void DevTools(float dt);
@@ -95,15 +96,15 @@ public:
 	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
 
 	// Double Jump
-	bool doubleJumpUnlocked = true; // TO DO: Change to false
+	bool doubleJumpUnlocked = false; 
 	bool secondJumpUsed = false;
 	
 	// Gliding
-	bool glideUnlocked = true; // TO DO: Change to false
+	bool glideUnlocked = false; 
 	bool isGliding = false; // Flag
 
 	// Dash
-	bool dashUnlocked = true;
+	bool dashUnlocked = false; 
 	bool isDashing = false; // Flag to check if the player has dashed
 	float dashForce = 15.0f;
 
@@ -133,10 +134,29 @@ public:
 	//Audio fx
 	//int pickCoinFxId;
 
+	// Last Postion
+	Vector2D lastSafePosition;
+	float safePositionTimer = 0.0f;
+	const float safePositionInterval = 0.2f;
+
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
+
 	AnimationSet anims;
+	int currentAnimPriority = 0;
+
+	/*	
+		Idle = 0
+		Move = 1
+		Jump = 2
+		Fall = 3
+		Attack = 4
+
+
+		Death = 99
+	*/
+
 	CameraController cameraController;
 	Vector2D respawnPosition;
 
