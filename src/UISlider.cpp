@@ -25,29 +25,45 @@ float UISlider::GetValue() const {
 }
 
 bool UISlider::Update(float dt) {
+    UIElement::Update(dt);
+    UpdateBarAndThumb();
     if (!visible) return false;
 
-    if (state != UIElementState::DISABLED) {
-        Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
+	if (state != UIElementState::DISABLED) {
+		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
 
-        bool mouseInside = (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w &&
-            mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h);
+		bool mouseInside = (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w &&
+			mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h);
 
-        if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
-            if (mouseInside || state == UIElementState::FOCUSED) {
-                state = UIElementState::FOCUSED;
-                float relativeX = (float)(mousePos.getX() - sliderBar.x - (thumb.w / 2));
-                float normalized = relativeX / (float)(sliderBar.w - thumb.w);
-                SetValue(normalized);
-                NotifyObserver();
-            }
-        }
-        else {
-            state = UIElementState::NORMAL;
-        }
-    }
+		
+		if (mouseInside && Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN) {
+			isDragging = true;
+			state = UIElementState::PRESSED;
+		}
 
-    return true;
+		if (isDragging && Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
+			state = UIElementState::PRESSED;
+
+			float relativeX = (float)(mousePos.getX() - sliderBar.x - (thumb.w / 2));
+			float normalized = relativeX / (float)(sliderBar.w - thumb.w);
+			SetValue(normalized);
+
+			NotifyObserver();
+		}
+
+		if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
+			isDragging = false;
+
+			if (mouseInside) state = UIElementState::FOCUSED;
+			else state = UIElementState::NORMAL;
+		}
+
+		if (!isDragging && Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_IDLE) {
+			if (mouseInside) state = UIElementState::FOCUSED;
+			else state = UIElementState::NORMAL;
+		}
+	}
+	return true;
 }
 
 void UISlider::Draw() const {

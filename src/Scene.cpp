@@ -368,9 +368,9 @@ void Scene::LoadMainMenu()
 	RecalculateBackgroundScale();
 
 	float wPerc = 0.25f; // 25% of the screen width
-	float hPerc = 0.08f; // 8% of the height of the screen.
-	float spacing = 0.11f; // 11% of spacing of the screen
-	float currentY = 0.5f;
+	float hPerc = 0.08f; // 8% of the top of the screen.
+	float spacing = 0.1f;
+	float currentY = 0.35f;
 
 	// MAIN MENU
 	auto btnPlay = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start Game", 0.5f, currentY, wPerc, hPerc, this);
@@ -462,6 +462,7 @@ void Scene::HandleMainMenuUIEvents(UIElement* uiElement)
 	case 3: // SETTINGS
 		LOG("Ir a Settings");
 		ShowSettings(true);
+		Engine::GetInstance().input->ClearMouseInput();
 		break;
 
 	case 5: // EXIT

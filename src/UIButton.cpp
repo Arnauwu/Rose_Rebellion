@@ -4,10 +4,10 @@
 #include "Audio.h"
 
 UIButton::UIButton(int id, float anchorX, float anchorY, float wPerc, float hPerc, const char* text)
-    : UIElement(UIElementType::BUTTON, id, anchorX, anchorY, wPerc, hPerc, text)
+	: UIElement(UIElementType::BUTTON, id, anchorX, anchorY, wPerc, hPerc, text)
 {
-    canClick = true;
-    drawBasic = false;
+	canClick = true;
+	drawBasic = false;
 }
 
 UIButton::~UIButton()
@@ -19,53 +19,44 @@ bool UIButton::Update(float dt)
 {
 	if (!visible) return false;
 
-    if (state != UIElementState::DISABLED)
-    {
-        // L16: TODO 3: Update the state of the GUiButton according to the mouse position
+	if (state != UIElementState::DISABLED)
+	{
+		// L16: TODO 3: Update the state of the GUiButton according to the mouse position
 		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
 
-        if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w &&
-            mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
+		if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w &&
+			mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
 
-            state = UIElementState::FOCUSED;
+			state = UIElementState::FOCUSED;
 
-            if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
-                state = UIElementState::PRESSED;
-            }
+			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
+				state = UIElementState::PRESSED;
+			}
 
-            if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
-                NotifyObserver();
-            }
-        }
-        else {
-            state = UIElementState::NORMAL;
-        }
+			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
+				NotifyObserver();
+			}
+		}
+		else {
+			state = UIElementState::NORMAL;
+		}
 	}
-
-	return false;
+	return true;
 }
 void UIButton::Draw() const
 {
-    if (!visible) return;
+	if (!visible) return;
 
-    // 1. Dibujar el fondo del botón según estado
-    SDL_Color color = { 100, 100, 100, 255 }; // Normal
-    if (state == UIElementState::FOCUSED) color = { 150, 150, 150, 255 };
-    if (state == UIElementState::PRESSED) color = { 200, 200, 200, 255 };
+	// 1. Dibujar el fondo del botón según estado
+	SDL_Color color = { 100, 100, 100, 255 }; // Normal
+	if (state == UIElementState::FOCUSED) color = { 150, 150, 150, 255 };
+	if (state == UIElementState::PRESSED) color = { 200, 200, 200, 255 };
 
-    Engine::GetInstance().render->DrawRectangle(bounds, color.r, color.g, color.b, color.a, true, false);
+	Engine::GetInstance().render->DrawRectangle(bounds, color.r, color.g, color.b, color.a, true, false);
 
-    if (!text.empty()) {
-        int padding = (int)(bounds.h * 0.2f);
-        Engine::GetInstance().render->DrawText(
-            text.c_str(),
-            bounds.x + padding,
-            bounds.y + padding,
-            bounds.w - (padding * 2),
-            bounds.h - (padding * 2),
-            { 255, 255, 255, 255 }
-        );
-    }
+	if (!text.empty()) {
+		Engine::GetInstance().render->DrawTextCentered(text.c_str(), bounds, { 255, 255, 255, 255 });
+	}
 }
 
 bool UIButton::CleanUp()

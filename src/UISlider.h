@@ -17,4 +17,6 @@ private:
 	float value = 0.5f;
 
 	void UpdateBarAndThumb();
+
+	bool isDragging = false;
 };

@@ -80,6 +80,16 @@ void UIManager::Draw() const
 		if (uiElement->visible) uiElement->Draw();
 	}
 }
+
+void UIManager::RecalculateAllUI()
+{
+	for (const auto& uiElement : UIElementsList)
+	{
+		if (uiElement != nullptr) {
+			uiElement->RecalculateBounds();
+		}
+	}
+}
 bool UIManager::CleanUp()
 {
 	for (const auto& uiElement : UIElementsList)

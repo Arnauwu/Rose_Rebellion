@@ -40,7 +40,8 @@ void UICheckBox::Draw() const {
         Engine::GetInstance().render->DrawRectangle(inner, 0, 255, 0, 255, true, false);
     }
 
-    Engine::GetInstance().render->DrawText(text.c_str(), bounds.x + bounds.w + 10, bounds.y, 100, bounds.h, { 255,255,255,255 });
+    int textX = bounds.x + bounds.w + (int)(bounds.w * 0.5f);
+    Engine::GetInstance().render->DrawText(text.c_str(), textX, bounds.y, 0, bounds.h, { 255,255,255,255 });
 }
 
 bool UICheckBox::CleanUp() {

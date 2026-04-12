@@ -431,6 +431,52 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 	return true;
 }
 
+bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color) const
+{
+	if (!font || !renderer || !text) return false;
+
+	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	if (!surface) return false;
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (!texture) {
+		SDL_DestroySurface(surface);
+		return false;
+	}
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	float padding = bounds.h * 0.2f;
+	float maxW = bounds.w - (padding * 2);
+	float maxH = bounds.h - (padding * 2);
+
+	float textRatio = (float)surface->w / (float)surface->h;
+	float boxRatio = maxW / maxH;
+
+	float finalW, finalH;
+
+	if (textRatio > boxRatio) {
+		finalW = maxW;
+		finalH = maxW / textRatio;
+	}
+	else {
+		finalH = maxH;
+		finalW = maxH * textRatio;
+	}
+
+	// 4. Centramos el texto exactamente en el medio del botón
+	float finalX = bounds.x + (bounds.w - finalW) / 2.0f;
+	float finalY = bounds.y + (bounds.h - finalH) / 2.0f;
+
+	SDL_FRect dstrect = { finalX, finalY, finalW, finalH };
+
+	SDL_RenderTexture(renderer, texture, nullptr, &dstrect);
+
+	SDL_DestroyTexture(texture);
+	SDL_DestroySurface(surface);
+
+	return true;
+}
 void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;

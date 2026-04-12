@@ -56,6 +56,8 @@ public:
 		return mouseButtons[id - 1];
 	}
 
+	void ClearMouseInput();
+
 	// Check if a certain window event happened
 	bool GetWindowEvent(EventWindow ev);
 

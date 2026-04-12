@@ -43,6 +43,12 @@ public:
 		section = { 0, 0, 0, 0 };
 	}
 
+	void SetPivot(float pX, float pY) {
+		pivotX = pX;
+		pivotY = pY;
+		RecalculateBounds();
+	}
+
 	void SetObserver(Module* module)
 	{
 		observer = module;
@@ -65,8 +71,14 @@ public:
 	SDL_Rect bounds;
 	SDL_Color color;
 
+	// Position and relative size variables
 	float anchorX = 0.5f;
 	float anchorY = 0.5f;
+
+	//Pivot variables(0.0 is left / up)
+	float pivotX = 0.5f;
+	float pivotY = 0.5f;
+
 	float relW = 0.1f;
 	float relH = 0.1f;
 

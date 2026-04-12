@@ -90,8 +90,7 @@ void Window::SetTitle(const char* new_title)
 
 void Window::GetWindowSize(int& width, int& height) const
 {
-	width = this->windowWidth;
-	height = this->windowHeight;
+	SDL_GetWindowSize(window, &width, &height);
 }
 
 int Window::GetScale() const
@@ -101,12 +100,14 @@ int Window::GetScale() const
 
 void Window::SetFullscreen(bool enabled)
 {
-	if (enabled)
-	{
-		SDL_SetWindowFullscreen(window, true);
-	}
-	else
-	{
+	if (enabled) {
+		SDL_SetWindowFullscreen(window, true); // If is full screen --> MouseGrab on windows
+		
+		SDL_SetWindowMouseGrab(window, true); 
+	} else {
 		SDL_SetWindowFullscreen(window, false);
+		
+		SDL_SetWindowMouseGrab(window, false); 
 	}
+	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 }

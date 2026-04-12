@@ -28,6 +28,7 @@ public:
 
 	void Draw() const;
 
+	void RecalculateAllUI();
 	// Additional methods
 	std::shared_ptr<UIElement> CreateUIElement(UIElementType type, int id, const char* text, float anchorX, float anchorY, float wPerc, float hPerc, Module* observer);
 

@@ -14,6 +14,7 @@ UIElement::UIElement(UIElementType type, int id, float anchorX, float anchorY, f
 {
 	color.r = 255; color.g = 255; color.b = 255;
 	texture = nullptr;
+
 	RecalculateBounds();
 }
 
@@ -25,12 +26,11 @@ void UIElement::RecalculateBounds()
 	bounds.w = (int)(screenW * relW);
 	bounds.h = (int)(screenH * relH);
 
-	bounds.x = (int)(screenW * anchorX) - (bounds.w / 2);
-	bounds.y = (int)(screenH * anchorY) - (bounds.h / 2);
+	bounds.x = (int)(screenW * anchorX) - (int)(bounds.w * pivotX);
+	bounds.y = (int)(screenH * anchorY) - (int)(bounds.h * pivotY);
 }
 
 bool UIElement::Update(float dt)
 {
-	RecalculateBounds();
 	return true;
 }
