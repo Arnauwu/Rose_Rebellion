@@ -74,7 +74,7 @@ bool Render::Start()
 {
 	LOG("render start");
 
-	font = TTF_OpenFont("Assets/Fonts/alagard.ttf", 24);
+	font = TTF_OpenFont("Assets/Fonts/LibreBaskerville-VariableFont_wght.ttf", 24);
 	if (font == nullptr)
 	{
 		LOG("Failed to load font! SDL_ttf Error: %s\n", SDL_GetError());

@@ -58,28 +58,23 @@ bool Scene::Update(float dt)
 		break;
 	case SceneID::MENU:
 		UpdateMainMenu(dt);
+
+		break;
+	case SceneID::GAME:
+		UpdateWin(dt);
+
 		break;
 	case SceneID::GAMEOVER:
 		UpdateGameOver(dt);
+
+		break;
+	case SceneID::WIN:
+		UpdateGameOver(dt);
+
 		break;
 	default:
 		break;
 	}
-
-	// Make the camera movement independent of framerate
-	float camSpeed = 1;
-
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		Engine::GetInstance().render->camera.y -= (int)ceil(camSpeed * dt);
-
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		Engine::GetInstance().render->camera.y += (int)ceil(camSpeed * dt);
-
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		Engine::GetInstance().render->camera.x -= (int)ceil(camSpeed * dt);
-	
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.x += (int)ceil(camSpeed * dt);
 
 	return true;
 }
@@ -91,9 +86,7 @@ bool Scene::PostUpdate()
 
 	switch (currentScene)
 	{
-	case SceneID::MENU:
 
-		break;
 	case SceneID::GAME:
 		PostUpdateCastle();
 		break;
@@ -121,11 +114,6 @@ bool Scene::CleanUp()
 	return true;
 }
 
-Vector2D Scene::GetPlayerPosition()
-{
-	return player->GetPosition();
-}
-
 void Scene::LoadMap(std::string mapFile)
 {
 
@@ -137,7 +125,7 @@ void Scene::LoadMap(std::string mapFile)
 	setNewMap = false;
 	
 	Engine::GetInstance().entityManager->CleanUp();
-	player = nullptr;
+	player = nullptr; 
 
 	Engine::GetInstance().map->CleanUp();
 	
@@ -172,6 +160,9 @@ void Scene::LoadScene(SceneID newScene)
 	case SceneID::GAMEOVER:
 		LoadGameOver();
 		break;
+	case SceneID::WIN:
+		LoadWin();
+		break;
 	}
 }
 
@@ -192,18 +183,54 @@ void Scene::UnloadCurrentScene() {
 		break;
 	case SceneID::MENU:
 		UnloadMainMenu();
+
+		break;
+	case SceneID::GAME:
+		// TO DO:
+
+		break;
+	case SceneID::WIN:
+		UnloadWin();
 		break;
 	case SceneID::GAMEOVER:
 		UnloadGameOver();
+
 		break;
 	}
-
 }
 
 // *********************************************
-// General Helpers
+//				General Helpers
 // *********************************************
 
+Vector2D Scene::GetPlayerPosition()
+{
+	if (player) return player->GetPosition();
+	else Vector2D(0, 0);
+}
+
+// MouseControl
+bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
+{
+	if (currentScene == SceneID::MENU)
+	{
+		HandleMainMenuUIEvents(uiElement);
+	}
+	
+	else if (currentScene == SceneID::GAME)
+	{
+		HandleGameMenuUIEvents(uiElement);
+	}
+
+	//else if (currentScene == SceneID::WIN)
+	//{
+	//	if (uiElement->id == 21) // MENU
+	//	{
+	//		ChangeScene(SceneID::MENU);
+	//	}
+	//}
+	return true;
+}
 
 
 // *********************************************
@@ -245,11 +272,13 @@ void Scene::UnloadIntro()
 }
 
 // *********************************************
-//					MENU?
+//					MENU 
 // *********************************************
 
 void Scene::LoadMainMenu()
 {
+	//menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/Fons_Exterior_Castell.png");
+
 	mainMenuElements.clear();
 	settingsMenuElements.clear();
 
@@ -266,6 +295,7 @@ void Scene::LoadMainMenu()
 	int mainX = (windowW / 2) - (btnW / 2);
 	int currentY = (int)(windowH * 0.4f);
 	
+	// ID 1. PLAY
 	auto btnPlay = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "PLAY", { mainX, currentY, btnW, btnH }, this);
 	mainMenuElements.push_back(btnPlay);
 	currentY += btnH + spacing; // Bajamos la Y para el siguiente botón
@@ -281,16 +311,11 @@ void Scene::LoadMainMenu()
 	mainMenuElements.push_back(btnSettings);
 	currentY += btnH + spacing;
 
-	// ID 4. CREDITS
-	auto btnCredits = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 4, "CREDITS", { mainX, currentY, btnW, btnH }, this);
-	mainMenuElements.push_back(btnCredits);
-	currentY += btnH + spacing;
-
 	// ID 5. EXIT
 	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 5, "EXIT", { mainX, currentY, btnW, btnH }, this);
 	mainMenuElements.push_back(btnExit);
 
-	// --- ELEMENTOS DEL MENÚ SETTINGS ---
+	// --- SETTING MENU ---
 
 	currentY = (int)(windowW * 0.45f);
 	int sliderX = (windowH / 2) - (sliderW / 2);
@@ -306,31 +331,22 @@ void Scene::LoadMainMenu()
 	currentY += sliderH + spacing + 20;
 
 	// ID 8: FULLSCREEN CHECKBOX
-	int checkSize = 30;
+	/*int checkSize = 30;
 	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, 8, "Fullscreen", { sliderX + 40, currentY, checkSize, checkSize }, this);
 	settingsMenuElements.push_back(chkFull);
-	currentY += checkSize + spacing + 10;
+	currentY += checkSize + spacing + 10;*/
 
 	// ID 9: BACK BUTTON
 	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 9, "BACK", { mainX, currentY + 20, btnW, btnH }, this);
 	settingsMenuElements.push_back(btnBack);
 
-	// --- ELEMENTOS DE CREDITOS ---
-
-	int creditsBackY = (int)(windowH * 0.85f);
-
-	// ID 10: BACK BUTTON
-	auto btnBackCredits = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 10, "BACK", { mainX, creditsBackY, btnW, btnH }, this);
-	creditsMenuElements.push_back(btnBackCredits);
-
 	ShowSettings(false);
-	ShowCredits(false);
 	ShowPauseMenu(false);
-	ShowPauseSettings(false);
+	ShowGameSettings(false);
 }
 
 void Scene::LoadPauseUI() {
-	pauseMenuElements.clear();
+	gameMenuElements.clear();
 	settingsMenuElements.clear();
 
 	int w, h;
@@ -347,17 +363,17 @@ void Scene::LoadPauseUI() {
 
 	// ID 11: RESUME
 	auto btnResume = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 11, "RESUME", { centerX, centerY, btnW, btnH }, this);
-	pauseMenuElements.push_back(btnResume);
+	gameMenuElements.push_back(btnResume);
 	centerY += btnH + spacing;
 
 	// ID 12: SETTINGS (En juego)
 	auto btnSettings = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 12, "SETTINGS", { centerX, centerY, btnW, btnH }, this);
-	pauseMenuElements.push_back(btnSettings);
+	gameMenuElements.push_back(btnSettings);
 	centerY += btnH + spacing;
 
 	// ID 13: EXIT TO MAIN MENU
 	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 13, "MAIN MENU", { centerX, centerY, btnW, btnH }, this);
-	pauseMenuElements.push_back(btnExit);
+	gameMenuElements.push_back(btnExit);
 
 	// --- SETTINGS - EN PAUSE MENU -- LO MISMO
 
@@ -382,14 +398,14 @@ void Scene::LoadPauseUI() {
 	settingsMenuElements.push_back(btnBackPause);
 
 	ShowPauseMenu(false);
-	ShowPauseSettings(false);
+	ShowGameSettings(false);
 }
 
 void Scene::ShowPauseMenu(bool show) {
 	if (show) menuState = MenuState::PAUSE;
 	else menuState = MenuState::NONE;
 
-	for (auto& elem : pauseMenuElements) {
+	for (auto& elem : gameMenuElements) {
 		elem->visible = show;
 
 		if (show == true) {
@@ -400,15 +416,15 @@ void Scene::ShowPauseMenu(bool show) {
 		}
 	}
 
-	ShowPauseSettings(false);
+	ShowGameSettings(false);
 }
 
-void Scene::ShowPauseSettings(bool show) {
+void Scene::ShowGameSettings(bool show) {
 	if (show == true) {
 		menuState = MenuState::PAUSE_SETTINGS;
 	}
 
-	for (auto& elem : pauseMenuElements) {
+	for (auto& elem : gameMenuElements) {
 		if (show == true) {
 			elem->visible = false;
 			elem->state = UIElementState::DISABLED;
@@ -483,8 +499,8 @@ void Scene::UnloadMainMenu() {
 	}
 	mainMenuElements.clear();
 	settingsMenuElements.clear();
-	creditsMenuElements.clear();
-	pauseMenuElements.clear();
+	gameMenuElements.clear();
+	gameMenuElements.clear();
 }
 
 void Scene::HandleMainMenuUIEvents(UIElement* uiElement)
@@ -512,11 +528,6 @@ void Scene::HandleMainMenuUIEvents(UIElement* uiElement)
 	case 3: // SETTINGS
 		LOG("Ir a Settings");
 		ShowSettings(true);
-		break;
-
-	case 4: // CREDITS
-		LOG("Ir a Creditos");
-		ShowCredits(true);
 		break;
 
 	case 5: // EXIT
@@ -555,16 +566,12 @@ void Scene::HandleMainMenuUIEvents(UIElement* uiElement)
 		ShowSettings(false);
 		break;
 
-	case 10: // BACK de Créditos
-		ShowCredits(false);
-		break;
-
 	default:
 		break;
 	}
 }
 
-void Scene::HandlePauseMenuUIEvents(UIElement* uiElement)
+void Scene::HandleGameMenuUIEvents(UIElement* uiElement)
 {
 	switch (uiElement->id)
 	{
@@ -573,7 +580,7 @@ void Scene::HandlePauseMenuUIEvents(UIElement* uiElement)
 		break;
 
 	case 12: // SETTINGS (Dentro de la pausa)
-		ShowPauseSettings(true);
+		ShowGameSettings(true);
 		break;
 
 	case 13: // EXIT TO MAIN MENU
@@ -585,7 +592,7 @@ void Scene::HandlePauseMenuUIEvents(UIElement* uiElement)
 		break;
 
 	case 14: // BACK PAUSE
-		ShowPauseSettings(false);
+		ShowGameSettings(false);
 		ShowPauseMenu(true);
 		break;
 
@@ -645,48 +652,6 @@ void Scene::ShowSettings(bool show) {
 		}
 	}
 }
-
-void Scene::ShowCredits(bool show) {
-
-	if (show) {
-		menuState = MenuState::CREDITS;
-	}
-	else {
-		menuState = MenuState::MAIN;
-	}
-
-	for (auto& elem : mainMenuElements) {
-		if (show == true) {
-
-			elem->visible = false;
-			elem->state = UIElementState::DISABLED;
-		}
-		else {
-
-			elem->visible = true;
-			elem->state = UIElementState::NORMAL;
-
-		}
-	}
-
-	// Settings ocultos
-	for (auto& elem : settingsMenuElements) {
-		elem->visible = false;
-		elem->state = UIElementState::DISABLED;
-	}
-	// Gestion de los creditos
-	for (auto& elem : creditsMenuElements) {
-		if (show == true) {
-			elem->visible = true;
-			elem->state = UIElementState::NORMAL;
-		}
-		else {
-			elem->visible = false;
-			elem->state = UIElementState::DISABLED;
-		}
-	}
-}
-
 
 void Scene::LoadCastle()
 {
@@ -800,3 +765,4 @@ void Scene::UnloadWin()
 		outroTexture = nullptr;
 	}*/
 }
+

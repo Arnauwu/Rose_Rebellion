@@ -9,9 +9,7 @@
 enum class SceneID {
 	INTRO,
 	MENU,
-	CASTLE,
-	LEVEL_TRANSITION,
-	LEVEL2,
+	GAME,
 	WIN,
 	GAMEOVER
 };
@@ -71,11 +69,14 @@ public:
 
 	bool setNewMap = false;
 
+	// Handles multiple Gui Event methods
+	bool OnUIMouseClickEvent(UIElement* uiElement);
+
 public:
 
 	// Public Variables
 	SceneID currentScene = SceneID::INTRO; // Start in INTRO
-	SceneID lastLevelPlayed = SceneID::CASTLE;
+	SceneID lastLevelPlayed = SceneID::GAME;
 
 	SDL_Texture* introTexture = nullptr;
 	SDL_Texture* menuBackground = nullptr;
@@ -104,7 +105,7 @@ private:
 	void LoadPauseUI();
 	void ShowPauseMenu(bool show);
 	void ShowPauseSettings(bool show);
-	void HandlePauseMenuUIEvents(UIElement* uiElement);
+	void HandleGameMenuUIEvents(UIElement* uiElement);
 
 	//Levels
 	void LoadCastle();
@@ -138,8 +139,7 @@ private:
 
 	std::vector<std::shared_ptr<UIElement>> mainMenuElements;
 	std::vector<std::shared_ptr<UIElement>> settingsMenuElements;
-	std::vector<std::shared_ptr<UIElement>> creditsMenuElements;
-	std::vector<std::shared_ptr<UIElement>> pauseMenuElements;
+	std::vector<std::shared_ptr<UIElement>> gameMenuElements;
 
 	bool exitGame = false;
 
