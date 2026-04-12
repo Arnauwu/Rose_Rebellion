@@ -17,7 +17,7 @@ enum class SceneID {
 enum class MenuState {
 	MAIN,
 	SETTINGS,
-	CREDITS,
+	//CREDITS,
 
 	NONE,
 	PAUSE,
@@ -52,16 +52,22 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	// Game Pause
+	bool GetGamePaused() const { return isGamePaused; }
+
+	// Functions to handle scene changes
 	void LoadScene(SceneID newScene);
 	void ChangeScene(SceneID newScene);
 	void UnloadCurrentScene();
 
-	void ResetLevel();
+	// Handles multiple Gui Event methods
+	bool OnUIMouseClickEvent(UIElement* uiElement);
+	void HandleGameMenuUIEvents(UIElement* uiElement);
 
 	// Return the player position
 	Vector2D GetPlayerPosition();
 
-	//Load
+	//Load Map
 	void LoadMap(std::string mapFile);
 
 	std::shared_ptr<Player> GetPlayer() const { return player; };
@@ -69,8 +75,6 @@ public:
 
 	bool setNewMap = false;
 
-	// Handles multiple Gui Event methods
-	bool OnUIMouseClickEvent(UIElement* uiElement);
 
 public:
 
@@ -80,14 +84,12 @@ public:
 
 	SDL_Texture* introTexture = nullptr;
 	SDL_Texture* menuBackground = nullptr;
-	SDL_Texture* gameOverTexture = nullptr;
-	SDL_Texture* transitionTexture = nullptr;
 
 	std::shared_ptr<Player> player;
 
 
 private:
-	
+
 	//Intro
 	void LoadIntro();
 	void UpdateIntro(float dt);
@@ -98,25 +100,22 @@ private:
 	void UpdateMainMenu(float dt);
 	void UnloadMainMenu();
 	void HandleMainMenuUIEvents(UIElement* uiElement);
-	
+
+	//In game menu
+	void LoadGameMenu();
+	void UpdateGameMenu(float dt);
+	void UnloadGameMenu();
+
 	//Show
 	void ShowSettings(bool show);
-	void ShowCredits(bool show);
-	void LoadPauseUI();
-	void ShowPauseMenu(bool show);
-	void ShowPauseSettings(bool show);
-	void HandleGameMenuUIEvents(UIElement* uiElement);
+	void ShowGameMenu(bool show);
+	void ShowGameSettings(bool show);
 
-	//Levels
-	void LoadCastle();
-	void UpdateCastle(float dt);
-	void PostUpdateCastle();
-	void UnloadCastle();
-
-	void LoadLevel2();
-	void UpdateLevel2(float dt);
-	void PostUpdateLevel2();
-	void UnloadLevel2();
+	//Game
+	void LoadGame();
+	void UpdateGame(float dt);
+	void PostUpdateGame();
+	void UnloadGame();
 
 	//Game Over
 	void LoadGameOver();
@@ -131,6 +130,7 @@ private:
 	//Transitions
 	void LoadLevelTransition();
 	void UpdateLevelTransition(float dt);
+	void UnloadLevelTransition();
 
 
 private:
@@ -142,6 +142,7 @@ private:
 	std::vector<std::shared_ptr<UIElement>> gameMenuElements;
 
 	bool exitGame = false;
+	bool isGamePaused = false;
 
 
 	int windowW = 0;
@@ -154,3 +155,4 @@ private:
 	float winTimer = 0.0f;
 
 };
+
