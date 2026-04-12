@@ -91,6 +91,7 @@ bool Scene::PostUpdate()
 		PostUpdateGame();
 		break;
 	}
+	if (exitGame) return false;
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
 		if (currentScene != SceneID::MENU) ChangeScene(SceneID::MENU);
@@ -392,14 +393,20 @@ void Scene::LoadMainMenu()
 	float setY = 0.35f;
 
 	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 6, "Music Volume", 0.5f, setY, 0.3f, 0.05f, this);
+	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get()))
+		s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
 	settingsMenuElements.push_back(sldMusic);
 	setY += spacing;
 
 	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 7, "FX Volume", 0.5f, setY, 0.3f, 0.05f, this);
+	if (auto* s = dynamic_cast<UISlider*>(sldFX.get()))
+		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
 	settingsMenuElements.push_back(sldFX);
 	setY += spacing;
 
 	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, 8, "Fullscreen", 0.5f, setY, 0.05f, 0.05f, this);
+	if (auto* c = dynamic_cast<UICheckBox*>(chkFull.get()))
+		c->isChecked = Engine::GetInstance().window->IsFullscreen();
 	settingsMenuElements.push_back(chkFull);
 	setY += spacing;
 
@@ -490,12 +497,11 @@ void Scene::HandleMainMenuUIEvents(UIElement* uiElement)
 		break;
 	}
 
-	case 8: // FULLSCREEN CHECKBOX
+	case 8:
 	{
 		UICheckBox* checkbox = (UICheckBox*)uiElement;
 		Engine::GetInstance().window->SetFullscreen(checkbox->isChecked);
-		RecalculateBackgroundScale();
-
+		RecalculateBackgroundScale();  // solo en main menu
 		break;
 	}
 
@@ -533,18 +539,24 @@ void Scene::LoadGameMenu() {
 	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 13, "MAIN MENU", 0.5f, currentY, wPerc, hPerc, this);
 	gameMenuElements.push_back(btnExit);
 
-	// PAUSE SETTINGS
+	// "PAUSE SETTINGS" en LoadGameMenu()
 	float setY = 0.35f;
 
 	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 6, "Music Volume", 0.5f, setY, 0.3f, 0.05f, this);
+	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get()))
+		s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
 	settingsMenuElements.push_back(sldMusic);
 	setY += spacing;
 
 	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 7, "FX Volume", 0.5f, setY, 0.3f, 0.05f, this);
+	if (auto* s = dynamic_cast<UISlider*>(sldFX.get()))
+		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
 	settingsMenuElements.push_back(sldFX);
 	setY += spacing;
 
 	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, 8, "Fullscreen", 0.5f, setY, 0.05f, 0.05f, this);
+	if (auto* c = dynamic_cast<UICheckBox*>(chkFull.get()))
+		c->isChecked = Engine::GetInstance().window->IsFullscreen();
 	settingsMenuElements.push_back(chkFull);
 	setY += spacing;
 
@@ -602,8 +614,9 @@ void Scene::HandleGameMenuUIEvents(UIElement* uiElement)
 	{
 		UICheckBox* checkbox = (UICheckBox*)uiElement;
 		Engine::GetInstance().window->SetFullscreen(checkbox->isChecked);
+		RecalculateBackgroundScale();  // solo en main menu
 		break;
-	}
+	} 
 	default:
 		break;
 	}
