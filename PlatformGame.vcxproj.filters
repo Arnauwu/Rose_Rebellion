@@ -122,9 +122,8 @@
     </ClCompile>
     <ClCompile Include="src\SpiderEnemy.cpp">
       <Filter>Source Files\Game\Enemies</Filter>
-	</ClCompile>
-
-	<ClCompile Include="src\UIButton.cpp">
+    </ClCompile>
+    <ClCompile Include="src\UIButton.cpp">
       <Filter>Source Files\Utils\UI</Filter>
     </ClCompile>
     <ClCompile Include="src\UICheckBox.cpp">
@@ -135,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="src\SavePoint.cpp">
       <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIElement.cpp">
+      <Filter>Source Files\Utils\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -212,8 +214,8 @@
     </ClInclude>
     <ClInclude Include="src\SpiderEnemy.h">
       <Filter>Source Files\Game\Enemies</Filter>
-	</ClInclude>
-	<ClInclude Include="src\UIButton.h">
+    </ClInclude>
+    <ClInclude Include="src\UIButton.h">
       <Filter>Source Files\Utils\UI</Filter>
     </ClInclude>
     <ClInclude Include="src\UICheckBox.h">

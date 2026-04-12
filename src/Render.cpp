@@ -262,6 +262,27 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 	return ret;
 }
 
+bool Render::DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) const
+{
+	if (texture == nullptr) return false;
+
+	// SDL3 utiliza FRect (float) para renderizar
+	SDL_FRect dstFRect;
+	dstFRect.x = (float)destRect.x;
+	dstFRect.y = (float)destRect.y;
+	dstFRect.w = (float)destRect.w;
+	dstFRect.h = (float)destRect.h;
+
+	// SDL_RenderTexture dibuja la textura estirada al rectángulo de destino
+	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstFRect))
+	{
+		LOG("Cannot draw scaled texture. SDL_Error: %s", SDL_GetError());
+		return false;
+	}
+
+	return true;
+}
+
 bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
 {
 	bool ret = true;

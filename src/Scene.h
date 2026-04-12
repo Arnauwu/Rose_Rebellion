@@ -145,6 +145,12 @@ private:
 	bool isGamePaused = false;
 
 
+	float bgScaleX = 1.0f;
+	float bgScaleY = 1.0f;
+
+	// Method for recalculating the scale based on the current window
+	void RecalculateBackgroundScale();
+
 	int windowW = 0;
 	int windowH = 0;
 	SDL_Rect screenRect = { 0, 0, 0, 0 };

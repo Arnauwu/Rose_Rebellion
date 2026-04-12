@@ -225,14 +225,23 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		HandleGameMenuUIEvents(uiElement);
 	}
 
-	//else if (currentScene == SceneID::WIN)
-	//{
-	//	if (uiElement->id == 21) // MENU
-	//	{
-	//		ChangeScene(SceneID::MENU);
-	//	}
-	//}
 	return true;
+}
+
+void Scene::RecalculateBackgroundScale()
+{
+	if (menuBackground == nullptr) return;
+
+	int screenW, screenH;
+	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+
+	float texW, texH;
+	SDL_GetTextureSize(menuBackground, &texW, &texH);
+
+	float engineScale = (float)Engine::GetInstance().window->GetScale();
+
+	bgScaleX = (float)screenW / (texW * engineScale);
+	bgScaleY = (float)screenH / (texH * engineScale);
 }
 
 // *********************************************
@@ -317,13 +326,12 @@ void Scene::LoadIntro()
 	screenRect = { 0, 0, windowW, windowH };
 
 	//introTexture = Engine::GetInstance().textures->Load("Assets/Textures/Intro_Menus/Intro.jpg");
-	introTimer = 3000.0f;
+	introTimer = 0.f; // TO DO: METER PULSAR TECLA EN VEZ DE TIMER --> No lo meto por comodidad mientras edito
 }
 
 void Scene::UpdateIntro(float dt)
 {
-	Engine::GetInstance().render->DrawRectangle(screenRect, 10, 70, 45, 255, true, false); //Intro Verde mismo
-
+	Engine::GetInstance().render->DrawRectangle(screenRect, 10, 70, 45, 255, true, false);
 	introTimer -= dt;
 
 	if (introTimer <= 0.0f || Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
@@ -351,67 +359,51 @@ void Scene::UnloadIntro()
 
 void Scene::LoadMainMenu()
 {
-	//menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/Fons_Exterior_Castell.png");
-
 	mainMenuElements.clear();
 	settingsMenuElements.clear();
 
-	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
-	screenRect = { 0, 0, windowW, windowH };
+	if (menuBackground == nullptr) {
+		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/Fons_Exterior_Castell.png");
+	}
+	RecalculateBackgroundScale();
 
-	int btnW = 150;
-	int btnH = 40;
+	float wPerc = 0.25f; // 25% of the screen width
+	float hPerc = 0.08f; // 8% of the height of the screen.
+	float spacing = 0.11f; // 11% of spacing of the screen
+	float currentY = 0.5f;
 
-	int sliderW = 200;
-	int sliderH = 20;
-	int spacing = 20; // Espacio entre botones
-
-	int mainX = (windowW / 2) - (btnW / 2);
-	int currentY = (int)(windowH * 0.4f);
-
-	// ID 1. PLAY
-	auto btnPlay = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "PLAY", { mainX, currentY, btnW, btnH }, this);
+	// MAIN MENU
+	auto btnPlay = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start Game", 0.5f, currentY, wPerc, hPerc, this);
 	mainMenuElements.push_back(btnPlay);
-	currentY += btnH + spacing; // Bajamos la Y para el siguiente botón
+	currentY += spacing;
 
-	// ID 2. CONTINUE
-	auto btnContinue = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, "CONTINUE", { mainX, currentY, btnW, btnH }, this);
-	//if (!CanContinueGame()) btnContinue->state = UIElementState::DISABLED;
+	auto btnContinue = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, "Load Game", 0.5f, currentY, wPerc, hPerc, this);
 	mainMenuElements.push_back(btnContinue);
-	currentY += btnH + spacing;
+	currentY += spacing;
 
-	// ID 3. SETTINGS
-	auto btnSettings = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 3, "SETTINGS", { mainX, currentY, btnW, btnH }, this);
+	auto btnSettings = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 3, "Settings", 0.5f, currentY, wPerc, hPerc, this);
 	mainMenuElements.push_back(btnSettings);
-	currentY += btnH + spacing;
+	currentY += spacing;
 
-	// ID 5. EXIT
-	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 5, "EXIT", { mainX, currentY, btnW, btnH }, this);
+	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 5, "Quit Game", 0.5f, currentY, wPerc, hPerc, this);
 	mainMenuElements.push_back(btnExit);
 
-	// --- SETTING MENU ---
+	// MAIN MENU SETTINGS
+	float setY = 0.35f;
 
-	currentY = (int)(windowW * 0.45f);
-	int sliderX = (windowH / 2) - (sliderW / 2);
-
-	// ID 6: MUSIC SLIDER
-	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 6, "Music Volume", { sliderX, currentY, sliderW, sliderH }, this);
+	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 6, "Music Volume", 0.5f, setY, 0.3f, 0.05f, this);
 	settingsMenuElements.push_back(sldMusic);
-	currentY += sliderH + spacing + 20;
+	setY += spacing;
 
-	// ID 7: FX SLIDER
-	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 7, "FX Volume", { sliderX, currentY, sliderW, sliderH }, this);
+	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 7, "FX Volume", 0.5f, setY, 0.3f, 0.05f, this);
 	settingsMenuElements.push_back(sldFX);
-	currentY += sliderH + spacing + 20;
+	setY += spacing;
 
-	// ID 8: FULLSCREEN CHECKBOX
-	/*int checkSize = 30;
-	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, 8, "Fullscreen", { sliderX + 40, currentY, checkSize, checkSize }, this);
+	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, 8, "Fullscreen", 0.5f, setY, 0.05f, 0.05f, this);
 	settingsMenuElements.push_back(chkFull);
-	currentY += checkSize + spacing + 10;*/
+	setY += spacing;
 
-	// ID 9: BACK BUTTON
-	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 9, "BACK", { mainX, currentY + 20, btnW, btnH }, this);
+	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 9, "BACK", 0.5f, setY, wPerc, hPerc, this);
 	settingsMenuElements.push_back(btnBack);
 
 	ShowSettings(false);
@@ -419,9 +411,16 @@ void Scene::LoadMainMenu()
 	ShowGameSettings(false);
 }
 
-void Scene::UpdateMainMenu(float dt) {
+void Scene::UpdateMainMenu(float dt)
+{
 	if (menuBackground != nullptr) {
-		Engine::GetInstance().render->DrawTexture(menuBackground, 0, 0);
+		int screenW, screenH;
+		Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+
+		SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
+
+		// Dibujamos la textura forzándola a ocupar ese rectángulo
+		Engine::GetInstance().render->DrawTextureScaled(menuBackground, fullScreenRect);
 	}
 }
 
@@ -494,6 +493,8 @@ void Scene::HandleMainMenuUIEvents(UIElement* uiElement)
 	{
 		UICheckBox* checkbox = (UICheckBox*)uiElement;
 		Engine::GetInstance().window->SetFullscreen(checkbox->isChecked);
+		RecalculateBackgroundScale();
+
 		break;
 	}
 
@@ -514,52 +515,39 @@ void Scene::LoadGameMenu() {
 	gameMenuElements.clear();
 	settingsMenuElements.clear();
 
-	int w, h;
-	Engine::GetInstance().window->GetWindowSize(w, h);
-	float zoom = Engine::GetInstance().render->GetZoom();
-	// Coordenadas
-	int btnW = (int)(150 / zoom);
-	int btnH = (int)(40 / zoom);
-	int spacing = (int)(20 / zoom);
-	int centerX = (int)((w / 2) / zoom) - (btnW / 2);
-	int centerY = (int)((h / 2) / zoom) - 100;
+	float wPerc = 0.25f;
+	float hPerc = 0.08f;
+	float spacing = 0.11f;
+	float currentY = 0.4f;
 
-	// --- BOTONES DE PAUSA ---
-
-	// ID 11: RESUME
-	auto btnResume = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 11, "RESUME", { centerX, centerY, btnW, btnH }, this);
+	// PAUSE MENU
+	auto btnResume = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 11, "RESUME", 0.5f, currentY, wPerc, hPerc, this);
 	gameMenuElements.push_back(btnResume);
-	centerY += btnH + spacing;
+	currentY += spacing;
 
-	// ID 12: SETTINGS (En juego)
-	auto btnSettings = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 12, "SETTINGS", { centerX, centerY, btnW, btnH }, this);
+	auto btnSettings = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 12, "SETTINGS", 0.5f, currentY, wPerc, hPerc, this);
 	gameMenuElements.push_back(btnSettings);
-	centerY += btnH + spacing;
+	currentY += spacing;
 
-	// ID 13: EXIT TO MAIN MENU
-	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 13, "MAIN MENU", { centerX, centerY, btnW, btnH }, this);
+	auto btnExit = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 13, "MAIN MENU", 0.5f, currentY, wPerc, hPerc, this);
 	gameMenuElements.push_back(btnExit);
 
-	// --- SETTINGS - EN PAUSE MENU -- LO MISMO
+	// PAUSE SETTINGS
+	float setY = 0.35f;
 
-	int sliderW = (int)(200 / zoom);
-	int sliderX = (w / 2 / zoom) - (sliderW / 2);
-	int setY = (h / 2 / zoom) - 80;
-
-	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 6, "Music Volume", { sliderX, setY, sliderW, 20 }, this);
+	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 6, "Music Volume", 0.5f, setY, 0.3f, 0.05f, this);
 	settingsMenuElements.push_back(sldMusic);
-	setY += 50;
+	setY += spacing;
 
-	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 7, "FX Volume", { sliderX, setY, sliderW, 20 }, this);
+	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, 7, "FX Volume", 0.5f, setY, 0.3f, 0.05f, this);
 	settingsMenuElements.push_back(sldFX);
-	setY += 50;
+	setY += spacing;
 
-	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, 8, "Fullscreen", { sliderX + 40, setY, 30, 30 }, this);
+	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, 8, "Fullscreen", 0.5f, setY, 0.05f, 0.05f, this);
 	settingsMenuElements.push_back(chkFull);
-	setY += 50;
+	setY += spacing;
 
-	// ID 14: BACK 
-	auto btnBackPause = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 14, "BACK", { centerX, setY, btnW, btnH }, this);
+	auto btnBackPause = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 14, "BACK", 0.5f, setY, wPerc, hPerc, this);
 	settingsMenuElements.push_back(btnBackPause);
 
 	ShowGameMenu(false);
@@ -655,7 +643,7 @@ void Scene::UpdateLevelTransition(float dt) {
 	transitionTimer -= dt;
 }
 void Scene::UnloadLevelTransition() {
-	
+
 }
 
 void Scene::LoadGameOver() {

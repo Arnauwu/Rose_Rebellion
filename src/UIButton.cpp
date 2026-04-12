@@ -3,13 +3,11 @@
 #include "Engine.h"
 #include "Audio.h"
 
-UIButton::UIButton(int id, SDL_Rect bounds, const char* text) : UIElement(UIElementType::BUTTON, id)
+UIButton::UIButton(int id, float anchorX, float anchorY, float wPerc, float hPerc, const char* text)
+    : UIElement(UIElementType::BUTTON, id, anchorX, anchorY, wPerc, hPerc, text)
 {
-	this->bounds = bounds;
-	this->text = text;
-
-	canClick = true;
-	drawBasic = false;
+    canClick = true;
+    drawBasic = false;
 }
 
 UIButton::~UIButton()
@@ -42,29 +40,32 @@ bool UIButton::Update(float dt)
         else {
             state = UIElementState::NORMAL;
         }
-
-		// L16: TODO 4: Draw the button according the GuiControl State
-		switch (state)
-		{
-		case UIElementState::DISABLED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 255, true, false);
-			break;
-		case UIElementState::NORMAL:
-			Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 255, 255, true, false);
-			break;
-		case UIElementState::FOCUSED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 20, 255, true, false);
-			break;
-		case UIElementState::PRESSED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 0, 255, 0, 255, true, false);
-			break;
-		}
-
-		// L16: TODO 6: Draw text centered in the button
-		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h, { 255,255,255,255 });
 	}
 
 	return false;
+}
+void UIButton::Draw() const
+{
+    if (!visible) return;
+
+    // 1. Dibujar el fondo del botón según estado
+    SDL_Color color = { 100, 100, 100, 255 }; // Normal
+    if (state == UIElementState::FOCUSED) color = { 150, 150, 150, 255 };
+    if (state == UIElementState::PRESSED) color = { 200, 200, 200, 255 };
+
+    Engine::GetInstance().render->DrawRectangle(bounds, color.r, color.g, color.b, color.a, true, false);
+
+    if (!text.empty()) {
+        int padding = (int)(bounds.h * 0.2f);
+        Engine::GetInstance().render->DrawText(
+            text.c_str(),
+            bounds.x + padding,
+            bounds.y + padding,
+            bounds.w - (padding * 2),
+            bounds.h - (padding * 2),
+            { 255, 255, 255, 255 }
+        );
+    }
 }
 
 bool UIButton::CleanUp()

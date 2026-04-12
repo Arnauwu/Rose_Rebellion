@@ -21,11 +21,15 @@ public:
 	// Called each loop iteration
 	bool Update(float dt);
 
+	//Called after all Updates
+	bool PostUpdate() override;
 	// Called before quitting
 	bool CleanUp();
 
+	void Draw() const;
+
 	// Additional methods
-	std::shared_ptr<UIElement> CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, Module* observer, SDL_Rect sliderBounds = { 0,0,0,0 });
+	std::shared_ptr<UIElement> CreateUIElement(UIElementType type, int id, const char* text, float anchorX, float anchorY, float wPerc, float hPerc, Module* observer);
 
 public:
 

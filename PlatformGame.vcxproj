@@ -170,6 +170,7 @@
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UIButton.cpp" />
     <ClCompile Include="src\UICheckBox.cpp" />
+    <ClCompile Include="src\UIElement.cpp" />
     <ClCompile Include="src\UIManager.cpp" />
     <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
