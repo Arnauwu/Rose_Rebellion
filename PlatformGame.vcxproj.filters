@@ -138,9 +138,6 @@
     <ClCompile Include="src\UIElement.cpp">
       <Filter>Source Files\Utils\UI</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene.cpp">
-      <Filter>Source Files\Game\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="src\SceneManager.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
@@ -241,9 +238,6 @@
     </ClInclude>
     <ClInclude Include="src\SavePoint.h">
       <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene.h">
-      <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneBase.h">
       <Filter>Source Files\Game\Scenes</Filter>
