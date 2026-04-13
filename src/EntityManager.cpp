@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Engine.h"
 #include "Textures.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Log.h"
 
 #include "Item.h"

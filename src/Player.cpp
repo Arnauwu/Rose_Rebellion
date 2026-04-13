@@ -4,7 +4,7 @@
 #include "Audio.h"
 #include "Input.h"
 #include "Render.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -426,7 +426,7 @@ void Player::Interact()
 	{
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 		{
-			Engine::GetInstance().scene->setNewMap = true;
+			Engine::GetInstance().sceneManager->setNewMap = true;
 		}
 	}
 }
