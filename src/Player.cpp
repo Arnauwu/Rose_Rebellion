@@ -58,7 +58,7 @@ bool Player::Start()
 	else
 	{
 		std::unordered_map<int, std::string> aliases = { {0,"move_right"},
-												 {12,"move_left"},
+												 {11,"move_left"},
 												 {22,"jump_right"},
 												 {33,"fall_right" },
 												 {44,"jump_left" } ,
@@ -198,7 +198,15 @@ void Player::Move() {
 	{
 		velocity.x = -speed;
 		lookingRight = false;
-		if (currentAnimPriority < 1)
+		if (currentAnimPriority == 3)
+		{
+			anims.SetCurrent("fall_left");
+		}
+		else if (currentAnimPriority == 2)
+		{
+			anims.SetCurrent("jump_left");
+		}
+		else if (currentAnimPriority <= 1)
 		{
 			anims.SetCurrent("move_left");
 			currentAnimPriority = 1;
@@ -209,7 +217,15 @@ void Player::Move() {
 	{
 		velocity.x = speed;
 		lookingRight = true;
-		if (currentAnimPriority < 1)
+		if (currentAnimPriority == 3)
+		{
+			anims.SetCurrent("fall_right");
+		}
+		else if (currentAnimPriority == 2)
+		{
+			anims.SetCurrent("jump_right");
+		}
+		if (currentAnimPriority <= 1)
 		{
 			anims.SetCurrent("move_right");
 			currentAnimPriority = 1;
@@ -272,6 +288,7 @@ void Player::RespawnFromVoid() {
 
 	LOG("Player reset to last safe position: %.2f, %.2f", respawnPosition.getX(), respawnPosition.getY());
 }
+
 void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
 {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
@@ -290,6 +307,8 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			{
 				anims.SetCurrent("jump_left");
 			}
+			currentAnimPriority = 2;
+
 			//Extra Jump Force
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
@@ -297,7 +316,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			LOG("Jump");
 		}
 		// Double Jump
-		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
+		else if ( doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
@@ -309,6 +328,8 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			{
 				anims.SetCurrent("jump_left");
 			}
+			currentAnimPriority = 2;
+
 			//Extra Jump Force
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
@@ -334,6 +355,8 @@ void Player::Attack(float dt)
 	{
 		isAttacking = true;
 		anims.SetCurrent("attack");
+		currentAnimPriority = 4;
+
 		currentAttackTime = 0.0f;
 
 		// Calculate the collider's position based on the direction the player is facing
@@ -367,6 +390,7 @@ void Player::Attack(float dt)
 		{
 			isAttacking = false;
 			anims.SetCurrent("idle");
+			currentAnimPriority = 0;
 
 			// Destroy the collider
 			if (attackCollider != nullptr)
@@ -464,7 +488,7 @@ void Player::ApplyPhysics() {
 		}
 	}
 
-	if (velocity.y > 10 && anims.GetCurrentName() != "fall")
+	if (velocity.y > 10 && currentAnimPriority != 3)
 	{
 		if (lookingRight)
 		{
@@ -474,6 +498,7 @@ void Player::ApplyPhysics() {
 		{
 			anims.SetCurrent("fall_left");
 		}
+		currentAnimPriority = 3;
 	}
 
 	// Apply velocity via helper
@@ -556,7 +581,7 @@ void Player::UnlockCape()
 	Engine::GetInstance().textures->UnLoad(texture);
 	
 	std::unordered_map<int, std::string> aliases = { {0,"move_right"},
-											 {12,"move_left"},
+											 {11,"move_left"},
 											 {22,"jump_right"},
 											 {33,"fall_right" },
 											 {44,"jump_left" } ,
@@ -606,9 +631,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		if (anims.GetCurrentName() == "jump")
+		if (currentAnimPriority < 1)
 		{
 			anims.SetCurrent("idle");
+			currentAnimPriority = 0;
 		}
 
 		onGround = true;
