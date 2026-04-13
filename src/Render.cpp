@@ -131,6 +131,36 @@ void Render::SetBackgroundColor(SDL_Color color)
 	background = color;
 }
 
+void Render::SetColorMod(SDL_Texture* texture, Uint8* r, Uint8* g, Uint8* b, Uint8 nr, Uint8 ng, Uint8 nb)
+{
+	SDL_GetTextureColorMod(texture, r, g, b); //Get original texture RGB
+	SDL_SetTextureColorMod(texture, nr, ng, nb); //Set to X color 
+}
+
+bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin) const
+{
+	bool result = false;
+
+	float camLeft = -camera.x - margin;
+	float camTop = -camera.y - margin;
+
+	float camRight = camLeft + camera.w + margin;
+	float camBott = camTop + camera.h + margin;
+
+	float objRight = x + w;
+	float objBott = y + h;
+
+	if (objRight >= camLeft && x <= camRight)
+	{
+		if (objBott >= camTop && y <= camBott)
+		{
+			result = true;
+		}
+	}
+
+	return result;
+}
+
 void Render::SetViewPort(const SDL_Rect& rect)
 {
 	SDL_SetRenderViewport(renderer, &rect);

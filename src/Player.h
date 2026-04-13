@@ -7,6 +7,7 @@
 #include <SDL3/SDL.h>
 #include "Timer.h"
 #include <iostream>
+#include "CameraController.h"
 
 
 struct SDL_Texture;
@@ -34,25 +35,20 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
-	Vector2D lastSafePosition;
-	float safePositionTimer = 0.0f;
-	const float safePositionInterval = 0.2f; 
+
 private:
 
 	void GodModeMove(float dt);
 
 	void GetPhysicsValues();
 	void Move();
+	void Knockback();
 	void Respawn();
 	void RespawnFromVoid();
 	void Jump(float dt);
 	void Attack(float dt);
 	void Glide();
 	void Dash();
-
-	void TakeDamage(int damage);
-	void TakeHealth(int health);
-	void Died();
 
 	void Interact();
 
@@ -61,31 +57,26 @@ private:
 
 	void CameraFollows();
 
+	// Unlocks
+	void UnlockCape();
+
 	// DevTools / Debug
-	void Teleport();
+	void DevTools(float dt);
 
 public:
-
-	int health; 
 	float speed = 4.0f;
 
 	// Texture
 	SDL_Texture* texture = nullptr;
 	int texW, texH;
-	bool lookingRight = true; //False Left -- True Right 
 
 	/*--- PLAYER VARIABLES ---*/
-	//Live variables
-	int maxHealth = 100;
-	int currentHealth = 100;
-
 	// Physics
 	PhysBody* pbody = nullptr;
+	float knockbackForce;
+	bool isKnockedback = false;
+	float knockbackTime = 500.0f;
 
-	//Death variables
-	bool isdead = false;
-	float deathTimer = 0.0f;
-	float deathDelay = 1.0f; 
 
 	/*--- PLAYER STATES INFO --- */
 	// Ground
@@ -95,8 +86,7 @@ public:
 	// Wall
 	bool onWall = false;
 
-	// GodMode
-	bool godMode = false;
+
 
 	/*--- PLAYER SKILLS --- */
 	// Jump
@@ -109,17 +99,24 @@ public:
 	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
 
 	// Double Jump
-	bool doubleJumpUnlocked = true; // TO DO: Change to false
+	bool doubleJumpUnlocked = false; 
 	bool secondJumpUsed = false;
 	
 	// Gliding
-	bool glideUnlocked = true; // TO DO: Change to false
+	bool glideUnlocked = false; 
 	bool isGliding = false; // Flag
 
 	// Dash
-	bool dashUnlocked = true;
-	float dashForce = 150.0f;
-	bool hasDashed = false; // Flag to check if the player has dashed
+	bool dashUnlocked = false; 
+	bool isDashing = false; // Flag to check if the player has dashed
+	float dashForce = 15.0f;
+
+	Timer dashTimer;
+	float dashDurationMS = 300;
+
+	Timer dashCooldownTimer;
+	float dashCooldownMS = 300;
+
 
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
@@ -140,10 +137,30 @@ public:
 	//Audio fx
 	//int pickCoinFxId;
 
+	// Last Postion
+	Vector2D lastSafePosition;
+	float safePositionTimer = 0.0f;
+	const float safePositionInterval = 0.2f;
+
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
+
 	AnimationSet anims;
+	int currentAnimPriority = 0;
+
+	/*	
+		Idle = 0
+		Move = 1
+		Jump = 2
+		Fall = 3
+		Attack = 4
+
+
+		Death = 99
+	*/
+
+	CameraController cameraController;
 	Vector2D respawnPosition;
 
 };

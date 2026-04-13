@@ -16,6 +16,7 @@ bool Enemy::Update(float dt)
 	PerformPathfinding();
 	GetPhysicsValues();
 	Move();
+	Knockback();
 	ApplyPhysics();
 	Draw(dt);
 

@@ -7,8 +7,10 @@
 
 #include "Item.h"
 #include "SavePoint.h"
-#include "Test.h"
 #include "SpiderEnemy.h"
+#include "Cucafera.h"
+#include "SwordKnight.h"
+#include "ShieldKnight.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -80,11 +82,17 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
 		break;
-	case EntityType::ENEMY:
-		entity = std::make_shared<TestEnemy>();
-		break;
 	case EntityType::SPIDER:
 		entity = std::make_shared<SpiderEnemy>();
+		break;
+	case EntityType::CUCAFERA:
+		entity = std::make_shared<Cucafera>();
+		break;
+	case EntityType::SWORD_KNIGHT:
+		entity = std::make_shared<SwordKnight>();
+		break;
+	case EntityType::SHIELD_KNIGHT:
+		entity = std::make_shared<ShieldKnight>();
 		break;
 	default:
 		break;
