@@ -8,8 +8,8 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Audio.h"
-#include "Scene.h"
 #include "EntityManager.h"
+#include "SceneManager.h"
 #include "Map.h"
 #include "Physics.h"
 #include "Log.h"
@@ -37,7 +37,7 @@ Engine::Engine() {
     audio = std::make_shared<Audio>();
 
     physics = std::make_shared<Physics>();
-    scene = std::make_shared<Scene>();
+    sceneManager = std::make_shared<SceneManager>();
     map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
     uiManager = std::make_shared<UIManager>();
@@ -52,8 +52,9 @@ Engine::Engine() {
 
     AddModule(std::static_pointer_cast<Module>(physics));
     AddModule(std::static_pointer_cast<Module>(map));
-    AddModule(std::static_pointer_cast<Module>(scene));
     AddModule(std::static_pointer_cast<Module>(entityManager));
+    AddModule(std::static_pointer_cast<Module>(sceneManager));
+
  
     // Hud Manager 
     AddModule(std::static_pointer_cast<Module>(hud));
