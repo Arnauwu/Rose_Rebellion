@@ -54,6 +54,7 @@ bool SpiderEnemy::Update(float dt) {
     {
         GetPhysicsValues();
         Move();
+		Knockback();
         ApplyPhysics();
     }
 
@@ -103,6 +104,33 @@ void SpiderEnemy::Move() {
         velocity.y = speed;
         angle = 90.0f;
         break;
+    }
+}
+
+void SpiderEnemy::Knockback()
+{
+    if (isdead) return;
+
+    if (isKnockedback)
+    {
+        anims.SetCurrent("hurt");
+        if (lookingRight)
+        {
+            velocity.x = knockbackForce;
+        }
+        else
+        {
+            velocity.x = -knockbackForce;
+        }
+    }
+    if (knockbackTime <= 0)
+    {
+        isKnockedback = false;
+        knockbackTime = 500.0f;
+    }
+    else
+    {
+        knockbackTime -= Engine::GetInstance().GetDt();
     }
 }
 

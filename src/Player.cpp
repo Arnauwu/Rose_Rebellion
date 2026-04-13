@@ -91,6 +91,8 @@ bool Player::Start()
 	// Initialize audio
 	//pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
+	knockbackForce = 5.0f;
+
 	maxHealth = 100;
 	currentHealth = maxHealth;
 
@@ -112,6 +114,8 @@ bool Player::Update(float dt)
 		GetPhysicsValues();
 		
 		Move();
+
+		Knockback();
 		
 		Jump(dt);
 
@@ -246,6 +250,33 @@ void Player::Move() {
 			
 			currentAnimPriority = 0;
 		}
+	}
+}
+
+void Player::Knockback()
+{
+	if (isdead) return;
+
+	if (isKnockedback)
+	{
+		anims.SetCurrent("hurt");
+		if (!lookingRight) //TO DO: Improve this to apply the knockback in the same direction of the enemy attack, not just based on where the player is looking
+		{
+			velocity.x = knockbackForce;
+		}
+		else
+		{
+			velocity.x = -knockbackForce;
+		}
+	}
+	if (knockbackTime <= 0)
+	{
+		isKnockedback = false;
+		knockbackTime = 500.0f;
+	}
+	else
+	{
+		knockbackTime -= Engine::GetInstance().GetDt();
 	}
 }
 
@@ -618,6 +649,8 @@ bool Player::CleanUp()
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
+		if (physA == attackCollider) {  return; }
+
 	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead) {
@@ -678,9 +711,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}  
 	case ColliderType::ENEMY:
 		TakeDamage(10); // Contact Damage
+		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
 		TakeDamage(physB->listener->damage);
+		isKnockedback = true;
 			break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");

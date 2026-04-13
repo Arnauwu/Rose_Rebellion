@@ -25,6 +25,7 @@ public:
 private:
     void GetPhysicsValues() override;
     void Move() override;
+    void Knockback() override;
     void RotateFacing();
     void ApplyPhysics() override;
     void Draw(float dt);

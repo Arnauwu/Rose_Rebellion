@@ -72,6 +72,7 @@ bool SwordKnight::Start()
 	//Stats
 	vision = 10;
 	speed = 1.0f;
+	knockbackForce = 5.0f;
 
 	maxHealth = 50;
 	currentHealth = maxHealth;
@@ -102,6 +103,7 @@ bool SwordKnight::Update(float dt)
 
 		GetPhysicsValues();
 		Move();
+		Knockback();
 		ApplyPhysics();
 	}
 
@@ -201,6 +203,34 @@ void SwordKnight::Move() {
 	return;
 }
 
+void SwordKnight::Knockback()
+{
+	if (isdead) return;
+
+	if (isKnockedback)
+	{
+		isAttacking = false;
+		anims.SetCurrent("hurt");
+		if (lookingRight)
+		{
+			velocity.x = knockbackForce;
+		}
+		else
+		{
+			velocity.x = -knockbackForce;
+		}
+	}
+	if (knockbackTime <= 0)
+	{
+		isKnockedback = false;
+		knockbackTime = 500.0f;
+	}
+	else
+	{
+		knockbackTime -= Engine::GetInstance().GetDt();
+	}
+}
+
 void SwordKnight::ApplyPhysics() {
 
 	// Apply velocity via helper
@@ -294,11 +324,16 @@ void SwordKnight::Attack()
 
 
 //Define OnCollision function for the enemy. 
-void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
+void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) 
+{
+	if (physA == attackHitbox) { return; }
+
+
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
+		isKnockedback = true;
 		break;
 
 	default:

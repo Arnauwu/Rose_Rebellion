@@ -42,6 +42,7 @@ private:
 
 	void GetPhysicsValues();
 	void Move();
+	void Knockback();
 	void Respawn();
 	void RespawnFromVoid();
 	void Jump(float dt);
@@ -72,7 +73,9 @@ public:
 	/*--- PLAYER VARIABLES ---*/
 	// Physics
 	PhysBody* pbody = nullptr;
-
+	float knockbackForce;
+	bool isKnockedback = false;
+	float knockbackTime = 500.0f;
 
 
 	/*--- PLAYER STATES INFO --- */

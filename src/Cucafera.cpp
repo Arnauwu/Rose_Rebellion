@@ -59,6 +59,7 @@ bool Cucafera::Start()
 	//Stats
 	vision = 10;
 	speed = 2.0f;
+	knockbackForce = 5.0f;
 
 	maxHealth = 30;
 	currentHealth = 30;
@@ -86,6 +87,7 @@ bool Cucafera::Update(float dt)
 
 		GetPhysicsValues();
 		Move();
+		Knockback();
 		ApplyPhysics();
 	}
 	
@@ -134,13 +136,13 @@ void Cucafera::Move() {
 	Vector2D tilePos = GetTilePos();
 
 	// Move if player has been found
-	if (pathfinding->pathTiles.empty() && isRolling == false)
+	if (pathfinding->pathTiles.empty() && isRolling == false && isKnockedback == false)
 	{
 		anims.SetCurrent("hurt"); // TO DO: CHANGE TO Idle/ or make it WALK
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 5 && isRolling == false)
+	else if (playerTileDist >= 5 && isRolling == false && isKnockedback == false)
 	{
 		anims.SetCurrent("hurt"); // TO DO: CHANGE TO WALK
 
@@ -174,9 +176,40 @@ void Cucafera::Move() {
 	}
 	else
 	{
-		RollAttack();
+		if (!isdead && isKnockedback == false)
+		{
+			RollAttack();
+		}
 	}
 	return;
+}
+
+void Cucafera::Knockback()
+{
+	if (isdead) return;
+
+	if (isKnockedback)
+	{
+		isRolling = false;
+		anims.SetCurrent("hurt");
+		if (lookingRight)
+		{
+			velocity.x = knockbackForce;
+		}
+		else
+		{
+			velocity.x = -knockbackForce;
+		}
+	}
+	if (knockbackTime <= 0)
+	{
+		isKnockedback = false;
+		knockbackTime = 500.0f;
+	}
+	else
+	{
+		knockbackTime -= Engine::GetInstance().GetDt();
+	}
 }
 
 void Cucafera::ApplyPhysics() {
@@ -219,7 +252,7 @@ void Cucafera::Draw(float dt)
 
 void Cucafera::RollAttack()
 {
-	if (isRolling == false)
+	if (isRolling == false && isKnockedback == false)
 	{
 		isRolling = true;
 		anims.SetCurrent("startSpin");
@@ -227,7 +260,7 @@ void Cucafera::RollAttack()
 		return;
 	}
 
-	if (startAttack.ReadMSec() >= 250)
+	if (startAttack.ReadMSec() >= 250 && isKnockedback == false)
 	{
 		anims.SetCurrent("spin");
 		if (lookingRight == false)
@@ -255,6 +288,7 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
+		isKnockedback = true;
 		break;
 
 	default:
