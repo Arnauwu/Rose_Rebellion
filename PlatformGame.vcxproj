@@ -153,11 +153,14 @@
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\GameScene.cpp" />
     <ClCompile Include="src\Hud.cpp" />
     <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\IntroScene.cpp" />
     <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Map.cpp" />
+    <ClCompile Include="src\MenuScene.cpp" />
     <ClCompile Include="src\Pathfinding.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\Physics.cpp" />
@@ -165,7 +168,7 @@
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Render.cpp" />
     <ClCompile Include="src\SavePoint.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\ShieldKnight.cpp" />
     <ClCompile Include="src\SpiderEnemy.cpp" />
     <ClCompile Include="src\SwordKnight.cpp" />
@@ -173,6 +176,7 @@
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UIButton.cpp" />
     <ClCompile Include="src\UICheckBox.cpp" />
+    <ClCompile Include="src\UIElement.cpp" />
     <ClCompile Include="src\UIManager.cpp" />
     <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
@@ -187,11 +191,14 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\GameScene.h" />
     <ClInclude Include="src\Hud.h" />
     <ClInclude Include="src\Input.h" />
+    <ClInclude Include="src\IntroScene.h" />
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\MenuScene.h" />
     <ClInclude Include="src\Module.h" />
     <ClInclude Include="src\Pathfinding.h" />
     <ClInclude Include="src\PerfTimer.h" />
@@ -199,7 +206,8 @@
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
     <ClInclude Include="src\SavePoint.h" />
-    <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\SceneBase.h" />
+    <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShieldKnight.h" />
     <ClInclude Include="src\SpiderEnemy.h" />
     <ClInclude Include="src\SwordKnight.h" />

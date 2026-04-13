@@ -4,7 +4,7 @@
 #include "Audio.h"
 #include "Input.h"
 #include "Render.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -109,7 +109,7 @@ bool Player::Update(float dt)
 {
 	if (pbody == nullptr) return true;
 
-	if (Engine::GetInstance().scene->isGamePaused == false && !isdead)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
 		
@@ -181,7 +181,7 @@ bool Player::Update(float dt)
 
 bool Player::PostUpdate()
 {
-	if (Engine::GetInstance().scene->isGamePaused == false && !isdead)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		Interact();
 	}
@@ -497,7 +497,7 @@ void Player::Interact()
 	{
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 		{
-			Engine::GetInstance().scene->setNewMap = true;
+			Engine::GetInstance().sceneManager->setNewMap = true;
 		}
 	}
 }
@@ -538,7 +538,7 @@ void Player::ApplyPhysics() {
 
 void Player::Draw(float dt) 
 {
-	if (Engine::GetInstance().scene->isGamePaused == false)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
 		anims.Update(dt);
 	}

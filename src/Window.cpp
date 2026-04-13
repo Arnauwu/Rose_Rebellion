@@ -90,8 +90,7 @@ void Window::SetTitle(const char* new_title)
 
 void Window::GetWindowSize(int& width, int& height) const
 {
-	width = this->windowWidth;
-	height = this->windowHeight;
+	SDL_GetWindowSize(window, &width, &height);
 }
 
 int Window::GetScale() const
@@ -99,14 +98,35 @@ int Window::GetScale() const
 	return windowScale;
 }
 
-void Window::SetFullscreen(bool enabled)
+void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer)
 {
-	if (enabled)
-	{
+	// Save mouse Position
+	float mouseX, mouseY;
+	SDL_GetMouseState(&mouseX, &mouseY);
+
+	int oldW, oldH;
+	SDL_GetWindowSize(window, &oldW, &oldH);
+
+	float relX = (oldW > 0) ? mouseX / (float)oldW : 0.5f;
+	float relY = (oldH > 0) ? mouseY / (float)oldH : 0.5f;
+
+	// Fullscreen mode aplay
+	isFullscreen = enabled;
+	if (enabled) {
 		SDL_SetWindowFullscreen(window, true);
+		SDL_SetWindowMouseGrab(window, true);
 	}
-	else
-	{
+	else {
 		SDL_SetWindowFullscreen(window, false);
+		SDL_SetWindowMouseGrab(window, false);
 	}
+
+	SDL_SyncWindow(window);
+
+	// Resize and reposition the cursor in the same relative position
+	int newW, newH;
+	SDL_GetWindowSize(window, &newW, &newH);
+	SDL_GetWindowSizeInPixels(window, &windowWidth, &windowHeight);
+
+	SDL_WarpMouseInWindow(window, relX * newW, relY * newH);
 }

@@ -27,6 +27,12 @@ bool Render::Awake()
 	LOG("Create SDL rendering context");
 	bool ret = true;
 
+	if (TTF_Init() == -1)
+	{
+		LOG("SDL_ttf could not initialize! SDL_ttf Error: %s\n", SDL_GetError());
+		ret = false;
+	}
+
 	int scale = Engine::GetInstance().window->GetScale();
 	SDL_Window* window = Engine::GetInstance().window->window;
 
@@ -67,6 +73,13 @@ bool Render::Awake()
 bool Render::Start()
 {
 	LOG("render start");
+
+	font = TTF_OpenFont("Assets/Fonts/LibreBaskerville-VariableFont_wght.ttf", 24);
+	if (font == nullptr)
+	{
+		LOG("Failed to load font! SDL_ttf Error: %s\n", SDL_GetError());
+	}
+
 	// back background
 	if (!SDL_GetRenderViewport(renderer, &viewport))
 	{
@@ -98,6 +111,17 @@ bool Render::PostUpdate()
 bool Render::CleanUp()
 {
 	LOG("Destroying SDL render");
+
+	//Liberamos la fuente
+	if (font != nullptr)
+	{
+		TTF_CloseFont(font);
+		font = nullptr;
+	}
+
+	//Cerramos la librería
+	TTF_Quit();
+
 	SDL_DestroyRenderer(renderer);
 	return true;
 }
@@ -268,6 +292,27 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 	return ret;
 }
 
+bool Render::DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) const
+{
+	if (texture == nullptr) return false;
+
+	// SDL3 utiliza FRect (float) para renderizar
+	SDL_FRect dstFRect;
+	dstFRect.x = (float)destRect.x;
+	dstFRect.y = (float)destRect.y;
+	dstFRect.w = (float)destRect.w;
+	dstFRect.h = (float)destRect.h;
+
+	// SDL_RenderTexture dibuja la textura estirada al rectángulo de destino
+	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstFRect))
+	{
+		LOG("Cannot draw scaled texture. SDL_Error: %s", SDL_GetError());
+		return false;
+	}
+
+	return true;
+}
+
 bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
 {
 	bool ret = true;
@@ -416,6 +461,52 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 	return true;
 }
 
+bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color) const
+{
+	if (!font || !renderer || !text) return false;
+
+	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	if (!surface) return false;
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (!texture) {
+		SDL_DestroySurface(surface);
+		return false;
+	}
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	float padding = bounds.h * 0.2f;
+	float maxW = bounds.w - (padding * 2);
+	float maxH = bounds.h - (padding * 2);
+
+	float textRatio = (float)surface->w / (float)surface->h;
+	float boxRatio = maxW / maxH;
+
+	float finalW, finalH;
+
+	if (textRatio > boxRatio) {
+		finalW = maxW;
+		finalH = maxW / textRatio;
+	}
+	else {
+		finalH = maxH;
+		finalW = maxH * textRatio;
+	}
+
+	// 4. Centramos el texto exactamente en el medio del botón
+	float finalX = bounds.x + (bounds.w - finalW) / 2.0f;
+	float finalY = bounds.y + (bounds.h - finalH) / 2.0f;
+
+	SDL_FRect dstrect = { finalX, finalY, finalW, finalH };
+
+	SDL_RenderTexture(renderer, texture, nullptr, &dstrect);
+
+	SDL_DestroyTexture(texture);
+	SDL_DestroySurface(surface);
+
+	return true;
+}
 void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;

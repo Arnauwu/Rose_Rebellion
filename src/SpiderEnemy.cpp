@@ -4,7 +4,7 @@
 #include "Audio.h"
 #include "Input.h"
 #include "Render.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -50,7 +50,7 @@ bool SpiderEnemy::Update(float dt) {
     
     if (!active) return true;
 
-    if (Engine::GetInstance().scene->isGamePaused == false)
+    if (Engine::GetInstance().sceneManager->isGamePaused == false)
     {
         GetPhysicsValues();
         Move();
@@ -60,7 +60,7 @@ bool SpiderEnemy::Update(float dt) {
 
     Draw(dt);
 
-    if (Engine::GetInstance().scene->isGamePaused == false)
+    if (Engine::GetInstance().sceneManager->isGamePaused == false)
     {
         if (isStuck) {
             time += dt;
@@ -150,7 +150,7 @@ void SpiderEnemy::ApplyPhysics() {
 
 void SpiderEnemy::Draw(float dt)
 {
-    if (Engine::GetInstance().scene->isGamePaused == false)
+    if (Engine::GetInstance().sceneManager->isGamePaused == false)
     {
         anims.Update(dt);
     }

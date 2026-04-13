@@ -5,10 +5,11 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
+#include "Player.h"
 
 #include <math.h>
 
-#include "Scene.h"
+#include "SceneManager.h"
 
 #include "EntityManager.h"
 #include "SpiderEnemy.h"
@@ -642,21 +643,23 @@ void Map::SpawnEntities()
                 float y = objectNode.attribute("y").as_float();
 
                 if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
-                {
-                    std::shared_ptr<Player> player = Engine::GetInstance().scene->GetPlayer();
+               {
+					Player* player = Engine::GetInstance().sceneManager->GetPlayer();
 
-                    if (player == NULL) //if player doesnt exist
-                    {
-                        player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
-                        player->position = Vector2D(x, y);
-                        //player->Start();
-                    }
-                    else // if player exists
-                    {
-                        player->position = (Vector2D(x, y));
-                    }
-                    Engine::GetInstance().scene->SetPlayer(player);
-                }
+					if (player == NULL) 
+					{
+						std::shared_ptr<Player> newPlayerPtr = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
+
+						player = newPlayerPtr.get();
+
+						player->position = Vector2D(x, y);
+					}
+					else 
+					{
+						player->position = Vector2D(x, y);
+					}
+					Engine::GetInstance().sceneManager->SetPlayer(player);
+				}
                 else if (entityType == std::string("Spider"))
                 {
                     std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));

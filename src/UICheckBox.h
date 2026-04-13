@@ -3,9 +3,10 @@
 
 class UICheckBox : public UIElement {
 public:
-    UICheckBox(int id, SDL_Rect bounds, const char* text);
-    bool Update(float dt) override;
-    bool CleanUp() override;
+	UICheckBox(int id, float anchorX, float anchorY, float wPerc, float hPerc, const char* text);
+	bool Update(float dt) override;
+	void Draw() const override;
+	bool CleanUp() override;
 
-    bool isChecked = false;
+	bool isChecked = false;
 };

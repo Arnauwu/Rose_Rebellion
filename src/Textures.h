@@ -3,7 +3,7 @@
 #include "Module.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
-
+#include <list>
 class Textures : public Module
 {
 public:

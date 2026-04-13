@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "render.h"
 #include "Log.h"
+#include "UIManager.h"
 
 #define MAX_KEYS 300
 
@@ -100,7 +101,10 @@ bool Input::PreUpdate()
 		case SDL_EVENT_WINDOW_RESTORED:
 			windowEvents[WE_SHOW] = true;
 			break;
-
+		case SDL_EVENT_WINDOW_RESIZED:
+		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+			Engine::GetInstance().uiManager->RecalculateAllUI();
+			break;
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			if (event.button.button >= 1 && event.button.button <= NUM_MOUSE_BUTTONS)
 				mouseButtons[event.button.button - 1] = KEY_DOWN;
@@ -156,4 +160,12 @@ Vector2D Input::GetMousePosition()
 Vector2D Input::GetMouseMotion()
 {
 	return Vector2D((float)mouseMotionX, (float)mouseMotionY);
+}
+
+void Input::ClearMouseInput()
+{
+	for (int i = 0; i < NUM_MOUSE_BUTTONS; ++i)
+	{
+		mouseButtons[i] = KEY_IDLE;
+	}
 }

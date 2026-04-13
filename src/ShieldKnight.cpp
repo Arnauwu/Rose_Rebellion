@@ -4,7 +4,7 @@
 #include "Audio.h"
 #include "Input.h"
 #include "Render.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -93,7 +93,7 @@ bool ShieldKnight::Update(float dt)
 
 	if (!active) return true;
 
-	if (Engine::GetInstance().scene->isGamePaused == false && isdead == false)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
 		if (pathFindingCooldown.ReadMSec() > 500)
 		{
@@ -135,7 +135,7 @@ void ShieldKnight::PerformPathfinding()
 	Vector2D pos = GetPosition();
 
 	//Get the position of the player
-	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
+	Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
 
 	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
 	int iter = 0;
@@ -240,7 +240,7 @@ void ShieldKnight::ApplyPhysics() {
 
 void ShieldKnight::Draw(float dt)
 {
-	if (Engine::GetInstance().scene->isGamePaused == false)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
 		anims.Update(dt);
 	}
