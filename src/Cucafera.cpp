@@ -77,7 +77,7 @@ bool Cucafera::Update(float dt)
 
 	if (!active) return true;
 
-	if (Engine::GetInstance().scene->isGamePaused == false && isdead == false)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
 		if (pathFindingCooldown.ReadMSec() > 500)
 		{
@@ -221,7 +221,7 @@ void Cucafera::ApplyPhysics() {
 
 void Cucafera::Draw(float dt)
 {
-	if (Engine::GetInstance().scene->isGamePaused == false)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
 		anims.Update(dt);
 	}

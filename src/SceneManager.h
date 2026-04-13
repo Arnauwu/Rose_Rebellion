@@ -44,6 +44,8 @@ public:
 
     // The boolean you were using to trigger map changes
     bool setNewMap = false;
+    bool isGamePaused = false;
+
 private:
     // The currently active scene object
     SceneBase* currentScene = nullptr;

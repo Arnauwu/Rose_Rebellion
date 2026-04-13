@@ -39,7 +39,7 @@ void GameScene::LoadMap(std::string mapFile)
 bool GameScene::Start() {
 	LOG("Loading Game Scene");
 
-	LoadMap("MapTemplate.tmx");
+	LoadMap("Castle.tmx");
 	if (player != nullptr) {
 		player->position.setX(10);
 		player->position.setY(10);

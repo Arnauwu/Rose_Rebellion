@@ -109,7 +109,7 @@ bool Player::Update(float dt)
 {
 	if (pbody == nullptr) return true;
 
-	if (Engine::GetInstance().scene->isGamePaused == false && !isdead)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
 		
@@ -181,7 +181,7 @@ bool Player::Update(float dt)
 
 bool Player::PostUpdate()
 {
-	if (Engine::GetInstance().scene->isGamePaused == false && !isdead)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		Interact();
 	}
@@ -538,7 +538,7 @@ void Player::ApplyPhysics() {
 
 void Player::Draw(float dt) 
 {
-	if (Engine::GetInstance().scene->isGamePaused == false)
+	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
 		anims.Update(dt);
 	}
