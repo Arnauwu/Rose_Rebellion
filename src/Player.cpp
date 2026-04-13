@@ -39,19 +39,42 @@ bool Player::Start()
 {
 	// Initialize Player parameters
 
-	// Load
-	std::unordered_map<int, std::string> aliases = { {0,"move_right"},
-													 {12,"move_left"},
-													 {24,"idle"},
-													 {36,"attack" },
-													 {48,"death" } ,
-													 {60,"jump"},
-													 {72,"fall" }
-	};
-	anims.LoadFromTSX("Assets/Textures/player.tsx", aliases);
-	anims.SetCurrent("front");
+	// Load Textures
+	if (!glideUnlocked)
+	{
+		std::unordered_map<int, std::string> aliases = { {0,"move_right"},
+												 {11,"move_left"},
+												 {22,"jump_right"},
+												 {33,"fall_right" },
+												 {44,"jump_left" } ,
+												 {55,"fall_left"},
+												 {66,"dash" }
+		};
+		anims.LoadFromTSX("Assets/Textures/Princess/capelessPrincess.tsx", aliases);
+		anims.SetCurrent("idle_right");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/princess.png");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/capelessPrincess.png");
+	}
+	else
+	{
+		std::unordered_map<int, std::string> aliases = { {0,"move_right"},
+												 {11,"move_left"},
+												 {22,"jump_right"},
+												 {33,"fall_right" },
+												 {44,"jump_left" } ,
+												 {55,"fall_left"},
+												 {66,"idle_right" },
+												 {77,"idle_left" } ,
+												 {88,"death_right"},
+												 {99,"death_left" }
+		};
+		anims.LoadFromTSX("Assets/Textures/Princess/princess.tsx", aliases);
+		
+		anims.SetCurrent("idle_right");
+
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
+	}
+
 
 	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
@@ -101,10 +124,22 @@ bool Player::Update(float dt)
 		ApplyPhysics();
 	}
 
-	if (isdead && anims.GetCurrentName() != "death")
+	if (isdead && currentAnimPriority < 99)
 	{
-		anims.GetAnim("death")->SetLoop(false);
-		anims.SetCurrent("death");
+		currentAnimPriority = 99;
+
+		if (lookingRight)
+		{
+			anims.GetAnim("death_right")->SetLoop(false);
+			anims.SetCurrent("death_right");
+		}
+		else
+		{
+			anims.GetAnim("death_left")->SetLoop(false);
+			anims.SetCurrent("death_left");
+		}
+
+
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		if (attackCollider != nullptr)
 		{
@@ -163,9 +198,18 @@ void Player::Move() {
 	{
 		velocity.x = -speed;
 		lookingRight = false;
-		if (anims.GetCurrentName() != "jump" && anims.GetCurrentName() != "attack")
+		if (currentAnimPriority == 3)
+		{
+			anims.SetCurrent("fall_left");
+		}
+		else if (currentAnimPriority == 2)
+		{
+			anims.SetCurrent("jump_left");
+		}
+		else if (currentAnimPriority <= 1)
 		{
 			anims.SetCurrent("move_left");
+			currentAnimPriority = 1;
 		}
 	}
 	// Move Right
@@ -173,16 +217,34 @@ void Player::Move() {
 	{
 		velocity.x = speed;
 		lookingRight = true;
-		if (anims.GetCurrentName() != "jump" && anims.GetCurrentName() != "attack")
+		if (currentAnimPriority == 3)
+		{
+			anims.SetCurrent("fall_right");
+		}
+		else if (currentAnimPriority == 2)
+		{
+			anims.SetCurrent("jump_right");
+		}
+		if (currentAnimPriority <= 1)
 		{
 			anims.SetCurrent("move_right");
+			currentAnimPriority = 1;
 		}
 	}
 	else
 	{
-		if (anims.GetCurrentName() != "jump" && anims.GetCurrentName() != "attack")
+		if (!isAttacking && !isJumping && !isDashing)
 		{
-			anims.SetCurrent("idle");
+			if (lookingRight)
+			{
+				anims.SetCurrent("idle_right");
+			}
+			else
+			{
+				anims.SetCurrent("idle_left");
+			}
+			
+			currentAnimPriority = 0;
 		}
 	}
 }
@@ -226,6 +288,7 @@ void Player::RespawnFromVoid() {
 
 	LOG("Player reset to last safe position: %.2f, %.2f", respawnPosition.getX(), respawnPosition.getY());
 }
+
 void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
 {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
@@ -236,7 +299,15 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			anims.SetCurrent("jump");
+			if (lookingRight == true)
+			{
+				anims.SetCurrent("jump_right");
+			}
+			else
+			{
+				anims.SetCurrent("jump_left");
+			}
+			currentAnimPriority = 2;
 
 			//Extra Jump Force
 			isJumpKeyDown = true;
@@ -245,11 +316,19 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			LOG("Jump");
 		}
 		// Double Jump
-		else if ((isJumping == true || onAir == true) && secondJumpUsed == false)
+		else if ( doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
-			anims.SetCurrent("jump");
+			if (lookingRight == true)
+			{
+				anims.SetCurrent("jump_right");
+			}
+			else
+			{
+				anims.SetCurrent("jump_left");
+			}
+			currentAnimPriority = 2;
 
 			//Extra Jump Force
 			isJumpKeyDown = true;
@@ -276,6 +355,8 @@ void Player::Attack(float dt)
 	{
 		isAttacking = true;
 		anims.SetCurrent("attack");
+		currentAnimPriority = 4;
+
 		currentAttackTime = 0.0f;
 
 		// Calculate the collider's position based on the direction the player is facing
@@ -309,6 +390,7 @@ void Player::Attack(float dt)
 		{
 			isAttacking = false;
 			anims.SetCurrent("idle");
+			currentAnimPriority = 0;
 
 			// Destroy the collider
 			if (attackCollider != nullptr)
@@ -406,9 +488,17 @@ void Player::ApplyPhysics() {
 		}
 	}
 
-	if (velocity.y > 10 && anims.GetCurrentName() != "fall")
+	if (velocity.y > 10 && currentAnimPriority != 3)
 	{
-		anims.SetCurrent("fall");
+		if (lookingRight)
+		{
+			anims.SetCurrent("fall_right");
+		}
+		else
+		{
+			anims.SetCurrent("fall_left");
+		}
+		currentAnimPriority = 3;
 	}
 
 	// Apply velocity via helper
@@ -422,8 +512,6 @@ void Player::Draw(float dt)
 		anims.Update(dt);
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-
-
 
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
@@ -488,6 +576,28 @@ void Player::CameraFollows()
 	}
 }
 
+void Player::UnlockCape()
+{
+	Engine::GetInstance().textures->UnLoad(texture);
+	
+	std::unordered_map<int, std::string> aliases = { {0,"move_right"},
+											 {11,"move_left"},
+											 {22,"jump_right"},
+											 {33,"fall_right" },
+											 {44,"jump_left" } ,
+											 {55,"fall_left"},
+											 {66,"idle_right" },
+											 {77,"idle_left" } ,
+											 {88,"death_right"},
+											 {99,"death_left" }
+	};
+	anims.LoadFromTSX("Assets/Textures/Princess/princess.tsx", aliases);
+	anims.SetCurrent("front");
+
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
+	glideUnlocked = true;
+}
+
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
@@ -521,9 +631,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		if (anims.GetCurrentName() == "jump")
+		if (currentAnimPriority < 1)
 		{
 			anims.SetCurrent("idle");
+			currentAnimPriority = 0;
 		}
 
 		onGround = true;
@@ -632,6 +743,8 @@ void Player::DevTools(float dt)
 	{
 		pbody->SetPosition(96, 96);
 	}
+
+
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
 		pbody->SetPosition(respawnPosition.getX(), respawnPosition.getY());
 		LOG("Player respawned at last save point!");
@@ -639,6 +752,8 @@ void Player::DevTools(float dt)
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f,0.0f });
 	}
+	
+	// GodMode (To Do: Make it work)
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
 		if (!godMode) {
 			LOG("GodMode - Active");
@@ -651,12 +766,15 @@ void Player::DevTools(float dt)
 		godMode = !godMode;
 	}
 
+
+	// Add Skill Point
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
 	{
 		currentForceOrbs++;
 		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
 	}
 
+	// Unlock Skills
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
 		if (currentForceOrbs > 0)
@@ -707,9 +825,15 @@ void Player::DevTools(float dt)
 		}
 		else { LOG("Not Enough Skill Points"); }
 	}
-	if (godMode)
+
+	//if (godMode)
+	//{
+	//	GodModeMove(dt);
+	//}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_9) == KEY_DOWN)
 	{
-		GodModeMove(dt);
+		UnlockCape();
 	}
 }
 
