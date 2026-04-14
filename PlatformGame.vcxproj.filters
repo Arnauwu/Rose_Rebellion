@@ -29,12 +29,6 @@
     <Filter Include="Source Files\Utils\Timers">
       <UniqueIdentifier>{8d1f540a-6649-46c4-839c-612fcdf5c61d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Entities">
-      <UniqueIdentifier>{8bea1a1f-dee6-490f-a719-81df0e62886f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Utils\UI">
-      <UniqueIdentifier>{efb5028b-95e3-4773-be50-6f8bcfa0dc5c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Game\Scenes">
       <UniqueIdentifier>{90ca5fe5-9051-42b1-a5f4-1e9b37629099}</UniqueIdentifier>
     </Filter>
@@ -53,10 +47,62 @@
     <Filter Include="Source Files\Game\Entity\Enemies\SwordKnight">
       <UniqueIdentifier>{e4d0c36d-5642-4552-9802-f8ff8dbbef73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Audio">
+      <UniqueIdentifier>{8a271659-c669-4320-8471-c880a4b44028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\UI Buttons">
+      <UniqueIdentifier>{efb5028b-95e3-4773-be50-6f8bcfa0dc5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Princess">
+      <UniqueIdentifier>{ae25dd22-925e-44bf-b488-672a7d59f723}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Game\Entity\Items">
       <UniqueIdentifier>{3e93a032-1bf8-417b-b573-eff15d7fad10}</UniqueIdentifier>
-    <Filter Include="Source Files\Game\Enemies\FlyingEnemy">
-      <UniqueIdentifier>{66ee72f2-6235-40ea-a463-cc901ab02f87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Items\Orbs">
+      <UniqueIdentifier>{24ae38cd-bbfe-45b8-bbbd-1f07cecaacef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Items\Keys">
+      <UniqueIdentifier>{04111df5-8f55-4a24-abfb-11142d15e3a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Items\SavePoint">
+      <UniqueIdentifier>{aadc31bc-4ed1-4685-a234-7dab5abeb75c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Scenes">
+      <UniqueIdentifier>{a145baf3-efa8-41d1-b8be-95aba32cdaf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Physics">
+      <UniqueIdentifier>{44931151-4432-40ce-8494-3bc6e8cbb433}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Hud">
+      <UniqueIdentifier>{d608546a-48dc-4f93-8b39-a7f9a8825a06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Cucafera M">
+      <UniqueIdentifier>{2a04e679-f34a-4b20-8dce-78675bbadce8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Ninfa">
+      <UniqueIdentifier>{b380b27f-3463-4b40-887d-36c719b09296}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Map">
+      <UniqueIdentifier>{73d510ed-bdf3-4265-9b40-75e19ddcecc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Camera">
+      <UniqueIdentifier>{13cf3693-423d-43d9-a2ff-808138ef8fc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Entities">
+      <UniqueIdentifier>{8bea1a1f-dee6-490f-a719-81df0e62886f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\UI">
+      <UniqueIdentifier>{2239aa76-53bb-4217-af99-8f18bb03d5b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Render">
+      <UniqueIdentifier>{2fc6a1b2-fed3-41e0-9166-c9455548680a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Engine">
+      <UniqueIdentifier>{270afed0-5bd5-4948-9b28-ff4234e9e7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\Inputs &amp; Window">
+      <UniqueIdentifier>{460ea693-e3c8-43e6-90fe-8070aa5a629e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,39 +117,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Audio.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Engine.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Input.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PlatformGame.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Textures.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Window.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Map.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Physics.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hud.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UIManager.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\Animation.cpp">
       <Filter>Source Files\Utils\Animation</Filter>
     </ClCompile>
@@ -128,29 +141,14 @@
     <ClCompile Include="src\Enemy.cpp">
       <Filter>Source Files\Game\Entity\Enemies</Filter>
     </ClCompile>
-    <ClCompile Include="src\CameraController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SpiderEnemy.cpp">
-      <Filter>Source Files\Game\Entity\Enemies</Filter>
-    </ClCompile>
     <ClCompile Include="src\UIButton.cpp">
-      <Filter>Source Files\Utils\UI</Filter>
+      <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClCompile>
     <ClCompile Include="src\UICheckBox.cpp">
-      <Filter>Source Files\Utils\UI</Filter>
+      <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClCompile>
     <ClCompile Include="src\UISlider.cpp">
-      <Filter>Source Files\Utils\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SavePoint.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UIElement.cpp">
-      <Filter>Source Files\Utils\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneManager.cpp">
-      <Filter>Source Files\Game\Scenes</Filter>
+      <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClCompile>
     <ClCompile Include="src\IntroScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
@@ -170,62 +168,74 @@
     <ClCompile Include="src\ShieldKnight.cpp">
       <Filter>Source Files\Game\Entity\Enemies\ShieldKnight</Filter>
     </ClCompile>
+    <ClCompile Include="src\Textures.cpp">
+      <Filter>Source Files\Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio.cpp">
+      <Filter>Source Files\Engine\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render.cpp">
+      <Filter>Source Files\Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIManager.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIElement.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClCompile>
     <ClCompile Include="src\Player.cpp">
-      <Filter>Source Files\Game\Entity</Filter>
+      <Filter>Source Files\Game\Entity\Princess</Filter>
     </ClCompile>
     <ClCompile Include="src\HealthOrb.cpp">
-      <Filter>Source Files\Game\Entity\Items</Filter>
+      <Filter>Source Files\Game\Entity\Items\Orbs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SkillPointOrb.cpp">
+      <Filter>Source Files\Game\Entity\Items\Orbs</Filter>
     </ClCompile>
     <ClCompile Include="src\Item.cpp">
       <Filter>Source Files\Game\Entity\Items</Filter>
     </ClCompile>
-    <ClCompile Include="src\SkillPointOrb.cpp">
-      <Filter>Source Files\Game\Entity\Items</Filter>
+    <ClCompile Include="src\SceneManager.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\SavePoint.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Physics.cpp">
+      <Filter>Source Files\Engine\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="src\FlyingEnemy.cpp">
-      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+    <ClCompile Include="src\Hud.cpp">
+      <Filter>Source Files\Utils\Hud</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpiderEnemy.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ninfa.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Ninfa</Filter>
     </ClCompile>
     <ClCompile Include="src\HomingProjectile.cpp">
-      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\Ninfa</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Map.cpp">
+      <Filter>Source Files\Engine\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CameraController.cpp">
+      <Filter>Source Files\Utils\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>Source Files\Utils\Inputs &amp; Window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Input.cpp">
+      <Filter>Source Files\Utils\Inputs &amp; Window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine.cpp">
+      <Filter>Source Files\Engine\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SavePoint.cpp">
+      <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Audio.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Input.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Module.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Textures.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Window.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Map.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Physics.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UIManager.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hud.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Animation.h">
       <Filter>Source Files\Utils\Animation</Filter>
     </ClInclude>
@@ -253,31 +263,16 @@
     <ClInclude Include="src\Enemy.h">
       <Filter>Source Files\Game\Entity\Enemies</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpiderEnemy.h">
-      <Filter>Source Files\Game\Entity\Enemies</Filter>
-    </ClInclude>
     <ClInclude Include="src\UIButton.h">
-      <Filter>Source Files\Utils\UI</Filter>
+      <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClInclude>
     <ClInclude Include="src\UICheckBox.h">
-      <Filter>Source Files\Utils\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UIElement.h">
-      <Filter>Source Files\Utils\UI</Filter>
+      <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClInclude>
     <ClInclude Include="src\UISlider.h">
-      <Filter>Source Files\Utils\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SavePoint.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SceneBase.h">
-      <Filter>Source Files\Game\Scenes</Filter>
+      <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClInclude>
     <ClInclude Include="src\GameScene.h">
-      <Filter>Source Files\Game\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SceneManager.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="src\MenuScene.h">
@@ -285,9 +280,6 @@
     </ClInclude>
     <ClInclude Include="src\IntroScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CameraController.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Cucafera.h">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera</Filter>
@@ -298,23 +290,74 @@
     <ClInclude Include="src\ShieldKnight.h">
       <Filter>Source Files\Game\Entity\Enemies\ShieldKnight</Filter>
     </ClInclude>
+    <ClInclude Include="src\Textures.h">
+      <Filter>Source Files\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Audio.h">
+      <Filter>Source Files\Engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render.h">
+      <Filter>Source Files\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UIManager.h">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UIElement.h">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClInclude>
     <ClInclude Include="src\Player.h">
-      <Filter>Source Files\Game\Entity</Filter>
+      <Filter>Source Files\Game\Entity\Princess</Filter>
     </ClInclude>
     <ClInclude Include="src\HealthOrb.h">
-      <Filter>Source Files\Game\Entity\Items</Filter>
+      <Filter>Source Files\Game\Entity\Items\Orbs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SkillPointOrb.h">
+      <Filter>Source Files\Game\Entity\Items\Orbs</Filter>
     </ClInclude>
     <ClInclude Include="src\Item.h">
       <Filter>Source Files\Game\Entity\Items</Filter>
     </ClInclude>
-    <ClInclude Include="src\SkillPointOrb.h">
-      <Filter>Source Files\Game\Entity\Items</Filter>
+    <ClInclude Include="src\SceneBase.h">
+      <Filter>Source Files\Engine\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\FlyingEnemy.h">
-      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+    <ClInclude Include="src\SceneManager.h">
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics.h">
+      <Filter>Source Files\Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hud.h">
+      <Filter>Source Files\Utils\Hud</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpiderEnemy.h">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Map.h">
+      <Filter>Source Files\Engine\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CameraController.h">
+      <Filter>Source Files\Utils\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Input.h">
+      <Filter>Source Files\Utils\Inputs &amp; Window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Window.h">
+      <Filter>Source Files\Utils\Inputs &amp; Window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Module.h">
+      <Filter>Source Files\Engine\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine.h">
+      <Filter>Source Files\Engine\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ninfa.h">
+      <Filter>Source Files\Game\Entity\Enemies\Ninfa</Filter>
     </ClInclude>
     <ClInclude Include="src\HomingProjectile.h">
-      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\Ninfa</Filter>
+    </ClInclude>
+    <ClInclude Include="SavePoint.h">
+      <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,7 @@ IntroScene::~IntroScene() {}
 bool IntroScene::Start() {
 	introTimer = 30000.0f; // 3 seconds of intro
 	if (introTexture == nullptr) {
-		introTexture = Engine::GetInstance().textures->Load("Assets/Textures/Fons_Exterior_Castell_1.png");
+		introTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Intro/Intro.jpg");
 	}
 	return true;
 }

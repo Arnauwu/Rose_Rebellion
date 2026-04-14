@@ -153,7 +153,7 @@
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
-    <ClCompile Include="src\FlyingEnemy.cpp" />
+    <ClCompile Include="src\Ninfa.cpp" />
     <ClCompile Include="src\GameScene.cpp" />
     <ClCompile Include="src\HealthOrb.cpp" />
     <ClCompile Include="src\HomingProjectile.cpp" />
@@ -167,7 +167,7 @@
     <ClCompile Include="src\Pathfinding.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\Physics.cpp" />
-    <ClCompile Include="src\PlatformGame.cpp" />
+    <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Render.cpp" />
     <ClCompile Include="src\SavePoint.cpp" />
@@ -185,9 +185,9 @@
     <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\SavePoint.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SavePoint.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\CameraController.h" />
@@ -196,7 +196,7 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
-    <ClInclude Include="src\FlyingEnemy.h" />
+    <ClInclude Include="src\Ninfa.h" />
     <ClInclude Include="src\GameScene.h" />
     <ClInclude Include="src\HealthOrb.h" />
     <ClInclude Include="src\HomingProjectile.h" />
@@ -213,7 +213,6 @@
     <ClInclude Include="src\Physics.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
-    <ClInclude Include="src\SavePoint.h" />
     <ClInclude Include="src\SceneBase.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShieldKnight.h" />

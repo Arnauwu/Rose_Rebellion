@@ -10,8 +10,8 @@
 Pathfinding::Pathfinding(bool ground) 
 {
     // Loads texture to draw the path
-    pathTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/MapMetadata.png");
-    tileX = Engine::GetInstance().textures.get()->Load("Assets/Maps/x.png");
+    pathTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/Pathfinding/MapMetadata.png");
+    tileX = Engine::GetInstance().textures.get()->Load("Assets/Maps/Pathfinding/x.png");
     map = Engine::GetInstance().map.get();
 
     layerNav = map->GetNavigationLayer(ground,&blockedGid,&highCostGid);

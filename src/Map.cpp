@@ -16,7 +16,7 @@
 #include "Cucafera.h"
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
-#include "FlyingEnemy.h"
+#include "Ninfa.h"
 
 #include "SavePoint.h"
 #include "Item.h"
@@ -673,7 +673,7 @@ void Map::SpawnEntities()
 				}
 				else if (entityType == std::string("FlyingEnemy"))
 				{
-					std::shared_ptr<FlyingEnemy> flyingEnemy = std::dynamic_pointer_cast<FlyingEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::FLYING_ENEMY));
+					std::shared_ptr<FlyingEnemy> flyingEnemy = std::dynamic_pointer_cast<FlyingEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA));
 					flyingEnemy->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("SwordKnight"))
