@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="40">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="41">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3219,6 +3219,17 @@
    <point/>
   </object>
   <object id="27" name="Test" type="Test" x="330.285" y="685.418">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="16" name="PlayerSpawns">
+  <properties>
+   <property name="PlayerSpawns" type="bool" value="true"/>
+  </properties>
+  <object id="40" x="38.6667" y="693.333">
+   <properties>
+    <property name="FromRoom" type="file" value="Forest_01.tmx"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

@@ -57,6 +57,11 @@ struct Path
     std::string teleportTo;
 };
 
+struct PlayerSpawnPoint
+{
+    std::string fromRoom;  // Nombre del mapa de origen
+    Vector2D position;     // Posición de spawn
+};
 
 struct ObjectGroup
 {
@@ -137,6 +142,7 @@ struct MapData
     std::list<Door*> doors;
     std::list<Path*> paths;
     std::list<MapLayer*> layers;
+    std::list<PlayerSpawnPoint*> spawnPoints;
 };
 
 class Map : public Module
@@ -180,17 +186,17 @@ public:
 	Vector2D GetMapSizeInPixels();
     Vector2D GetMapSizeInTiles();
 
-
     int GetTileWidth() { return mapData.tileWidth;  }
 
     int GetTileHeight() { return mapData.tileHeight; }
 
     // Entities
     void SpawnEntities();
+    Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
 
     //Door
     std::string DoorInfo(PhysBody* door);
-    std::string PathInfo(PhysBody* path);
+    std::string PathInfo(PhysBody* path   );
 
 public: 
     std::string mapFileName;

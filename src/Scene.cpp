@@ -153,8 +153,9 @@ Vector2D Scene::GetPlayerPosition()
 
 void Scene::LoadMap(std::string mapFile)
 {
+	std::string previousMap = Engine::GetInstance().map->mapFileName;
 
-	//Load the map. 
+	// Obtener el mapa a cargar
 	if (mapFile == "")
 	{
 		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
@@ -169,8 +170,15 @@ void Scene::LoadMap(std::string mapFile)
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
 	Engine::GetInstance().map->SpawnEntities();
 
-	Engine::GetInstance().entityManager->Start();
+	// Obtener posición de spawn basada en el mapa anterior
+	Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
+	
+	if (Engine::GetInstance().scene->GetPlayer() != nullptr)
+	{
+		Engine::GetInstance().scene->GetPlayer()->position = spawnPos;
+	}
 
+		Engine::GetInstance().entityManager->Start();
 }
 
 // *********************************************
