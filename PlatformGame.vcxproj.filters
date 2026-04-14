@@ -32,22 +32,29 @@
     <Filter Include="Source Files\Engine\Entities">
       <UniqueIdentifier>{8bea1a1f-dee6-490f-a719-81df0e62886f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Enemies">
-      <UniqueIdentifier>{baab7345-41be-492a-b7ac-aaa53568ff7a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Utils\UI">
       <UniqueIdentifier>{efb5028b-95e3-4773-be50-6f8bcfa0dc5c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Game\Scenes">
       <UniqueIdentifier>{90ca5fe5-9051-42b1-a5f4-1e9b37629099}</UniqueIdentifier>
-    <Filter Include="Source Files\Game\Enemies\Cucafera">
+    </Filter>
+    <Filter Include="Source Files\Game\Entity">
+      <UniqueIdentifier>{3adfbcf7-69ae-4a9f-9b3b-48ab43e23fba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies">
+      <UniqueIdentifier>{baab7345-41be-492a-b7ac-aaa53568ff7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Cucafera">
       <UniqueIdentifier>{2cb2e297-aabb-4212-b99c-9ab73afbeb27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Enemies\ShieldKnight">
+    <Filter Include="Source Files\Game\Entity\Enemies\ShieldKnight">
       <UniqueIdentifier>{5b1be39f-d31c-4162-aa7f-ad8994d69bfa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Enemies\SwordKnight">
+    <Filter Include="Source Files\Game\Entity\Enemies\SwordKnight">
       <UniqueIdentifier>{e4d0c36d-5642-4552-9802-f8ff8dbbef73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Items">
+      <UniqueIdentifier>{3e93a032-1bf8-417b-b573-eff15d7fad10}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -83,17 +90,11 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Player.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\Map.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Physics.cpp">
       <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Item.cpp">
-      <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="src\Hud.cpp">
       <Filter>Source Files\Engine</Filter>
@@ -123,13 +124,13 @@
       <Filter>Source Files\Engine\Entities</Filter>
     </ClCompile>
     <ClCompile Include="src\Enemy.cpp">
-      <Filter>Source Files\Game\Enemies</Filter>
+      <Filter>Source Files\Game\Entity\Enemies</Filter>
     </ClCompile>
     <ClCompile Include="src\CameraController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SpiderEnemy.cpp">
-      <Filter>Source Files\Game\Enemies</Filter>
+      <Filter>Source Files\Game\Entity\Enemies</Filter>
     </ClCompile>
     <ClCompile Include="src\UIButton.cpp">
       <Filter>Source Files\Utils\UI</Filter>
@@ -157,14 +158,27 @@
     </ClCompile>
     <ClCompile Include="src\MenuScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
     <ClCompile Include="src\Cucafera.cpp">
-      <Filter>Source Files\Game\Enemies\Cucafera</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera</Filter>
     </ClCompile>
     <ClCompile Include="src\SwordKnight.cpp">
-      <Filter>Source Files\Game\Enemies\SwordKnight</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\SwordKnight</Filter>
     </ClCompile>
     <ClCompile Include="src\ShieldKnight.cpp">
-      <Filter>Source Files\Game\Enemies\ShieldKnight</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\ShieldKnight</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Player.cpp">
+      <Filter>Source Files\Game\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HealthOrb.cpp">
+      <Filter>Source Files\Game\Entity\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Item.cpp">
+      <Filter>Source Files\Game\Entity\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SkillPointOrb.cpp">
+      <Filter>Source Files\Game\Entity\Items</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -189,17 +203,11 @@
     <ClInclude Include="src\Window.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Player.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\Map.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics.h">
       <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Item.h">
-      <Filter>Source Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\UIManager.h">
       <Filter>Source Files\Engine</Filter>
@@ -232,10 +240,10 @@
       <Filter>Source Files\Engine\Entities</Filter>
     </ClInclude>
     <ClInclude Include="src\Enemy.h">
-      <Filter>Source Files\Game\Enemies</Filter>
+      <Filter>Source Files\Game\Entity\Enemies</Filter>
     </ClInclude>
     <ClInclude Include="src\SpiderEnemy.h">
-      <Filter>Source Files\Game\Enemies</Filter>
+      <Filter>Source Files\Game\Entity\Enemies</Filter>
     </ClInclude>
     <ClInclude Include="src\UIButton.h">
       <Filter>Source Files\Utils\UI</Filter>
@@ -266,17 +274,30 @@
     </ClInclude>
     <ClInclude Include="src\IntroScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
     <ClInclude Include="src\CameraController.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Cucafera.h">
-      <Filter>Source Files\Game\Enemies\Cucafera</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera</Filter>
     </ClInclude>
     <ClInclude Include="src\SwordKnight.h">
-      <Filter>Source Files\Game\Enemies\SwordKnight</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\SwordKnight</Filter>
     </ClInclude>
     <ClInclude Include="src\ShieldKnight.h">
-      <Filter>Source Files\Game\Enemies\ShieldKnight</Filter>
+      <Filter>Source Files\Game\Entity\Enemies\ShieldKnight</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player.h">
+      <Filter>Source Files\Game\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HealthOrb.h">
+      <Filter>Source Files\Game\Entity\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Item.h">
+      <Filter>Source Files\Game\Entity\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SkillPointOrb.h">
+      <Filter>Source Files\Game\Entity\Items</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

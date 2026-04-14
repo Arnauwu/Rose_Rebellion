@@ -1,4 +1,4 @@
-#include "Item.h"
+#include "HealthOrb.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -9,29 +9,32 @@
 #include "Physics.h"
 #include "EntityManager.h"
 
-Item::Item() : Entity(EntityType::ITEM)
+HealthOrb::HealthOrb() : Entity(EntityType::ITEM)
 {
-	name = "item";
+	name = "HealthOrbs";
 }
 
-Item::~Item() {}
+HealthOrb::~HealthOrb() {}
 
-bool Item::Awake() {
+bool HealthOrb::Awake() {
 	return true;
 }
 
-bool Item::Start() {
+bool HealthOrb::Start() {
 
 	//initilize textures
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/goldCoin.png");
-	
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Item/HealthOrb/HealthOrb.png");
+
 	// Add a physics to an item - initialize the physics body
-	Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
+	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
+	
+	texH = 32; texW = 32;
+	pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
+
+	Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 
 	// Assign collider type
-	pbody->ctype = ColliderType::ITEM;
-
+	pbody->ctype = ColliderType::HEALTH_ORB;
 
 	// Set this class as the listener of the pbody
 	pbody->listener = this;   // so Begin/EndContact can call back to Item
@@ -39,7 +42,7 @@ bool Item::Start() {
 	return true;
 }
 
-bool Item::Update(float dt)
+bool HealthOrb::Update(float dt)
 {
 	if (!active) return true;
 
@@ -49,19 +52,19 @@ bool Item::Update(float dt)
 	position.setX((float)x);
 	position.setY((float)y);
 
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - texH / 2, nullptr, SDL_FLIP_NONE, 0.5f);
 
 	return true;
 }
 
-bool Item::CleanUp()
+bool HealthOrb::CleanUp()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	return true;
 }
 
-bool Item::Destroy()
+bool HealthOrb::Destroy()
 {
 	LOG("Destroying item");
 	active = false;

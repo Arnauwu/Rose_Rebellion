@@ -6,7 +6,11 @@
 #include "Log.h"
 
 #include "Item.h"
+#include "HealthOrb.h"
+#include "SkillPointOrb.h"
+
 #include "SavePoint.h"
+
 #include "SpiderEnemy.h"
 #include "Cucafera.h"
 #include "SwordKnight.h"
@@ -78,6 +82,12 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::ITEM:
 		entity = std::make_shared<Item>();
+		break;
+	case EntityType::HEALTH_ORB:
+		entity = std::make_shared<HealthOrb>();
+		break;
+	case EntityType::SKILL_POINT_ORB:
+		entity = std::make_shared<SkillPointOrb>();
 		break;
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
