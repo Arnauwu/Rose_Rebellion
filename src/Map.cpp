@@ -1,4 +1,3 @@
-
 #include "Engine.h"
 #include "Render.h"
 #include "Textures.h"
@@ -721,6 +720,27 @@ std::string Map::DoorInfo(PhysBody* door)
 		}
 	}
 	return std::string();
+}
+
+Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
+{
+	// Buscar el spawn point que coincida con la sala de origen
+	for (const auto& spawnPoint : mapData.spawnPoints)
+	{
+		if (spawnPoint->fromRoom == fromRoom)
+		{
+			return spawnPoint->position;
+		}
+	}
+
+	// Si no encuentra un spawn point específico, devuelve el primero encontrado
+	if (!mapData.spawnPoints.empty())
+	{
+		return mapData.spawnPoints.front()->position;
+	}
+
+	// Fallback: posición por defecto
+	return Vector2D(96, 96);
 }
 
 
