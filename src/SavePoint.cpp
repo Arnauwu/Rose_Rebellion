@@ -16,9 +16,6 @@ bool SavePoint::Awake(){
 }
 
 bool SavePoint::Start() {
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/GoldCoin.png");
-	//std::unordered_map<int, std::string>aliase = { {0,"off"},{1,"on"} };
-
 	// Savepoint sensor: Activates when the player passes through it. The physics engine sends an OnCollision / OnTrigger notification
 	pbody = Engine::GetInstance().physics->CreateRectangleSensor((int)position.getX(), (int)position.getY(), 32, 32, bodyType::STATIC);// Static object, 32x32 size
 	// Savepoint type

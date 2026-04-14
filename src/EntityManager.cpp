@@ -15,6 +15,7 @@
 #include "Cucafera.h"
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
+#include "FlyingEnemy.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -97,6 +98,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::CUCAFERA:
 		entity = std::make_shared<Cucafera>();
+		break;
+	case EntityType::FLYING_ENEMY:
+		entity = std::make_shared<FlyingEnemy>();
 		break;
 	case EntityType::SWORD_KNIGHT:
 		entity = std::make_shared<SwordKnight>();
