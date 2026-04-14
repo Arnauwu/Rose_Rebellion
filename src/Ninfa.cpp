@@ -11,10 +11,10 @@
 #include "Log.h"
 #include "EntityManager.h"
 
-FlyingEnemy::FlyingEnemy() : Enemy(EntityType::NINFA)
+Ninfa::Ninfa() : Enemy(EntityType::NINFA)
 {
-    name = "FlyingEnemy";
-    currentState = FlyingEnemyState::IDLE;
+    name = "Ninfa";
+    currentState = NinfaState::IDLE;
 
     // Distancia ideal para que el jugador pueda atacarlo
     targetOffsetX = 120.0f; // X
@@ -26,26 +26,26 @@ FlyingEnemy::FlyingEnemy() : Enemy(EntityType::NINFA)
     cooldownDurationMs = 2000.0f; // intervalo de ataque
 }
 
-FlyingEnemy::~FlyingEnemy() {}
+Ninfa::~Ninfa() {}
 
-bool FlyingEnemy::Awake() {
+bool Ninfa::Awake() {
     return true;
 }
 
-bool FlyingEnemy::Start()
+bool Ninfa::Start()
 {
    
     //Enemigo volador sprite
     
-    //std::unordered_map<int, std::string> aliases = {
-    //    {0, "idle"}, {4, "fly"}, {8, "windup"}, {12, "attack"}, {16, "dead"}
-    //};
-    //anims.LoadFromTSX("Assets/Textures/FlyingEnemy.tsx", aliases);
-    //anims.SetCurrent("idle");
+    std::unordered_map<int, std::string> aliases = {
+        {0, "idle"}, {3, "fly"}, {8, "attack"}, {16, "dead"}
+    };
+    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.tsx", aliases);
+    anims.SetCurrent("idle");
  
 
     // Textura temporal para pruebas (testear)
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa_P.png");
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
    
    // Physic Body
     texW = 32; 
@@ -60,8 +60,8 @@ bool FlyingEnemy::Start()
     }
 
     //Parametros basicos del enemigo volador
-    vision = 15;
-    speed = 3.0f;
+    vision = 12;
+    speed = 2.5f;
     knockbackForce = 5.0f;
     maxHealth = 20;
     currentHealth = 20;
@@ -69,13 +69,19 @@ bool FlyingEnemy::Start()
     return true;
 }
 
-bool FlyingEnemy::Update(float dt)
+bool Ninfa::Update(float dt)
 {
     if (!active) return true;
 
     // Lógica mientras está vivo
     if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
     {
+        if (pathFindingCooldown.ReadMSec() > 500)
+        {
+            //PerformPathfinding();
+            pathFindingCooldown.Start();
+        }
+
         GetPhysicsValues();
         Move();
         Knockback();
@@ -83,7 +89,7 @@ bool FlyingEnemy::Update(float dt)
     }
 
     // Lógica al morir
-    if (isdead)
+    if (isdead && anims.GetCurrentName() != "dead" )
     {
         // Se ejecuta solo una vez al morir
         if (!physicsDisabledOnDeath)
@@ -115,11 +121,31 @@ bool FlyingEnemy::Update(float dt)
     Draw(dt);
     return true;
 }
-void FlyingEnemy::GetPhysicsValues() {
+void Ninfa::GetPhysicsValues() {
     velocity = { 0.0f, 0.0f };
 }
 
-void FlyingEnemy::Move() {
+//void Ninfa::PerformPathfinding()
+//{
+//    //Reset path
+//    pathfinding->ResetPath(GetTilePos());
+//
+//    //Get the position of the enemy
+//    Vector2D pos = GetPosition();
+//
+//    //Get the position of the player
+//    Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+//
+//    playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
+//    int iter = 0;
+//
+//    while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
+//    {
+//        pathfinding->PropagateAStar();
+//        iter++;
+//    }
+//}
+void Ninfa::Move() {
     if (isdead || isKnockedback) return;
 
     Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
@@ -137,26 +163,27 @@ void FlyingEnemy::Move() {
     Vector2D moveDir = (targetPos - myPos).normalized();
 
     switch (currentState) {
-    case FlyingEnemyState::IDLE:
+    case NinfaState::IDLE:
     {
         if (distToPlayer < vision * 32.0f) {
-            currentState = FlyingEnemyState::CHASE;
+            currentState = NinfaState::CHASE;
         }
         break;
     }
-    case FlyingEnemyState::CHASE:
+    case NinfaState::CHASE:
     {
+        anims.SetCurrent("fly");
         velocity.x = moveDir.getX() * speed;
         velocity.y = moveDir.getY() * speed;
 
         // Cuando entra en el rango de ataque, se prepara para disparar
         if (distToPlayer <= attackRange) {
-            currentState = FlyingEnemyState::WINDUP;
+            currentState = NinfaState::WINDUP;
             stateTimer.Start();
         }
         break;
     }
-    case FlyingEnemyState::WINDUP:
+    case NinfaState::WINDUP:
     {
         // Mantiene el movimiento mientras carga el ataque
         velocity.x = moveDir.getX() * speed;
@@ -164,18 +191,19 @@ void FlyingEnemy::Move() {
 
         // Finaliza el tiempo de carga
         if (stateTimer.ReadMSec() >= windupDurationMs) {
-            currentState = FlyingEnemyState::ATTACK;
+            currentState = NinfaState::ATTACK;
+            anims.SetCurrent("attack");
         }
         break;
     }
-    case FlyingEnemyState::ATTACK:
+    case NinfaState::ATTACK:
     {
         ShootProjectile(); // Dispara la bala
-        currentState = FlyingEnemyState::COOLDOWN;
+        currentState = NinfaState::COOLDOWN;
         stateTimer.Start();
         break;
     }
-    case FlyingEnemyState::COOLDOWN:
+    case NinfaState::COOLDOWN:
     {
         // Mantiene el movimiento hacia el jugador mientras espera para el siguiente disparo
         velocity.x = moveDir.getX() * speed;
@@ -183,17 +211,17 @@ void FlyingEnemy::Move() {
 
         // Termina el enfriamiento y vuelve a perseguir
         if (stateTimer.ReadMSec() >= cooldownDurationMs) {
-            currentState = FlyingEnemyState::CHASE;
+            currentState = NinfaState::CHASE;
         }
         break;
     }
     }
 }
-void FlyingEnemy::ApplyPhysics() {
+void Ninfa::ApplyPhysics() {
     Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
 }
 
-void FlyingEnemy::Knockback()
+void Ninfa::Knockback()
 {
     if (isdead) return;
 
@@ -213,27 +241,33 @@ void FlyingEnemy::Knockback()
     }
 }
 
-void FlyingEnemy::Draw(float dt)
+void Ninfa::Draw(float dt)
 {
     if (Engine::GetInstance().sceneManager->isGamePaused == false) {
-        // anims.Update(dt);
+        
+        anims.Update(dt);
     }
+    const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
     int x, y;
     pbody->GetPosition(x, y);
+    position.setX((float)x);
+    position.setY((float)y);
 
     // Invierte (voltea) la textura del enemigo según su dirección
     SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
+    if (Engine::GetInstance().physics->GetDebug())
+    {
+        //pathfinding->DrawPath();
+    }
     // Pruebas (Testing)
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x - 16, y - 16, nullptr, sdlFlip, 0.2);
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 0.5);
 
-   
 }
 
-void FlyingEnemy::ShootProjectile() {
+void Ninfa::ShootProjectile() {
     Vector2D spawnPos = GetPosition();
-
     // Genera la bala un poco por delante del enemigo volador para que no colisione consigo mismo
     spawnPos.setX(lookingRight ? spawnPos.getX() + 20.0f : spawnPos.getX() - 20.0f);
 
@@ -242,7 +276,7 @@ void FlyingEnemy::ShootProjectile() {
     Engine::GetInstance().entityManager->AddEntity(bullet);
 }
 
-bool FlyingEnemy::CleanUp() {
+bool Ninfa::CleanUp() {
     // Libera la textura del enemigo
     if (texture != nullptr) {
         Engine::GetInstance().textures->UnLoad(texture);
@@ -252,7 +286,7 @@ bool FlyingEnemy::CleanUp() {
     return Enemy::CleanUp();
 }
 
-void FlyingEnemy::OnCollision(PhysBody* physA, PhysBody* physB)
+void Ninfa::OnCollision(PhysBody* physA, PhysBody* physB)
 {
     // Si está muerto, no hace daño ni recibe más golpes
     if (isdead) return;

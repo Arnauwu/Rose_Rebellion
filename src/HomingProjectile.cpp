@@ -26,7 +26,7 @@ HomingProjectile::~HomingProjectile() {}
 bool HomingProjectile::Start()
 {
    //Textura
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/player1.png");
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa_P.png");
 
    //Fisica
     int radius = 6; // El área de impacto de las balas es más pequeña, lo que da a los jugadores más margen para esquivarlas.
@@ -105,7 +105,7 @@ void HomingProjectile::Draw(float dt)
     // Girar la textura para que apunte hacia la dirección de movimiento
     double angle = std::atan2(currentVelocity.getY(), currentVelocity.getX()) * (180.0 / PI);
 
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x - 8, y - 8, nullptr, SDL_FLIP_NONE, 1.0, angle);
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x - 8, y - 8, nullptr, SDL_FLIP_NONE, 0.1, angle);
 }
 
 Vector2D HomingProjectile::GetPosition()

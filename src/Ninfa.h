@@ -5,7 +5,7 @@
 #include <SDL3/SDL.h>
 #include "Pathfinding.h"
 
-enum class FlyingEnemyState{
+enum class NinfaState{
 	IDLE,
 	CHASE,
 	WINDUP,//Move 
@@ -13,10 +13,10 @@ enum class FlyingEnemyState{
 	COOLDOWN
 };
 
-class FlyingEnemy :public Enemy {
+class Ninfa :public Enemy {
 public:
-	FlyingEnemy();
-	virtual ~FlyingEnemy();
+	Ninfa();
+	virtual ~Ninfa();
 	
 	bool Awake() override;
 	bool Start() override;
@@ -32,10 +32,11 @@ protected:
 	void Draw(float dt); 
 
 private:
+	void PerformPathfinding();
 	void ShootProjectile();
 
 public:
-	FlyingEnemyState currentState;
+	NinfaState currentState;
 
 	float targetOffsetX = 0.0f;
 	float targetOffsetY = 0.0f;

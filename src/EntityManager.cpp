@@ -100,7 +100,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<Cucafera>();
 		break;
 	case EntityType::NINFA:
-		entity = std::make_shared<FlyingEnemy>();
+		entity = std::make_shared<Ninfa>();
 		break;
 	case EntityType::SWORD_KNIGHT:
 		entity = std::make_shared<SwordKnight>();

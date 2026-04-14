@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="43">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="43">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -57,7 +57,7 @@
    </wangset>
   </wangsets>
  </tileset>
- <tileset firstgid="49" name="MapMetadata" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="2" columns="2">
+ <tileset firstgid="49" name="MapMetadata" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="1" columns="2">
   <image source="MapMetadata.png" width="67" height="34"/>
   <tile id="0">
    <properties>
@@ -65,7 +65,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="51" name="goldCoin" tilewidth="32" tileheight="32" tilecount="0" columns="1">
+ <tileset firstgid="50" name="goldCoin" tilewidth="32" tileheight="32" tilecount="0" columns="1">
   <image source="../Textures/goldCoin.png" width="32" height="32"/>
  </tileset>
  <layer id="1" name="Map" width="64" height="24">
@@ -3214,10 +3214,10 @@
    </properties>
    <point/>
   </object>
-  <object id="26" name="SwordKnight" type="SwordKnight" x="1629.15" y="682.974">
+  <object id="26" name="SwordKnight" type="SwordKnight" x="603.817" y="682.974">
    <point/>
   </object>
-  <object id="27" name="Cucafera" type="Cucafera" x="330.285" y="685.418">
+  <object id="27" name="Cucafera" type="Cucafera" x="1238.28" y="693.418">
    <point/>
   </object>
   <object id="40" name="Player" type="Player" x="104" y="694">
@@ -3232,7 +3232,7 @@
    </properties>
    <point/>
   </object>
-  <object id="42" name="FlyingEnemy" type="FlyingEnemy" x="1448.57" y="351.169">
+  <object id="42" name="Ninfa" type="Ninfa" x="1476.57" y="456.502">
    <point/>
   </object>
  </objectgroup>

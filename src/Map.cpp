@@ -671,10 +671,10 @@ void Map::SpawnEntities()
 					std::shared_ptr<Cucafera> cucafera = std::dynamic_pointer_cast<Cucafera>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA));
 					cucafera->position = Vector2D(x, y);
 				}
-				else if (entityType == std::string("FlyingEnemy"))
+				else if (entityType == std::string("Ninfa"))
 				{
-					std::shared_ptr<FlyingEnemy> flyingEnemy = std::dynamic_pointer_cast<FlyingEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA));
-					flyingEnemy->position = Vector2D(x, y);
+					std::shared_ptr<Ninfa> ninfa = std::dynamic_pointer_cast<Ninfa>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA));
+					ninfa->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("SwordKnight"))
 				{
