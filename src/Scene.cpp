@@ -176,6 +176,7 @@ void Scene::LoadMap(std::string mapFile)
 	if (Engine::GetInstance().scene->GetPlayer() != nullptr)
 	{
 		Engine::GetInstance().scene->GetPlayer()->position = spawnPos;
+		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 	}
 
 		Engine::GetInstance().entityManager->Start();
