@@ -140,10 +140,10 @@ void HomingProjectile::Draw(float dt)
     double angle = std::atan2(currentVelocity.getY(), currentVelocity.getX()) * (180.0 / PI);
 
     // 白盒测试：如果有图片，进行旋转渲染
-   /* Engine::GetInstance().render->DrawRotatedTexture(texture, x - 8, y - 8, nullptr, SDL_FLIP_NONE, 1.0, angle);*/
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x - 8, y - 8, nullptr, SDL_FLIP_NONE, 1.0, angle);
 
     // 白盒测试：如果没有图片，你可以用 SDL 画个圆点代表子弹
-     Engine::GetInstance().render->DrawCircle(x, y, 6, 255, 255, 0, 255); // 黄色圆点
+     //Engine::GetInstance().render->DrawCircle(x, y, 6, 255, 255, 0, 255); // 黄色圆点
 }
 
 Vector2D HomingProjectile::GetPosition()

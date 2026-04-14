@@ -19,10 +19,10 @@ FlyingEnemy::FlyingEnemy() : Enemy(EntityType::FLYING_ENEMY)
     // 悬停参数：根据玩家跳跃高度来微调，确保玩家跳起来能砍到它
     targetOffsetX = 120.0f; // 距离玩家的水平距离
     targetOffsetY = 80.0f;  // 距离玩家的垂直高度
-    attackRange = 15.0f;    // 允许攻击的误差范围
+    attackRange = 350.0f;    // 允许攻击的误差范围
 
     // 时间参数
-    windupDurationMs = 800.0f;   // 蓄力时间 0.8秒 (给玩家预警)
+    windupDurationMs = 100.0f;   // 蓄力时间 0.8秒 (给玩家预警)
     cooldownDurationMs = 2000.0f; // 攻击后休息 2秒
 }
 
@@ -46,8 +46,8 @@ bool FlyingEnemy::Start()
     */
 
     // 暂时用 Cucafera 或者一张纯色图代替
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/bullet.png");
-
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/test.png");
+   
     // ==========================================
     // 2. 物理碰撞体设置
     // ==========================================
@@ -109,87 +109,65 @@ void FlyingEnemy::Move() {
 
     Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
     Vector2D myPos = GetPosition();
+    float distToPlayer = (playerPos - myPos).magnitude();
 
-    // ==========================================
-    // 朝向控制：确保怪物永远面朝玩家
-    // ==========================================
+    // 控制朝向
     lookingRight = (playerPos.getX() > myPos.getX());
 
-    // ==========================================
-    // 计算悬停目标点：玩家斜上方
-    // ==========================================
+    // 计算理想的悬停目标点
     float dirX = (playerPos.getX() < myPos.getX()) ? 1.0f : -1.0f;
     Vector2D targetPos(playerPos.getX() + (dirX * targetOffsetX), playerPos.getY() - targetOffsetY);
-    float distToHoverPos = (targetPos - myPos).magnitude();
 
-    // ==========================================
-    // 状态机逻辑
-    // ==========================================
+    // 【统一动作】：无论什么状态，敌人都永远试图往理想悬停点飞，实现“移动射击”！
+    Vector2D moveDir = (targetPos - myPos).normalized();
+
     switch (currentState) {
     case FlyingEnemyState::IDLE:
     {
-        // 玩家进入视野，开始追击
-        float distToPlayer = (playerPos - myPos).magnitude();
-        if (distToPlayer < vision * 32.0f) { // 假设一个 tile 是 32 像素
+        if (distToPlayer < vision * 32.0f) {
             currentState = FlyingEnemyState::CHASE;
         }
         break;
     }
     case FlyingEnemyState::CHASE:
     {
-        if (distToHoverPos <= attackRange) {
-            // 距离达标，开始蓄力
+        // 保持飞行
+        velocity.x = moveDir.getX() * speed;
+        velocity.y = moveDir.getY() * speed;
+
+        // 【修改 3】：只要距离玩家足够近（在射击半径内），不需要停下，直接进入开火准备
+        if (distToPlayer <= attackRange) {
             currentState = FlyingEnemyState::WINDUP;
             stateTimer.Start();
-            // anims.SetCurrent("windup"); // 播放蓄力动画
-        }
-        else {
-            // 飞行怪专属移动逻辑：无视地形直线向目标点飞行
-            // 这样它就会像个幽灵一样丝滑地悬浮跟随玩家
-            Vector2D moveDir = (targetPos - myPos).normalized();
-            velocity.x = moveDir.getX() * speed;
-            velocity.y = moveDir.getY() * speed;
         }
         break;
     }
     case FlyingEnemyState::WINDUP:
     {
-        // 蓄力期间保持静止
-        velocity = { 0.0f, 0.0f };
+        // 【修改 4】：蓄力期间不停下！继续飞行！
+        velocity.x = moveDir.getX() * speed;
+        velocity.y = moveDir.getY() * speed;
 
-        // 【防抽搐优化】：如果玩家跑得太远（超过攻击范围的两倍），打断蓄力继续追
-        if (distToHoverPos > attackRange * 2.5f) {
-            currentState = FlyingEnemyState::CHASE;
-            break;
-        }
-
-        // 蓄力时间到，开火！
+        // 极短的蓄力时间 (100ms) 到了之后，直接攻击
         if (stateTimer.ReadMSec() >= windupDurationMs) {
             currentState = FlyingEnemyState::ATTACK;
-            // anims.SetCurrent("attack");
         }
         break;
     }
     case FlyingEnemyState::ATTACK:
     {
-        ShootProjectile(); // 发射追踪弹
+        ShootProjectile(); // 发射子弹
         currentState = FlyingEnemyState::COOLDOWN;
         stateTimer.Start();
         break;
     }
     case FlyingEnemyState::COOLDOWN:
     {
-        // 【风筝逻辑】：冷却期间依然要跟玩家保持距离
-        if (distToHoverPos > attackRange) {
-            Vector2D moveDir = (targetPos - myPos).normalized();
-            velocity.x = moveDir.getX() * speed;
-            velocity.y = moveDir.getY() * speed;
-        }
-        else {
-            velocity = { 0.0f, 0.0f };
-        }
+        // 冷却期间依然保持飞行（风筝玩家）
+        velocity.x = moveDir.getX() * speed;
+        velocity.y = moveDir.getY() * speed;
 
-        // 冷却结束，重新寻找攻击机会
+        // 冷却结束后，切回 CHASE 状态，如果玩家还在范围内，下一帧就会立刻重新开火！
         if (stateTimer.ReadMSec() >= cooldownDurationMs) {
             currentState = FlyingEnemyState::CHASE;
         }
@@ -197,7 +175,6 @@ void FlyingEnemy::Move() {
     }
     }
 }
-
 void FlyingEnemy::ApplyPhysics() {
     Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
 }
