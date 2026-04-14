@@ -153,7 +153,9 @@
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\FlyingEnemy.cpp" />
     <ClCompile Include="src\GameScene.cpp" />
+    <ClCompile Include="src\HomingProjectile.cpp" />
     <ClCompile Include="src\Hud.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\IntroScene.cpp" />
@@ -181,6 +183,7 @@
     <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\SavePoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
@@ -191,7 +194,9 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\FlyingEnemy.h" />
     <ClInclude Include="src\GameScene.h" />
+    <ClInclude Include="src\HomingProjectile.h" />
     <ClInclude Include="src\Hud.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\IntroScene.h" />

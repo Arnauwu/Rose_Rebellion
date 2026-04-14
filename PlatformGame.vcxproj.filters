@@ -40,6 +40,7 @@
     </Filter>
     <Filter Include="Source Files\Game\Scenes">
       <UniqueIdentifier>{90ca5fe5-9051-42b1-a5f4-1e9b37629099}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Game\Enemies\Cucafera">
       <UniqueIdentifier>{2cb2e297-aabb-4212-b99c-9ab73afbeb27}</UniqueIdentifier>
     </Filter>
@@ -48,6 +49,9 @@
     </Filter>
     <Filter Include="Source Files\Game\Enemies\SwordKnight">
       <UniqueIdentifier>{e4d0c36d-5642-4552-9802-f8ff8dbbef73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Enemies\FlyingEnemy">
+      <UniqueIdentifier>{66ee72f2-6235-40ea-a463-cc901ab02f87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +161,7 @@
     </ClCompile>
     <ClCompile Include="src\MenuScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
     <ClCompile Include="src\Cucafera.cpp">
       <Filter>Source Files\Game\Enemies\Cucafera</Filter>
     </ClCompile>
@@ -165,6 +170,15 @@
     </ClCompile>
     <ClCompile Include="src\ShieldKnight.cpp">
       <Filter>Source Files\Game\Enemies\ShieldKnight</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SavePoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FlyingEnemy.cpp">
+      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HomingProjectile.cpp">
+      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,6 +280,7 @@
     </ClInclude>
     <ClInclude Include="src\IntroScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
     <ClInclude Include="src\CameraController.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -277,6 +292,12 @@
     </ClInclude>
     <ClInclude Include="src\ShieldKnight.h">
       <Filter>Source Files\Game\Enemies\ShieldKnight</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FlyingEnemy.h">
+      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HomingProjectile.h">
+      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
