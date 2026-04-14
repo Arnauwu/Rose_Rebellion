@@ -174,7 +174,10 @@
     <ClCompile Include="src\SavePoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FlyingEnemy.cpp">
+    <ClCompile Include="src\FlyingEnemy.cpp">
+      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HomingProjectile.cpp">
       <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
     </ClCompile>
   </ItemGroup>
@@ -290,7 +293,10 @@
     <ClInclude Include="src\ShieldKnight.h">
       <Filter>Source Files\Game\Enemies\ShieldKnight</Filter>
     </ClInclude>
-    <ClInclude Include="FlyingEnemy.h">
+    <ClInclude Include="src\FlyingEnemy.h">
+      <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HomingProjectile.h">
       <Filter>Source Files\Game\Enemies\FlyingEnemy</Filter>
     </ClInclude>
   </ItemGroup>
