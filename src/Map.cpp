@@ -418,6 +418,17 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 						mapData.doors.push_back(newDoor);
 					}
+					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
+					{
+						collider->ctype = ColliderType::PATH;
+
+						// TODO: Assign Listener
+
+						Door* newDoor = new Door;
+						newDoor->body = collider;
+						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						mapData.doors.push_back(newDoor);
+					}
 					else
 					{
 						collider->ctype = ColliderType::UNKNOWN;
@@ -711,6 +722,7 @@ std::string Map::DoorInfo(PhysBody* door)
 	}
 	return std::string();
 }
+
 
 
 

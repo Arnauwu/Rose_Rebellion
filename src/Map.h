@@ -51,6 +51,11 @@ struct Door
     PhysBody* body;
     std::string teleportTo;
 };
+struct Path
+{
+    PhysBody* body;
+    std::string teleportTo;
+};
 
 
 struct ObjectGroup
@@ -130,6 +135,7 @@ struct MapData
     std::list<TileSet*> tilesets;
     std::list<ObjectGroup*> objectGroups;
     std::list<Door*> doors;
+    std::list<Path*> paths;
     std::list<MapLayer*> layers;
 };
 
@@ -184,6 +190,7 @@ public:
 
     //Door
     std::string DoorInfo(PhysBody* door);
+    std::string PathInfo(PhysBody* path);
 
 public: 
     std::string mapFileName;

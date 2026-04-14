@@ -1675,7 +1675,7 @@
    <tile gid="34"/>
   </data>
  </layer>
- <layer id="10" name="GroundNavLayer" width="50" height="32" visible="0">
+ <layer id="10" name="GroundNavLayer" width="50" height="32">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -3300,7 +3300,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
+ <objectgroup color="#00aa00" id="6" name="Ground">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -3316,7 +3316,7 @@
   <object id="44" x="1475.1" y="576.25" width="61.3" height="14.5"/>
   <object id="45" x="63.35" y="800.25" width="61.3" height="14.5"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
+ <objectgroup color="#aa5500" id="7" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -3335,7 +3335,7 @@
   <object id="57" x="125.182" y="800.178" width="2" height="30.9167"/>
   <object id="58" x="1536.38" y="191.792" width="2.375" height="17.9167"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
+ <objectgroup color="#00aaff" id="8" name="Ceiling">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>

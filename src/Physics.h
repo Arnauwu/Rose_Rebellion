@@ -36,6 +36,7 @@ enum class ColliderType {
     ENEMY,
     SAVEPOINT,
     DOOR,
+    PATH,
     UNKNOWN
     // ..
 };
