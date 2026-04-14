@@ -69,6 +69,9 @@ SDL_Rect AnimationSet::TileIdToRect(int tileid, int columns, int tileW, int tile
 bool AnimationSet::LoadFromTSX(const char* tsxPath,
     const std::unordered_map<int, std::string>& aliases)
 {
+    DeleteSelfInfo();
+
+
     pugi::xml_document doc;
     pugi::xml_parse_result ok = doc.load_file(tsxPath);
     if (!ok) {
@@ -143,4 +146,16 @@ const std::string& AnimationSet::GetCurrentName() const {
 
 bool AnimationSet::Has(const std::string& name) const {
     return clips_.find(name) != clips_.end();
+}
+
+Animation* AnimationSet::GetAnim(std::string name)
+{
+    return &clips_.find(name)->second;
+}
+
+void AnimationSet::DeleteSelfInfo()
+{
+    tileW_ = 0, tileH_ = 0, columns_ = 0;
+    clips_.clear();
+    currentName_.clear();
 }

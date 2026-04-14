@@ -5,18 +5,21 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
+#include "Player.h"
 
 #include <math.h>
 
-#include "Scene.h"
+#include "SceneManager.h"
 
 #include "EntityManager.h"
-#include "Test.h"
 #include "SpiderEnemy.h"
+#include "Cucafera.h"
+#include "SwordKnight.h"
+#include "ShieldKnight.h"
+
 #include "SavePoint.h"
 #include "Item.h"
 
-#include "Test.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -640,32 +643,43 @@ void Map::SpawnEntities()
                 float y = objectNode.attribute("y").as_float();
 
                 if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
-                {
-                    std::shared_ptr<Player> player = Engine::GetInstance().scene->GetPlayer();
+               {
+					Player* player = Engine::GetInstance().sceneManager->GetPlayer();
 
-                    if (player == NULL) //if player doesnt exist
-                    {
-                        player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
-                        player->position = Vector2D(x, y);
-                        //player->Start();
-                    }
-                    else // if player exists
-                    {
-                        player->position = (Vector2D(x, y));
-                    }
-                    Engine::GetInstance().scene->SetPlayer(player);
-                }
-                else if (entityType == std::string("Test"))
-                {
-                    std::shared_ptr<TestEnemy> test = std::dynamic_pointer_cast<TestEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-                    test->position = Vector2D(x, y);
-                    //test->Start();
-                }
+					if (player == NULL) 
+					{
+						std::shared_ptr<Player> newPlayerPtr = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
+
+						player = newPlayerPtr.get();
+
+						player->position = Vector2D(x, y);
+					}
+					else 
+					{
+						player->position = Vector2D(x, y);
+					}
+					Engine::GetInstance().sceneManager->SetPlayer(player);
+				}
                 else if (entityType == std::string("Spider"))
                 {
                     std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
                     spider->position = Vector2D(x, y);
                 }
+				else if (entityType == std::string("Cucafera"))
+				{
+					std::shared_ptr<Cucafera> cucafera = std::dynamic_pointer_cast<Cucafera>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA));
+					cucafera->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("SwordKnight"))
+				{
+					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
+					swordKnight->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("ShieldKnight"))
+				{
+					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
+					shieldKnight->position = Vector2D(x, y);
+				}
             }
         }
     }

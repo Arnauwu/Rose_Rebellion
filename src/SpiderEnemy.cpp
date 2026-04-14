@@ -4,7 +4,7 @@
 #include "Audio.h"
 #include "Input.h"
 #include "Render.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -50,16 +50,17 @@ bool SpiderEnemy::Update(float dt) {
     
     if (!active) return true;
 
-    if (Engine::GetInstance().scene->isGamePaused == false)
+    if (Engine::GetInstance().sceneManager->isGamePaused == false)
     {
         GetPhysicsValues();
         Move();
+		Knockback();
         ApplyPhysics();
     }
 
     Draw(dt);
 
-    if (Engine::GetInstance().scene->isGamePaused == false)
+    if (Engine::GetInstance().sceneManager->isGamePaused == false)
     {
         if (isStuck) {
             time += dt;
@@ -106,6 +107,33 @@ void SpiderEnemy::Move() {
     }
 }
 
+void SpiderEnemy::Knockback()
+{
+    if (isdead) return;
+
+    if (isKnockedback)
+    {
+        anims.SetCurrent("hurt");
+        if (lookingRight)
+        {
+            velocity.x = knockbackForce;
+        }
+        else
+        {
+            velocity.x = -knockbackForce;
+        }
+    }
+    if (knockbackTime <= 0)
+    {
+        isKnockedback = false;
+        knockbackTime = 500.0f;
+    }
+    else
+    {
+        knockbackTime -= Engine::GetInstance().GetDt();
+    }
+}
+
 void SpiderEnemy::RotateFacing() {
     // Ciclo de rotación: DOWN -> LEFT -> UP -> RIGHT -> DOWN
     int next = (int)currentFacing + 1;
@@ -122,7 +150,7 @@ void SpiderEnemy::ApplyPhysics() {
 
 void SpiderEnemy::Draw(float dt)
 {
-    if (Engine::GetInstance().scene->isGamePaused == false)
+    if (Engine::GetInstance().sceneManager->isGamePaused == false)
     {
         anims.Update(dt);
     }

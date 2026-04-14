@@ -13,8 +13,8 @@ class Input;
 class Render;
 class Textures;
 class Audio;
-class Scene;
 class EntityManager;
+class SceneManager;
 class Map;
 class Physics;
 class UIManager;
@@ -95,9 +95,10 @@ public:
 	std::shared_ptr<Render> render;
 	std::shared_ptr<Textures> textures;
 	std::shared_ptr<Audio> audio;
-	std::shared_ptr<Scene> scene;
 
 	std::shared_ptr<EntityManager> entityManager;
+	std::shared_ptr<SceneManager> sceneManager;
+
 	std::shared_ptr<Map> map;
 
 	std::shared_ptr<Physics> physics;

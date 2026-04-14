@@ -1611,7 +1611,7 @@
    <tile gid="10"/>
   </data>
  </layer>
- <layer id="10" name="GroundNavLayer" width="64" height="24" visible="0">
+ <layer id="10" name="GroundNavLayer" width="64" height="24">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -2833,8 +2833,6 @@
    <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
-   <tile gid="49"/>
-   <tile gid="49"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2895,10 +2893,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="49"/>
-   <tile gid="49"/>
-   <tile gid="49"/>
-   <tile gid="49"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2959,10 +2953,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="49"/>
-   <tile gid="49"/>
-   <tile gid="49"/>
-   <tile gid="49"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3023,8 +3013,18 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="49"/>
-   <tile gid="49"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -3214,10 +3214,10 @@
    </properties>
    <point/>
   </object>
-  <object id="26" name="Test" type="Test" x="1629.15" y="682.974">
+  <object id="26" name="SwordKnight" type="SwordKnight" x="1629.15" y="682.974">
    <point/>
   </object>
-  <object id="27" name="Test" type="Test" x="330.285" y="685.418">
+  <object id="27" name="Cucafera" type="Cucafera" x="330.285" y="685.418">
    <point/>
   </object>
   <object id="40" name="Player" type="Player" x="104" y="694">

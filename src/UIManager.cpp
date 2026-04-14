@@ -18,26 +18,27 @@ bool UIManager::Start()
 	return true;
 }
 
-std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, Module* observer, SDL_Rect sliderBounds)
+std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id, const char* text, float anchorX, float anchorY, float wPerc, float hPerc, Module* observer)
 {
-	std::shared_ptr<UIElement> uiElement = std::make_shared<UIElement>();
+	std::shared_ptr<UIElement> uiElement = nullptr;
 
-	// CreateUIElement function that instantiates a new UIElement according to the UIElementType and add it to the list of UIElements
 	switch (type)
 	{
 	case UIElementType::BUTTON:
-		uiElement = std::make_shared<UIButton>(id, bounds, text);
+		uiElement = std::make_shared<UIButton>(id, anchorX, anchorY, wPerc, hPerc, text);
 		break;
 	case UIElementType::CHECKBOX:
-		uiElement = std::make_shared<UICheckBox>(id, bounds, text);
+		uiElement = std::make_shared<UICheckBox>(id, anchorX, anchorY, wPerc, hPerc, text);
 		break;
 	case UIElementType::SLIDER:
-		uiElement = std::make_shared<UISlider>(id, bounds, text);
+		uiElement = std::make_shared<UISlider>(id, anchorX, anchorY, wPerc, hPerc, text);
 		break;
 	}
 
-	uiElement->SetObserver(observer);
-	UIElementsList.push_back(uiElement);
+	if (uiElement != nullptr) {
+		uiElement->SetObserver(observer);
+		UIElementsList.push_back(uiElement);
+	}
 
 	return uiElement;
 }
@@ -67,7 +68,28 @@ bool UIManager::Update(float dt)
 
 	return true;
 }
+bool UIManager::PostUpdate()
+{
+	Draw();
+	return true;
+}
 
+void UIManager::Draw() const
+{
+	for (auto const& uiElement : UIElementsList) {
+		if (uiElement->visible) uiElement->Draw();
+	}
+}
+
+void UIManager::RecalculateAllUI()
+{
+	for (const auto& uiElement : UIElementsList)
+	{
+		if (uiElement != nullptr) {
+			uiElement->RecalculateBounds();
+		}
+	}
+}
 bool UIManager::CleanUp()
 {
 	for (const auto& uiElement : UIElementsList)
@@ -77,5 +99,4 @@ bool UIManager::CleanUp()
 
 	return true;
 }
-
 

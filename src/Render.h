@@ -34,18 +34,24 @@ public:
 	// Drawing
 	bool DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX) const;
 	bool DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, SDL_FlipMode flip = SDL_FLIP_NONE, float adjustableScale = 1, double angle = 0 , int pivotX = 0, int pivotY = 0) const;
+	bool DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) const;
+
 	bool DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
 	bool DrawCircle(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
 	
 	// Method DrawText to render text on screen. Uses SDL3_ttf
 	bool DrawText(const char* text, int x, int y, int w, int h, SDL_Color color) const;
+	bool DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color) const;
 
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
-	// L19 TODO 4: Create a method to know if a rectangle is inside the camera frustum
-	// TODO: Revisar si queremos  esto: bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
+	// Set Texture Color Mod
+	void SetColorMod(SDL_Texture* texture, Uint8* r, Uint8* g, Uint8* b, Uint8 nr, Uint8 ng, Uint8 nb);
+
+	// See if Rect is on screen
+	bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
 
 public:
 

@@ -5,19 +5,15 @@
 
 class UIButton : public UIElement
 {
-
 public:
-
-	UIButton(int id, SDL_Rect bounds, const char* text);
+	UIButton(int id, float anchorX, float anchorY, float wPerc, float hPerc, const char* text);
 	virtual ~UIButton();
 
-	// Called each loop iteration
-	bool Update(float dt);
-
+	bool Update(float dt) override;
+	void Draw() const override;
 	bool CleanUp() override;
 
 private:
-
 	bool canClick = true;
 	bool drawBasic = false;
 };

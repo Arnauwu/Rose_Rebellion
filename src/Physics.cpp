@@ -5,7 +5,7 @@
 #include "math.h"
 #include <SDL3/SDL_keycode.h>
 #include "Render.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Player.h"
 #include "Window.h"
 #include <vector>
@@ -41,7 +41,7 @@ bool Physics::PreUpdate()
 {
     bool ret = true;
 
-    if (Engine::GetInstance().scene->isGamePaused == true)
+    if (Engine::GetInstance().sceneManager->isGamePaused == true)
     {
         return ret;
     }

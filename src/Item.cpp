@@ -4,7 +4,7 @@
 #include "Audio.h"
 #include "Input.h"
 #include "Render.h"
-#include "Scene.h"
+#include "SceneManager.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"

@@ -46,6 +46,10 @@ public:
 
     bool Has(const std::string& name) const;
 
+    Animation* GetAnim(std::string name);
+
+    void DeleteSelfInfo();
+
 private:
     int tileW_ = 0, tileH_ = 0, columns_ = 0;
     std::unordered_map<std::string, Animation> clips_;

@@ -2,8 +2,8 @@
 #include "Engine.h"
 #include "Textures.h"
 #include "Render.h"
-#include "Scene.h" 
-#include "Player.h" 
+#include "SceneManager.h"
+#include "Player.h"
 #include "Window.h"
 #include "Log.h"
 #include <string>
@@ -25,9 +25,9 @@ bool Hud::Start() {
 
 bool Hud::Update(float dt) {
 
-    if (Engine::GetInstance().scene->GetPlayer() == nullptr) return true;
+    if (Engine::GetInstance().sceneManager->GetPlayer() == nullptr) return true;
 
-    Player* player = Engine::GetInstance().scene->GetPlayer().get();
+    Player* player = Engine::GetInstance().sceneManager->GetPlayer();
 
     return true;
 }
