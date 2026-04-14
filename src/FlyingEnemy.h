@@ -8,7 +8,7 @@
 enum class FlyingEnemyState{
 	IDLE,
 	CHASE,
-	WINDUP,//Move anims
+	WINDUP,//Move 
 	ATTACK,
 	COOLDOWN
 };
@@ -23,6 +23,7 @@ public:
 	bool Update(float dt) override;
 	bool CleanUp() override;
 
+	void OnCollision(PhysBody* physA, PhysBody* physB) override;
 protected:
 	void GetPhysicsValues() override;
 	void Move() override;
@@ -43,5 +44,9 @@ public:
 	Timer stateTimer;
 	float windupDurationMs=0.0f;
 	float cooldownDurationMs=0.0f;
+	
+	float deathTimer = 0.0f; 
+	bool physicsDisabledOnDeath = false; 
+	
 
 };
