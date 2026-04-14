@@ -146,6 +146,7 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FlyingEnemy.cpp" />
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="src\SavePoint.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FlyingEnemy.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\CameraController.h" />
