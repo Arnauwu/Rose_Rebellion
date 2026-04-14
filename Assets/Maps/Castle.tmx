@@ -57,16 +57,13 @@
    </wangset>
   </wangsets>
  </tileset>
- <tileset firstgid="49" name="MapMetadata" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="1" columns="2">
-  <image source="MapMetadata.png" width="67" height="34"/>
+ <tileset firstgid="49" name="MapMetadata" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="2" columns="2">
+  <image source="Pathfinding/MapMetadata.png" width="67" height="34"/>
   <tile id="0">
    <properties>
     <property name="Ground" value=""/>
    </properties>
   </tile>
- </tileset>
- <tileset firstgid="50" name="goldCoin" tilewidth="32" tileheight="32" tilecount="0" columns="1">
-  <image source="../Textures/goldCoin.png" width="32" height="32"/>
  </tileset>
  <layer id="1" name="Map" width="64" height="24">
   <properties>
