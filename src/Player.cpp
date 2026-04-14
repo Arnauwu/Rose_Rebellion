@@ -697,7 +697,21 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
 		break;
+	case ColliderType::HEALTH_ORB:
+		if (currentHealth < maxHealth)
+		{
+			currentHealth += 50;
 
+			if (currentHealth > maxHealth)
+			{
+				currentHealth = maxHealth;
+			}
+			physB->listener->Destroy();
+		}
+		break;
+	case ColliderType::SKILL_POINT_ORB:
+		currentForceOrbs++;
+		break;
 	case ColliderType::SAVEPOINT:
 	{
 		LOG("Collision SavePoint");
@@ -709,6 +723,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		respawnPosition = Vector2D((float)spX, (float)spY);
 		break;
 	}  
+
 	case ColliderType::ENEMY:
 		TakeDamage(10); // Contact Damage
 		isKnockedback = true;
@@ -717,6 +732,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
 			break;
+	
+	
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;

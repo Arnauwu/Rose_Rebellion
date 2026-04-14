@@ -155,6 +155,7 @@
     <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\FlyingEnemy.cpp" />
     <ClCompile Include="src\GameScene.cpp" />
+    <ClCompile Include="src\HealthOrb.cpp" />
     <ClCompile Include="src\HomingProjectile.cpp" />
     <ClCompile Include="src\Hud.cpp" />
     <ClCompile Include="src\Input.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="src\SavePoint.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\ShieldKnight.cpp" />
+    <ClCompile Include="src\SkillPointOrb.cpp" />
     <ClCompile Include="src\SpiderEnemy.cpp" />
     <ClCompile Include="src\SwordKnight.cpp" />
     <ClCompile Include="src\Textures.cpp" />
@@ -196,6 +198,7 @@
     <ClInclude Include="src\EntityManager.h" />
     <ClInclude Include="src\FlyingEnemy.h" />
     <ClInclude Include="src\GameScene.h" />
+    <ClInclude Include="src\HealthOrb.h" />
     <ClInclude Include="src\HomingProjectile.h" />
     <ClInclude Include="src\Hud.h" />
     <ClInclude Include="src\Input.h" />
@@ -214,6 +217,7 @@
     <ClInclude Include="src\SceneBase.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShieldKnight.h" />
+    <ClInclude Include="src\SkillPointOrb.h" />
     <ClInclude Include="src\SpiderEnemy.h" />
     <ClInclude Include="src\SwordKnight.h" />
     <ClInclude Include="src\Textures.h" />

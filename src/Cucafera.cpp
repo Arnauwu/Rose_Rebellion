@@ -97,6 +97,13 @@ bool Cucafera::Update(float dt)
 		anims.GetAnim("dead")->SetLoop(false);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
+
+		//Create Health Orb
+		std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
+		healthOrb->position.setX(this->position.getX());
+		healthOrb->position.setY(this->position.getY() - 100);
+		healthOrb->Start();
+
 	}
 
 	Draw(dt);
