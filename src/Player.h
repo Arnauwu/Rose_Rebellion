@@ -134,6 +134,15 @@ public:
 	float attackDuration = 0.25f; //attack duration
 	float currentAttackTime = 0.0f;
 
+	int comboStep = 0;                 // combo
+	float timeSinceLastAttack = 0.0f;  // Temporizador
+	const float comboResetTime = 3.0f; // Reset combo
+
+	// Save attack properties
+	int currentAttackWidth = 0;
+	int currentAttackHeight = 0;
+	int currentAttackOffsetX = 0;
+
 	//Audio fx
 	//int pickCoinFxId;
 
