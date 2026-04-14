@@ -16,12 +16,12 @@ FlyingEnemy::FlyingEnemy() : Enemy(EntityType::FLYING_ENEMY)
     name = "FlyingEnemy";
     currentState = FlyingEnemyState::IDLE;
 
-    // Altura donde esta el enemigo y asegura que el player puede eliminarle
-    targetOffsetX = 120.0f; //X
-    targetOffsetY = 80.0f;  //Y
-    attackRange = 350.0f;    // Parámetros de error
+    // Distancia ideal para que el jugador pueda atacarlo
+    targetOffsetX = 120.0f; // X
+    targetOffsetY = 80.0f;  // Y
+    attackRange = 350.0f;   // Rango de ataque
 
-    // Tiempo de carga y espera
+    // Tiempo de carga y enfriamiento (cooldown)
     windupDurationMs = 100.0f;   // Tiempo de carga
     cooldownDurationMs = 2000.0f; // intervalo de ataque
 }
@@ -35,7 +35,8 @@ bool FlyingEnemy::Awake() {
 bool FlyingEnemy::Start()
 {
    
-    //Enemigo volador sprite()
+    //Enemigo volador sprite
+    
     //std::unordered_map<int, std::string> aliases = {
     //    {0, "idle"}, {4, "fly"}, {8, "windup"}, {12, "attack"}, {16, "dead"}
     //};
@@ -43,22 +44,22 @@ bool FlyingEnemy::Start()
     //anims.SetCurrent("idle");
  
 
-    //Para textear
+    // Textura temporal para pruebas (testear)
     texture = Engine::GetInstance().textures->Load("Assets/Textures/player1.png");
    
-  //Physic Body
-    texW = 32;
+   // Physic Body
+    texW = 32; 
     texH = 32;
     pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
     pbody->listener = this;
     pbody->ctype = ColliderType::ENEMY;
 
-    // Elimina la gravedad para que pueda mantener en cielo
+    // Elimina la gravedad para que pueda mantenerse en el aire
     if (pbody != nullptr && !B2_IS_NULL(pbody->body)) {
         Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
     }
 
-    //Parametro basico del enemigo volador
+    //Parametros basicos del enemigo volador
     vision = 15;
     speed = 3.0f;
     knockbackForce = 5.0f;
@@ -72,7 +73,7 @@ bool FlyingEnemy::Update(float dt)
 {
     if (!active) return true;
 
-    //Si esta vivo
+    // Lógica mientras está vivo
     if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
     {
         GetPhysicsValues();
@@ -81,18 +82,18 @@ bool FlyingEnemy::Update(float dt)
         ApplyPhysics();
     }
 
-    //Cuando se muere
+    // Lógica al morir
     if (isdead)
     {
-        // Vuelva tener la gravedad, para que pueda caer hacia suelo
+        // Se ejecuta solo una vez al morir
         if (!physicsDisabledOnDeath)
         {
-            // para que pueda caer hacia suelo cuando se muere
+            // Vuelve a tener gravedad para que caiga al suelo
             if (pbody != nullptr && !B2_IS_NULL(pbody->body)) {
                 Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f);
             }
 
-            // Dejar de mover cuando muere
+            // Detiene el movimiento horizontal al morir (retiene la velocidad Y de caída)
             b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
             Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, currentVel.y });
 
@@ -102,7 +103,7 @@ bool FlyingEnemy::Update(float dt)
             physicsDisabledOnDeath = true;
         }
 
-        //<Tiempo Desparece cadáver
+        // Temporizador para que desaparezca el cadáver
         deathTimer += dt;
 
         if (deathTimer >= 1250.0f)
@@ -125,14 +126,14 @@ void FlyingEnemy::Move() {
     Vector2D myPos = GetPosition();
     float distToPlayer = (playerPos - myPos).magnitude();
 
-    // Controlar la direccion que orienda el enemigo 
+    // Controla la dirección a la que mira el enemigo
     lookingRight = (playerPos.getX() > myPos.getX());
 
-    // Calcura donde para
+    // Calcula la posición objetivo (dónde debe detenerse/flotar)
     float dirX = (playerPos.getX() < myPos.getX()) ? 1.0f : -1.0f;
     Vector2D targetPos(playerPos.getX() + (dirX * targetOffsetX), playerPos.getY() - targetOffsetY);
 
-    //Para que pueda disparar mientra esta moviendo
+    // Dirección de movimiento hacia la posición objetivo
     Vector2D moveDir = (targetPos - myPos).normalized();
 
     switch (currentState) {
@@ -148,7 +149,7 @@ void FlyingEnemy::Move() {
         velocity.x = moveDir.getX() * speed;
         velocity.y = moveDir.getY() * speed;
 
-        // Cuando llegues al campo de tiro, dispara.
+        // Cuando entra en el rango de ataque, se prepara para disparar
         if (distToPlayer <= attackRange) {
             currentState = FlyingEnemyState::WINDUP;
             stateTimer.Start();
@@ -157,11 +158,11 @@ void FlyingEnemy::Move() {
     }
     case FlyingEnemyState::WINDUP:
     {
-        // Matener el movimiendo cuando esta cargando
+        // Mantiene el movimiento mientras carga el ataque
         velocity.x = moveDir.getX() * speed;
         velocity.y = moveDir.getY() * speed;
 
-        // Tiempo de carga
+        // Finaliza el tiempo de carga
         if (stateTimer.ReadMSec() >= windupDurationMs) {
             currentState = FlyingEnemyState::ATTACK;
         }
@@ -169,18 +170,18 @@ void FlyingEnemy::Move() {
     }
     case FlyingEnemyState::ATTACK:
     {
-        ShootProjectile(); // Disparar bala
+        ShootProjectile(); // Dispara la bala
         currentState = FlyingEnemyState::COOLDOWN;
         stateTimer.Start();
         break;
     }
     case FlyingEnemyState::COOLDOWN:
     {
-        // Cuando esta esperando para que pueda disparar al siguiente bala, matega el movimiento hacia player
+        // Mantiene el movimiento hacia el jugador mientras espera para el siguiente disparo
         velocity.x = moveDir.getX() * speed;
         velocity.y = moveDir.getY() * speed;
 
-        // Dispara después de enfriar.
+        // Termina el enfriamiento y vuelve a perseguir
         if (stateTimer.ReadMSec() >= cooldownDurationMs) {
             currentState = FlyingEnemyState::CHASE;
         }
@@ -199,7 +200,7 @@ void FlyingEnemy::Knockback()
     if (isKnockedback)
     {
         // anims.SetCurrent("hurt");
-        // se retirará una corta distancia cuando resulta herido.
+        // Retrocede una corta distancia al ser herido
         velocity.x = lookingRight ? -knockbackForce : knockbackForce;
     }
 
@@ -221,20 +222,19 @@ void FlyingEnemy::Draw(float dt)
     int x, y;
     pbody->GetPosition(x, y);
 
-    //  Flip la textura del enemigo 
+    // Invierte (voltea) la textura del enemigo según su dirección
     SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-    //Testing
+    // Pruebas (Testing)
     Engine::GetInstance().render->DrawRotatedTexture(texture, x - 16, y - 16, nullptr, sdlFlip, 1.0);
 
-    // 
- 
+   
 }
 
 void FlyingEnemy::ShootProjectile() {
     Vector2D spawnPos = GetPosition();
 
-    // Crear la bala derante del la textura del enemigo volador
+    // Genera la bala un poco por delante del enemigo volador para que no colisione consigo mismo
     spawnPos.setX(lookingRight ? spawnPos.getX() + 20.0f : spawnPos.getX() - 20.0f);
 
     std::shared_ptr<HomingProjectile> bullet = std::make_shared<HomingProjectile>(spawnPos);
@@ -243,7 +243,7 @@ void FlyingEnemy::ShootProjectile() {
 }
 
 bool FlyingEnemy::CleanUp() {
-    // Limpiar la textura del player
+    // Libera la textura del enemigo
     if (texture != nullptr) {
         Engine::GetInstance().textures->UnLoad(texture);
         texture = nullptr;
@@ -254,7 +254,7 @@ bool FlyingEnemy::CleanUp() {
 
 void FlyingEnemy::OnCollision(PhysBody* physA, PhysBody* physB)
 {
-    // Si esta muerto no hace daño al player
+    // Si está muerto, no hace daño ni recibe más golpes
     if (isdead) return;
 
     switch (physB->ctype)

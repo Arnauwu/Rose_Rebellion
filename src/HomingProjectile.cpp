@@ -17,8 +17,8 @@ HomingProjectile::HomingProjectile(Vector2D startPos) : Entity(EntityType::ENEMY
     name = "HomingProjectile";
 
     speed = 6.0f;         // Velocidad de la bala
-    damage = 10;          // Daño de la bala
-    lifeTimeMS = 4000.0f; // AutoDestruye (4s)
+    damage = 10;          // Daño que causa la bala
+    lifeTimeMS = 4000.0f; // Tiempo antes de la autodestrucción (4s)
 }
 
 HomingProjectile::~HomingProjectile() {}
@@ -35,17 +35,17 @@ bool HomingProjectile::Start()
     pbody->listener = this;
     pbody->ctype = ColliderType::ENEMY_ATTACK;
 
-    // Elimina la fisica para que la bala no cae cuando esta volando
+    // Elimina la gravedad para que la bala no caiga mientras vuela
     if (pbody != nullptr && !B2_IS_NULL(pbody->body)) {
         Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
     }
 
-    // Obtiene la posicion del player para que la bala lanza hacia esa direccion
+    // Obtiene la posición del jugador para lanzar la bala en esa dirección
     Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
     Vector2D dir = (playerPos - position).normalized();
-    currentVelocity = dir * speed; // Direccion y la velocidad
+    currentVelocity = dir * speed; // Dirección multiplicada por la velocidad
 
-    //Contar 
+    // Iniciar temporizador
     lifeTimer.Start();
     return true;
 }
@@ -54,15 +54,13 @@ bool HomingProjectile::Update(float dt)
 {
     if (!active || pendingToDelete) return true;
 
-    // La bala autodestruye cuando contador llega 4ss
+    // La bala se autodestruye cuando el contador llega a 4s
     if (lifeTimer.ReadMSec() >= lifeTimeMS) {
         Destroy();
         return true;
     }
 
-    // ==========================================
-    // Mecanica del movimiento de la bala, no cambia la velocidad y direccion despues de lanzar
-    // ==========================================
+    //Mecánica de movimiento : mantiene la velocidad y dirección constantes tras ser lanzada
     Engine::GetInstance().physics->SetLinearVelocity(pbody, { currentVelocity.getX(), currentVelocity.getY() });
 
     Draw(dt);
@@ -75,20 +73,20 @@ void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB)
 
     switch (physB->ctype)
     {
-    //Hacer daño al player
+    // Hacer daño al player
     case ColliderType::PLAYER:
         if (physB->listener != nullptr) {
             physB->listener->TakeDamage(damage);
         }
         Destroy();
         break;
-    //Player puede defenter bala atravez un ataque
+    // El jugador puede destruir/desviar la bala mediante un ataque
     case ColliderType::PLAYER_ATTACK:
         Destroy();
         break;
     case ColliderType::WALL:
     case ColliderType::GROUND:
-    //Si choca a un pared destruye
+    // Si choca contra el escenario, se destruye
     case ColliderType::CEILING:
         Destroy();
         break;
@@ -104,7 +102,7 @@ void HomingProjectile::Draw(float dt)
     int x, y;
     pbody->GetPosition(x, y);
 
-    // Girar la textura de la bala para que la cabeza del textura hacia la direccion que va lanzar la bala
+    // Girar la textura para que apunte hacia la dirección de movimiento
     double angle = std::atan2(currentVelocity.getY(), currentVelocity.getX()) * (180.0 / PI);
 
     Engine::GetInstance().render->DrawRotatedTexture(texture, x - 8, y - 8, nullptr, SDL_FLIP_NONE, 1.0, angle);
