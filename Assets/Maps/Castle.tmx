@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="49">
+<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="50">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -4750,7 +4750,7 @@
   <object id="35" x="0.969697" y="1.35868" width="61.1667" height="221.919"/>
   <object id="36" x="1988.08" y="-1.62617" width="61.1667" height="221.919"/>
  </objectgroup>
- <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
+ <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="25" name="Player" type="Player" x="958.498" y="696.947">
    <point/>
   </object>
@@ -4779,6 +4779,9 @@
    <point/>
   </object>
   <object id="42" name="Ninfa" type="Ninfa" x="1476.57" y="456.502">
+   <point/>
+  </object>
+  <object id="49" name="Key" type="Key" x="312.151" y="697.461">
    <point/>
   </object>
  </objectgroup>

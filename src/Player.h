@@ -151,6 +151,8 @@ public:
 	float safePositionTimer = 0.0f;
 	const float safePositionInterval = 0.2f;
 
+	//Item
+	int keyCount = 0;
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;

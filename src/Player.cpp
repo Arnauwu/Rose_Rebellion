@@ -518,11 +518,29 @@ void Player::Dash()
 
 void Player::Interact()
 {
-	if (canInteract)
+	if (canInteract && interactuableBody != nullptr)
 	{
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		// 确保交互对象是门
+		if (interactuableBody->ctype == ColliderType::DOOR)
 		{
-			Engine::GetInstance().sceneManager->setNewMap = true;
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			{
+				if (keyCount > 0)
+				{
+					// 消耗一把钥匙
+					keyCount--;
+					LOG("Used a key! Keys remaining：%d", keyCount);
+
+					// 触发换图
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+				else
+				{
+					// 没有钥匙时的提示
+					LOG("HINT: You need a key to open this door!");
+					// TODO: 你可以在这里调用 UIManager 在屏幕上显示文字提示
+				}
+			}
 		}
 	}
 }
@@ -729,6 +747,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		LOG("Collision ITEM (Key Picked Up)");
+		// 增加钥匙数量
+		keyCount++;
+		LOG("KeyNum: %d", keyCount);
 		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
 		break;

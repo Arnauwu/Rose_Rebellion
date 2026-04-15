@@ -20,7 +20,7 @@
 
 #include "SavePoint.h"
 #include "Item.h"
-
+#include "Keys.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -685,6 +685,13 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
 					shieldKnight->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("Key"))
+				{
+					std::shared_ptr<Keys> key = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
+					if (key != nullptr) {
+						key->position = Vector2D(x, y);
+					}
 				}
             }
         }
