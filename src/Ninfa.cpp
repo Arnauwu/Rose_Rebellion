@@ -169,8 +169,56 @@ void Ninfa::Move() {
     Vector2D targetPos(playerPos.getX() + (dirX * targetOffsetX), playerPos.getY() - targetOffsetY);
 
     // Dirección de movimiento hacia la posición objetivo
-    Vector2D moveDir = (targetPos - myPos).normalized();
+    Vector2D moveDir = { 0.0f, 0.0f };
+    bool usePathfinding = false;
 
+    if (pathfinding != nullptr && !pathfinding->pathTiles.empty())
+    {
+       
+        float euclideanDistInTiles = distToPlayer / 32.0f;
+        int pathSize = pathfinding->pathTiles.size();
+
+        // Si la ruta de cuadros verdes es mucho más larga que la línea recta, 
+        // significa que hay una pared o un pasillo bloqueando el camino.
+        bool isBlockedByWall = (pathSize > (euclideanDistInTiles * 1.5f + 3.0f));
+
+        // Si el enemigo está atrapado en un muro, O está extremadamente lejos, usa los cuadros verdes
+        if (isBlockedByWall || pathSize > 12) {
+            usePathfinding = true;
+        }
+    }
+
+    // Navegación
+    if (usePathfinding)
+    {
+        Vector2D tilePos = GetTilePos();
+
+        // Avanza consumiendo los cuadros verdes
+        if (pathfinding->pathTiles.back() == tilePos) {
+            pathfinding->pathTiles.pop_back();
+        }
+
+        if (!pathfinding->pathTiles.empty()) {
+            Vector2D nextTile = pathfinding->pathTiles.back();
+            Vector2D nextWorldPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+
+            // Apuntar al centro del Tile
+            nextWorldPos.setX(nextWorldPos.getX() + 16.0f);
+            nextWorldPos.setY(nextWorldPos.getY() + 16.0f);
+
+            moveDir = (nextWorldPos - myPos).normalized();
+        }
+        else {
+            moveDir = (targetPos - myPos).normalized();
+        }
+    }
+    else
+    {
+        // Si no hay muros de por medio, el enemigo te tiene a la vista y vuela fluido a su zona de disparo
+        moveDir = (targetPos - myPos).normalized();
+    }
+   
+    //Estado
     switch (currentState) {
     case NinfaState::IDLE:
     {
