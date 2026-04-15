@@ -28,7 +28,8 @@ private:
 	void ApplyPhysics() override;
 	void Draw(float dt);
 
-	void BossAttack();
+	void SwordAttack();
+	void ShieldDash();
 
 public:
 
@@ -36,6 +37,16 @@ public:
 	bool isAttacking = false;
 	Timer startAttack;
 	float attackCooldown = 1000.0f; // Time between attack
+
+	bool isDashing = false;
+	Timer dashTimer;
+	float dashCooldown = 600.0f;
+
+	// NUEVO: Variables del Combo Fijo
+	int attackStep = 0;         // 0 = Ataque 1, 1 = Ataque 2, 2 = Embestida
+	bool isResting = false;     // Si está cansado
+	Timer restTimer;            // Reloj para contar los 3 segundos
+	float restDuration = 3000.0f;
 
 	int deathSoundId;
 };

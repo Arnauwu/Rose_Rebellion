@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "Timer.h"
 
 KnightBoss::KnightBoss() : Enemy(EntityType::KNIGHT_BOSS) // ASIGNAR TU TIPO DE ENTIDAD PARA EL BOSS SI LO TIENES EN EL ENUM
 {
@@ -133,59 +134,85 @@ void KnightBoss::Move() {
 
 	Vector2D tilePos = GetTilePos();
 
-	// Si está en medio de un ataque, no se mueve
+	// 0. Si está descansando (3 segundos)
+	if (isResting) {
+		velocity.x = 0; // No se mueve
+		anims.SetCurrent("idle"); // Puedes poner una animación de "cansado" aquí si la tienes
+
+		if (restTimer.ReadMSec() >= restDuration) {
+			isResting = false; // Termina el descanso
+			attackStep = 0;    // Reinicia el combo al primer ataque
+		}
+		return;
+	}
+
+	// 1. Si está dando un espadazo
 	if (isAttacking) {
-		BossAttack();
+		SwordAttack();
 		return;
 	}
 
-	// Si el jugador está muy cerca (por ejemplo 2 tiles) y no está retrocediendo, ataca
-	if (playerTileDist <= 2 && isKnockedback == false) {
-		BossAttack();
+	// 2. Si está en medio de una embestida
+	if (isDashing) {
+		ShieldDash();
 		return;
 	}
 
-	// Movimiento si ha detectado al jugador
+	// 3. Tomar decisión si estás muy cerca
+	if (playerTileDist <= 3 && !isKnockedback) {
+
+		// Mirar hacia el jugador
+		Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+		lookingRight = (playerPos.getX() > position.getX());
+
+		// EJECUTAR EL PASO DEL COMBO CORRESPONDIENTE
+		if (attackStep == 0 || attackStep == 1) {
+			isAttacking = true;
+			startAttack.Start();
+			SwordAttack();
+		}
+		else if (attackStep == 2) {
+			isDashing = true;
+			dashTimer.Start();
+			ShieldDash();
+		}
+		return;
+	}
+
+	// 4. Movimiento de persecución normal (si estás lejos)
 	if (pathfinding->pathTiles.empty() && isKnockedback == false)
 	{
 		anims.SetCurrent("idle");
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 2 && playerTileDist < vision && isKnockedback == false)
+	else if (playerTileDist >= 3 && playerTileDist < vision && isKnockedback == false)
 	{
 		anims.SetCurrent("walk");
 
-		if (pathfinding->pathTiles.back() == tilePos)
-		{
+		if (pathfinding->pathTiles.back() == tilePos) {
 			pathfinding->pathTiles.pop_back();
 			if (pathfinding->pathTiles.empty()) { return; }
 		}
 
 		Vector2D nextTile = pathfinding->pathTiles.back();
 
-		if (nextTile.getX() > tilePos.getX())
-		{
+		if (nextTile.getX() > tilePos.getX()) {
 			velocity.x = speed;
-			lookingRight = !true; // Ajusta según hacia dónde mire la textura por defecto
+			lookingRight = !true;
 		}
-		else if (nextTile.getX() < tilePos.getX())
-		{
+		else if (nextTile.getX() < tilePos.getX()) {
 			velocity.x = -speed;
 			lookingRight = !false;
 		}
-		else
-		{
+		else {
 			velocity.x = 0;
 		}
 
-		if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
-		{
-			velocity.x *= 5; // Salto o superación de obstáculo
+		if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1)) {
+			velocity.x *= 5;
 		}
 	}
-
-	return;
 }
 
 void KnightBoss::Knockback()
@@ -249,24 +276,43 @@ void KnightBoss::Draw(float dt)
 	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 1.0); // Modifiqué el scale a 1.0
 }
 
-void KnightBoss::BossAttack()
+void KnightBoss::SwordAttack()
 {
-	// Iniciar ataque
-	if (isAttacking == false && isKnockedback == false)
-	{
-		isAttacking = true;
+	if (isAttacking) {
 		anims.SetCurrent("attack");
-		startAttack.Start();
-		velocity.x = 0; // Se detiene para atacar
-		return;
-	}
+		velocity.x = 0; // Se queda quieto para el espadazo
+		damage = 10;    // Hace daño normal
 
-	// Lógica durante o finalizando el ataque
-	if (isAttacking && startAttack.ReadMSec() >= attackCooldown)
-	{
-		// Termina el ataque después del cooldown
-		isAttacking = false;
-		anims.SetCurrent("idle");
+		// Terminar ataque
+		if (startAttack.ReadMSec() >= attackCooldown) {
+			isAttacking = false;
+			anims.SetCurrent("idle");
+
+			// NUEVO: Avanzamos al siguiente paso del combo
+			attackStep++;
+		}
+	}
+}
+
+void KnightBoss::ShieldDash()
+{
+	if (isDashing) {
+		anims.SetCurrent("walk");
+		damage = 0; // Solo empuja, no hace daño
+
+		// Sale disparado hacia donde mira
+		velocity.x = lookingRight ? (speed * 3.5f) : (-speed * 3.5f);
+
+		// Terminar embestida
+		if (dashTimer.ReadMSec() >= dashCooldown) {
+			isDashing = false;
+			damage = 10; // Restaurar el daño normal
+			anims.SetCurrent("idle");
+
+			// NUEVO: Al terminar la embestida, se cansa por 3 segundos
+			isResting = true;
+			restTimer.Start();
+		}
 	}
 }
 
