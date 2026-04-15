@@ -17,6 +17,7 @@
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
 #include "Ninfa.h"
+#include "KnightBoss.h"
 
 #include "SavePoint.h"
 #include "Item.h"

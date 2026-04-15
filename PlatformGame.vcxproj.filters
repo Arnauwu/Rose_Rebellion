@@ -104,6 +104,9 @@
     <Filter Include="Source Files\Utils\Inputs &amp; Window">
       <UniqueIdentifier>{460ea693-e3c8-43e6-90fe-8070aa5a629e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\KnightBoss">
+      <UniqueIdentifier>{f2e8abfa-aa7e-4d71-8e84-49c21c83447e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -234,6 +237,9 @@
     <ClCompile Include="src\SavePoint.cpp">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClCompile>
+    <ClCompile Include="KnightBoss.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -358,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="SavePoint.h">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
+    </ClInclude>
+    <ClInclude Include="KnightBoss.h">
+      <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
