@@ -878,10 +878,10 @@ void Player::DevTools(float dt)
 		else { LOG("Not Enough Skill Points"); }
 	}
 
-	//if (godMode)
-	//{
-	//	GodModeMove(dt);
-	//}
+	if (godMode)
+	{
+		GodModeMove(dt);
+	}
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_9) == KEY_DOWN)
 	{

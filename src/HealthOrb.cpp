@@ -23,7 +23,7 @@ bool HealthOrb::Awake() {
 bool HealthOrb::Start() {
 
 	//initilize textures
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Item/HealthOrb/HealthOrb.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/HealthOrb/HealthOrb.png");
 
 	// Add a physics to an item - initialize the physics body
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);

@@ -35,6 +35,10 @@ bool SceneManager::PreUpdate() {
 
 bool SceneManager::Update(float dt) {
     if (currentScene != nullptr) {
+        if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN)
+        {
+            isGamePaused = !isGamePaused;
+        }
         return currentScene->Update(dt);
     }
     return true;

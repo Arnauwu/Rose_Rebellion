@@ -79,6 +79,7 @@ bool GameScene::Start() {
 bool GameScene::Update(float dt) {
 	auto input = Engine::GetInstance().input;
 
+
 	// --- SUB-MENU INPUT HANDLING ---
 	// Toggle menus based on keyboard shortcuts
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
