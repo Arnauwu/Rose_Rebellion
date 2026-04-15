@@ -691,6 +691,9 @@ void Map::SpawnEntities()
 				Properties a;
 				LoadProperties(objectNode, a);
 
+				
+
+				printf("PLAYERSPAWN FOUND");
 				PlayerSpawnPoint* newSpawn = new PlayerSpawnPoint;
 				newSpawn->fromRoom = a.GetProperty("FromRoom")->value2;
 				newSpawn->position.setX(x);

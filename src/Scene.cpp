@@ -154,6 +154,7 @@ Vector2D Scene::GetPlayerPosition()
 void Scene::LoadMap(std::string mapFile)
 {
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
+	printf("prevoius map : %s", previousMap);
 
 	// Obtener el mapa a cargar
 	if (mapFile == "")
