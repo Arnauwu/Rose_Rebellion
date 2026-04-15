@@ -119,6 +119,11 @@ bool Player::Update(float dt)
 		
 		Jump(dt);
 
+		timeSinceLastAttack += dt / 1000.0f; // Convert dt to seconds
+		if (timeSinceLastAttack >= comboResetTime) {
+			comboStep = 0; // Reset combo
+		}
+
 		Attack(dt);
 	
 		Glide();
@@ -389,20 +394,40 @@ void Player::Attack(float dt)
 		currentAnimPriority = 4;
 
 		currentAttackTime = 0.0f;
+		timeSinceLastAttack = 0.0f;
 
-		// Calculate the collider's position based on the direction the player is facing
-		int attackOffsetX = lookingRight ? 32 : -32;
-		int attackX = position.getX() + attackOffsetX;
+		if (comboStep == 0)
+		{
+			// first attack
+			damage = 10;
+			currentAttackWidth = 20;
+			currentAttackHeight = 32;
+			currentAttackOffsetX = 32;
+			LOG("Attack 1 started (Normal)");
+		}
+		else
+		{
+			// second attack
+			damage = 15;
+			currentAttackWidth = 45;
+			currentAttackHeight = 40;
+			currentAttackOffsetX = 45;
+			LOG("Attack 2 started (Heavy)");
+		}
+
+		// combo
+		comboStep = (comboStep + 1) % 2;
+
+		// calculate current attack
+		int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
+		int attackX = position.getX() + offsetX;
 		int attackY = position.getY();
 
-		// Create the attack collider as a kinematic sensor(width 20, height 32)
-		damage = 10;
-		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, 20, 32, bodyType::KINEMATIC);
+		// create collider attack
+		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
 		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
 		attackCollider->listener = this;
 
-		// Optional: Change animation anims.SetCurrent(�attack�);
-		LOG("Attack started");
 	}
 
 	// 2. Control the duration of the attack
@@ -565,13 +590,23 @@ void Player::Draw(float dt)
 		int attackX, attackY;
 		attackCollider->GetPosition(attackX, attackY);
 
-		// Box2D devuelve la posici�n desde el centro del collider. 
-		// Calculamos la esquina superior izquierda (Restamos la mitad del ancho(20) y alto(32) que le dimos)
-		SDL_Rect attackRect = { attackX - 10, attackY - 16, 20, 32 };
+		SDL_Rect attackRect = {
+			attackX - (currentAttackWidth / 2),
+			attackY - (currentAttackHeight / 2),
+			currentAttackWidth,
+			currentAttackHeight
+		};
 
-		// Dibuja un rect�ngulo rojo (R=255, G=0, B=0, Alpha=150)
-		// Nota: Dependiendo de tu Render.h, puede que te pida m�s par�metros al final como (..., true, true) para 'filled' y 'use_camera'
-		Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
+		// Draw diferent color combo
+		if (currentAttackWidth == 20) {
+			// fisrt attack red
+			Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
+		}
+		else {
+			// second attack blue
+			Engine::GetInstance().render->DrawRectangle(attackRect, 0, 150, 255, 150);
+		}
+
 	}
 }
 
