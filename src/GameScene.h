@@ -14,16 +14,35 @@ enum class GameMenuTab {
     INVENTORY,
     MAP,
     SKILL_TREE,
-    SETTINGS
+
+    PAUSE_MAIN,
+    PAUSE_OPTIONS
 };
 
 enum class GameUI_ID {
+    // Top Bar Tabs
     BTN_TAB_INVENTORY = 100,
     BTN_TAB_MAP,
     BTN_TAB_SKILLS,
-    BTN_TAB_SETTINGS,
-    BTN_RESUME 
+
+    // Pause Menu
+    BTN_PAUSE_RESUME,
+    BTN_PAUSE_OPTIONS,
+    BTN_PAUSE_MAINMENU,
+
+    // Pause Options
+    SLD_MUSIC,
+    SLD_FX,
+    CHK_FULLSCREEN,
+    BTN_OPTIONS_BACK,
+
+    // ITEMS UI
+    INV_ITEM_KEY = 200,
+    INV_ITEM_ORB,
+    INV_ITEM_GLIDE,
+    INV_DESC_TEXT
 };
+
 
 struct SDL_Texture;
 
@@ -48,8 +67,12 @@ public:
     Vector2D GetPlayerPosition() override;
     Player* GetPlayer() override;
     void SetPlayer(Player* p) override;
+    void LoadTextureIfNull(SDL_Texture*& texture, const char* path); 
 
-    SDL_Texture* gameMenuBackground = nullptr;
+    SDL_Texture* t_mapUI = nullptr;
+    SDL_Texture* t_inventoryUI = nullptr;
+    SDL_Texture* t_skilltreeUI = nullptr;
+    SDL_Texture* t_pauseUI = nullptr;
 
 private:
     // Helper functions for the Game Menu
@@ -65,9 +88,12 @@ private:
     GameMenuTab currentMenuTab = GameMenuTab::NONE;
 
     // UI Groups for the different tabs
-    std::vector<std::shared_ptr<UIElement>> topBarElements; 
+    std::vector<std::shared_ptr<UIElement>> topBarElements;
     std::vector<std::shared_ptr<UIElement>> inventoryUI;
     std::vector<std::shared_ptr<UIElement>> mapUI;
     std::vector<std::shared_ptr<UIElement>> skillUI;
-    std::vector<std::shared_ptr<UIElement>> settingsUI;
+
+    // Pause Vectos
+    std::vector<std::shared_ptr<UIElement>> pauseMainUI;
+    std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
 };
