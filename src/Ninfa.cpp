@@ -55,9 +55,18 @@ bool Ninfa::Start()
     pbody->ctype = ColliderType::ENEMY;
 
     // Elimina la gravedad para que pueda mantenerse en el aire
-    if (pbody != nullptr && !B2_IS_NULL(pbody->body)) {
+    if (pbody != nullptr && !B2_IS_NULL(pbody->body)) 
+    {
         Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
     }
+
+    // Initialize pathfinding
+    pathfinding = std::make_shared<Pathfinding>(false);
+
+    //Reset pathfinding
+    pathfinding->ResetPath(GetTilePos());
+
+    pathFindingCooldown.Start();
 
     //Parametros basicos del enemigo volador
     vision = 12;
@@ -78,7 +87,7 @@ bool Ninfa::Update(float dt)
     {
         if (pathFindingCooldown.ReadMSec() > 500)
         {
-            //PerformPathfinding();
+            PerformPathfinding();
             pathFindingCooldown.Start();
         }
 
@@ -125,26 +134,26 @@ void Ninfa::GetPhysicsValues() {
     velocity = { 0.0f, 0.0f };
 }
 
-//void Ninfa::PerformPathfinding()
-//{
-//    //Reset path
-//    pathfinding->ResetPath(GetTilePos());
-//
-//    //Get the position of the enemy
-//    Vector2D pos = GetPosition();
-//
-//    //Get the position of the player
-//    Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
-//
-//    playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
-//    int iter = 0;
-//
-//    while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
-//    {
-//        pathfinding->PropagateAStar();
-//        iter++;
-//    }
-//}
+void Ninfa::PerformPathfinding()
+{
+    //Reset path
+    pathfinding->ResetPath(GetTilePos());
+
+    //Get the position of the enemy
+    Vector2D pos = GetPosition();
+
+    //Get the position of the player
+    Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+
+    playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
+    int iter = 0;
+
+    while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
+    {
+        pathfinding->PropagateAStar();
+        iter++;
+    }
+}
 void Ninfa::Move() {
     if (isdead || isKnockedback) return;
 
@@ -259,7 +268,7 @@ void Ninfa::Draw(float dt)
 
     if (Engine::GetInstance().physics->GetDebug())
     {
-        //pathfinding->DrawPath();
+        pathfinding->DrawPath();
     }
     // Pruebas (Testing)
     Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 0.5);

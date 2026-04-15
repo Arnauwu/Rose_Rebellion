@@ -607,8 +607,8 @@ MapLayer* Map::GetNavigationLayer(bool ground, int* blockedGID, int* highGID)
 				return layer;
 			}
 			else  if (!ground &&
-				layer->properties.GetProperty("Fly") != NULL &&
-				layer->properties.GetProperty("Fly")->value)
+				layer->properties.GetProperty("Air") != NULL &&
+				layer->properties.GetProperty("Air")->value)
 			{
 				return layer;
 			}
