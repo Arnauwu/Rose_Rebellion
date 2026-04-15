@@ -58,6 +58,7 @@ struct ObjectGroup
     struct Object
     {
         float id, x, y, width, height;
+        unsigned int gid;
         std::vector<b2Vec2> points;
         Properties properties;
     };
@@ -82,7 +83,7 @@ struct MapLayer
     std::string name;
     int width;
     int height;
-    std::vector<int> tiles;
+    std::vector<unsigned int> tiles;
     Properties properties;
 
     // Function to get the gid value of i,j
