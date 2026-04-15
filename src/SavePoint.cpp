@@ -1,17 +1,19 @@
-﻿#include"SavePoint.h"
-#include"Engine.h"
-#include"Textures.h"
-#include"Render.h"
-#include"Log.h"
-#include"Physics.h"
+
+#include "SavePoint.h"
+
+#include "Engine.h"
+#include "Textures.h"
+#include "Render.h"
+#include "Log.h"
+#include "Physics.h"
 
 SavePoint::SavePoint() :Entity(EntityType::SAVEPOINT) {
 	name = "SavePoint";
 }
 
-SavePoint::~SavePoint(){}
+SavePoint::~SavePoint() {}
 
-bool SavePoint::Awake(){
+bool SavePoint::Awake() {
 	return true;
 }
 
@@ -21,7 +23,7 @@ bool SavePoint::Start() {
 	// Savepoint type
 	pbody->ctype = ColliderType::SAVEPOINT;
 	// Bind a listener so this object can receive and handle collision events.
-	pbody->listener=this;
+	pbody->listener = this;
 
 	return true;
 
@@ -36,7 +38,7 @@ bool SavePoint::Update(float dt) {
 	return true;
 }
 
-bool SavePoint::CleanUp() 
+bool SavePoint::CleanUp()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().physics->DeletePhysBody(pbody);
@@ -51,3 +53,4 @@ void SavePoint::Activate() {
 		texture = Engine::GetInstance().textures->Load("Assets/Textures/test.png");
 	}
 }
+

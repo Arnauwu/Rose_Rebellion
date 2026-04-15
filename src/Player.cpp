@@ -50,10 +50,10 @@ bool Player::Start()
 												 {55,"fall_left"},
 												 {66,"dash" }
 		};
-		anims.LoadFromTSX("Assets/Textures/Princess/capelessPrincess.tsx", aliases);
+		anims.LoadFromTSX("Assets/Textures/Princess/Princess_Capeless.tsx", aliases);
 		anims.SetCurrent("idle_right");
 
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/capelessPrincess.png");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/Princess_Capeless.png");
 	}
 	else
 	{
@@ -68,11 +68,11 @@ bool Player::Start()
 												 {88,"death_right"},
 												 {99,"death_left" }
 		};
-		anims.LoadFromTSX("Assets/Textures/Princess/princess.tsx", aliases);
+		anims.LoadFromTSX("Assets/Textures/Princess/Princess.tsx", aliases);
 		
 		anims.SetCurrent("idle_right");
 
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/Princess.png");
 	}
 
 

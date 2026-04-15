@@ -41,11 +41,11 @@ bool ShieldKnight::CleanUp()
 bool ShieldKnight::Start()
 {
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{8,"hurt"},{16,"dead"} };
-	anims.LoadFromTSX("Assets/Textures/Cucafera.tsx", aliases);
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Cucafera.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
 
 	//Load Audio
 

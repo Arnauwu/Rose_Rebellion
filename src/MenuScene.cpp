@@ -13,7 +13,7 @@ bool MenuScene::Start() {
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 
 	if (menuBackground == nullptr) {
-		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/Fons_Exterior_Castell_1.png");
+		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
 	}
 	RecalculateBackgroundScale();
 
