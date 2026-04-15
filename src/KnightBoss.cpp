@@ -10,6 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "Timer.h"
+#include "Physics.h"
 
 KnightBoss::KnightBoss() : Enemy(EntityType::KNIGHT_BOSS) // ASIGNAR TU TIPO DE ENTIDAD PARA EL BOSS SI LO TIENES EN EL ENUM
 {
@@ -257,11 +258,8 @@ void KnightBoss::Draw(float dt)
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
-	if (!lookingRight)
-	{
-		sdlFlip = SDL_FLIP_HORIZONTAL;
-	}
+	// MODIFICADO: Invertimos el flip para que coincida con el asset de la Ninfa
+	SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -273,23 +271,43 @@ void KnightBoss::Draw(float dt)
 		pathfinding->DrawPath();
 	}
 
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 1.0); // Modifiqué el scale a 1.0
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 1.0);
 }
 
 void KnightBoss::SwordAttack()
 {
 	if (isAttacking) {
 		anims.SetCurrent("attack");
-		velocity.x = 0; // Se queda quieto para el espadazo
-		damage = 10;    // Hace daño normal
+		velocity.x = 0;
+		damage = 20;
 
-		// Terminar ataque
+		// 1. CREAR HITBOX: En el momento del impacto visual (ej: a los 500ms)
+		if (startAttack.ReadMSec() > 500 && swordHitbox == nullptr) {
+
+			// Calculamos dónde aparece la espada dependiendo de a dónde mire
+			int hX = lookingRight ? position.getX() + 70 : position.getX() - 70;
+			int hY = position.getY();
+
+			// Creamos un rectángulo físico
+			swordHitbox = Engine::GetInstance().physics->CreateRectangle(hX, hY, 80, 40, bodyType::KINEMATIC);
+			swordHitbox->listener = this;
+			swordHitbox->ctype = ColliderType::ENEMY;
+
+			// (Línea de SetSensor eliminada por incompatibilidad con Box2D v3)
+		}
+
+		// 2. DESTRUIR HITBOX: Al terminar el ataque
 		if (startAttack.ReadMSec() >= attackCooldown) {
 			isAttacking = false;
 			anims.SetCurrent("idle");
-
-			// NUEVO: Avanzamos al siguiente paso del combo
 			attackStep++;
+
+			// Si la espada existe, la borramos del mundo de físicas
+			if (swordHitbox != nullptr) {
+				// SOLUCIÓN BOX2D V3:
+				b2DestroyBody(swordHitbox->body);
+				swordHitbox = nullptr; // Lo volvemos a poner a null para el próximo ataque
+			}
 		}
 	}
 }
@@ -344,4 +362,12 @@ void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	default:
 		break;
 	}
+}
+
+bool KnightBoss::CleanUp() {
+	if (swordHitbox != nullptr) {
+		b2DestroyBody(swordHitbox->body);
+		swordHitbox = nullptr;
+	}
+	return true;
 }
