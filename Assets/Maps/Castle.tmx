@@ -4696,7 +4696,7 @@
    <tile gid="49"/>
   </data>
  </layer>
- <objectgroup id="13" name="Door" visible="0">
+ <objectgroup id="13" name="Door">
   <properties>
    <property name="Door" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -4714,7 +4714,7 @@
   </object>
   <object id="30" x="1999.5" y="656.25" width="31" height="47.5">
    <properties>
-    <property name="TeleportTo" type="file" value="MapTemplate.tmx"/>
+    <property name="TeleportTo" type="file" value="bosque_test.tmx"/>
    </properties>
   </object>
  </objectgroup>
