@@ -50,6 +50,7 @@ struct Door
 {
     PhysBody* body;
     std::string teleportTo;
+    bool needsKey;
 };
 
 
@@ -184,6 +185,7 @@ public:
 
     //Door
     std::string DoorInfo(PhysBody* door);
+    bool DoorNeedsKey(PhysBody* door);
 
 public: 
     std::string mapFileName;

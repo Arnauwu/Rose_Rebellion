@@ -520,25 +520,34 @@ void Player::Interact()
 {
 	if (canInteract && interactuableBody != nullptr)
 	{
-		// 确保交互对象是门
+		// Asegurarse que es una puerta
 		if (interactuableBody->ctype == ColliderType::DOOR)
 		{
 			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 			{
-				if (keyCount > 0)
-				{
-					// 消耗一把钥匙
-					keyCount--;
-					LOG("Used a key! Keys remaining：%d", keyCount);
+				//Pregunta si esta puerta necesita llave
+				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
 
-					// 触发换图
-					Engine::GetInstance().sceneManager->setNewMap = true;
+				if (requiresKey)
+				{
+					// Si necesita
+					if (keyCount > 0)
+					{
+						//Restar una unidad cuando se usa una llave
+						keyCount--;
+						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+					else
+					{
+						LOG("Necesitas una llave para abrir, busca una ");
+					}
 				}
 				else
 				{
-					// 没有钥匙时的提示
-					LOG("HINT: You need a key to open this door!");
-					// TODO: 你可以在这里调用 UIManager 在屏幕上显示文字提示
+					// Si no
+					LOG("Esta puerta no necesita llave ");
+					Engine::GetInstance().sceneManager->setNewMap = true;
 				}
 			}
 		}

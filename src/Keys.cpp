@@ -1,4 +1,4 @@
-#include "Keys.h"
+Ôªø#include "Keys.h"
 #include "Engine.h"
 #include "Animation.h"
 #include "Textures.h"
@@ -19,13 +19,13 @@ bool Keys::Awake()
 
 bool Keys::Start()
 {
-    // º”‘ÿ‘ø≥◊µƒÃ˘Õº («Î∏˘æ›ƒ„µƒ µº ¬∑æ∂–ﬁ∏ƒ)
+   //Textura
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/obj_llave_castillo_game.png");
 
-    // ¥¥Ω®ŒÔ¿Ì≈ˆ◊≤ÃÂ (…Ë÷√Œ™¥´∏–∆˜£¨’‚—˘ÕÊº“ø…“‘÷±Ω”¥©π˝≤¢¥•∑¢ ∞»°)
+    //Fisica
     pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), 10, bodyType::KINEMATIC);
     pbody->listener = this;
-    pbody->ctype = ColliderType::ITEM; // ªÚ’ﬂƒ„ø…“‘»• Physics.h ◊®√≈º”“ª∏ˆ ColliderType::KEY
+    pbody->ctype = ColliderType::ITEM;
 
     return true;
 }
@@ -34,7 +34,7 @@ bool Keys::Update(float dt)
 {
     if (!isPicked)
     {
-        // ‰÷»æ‘ø≥◊
+        //Posicion donde renderiza la llave
         int x, y;
         pbody->GetPosition(x, y);
         Engine::GetInstance().render->DrawTexture(texture, x - 10, y - 10);
@@ -55,5 +55,5 @@ bool Keys::CleanUp()
 
 void Keys::OnCollision(PhysBody* physA, PhysBody* physB)
 {
-    //  ∞»°¬ﬂº≠“—æ≠‘⁄ Player.cpp µƒ OnCollision ¿Ô¥¶¿Ì¡À£¨’‚¿Ôø…“‘¡Ùø’ªÚ≤•∑≈“Ù–ß
+    // Aqu√≠ podemos a√±adir un efecto de sonido al recoger la llave.
 }

@@ -420,6 +420,18 @@ bool Map::Load(std::string path, std::string fileName)
 						Door* newDoor = new Door;
 						newDoor->body = collider;
 						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+
+						//Mira si necesita una llave para abrirlo o no
+						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
+						if (needsKeyProp != nullptr)
+						{
+							newDoor->needsKey = needsKeyProp->value; // Si la propiedad "NeedsKey" de la puerta es true, esta puerta necesita una llave.
+
+						}
+						else
+						{
+							newDoor->needsKey = false; // Si no, no necesita llave
+						}
 						mapData.doors.push_back(newDoor);
 					}
 					else
@@ -739,6 +751,16 @@ std::string Map::DoorInfo(PhysBody* door)
 	return std::string();
 }
 
-
+bool Map::DoorNeedsKey(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor->body == door)
+		{
+			return ndoor->needsKey;
+		}
+	}
+	return false;
+}
 
 
