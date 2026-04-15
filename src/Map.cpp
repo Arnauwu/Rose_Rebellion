@@ -687,6 +687,11 @@ void Map::SpawnEntities()
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
 					shieldKnight->position = Vector2D(x, y);
 				}
+				else if (entityType == std::string ("KnightBoss"))
+				{
+					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
+					knightBoss->position = Vector2D(x,y);
+				}
             }
         }
     }

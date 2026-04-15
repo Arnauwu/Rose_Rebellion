@@ -1,10 +1,10 @@
 #pragma once
 
-#include "src/Enemy.h"
-#include "src/Animation.h"
+#include "Enemy.h"
+#include "Animation.h"
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
-#include "src/Pathfinding.h"
+#include "Pathfinding.h"
 
 struct SDL_Texture;
 

@@ -237,7 +237,7 @@
     <ClCompile Include="src\SavePoint.cpp">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClCompile>
-    <ClCompile Include="KnightBoss.cpp">
+    <ClCompile Include="src\KnightBoss.cpp">
       <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
     </ClCompile>
   </ItemGroup>
@@ -365,7 +365,7 @@
     <ClInclude Include="SavePoint.h">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClInclude>
-    <ClInclude Include="KnightBoss.h">
+    <ClInclude Include="src\KnightBoss.h">
       <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
     </ClInclude>
   </ItemGroup>
