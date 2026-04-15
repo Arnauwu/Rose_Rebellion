@@ -41,7 +41,7 @@ bool Physics::PreUpdate()
 {
     bool ret = true;
 
-    if (Engine::GetInstance().sceneManager->isGamePaused == true)
+    if (Engine::GetInstance().sceneManager->IsGamePaused())
     {
         return ret;
     }

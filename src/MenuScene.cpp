@@ -112,7 +112,6 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     return true;
 }
 
-
 void MenuScene::ShowSettings(bool show) {
 	//Main Menu
 	for (auto& elem : mainButtons) {
@@ -138,7 +137,6 @@ void MenuScene::ShowSettings(bool show) {
 		}
 	}
 }
-
 
 bool MenuScene::CleanUp() {
 	Engine::GetInstance().uiManager->CleanUp();

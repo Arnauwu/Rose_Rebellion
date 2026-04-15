@@ -37,6 +37,8 @@ public:
     // Module UI override
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
+    bool IsGamePaused() const { return isGamePaused; }
+    void SetGamePaused(bool paused) { isGamePaused = paused; }
     // --- NEW: Bridge methods to satisfy old code ---
     Vector2D GetPlayerPosition();
     Player* GetPlayer();
