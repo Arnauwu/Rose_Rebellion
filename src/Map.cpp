@@ -758,11 +758,11 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 	}
 
 	// Si no encuentra un spawn point específico, devuelve el primero encontrado
-	if (!mapData.spawnPoints.empty())
-	{
-		printf("SpawnPoint no encontrado : %d", mapData.spawnPoints.front()->position);
-		return mapData.spawnPoints.front()->position;
-	}
+	//if (!mapData.spawnPoints.empty())
+	//{
+	//	printf("SpawnPoint no encontrado : %d", mapData.spawnPoints.front()->position);
+	//	return mapData.spawnPoints.front()->position;
+	//}
 
 	// Fallback: posición por defecto
 	printf("Nada encontrado...spawn en base");
