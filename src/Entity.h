@@ -9,6 +9,7 @@ enum class EntityType
 
 	ITEM,
 	KEY,
+	MANTA,
 	HEALTH_ORB,
 	SKILL_POINT_ORB,
 

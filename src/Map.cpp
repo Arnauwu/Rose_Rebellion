@@ -21,6 +21,7 @@
 #include "SavePoint.h"
 #include "Item.h"
 #include "Keys.h"
+#include "Manta.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -703,6 +704,12 @@ void Map::SpawnEntities()
 					std::shared_ptr<Keys> key = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
 					if (key != nullptr) {
 						key->position = Vector2D(x, y);
+					}
+				}
+				else if (entityType == std::string("Manta")) {
+					std::shared_ptr<Manta> manta = std::dynamic_pointer_cast<Manta>(Engine::GetInstance().entityManager->CreateEntity(EntityType::MANTA));
+					if (manta != nullptr) {
+						manta->position = Vector2D(x, y);
 					}
 				}
             }

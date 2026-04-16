@@ -104,6 +104,9 @@
     <Filter Include="Source Files\Utils\Inputs &amp; Window">
       <UniqueIdentifier>{460ea693-e3c8-43e6-90fe-8070aa5a629e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Items\Manta">
+      <UniqueIdentifier>{705fa7c2-95be-4353-84c6-7118dcfbe85a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -237,6 +240,9 @@
     <ClCompile Include="src\Keys.cpp">
       <Filter>Source Files\Game\Entity\Items\Keys</Filter>
     </ClCompile>
+    <ClCompile Include="src\Manta.cpp">
+      <Filter>Source Files\Game\Entity\Items\Manta</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -364,6 +370,9 @@
     </ClInclude>
     <ClInclude Include="src\Keys.h">
       <Filter>Source Files\Game\Entity\Items\Keys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Manta.h">
+      <Filter>Source Files\Game\Entity\Items\Manta</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
