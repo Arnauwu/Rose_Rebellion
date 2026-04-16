@@ -106,7 +106,7 @@ public:
 	bool secondJumpUsed = false;
 	
 	// Gliding
-	bool glideUnlocked = false; 
+	static bool glideUnlocked; 
 	bool isGliding = false; // Flag
 
 	// Dash
@@ -155,7 +155,7 @@ public:
 	const float safePositionInterval = 0.2f;
 
 	//Item
-	int keyCount = 0;
+	static int keyCount;
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;

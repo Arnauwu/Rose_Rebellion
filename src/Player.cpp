@@ -15,6 +15,9 @@
 
 using namespace std;
 
+int Player::keyCount = 0;
+bool Player::glideUnlocked = false;
+
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
