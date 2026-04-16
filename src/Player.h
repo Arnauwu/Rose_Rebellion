@@ -35,6 +35,9 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
+	
+	// Unlocks
+	void UnlockCape();
 
 private:
 
@@ -57,8 +60,8 @@ private:
 
 	void CameraFollows();
 
-	// Unlocks
-	void UnlockCape();
+	//// Unlocks
+	//void UnlockCape();
 
 	// DevTools / Debug
 	void DevTools(float dt);

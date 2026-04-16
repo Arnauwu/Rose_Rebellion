@@ -756,10 +756,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		LOG("Collision ITEM (Key Picked Up)");
-		// 增加钥匙数量
-		keyCount++;
-		LOG("KeyNum: %d", keyCount);
+
+		if (physB->listener->name == "Manta") {
+			LOG("Collision ITEM (Manta Picked Up)");
+		}
+		else if (physB->listener->name == "Key") {
+			LOG("Collision ITEM (Key Picked Up)");
+			keyCount++;
+			LOG("KeyNum: %d", keyCount);
+		}
 		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
 		break;

@@ -48,6 +48,12 @@ bool Manta::CleanUp() {
 	return true;
 }
 
-bool OnCollision() {
-	
+void Manta::OnCollision(PhysBody* physA, PhysBody* physB) {
+	if (physB->ctype == ColliderType::PLAYER) {
+
+		Player* player = (Player*)physB->listener;
+		player->UnlockCape();
+
+		isPicked = false;
+	}
 }

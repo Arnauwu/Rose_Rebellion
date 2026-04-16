@@ -16,4 +16,6 @@ public:
 private:
 	SDL_Texture* texture = nullptr;
 	PhysBody* pbody=nullptr;
+	
+	bool isPicked = false;
 };
