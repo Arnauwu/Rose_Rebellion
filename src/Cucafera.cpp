@@ -48,7 +48,7 @@ bool Cucafera::Start()
 	//ssign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
-	// Initialize pathfinding
+		// Initialize pathfinding
 	pathfinding = std::make_shared<Pathfinding>(true);
 
 	//Reset pathfinding
