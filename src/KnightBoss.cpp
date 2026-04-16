@@ -327,7 +327,7 @@ void KnightBoss::ShieldDash()
 			damage = 10; // Restaurar el daño normal
 			anims.SetCurrent("idle");
 
-			// NUEVO: Al terminar la embestida, se cansa por 3 segundos
+			// Al terminar la embestida, se cansa por 3 segundos
 			isResting = true;
 			restTimer.Start();
 		}
