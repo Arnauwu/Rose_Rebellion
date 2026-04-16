@@ -89,7 +89,14 @@ struct MapLayer
     // Function to get the gid value of i,j
     unsigned int Get(int x, int y) const
     {
-        return tiles[(y * width) + x];
+        int index = (y * width) + x;
+
+        if (tiles.empty() || index < 0 || index >= tiles.size())
+        {
+            return 0;
+        }
+
+        return tiles[index];
     }
 };
 

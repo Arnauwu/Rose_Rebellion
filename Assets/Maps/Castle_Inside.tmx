@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="73">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="82">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -57,7 +57,7 @@
    </wangset>
   </wangsets>
  </tileset>
- <tileset firstgid="49" name="MapMetadata" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="2" columns="2">
+ <tileset firstgid="49" name="MapMetadata" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="1" columns="2">
   <image source="MapMetadata.png" width="67" height="34"/>
   <tile id="0">
    <properties>
@@ -65,11 +65,11 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="51" name="goldCoin" tilewidth="32" tileheight="32" tilecount="1" columns="1">
+ <tileset firstgid="50" name="goldCoin" tilewidth="32" tileheight="32" tilecount="0" columns="1">
   <image source="../Textures/goldCoin.png" width="32" height="32"/>
  </tileset>
- <tileset firstgid="52" source="../Textures/player.tsx"/>
- <tileset firstgid="148" name="princess" tilewidth="256" tileheight="256" tilecount="96" columns="12">
+ <tileset firstgid="50" source="../Textures/player.tsx"/>
+ <tileset firstgid="50" name="princess" tilewidth="256" tileheight="256" tilecount="6" columns="12">
   <image source="../Textures/princess.png" width="3325" height="2048"/>
   <tile id="0">
    <animation>
@@ -3362,7 +3362,7 @@
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="28" x="1364.38" y="879.934" width="31" height="47.5">
+  <object id="28" x="1360.38" y="879.934" width="31" height="47.5">
    <properties>
     <property name="TeleportTo" type="file" value="Castle.tmx"/>
    </properties>
@@ -3370,6 +3370,31 @@
   <object id="29" x="1552.32" y="144.191" width="31" height="47.5">
    <properties>
     <property name="TeleportTo" type="file" value="Castle.tmx"/>
+   </properties>
+  </object>
+  <object id="73" x="208.333" y="431.667" width="31" height="47.5">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Room_Princess.tmx"/>
+   </properties>
+  </object>
+  <object id="78" x="497.5" y="655.25" width="31" height="47.5">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Room_Princess.tmx"/>
+   </properties>
+  </object>
+  <object id="79" x="1041.17" y="654.583" width="31" height="47.5">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Room_Princess.tmx"/>
+   </properties>
+  </object>
+  <object id="80" x="1137.5" y="430.25" width="31" height="47.5">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Room_Princess.tmx"/>
+   </properties>
+  </object>
+  <object id="81" x="176.833" y="176.25" width="31" height="47.5">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Room_Princess.tmx"/>
    </properties>
   </object>
  </objectgroup>

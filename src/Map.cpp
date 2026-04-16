@@ -139,6 +139,9 @@ bool Map::Update(float dt)
 		// Loop to draw all tiles in a layer + DrawTexture()
 		for (const auto& mapLayer : mapData.layers)
 		{
+			//If the layer has no tiles, skip it
+			if (mapLayer->tiles.empty()) continue;
+
 			if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true)
 			{
 				for (int x = 0; x < mapData.width; x++)
