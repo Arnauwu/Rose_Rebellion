@@ -27,7 +27,7 @@ bool Cucafera::Awake() {
 
 bool Cucafera::Start()
 {
-	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{8,"hurt"},{16,"dead"} };
+	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
 	anims.SetCurrent("idle");
 
@@ -145,13 +145,13 @@ void Cucafera::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isRolling == false && isKnockedback == false)
 	{
-		anims.SetCurrent("hurt"); // TO DO: CHANGE TO Idle/ or make it WALK
+		anims.SetCurrent("walk"); // TO DO: CHANGE TO Idle/ or make it WALK
 		velocity.x = 0;
 		return;
 	}
 	else if (playerTileDist >= 5 && isRolling == false && isKnockedback == false)
 	{
-		anims.SetCurrent("hurt"); // TO DO: CHANGE TO WALK
+		anims.SetCurrent("walk"); 
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -198,7 +198,7 @@ void Cucafera::Knockback()
 	if (isKnockedback)
 	{
 		isRolling = false;
-		anims.SetCurrent("hurt");
+		anims.SetCurrent("hurt"); // TO DO : Hurt effect
 		if (lookingRight)
 		{
 			velocity.x = knockbackForce;
