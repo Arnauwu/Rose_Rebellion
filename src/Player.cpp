@@ -682,10 +682,10 @@ bool Player::CleanUp()
 
 // Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
+	if (physA == attackCollider) { return; }
+
 	switch (physB->ctype)
 	{
-		if (physA == attackCollider || physB == attackCollider) {  return; }
-
 	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead) {
