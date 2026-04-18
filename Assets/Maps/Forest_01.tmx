@@ -11690,7 +11690,7 @@
   <object id="20" x="0" y="-0.459506" width="3840" height="160.46"/>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
-  <object id="52" name="Player" type="Player" x="22014.3" y="3658.3">
+  <object id="52" name="Player" type="Player" x="20696.1" y="2831.03">
    <point/>
   </object>
  </objectgroup>
@@ -11698,7 +11698,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="50" name="Player" type="Player" x="22542.9" y="3669.21">
+  <object id="50" name="Player" type="Player" x="23054.4" y="3603.88">
    <properties>
     <property name="FromRoom" type="file" value="Castle.tmx"/>
    </properties>

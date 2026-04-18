@@ -694,7 +694,7 @@ void Map::SpawnEntities()
 				PlayerSpawnPoint* newSpawn = new PlayerSpawnPoint;
 				newSpawn->fromRoom = a.GetProperty("FromRoom")->value2;
 				newSpawn->position.setX(x);
-				newSpawn->position.setX(y);
+				newSpawn->position.setY(y);
 				mapData.spawnPoints.push_back(newSpawn);
 			}
 		}
