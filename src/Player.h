@@ -64,7 +64,7 @@ private:
 	void DevTools(float dt);
 
 public:
-	float speed = 4.0f;
+	float speed = 6.0f;
 
 	// Texture
 	SDL_Texture* texture = nullptr;
@@ -90,7 +90,7 @@ public:
 
 	/*--- PLAYER SKILLS --- */
 	// Jump
-	float jumpForce = -7.5f; // The force to apply when jumping
+	float jumpForce = -10.0f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
 	// Extra Jump Force

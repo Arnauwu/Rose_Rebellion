@@ -544,7 +544,7 @@ void Player::ApplyPhysics() {
 		}
 	}
 
-	if (velocity.y > 10 && currentAnimPriority != 3)
+	if (velocity.y > 5 && currentAnimPriority != 3)
 	{
 		if (lookingRight)
 		{
@@ -583,7 +583,7 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 0.75f); // -20 0.25f
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 1.0f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -686,7 +686,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	switch (physB->ctype)
 	{
-
 	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead) {
@@ -774,6 +773,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision UNKNOWN");
 		break;
 
+	case ColliderType::PLAYER_ATTACK:
 	default:
 		break;
 	}

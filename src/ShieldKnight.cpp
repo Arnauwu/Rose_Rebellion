@@ -40,12 +40,12 @@ bool ShieldKnight::CleanUp()
 
 bool ShieldKnight::Start()
 {
-	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{8,"hurt"},{16,"dead"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"attack"},{16,"defend"},{24,"run"} };
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/ShieldKnight/ShieldKnight.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/ShieldKnight/ShieldKnight.png");
 
 	//Load Audio
 
@@ -160,13 +160,13 @@ void ShieldKnight::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isAttacking == false)
 	{
-		anims.SetCurrent("spin"); // TO DO: CHANGE TO Idle/ or make it WALK
+		anims.SetCurrent("idle"); // TO DO: CHANGE TO Idle/ or make it WALK
 		velocity.x = 0;
 		return;
 	}
 	else if (playerTileDist >= 5 && isAttacking == false)
 	{
-		anims.SetCurrent("spin"); // TO DO: CHANGE TO WALK
+		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -179,12 +179,12 @@ void ShieldKnight::Move() {
 		if (nextTile.getX() > tilePos.getX())
 		{
 			velocity.x = speed;
-			lookingRight = !true; // ! because Default anim looking left
+			lookingRight = true;
 		}
 		else if (nextTile.getX() < tilePos.getX())
 		{
 			velocity.x = -speed;
-			lookingRight = !false;
+			lookingRight = false;
 		}
 		else
 		{
@@ -280,7 +280,7 @@ void ShieldKnight::Attack()
 	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000)
 	{
 		isAttacking = true;
-		anims.SetCurrent("startSpin"); // Windup
+		anims.SetCurrent("attack"); // Windup
 		startAttack.Start();
 		return;
 	}
@@ -303,11 +303,11 @@ void ShieldKnight::Attack()
 
 		if (lookingRight)
 		{
-			attackX -= texW / 2;
+			attackX += texW / 2;
 		}
 		else
 		{
-			attackX += texW / 2;
+			attackX -= texW / 2;
 		}
 
 		attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, attackW, attackH, bodyType::STATIC);
@@ -318,7 +318,7 @@ void ShieldKnight::Attack()
 		attackDuration.Start();
 	}
 
-	if (lookingRight == false)
+	if (lookingRight)
 	{
 		velocity.x = speed * 3;
 	}
