@@ -104,8 +104,6 @@
     <Filter Include="Source Files\Utils\Inputs &amp; Window">
       <UniqueIdentifier>{460ea693-e3c8-43e6-90fe-8070aa5a629e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Entity\Enemies\KnightBoss">
-      <UniqueIdentifier>{f2e8abfa-aa7e-4d71-8e84-49c21c83447e}</UniqueIdentifier>
     <Filter Include="Source Files\Game\Entity\Items\Manta">
       <UniqueIdentifier>{705fa7c2-95be-4353-84c6-7118dcfbe85a}</UniqueIdentifier>
     </Filter>
@@ -239,8 +237,6 @@
     <ClCompile Include="src\SavePoint.cpp">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClCompile>
-    <ClCompile Include="src\KnightBoss.cpp">
-      <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
     <ClCompile Include="src\Keys.cpp">
       <Filter>Source Files\Game\Entity\Items\Keys</Filter>
     </ClCompile>
@@ -372,8 +368,6 @@
     <ClInclude Include="SavePoint.h">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClInclude>
-    <ClInclude Include="src\KnightBoss.h">
-      <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
     <ClInclude Include="src\Keys.h">
       <Filter>Source Files\Game\Entity\Items\Keys</Filter>
     </ClInclude>
