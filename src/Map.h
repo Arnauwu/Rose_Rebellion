@@ -53,12 +53,24 @@ struct Door
     bool needsKey;
 };
 
+struct Path
+{
+    PhysBody* body;
+    std::string teleportTo;
+};
+
+struct PlayerSpawnPoint
+{
+    std::string fromRoom;
+    Vector2D position;
+};
 
 struct ObjectGroup
 {
     struct Object
     {
         float id, x, y, width, height;
+        unsigned int gid;
         std::vector<b2Vec2> points;
         Properties properties;
     };
@@ -83,7 +95,7 @@ struct MapLayer
     std::string name;
     int width;
     int height;
-    std::vector<int> tiles;
+    std::vector<unsigned int> tiles;
     Properties properties;
 
     // Function to get the gid value of i,j
@@ -131,7 +143,9 @@ struct MapData
     std::list<TileSet*> tilesets;
     std::list<ObjectGroup*> objectGroups;
     std::list<Door*> doors;
+    std::list<Path*> paths;
     std::list<MapLayer*> layers;
+    std::list<PlayerSpawnPoint*> spawnPoints;
 };
 
 class Map : public Module
@@ -182,10 +196,11 @@ public:
 
     // Entities
     void SpawnEntities();
-
+    Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door
     std::string DoorInfo(PhysBody* door);
     bool DoorNeedsKey(PhysBody* door);
+    std::string PathInfo(PhysBody* path);
 
 public: 
     std::string mapFileName;

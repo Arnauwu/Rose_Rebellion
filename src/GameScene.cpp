@@ -16,6 +16,8 @@ GameScene::~GameScene() {
 }
 void GameScene::LoadMap(std::string mapFile)
 {
+	std::string previousMap = Engine::GetInstance().map->mapFileName;
+	printf("prevoius map : %s", previousMap);
 	//Load the map. 
 	if (mapFile == "")
 	{
@@ -31,6 +33,14 @@ void GameScene::LoadMap(std::string mapFile)
 
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
 	Engine::GetInstance().map->SpawnEntities();
+
+	Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
+
+	if (Engine::GetInstance().sceneManager->GetPlayer() != nullptr)
+	{
+		Engine::GetInstance().sceneManager->GetPlayer()->position = spawnPos;
+		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
+	}
 
 	Engine::GetInstance().entityManager->Start();
 

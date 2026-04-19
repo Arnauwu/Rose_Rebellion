@@ -53,6 +53,80 @@ bool Map::Update(float dt)
 
 	if (mapLoaded)
 	{
+		// Loop to draw all images
+		for (const auto& objectGroup : mapData.objectGroups) 
+		{
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true) 
+			{
+				for (const auto& obj : objectGroup->objects)
+				{
+					//Get the gid from tile
+					unsigned int gid = obj->gid;
+
+					//Check if the gid is different from 0 - some tiles are empty
+					if (gid != 0)
+					{
+						// Decode flip flags from GID
+						const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+						const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
+						const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+						const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
+
+						//Get Flip Variables and Correct Tile GID
+						bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
+						bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
+						bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
+						uint32_t tileId = gid & TILE_ID_MASK;
+
+						// Determine rotation and final horizontal flip
+						float rotation = 0.0f;
+						SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+
+						if (!flipD)
+						{
+							if (flipH && flipV) { rotation = 180.0f; }
+							else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
+						}
+						else // Diagonal Flip  == True
+						{
+							if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipH && !flipV) { rotation = 90.0f; }
+							else if (!flipH && flipV) { rotation = 270.0f; }
+							else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+						}
+
+						// Obtain the tile set using GetTilesetFromTileId
+						TileSet* tileSet = GetTilesetFromTileId(tileId);
+
+						if (tileSet != nullptr)
+						{
+							//Get the Rect from the tileSetTexture;
+							SDL_Rect tileRect;
+
+							tileRect.x = obj->x;
+							tileRect.y = obj->y;
+							tileRect.w = obj->width;
+							tileRect.h = obj->height;
+
+							SDL_Rect dstRect;
+
+							dstRect.x = tileSet->GetRect(tileId).x;
+							dstRect.y = tileSet->GetRect(tileId).y;
+							dstRect.w = tileSet->GetRect(tileId).w;
+							dstRect.h = tileSet->GetRect(tileId).h;
+
+							// Center point for rotation
+							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+							//Draw the texture
+							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
+						}
+					}
+				}
+			}
+		}
+
 		//Update all Animated Tiles
 		for (auto& tileset : mapData.tilesets)
 		{
@@ -83,7 +157,7 @@ bool Map::Update(float dt)
 						}
 
 						//Get the gid from tile
-						int gid = mapLayer->Get(x, y);
+						unsigned int gid = mapLayer->Get(x, y);
 
 						//Check if the gid is different from 0 - some tiles are empty
 						if (gid != 0)
@@ -319,6 +393,9 @@ bool Map::Load(std::string path, std::string fileName)
 		{
 			ObjectGroup* objectgroup = new ObjectGroup();
 
+			// Load Object Layer Properties
+			LoadProperties(objectGroupNode, objectgroup->properties);
+
 			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
 			{
 				ObjectGroup::Object* o = new ObjectGroup::Object;
@@ -329,6 +406,11 @@ bool Map::Load(std::string path, std::string fileName)
 				o->y = objectNode.attribute("y").as_float();
 				o->width = objectNode.attribute("width").as_float();
 				o->height = objectNode.attribute("height").as_float();
+
+				if (objectgroup->properties.GetProperty("Draw") != NULL && objectgroup->properties.GetProperty("Draw")->value == true)
+				{
+					o->gid = objectNode.attribute("gid").as_uint();
+				}
 
 				if (objectNode.child("polygon").attribute("points") != NULL)
 				{
@@ -359,8 +441,7 @@ bool Map::Load(std::string path, std::string fileName)
 				objectgroup->objects.push_back(o);
 			}
 
-			// Load Object Layer Properties
-			LoadProperties(objectGroupNode, objectgroup->properties);
+
 
 			//Add the layer to the map
 			mapData.objectGroups.push_back(objectgroup);
@@ -433,6 +514,17 @@ bool Map::Load(std::string path, std::string fileName)
 						{
 							newDoor->needsKey = false; // Si no, no necesita llave
 						}
+						mapData.doors.push_back(newDoor);
+					}
+					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
+					{
+						collider->ctype = ColliderType::PATH;
+
+						// TODO: Assign Listener
+
+						Door* newDoor = new Door;
+						newDoor->body = collider;
+						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 						mapData.doors.push_back(newDoor);
 					}
 					else
@@ -714,36 +806,29 @@ void Map::SpawnEntities()
 				}
             }
         }
+
+
+		if (objectGroupNode.attribute("name").as_string() == std::string("PlayerSpawns"))
+		{
+
+			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
+			{
+				std::string entityType = objectNode.attribute("type").as_string();
+				float x = objectNode.attribute("x").as_float();
+				float y = objectNode.attribute("y").as_float();
+
+				Properties a;
+				LoadProperties(objectNode, a);
+
+				PlayerSpawnPoint* newSpawn = new PlayerSpawnPoint;
+				newSpawn->fromRoom = a.GetProperty("FromRoom")->value2;
+				newSpawn->position.setX(x);
+				newSpawn->position.setY(y);
+				mapData.spawnPoints.push_back(newSpawn);
+			}
+		}
     }
-    //for (const auto& mapLayer : mapData.layers)
-    //{
-    //    for (int i = 0; i < mapData.width; i++)
-    //    {
-    //        for (int j = 0; j < mapData.height; j++)
-    //        {
-    //            //Get the gid from tile
-    //            uint32_t gid = mapLayer->Get(i, j);
 
-    //            //Check if the gid is different from 0 - some tiles are empty
-    //            if (gid != 0)
-    //            {
-    //                TileSet* tileSet = GetTilesetFromTileId(gid);
-
-    //                if (tileSet != nullptr)
-    //                {
-    //                    // If it's a goldcoin
-    //                    if (tileSet->name == "goldCoin")
-    //                    {
-    //                        // Create new Coin
-    //                        std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-    //                        item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
-    //                    }
-    //                }
-
-    //            }
-    //        }
-    //    }
-    //}
 }
 
 std::string Map::DoorInfo(PhysBody* door)
@@ -769,5 +854,26 @@ bool Map::DoorNeedsKey(PhysBody* door)
 	}
 	return false;
 }
+Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
+{
+	// Buscar el spawn point que coincida con la sala de origen
+	for (const auto& spawnPoint : mapData.spawnPoints)
+	{
+		if (spawnPoint->fromRoom == fromRoom)
+		{
+			return spawnPoint->position;
+		}
+	}
+
+	// Si no encuentra un spawn point específico, devuelve el primero encontrado
+	//if (!mapData.spawnPoints.empty())
+	//{
+	//	return mapData.spawnPoints.front()->position;
+	//}
+
+	// Fallback: posición por defecto
+	return Vector2D(200, 200);
+}
+
 
 
