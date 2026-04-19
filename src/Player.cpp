@@ -692,6 +692,8 @@ void Player::UnlockCape()
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
 	glideUnlocked = true;
+
+	AddItem(ItemID::GLIDE, 1);
 }
 
 bool Player::CleanUp()
@@ -708,6 +710,22 @@ bool Player::CleanUp()
 		attackCollider = nullptr;
 	}
 	return true;
+}
+
+// ==========================================
+// INVENTORY SYSTEM
+// ==========================================
+
+void Player::AddItem(ItemID id, int amount) {
+	inventory[id] += amount;
+}
+
+bool Player::HasItem(ItemID id) {
+	return inventory[id] > 0;
+}
+
+int Player::GetItemCount(ItemID id) {
+	return inventory[id];
 }
 
 // Define OnCollision function for the player. 
@@ -770,9 +788,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
 			keyCount++;
+
+			AddItem(ItemID::KEY, 1);
+
 			LOG("KeyNum: %d", keyCount);
 		}
-		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
 		break;
 	case ColliderType::HEALTH_ORB:
@@ -789,6 +809,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
+		AddItem(ItemID::STRENGTH_ORB, 1);
+		physB->listener->Destroy(); 
 		break;
 	case ColliderType::SAVEPOINT:
 	{

@@ -141,7 +141,7 @@ bool GameScene::Update(float dt) {
 		}
 
 		if (currentMenuTab == GameMenuTab::INVENTORY) {
-			//TO DO: Buscamos si algún elemento del inventario está FOCUSED
+			
 			for (auto& elem : inventoryUI) {
 				if (elem->state == UIElementState::FOCUSED) {
 				}
@@ -253,7 +253,6 @@ void GameScene::CreateInventoryUI() {
 	float centerY = 0.50f;
 	float offset = 0.15f;
 
-	// Ampliamos tu struct para que acepte un puntero a textura
 	struct InventorySlotDef {
 		GameUI_ID id;
 		const char* name;
@@ -349,16 +348,15 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 }
 
 void GameScene::UpdateInventoryVisuals() {
-	// TO DO: Al merge mirar los items
 	if (player == nullptr) return;
 
 	for (auto& btn : inventoryUI) {
 		bool hasItem = false;
 
-		// Comprobamos qué ítem es este botón y le preguntamos al Player si lo tiene
+		// We check which item this button is and ask the Player if they have it
 		switch (btn->id) {
 		case (int)GameUI_ID::INV_ITEM_WEAPON:
-			hasItem = player->HasItem(ItemID::WEAPON); // < Ajusta tu enum aquí
+			hasItem = player->HasItem(ItemID::WEAPON); 
 			break;
 		case (int)GameUI_ID::INV_ITEM_GLIDE:
 			hasItem = player->HasItem(ItemID::GLIDE);
@@ -373,17 +371,15 @@ void GameScene::UpdateInventoryVisuals() {
 		default:
 			continue; 
 		}
-		// Tintado de textura:
 		if (hasItem) {
-			btn->color = { 255, 255, 255, 255 }; // Blanco (Color original brillante)
+			btn->color = { 255, 255, 255, 255 }; // White tint --> Normal texture
 		}
 		else {
-			btn->color = { 60, 60, 60, 255 };    // Gris oscuro (Ítem bloqueado/sin conseguir)
+			btn->color = { 60, 60, 60, 255 };    // Gray tint
 		}
 	}
 }
 void GameScene::RefreshMenuUI() {
-	// La Top Bar (Inventario/Mapa) solo se muestra si NO estamos en pausa general
 	bool showTopBar = (currentMenuTab == GameMenuTab::INVENTORY ||
 		currentMenuTab == GameMenuTab::MAP ||
 		currentMenuTab == GameMenuTab::SKILL_TREE);

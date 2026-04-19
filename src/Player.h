@@ -6,9 +6,16 @@
 #include <unordered_map>
 #include <SDL3/SDL.h>
 #include "Timer.h"
-#include <iostream>
 #include "CameraController.h"
+#include <iostream>
+#include <map>
 
+enum class ItemID {
+	WEAPON,
+	GLIDE,
+	KEY,
+	STRENGTH_ORB,
+};
 
 struct SDL_Texture;
 
@@ -39,6 +46,13 @@ public:
 	// Unlocks
 	void UnlockCape();
 
+	//Inventary Variables
+	std::map<ItemID, int> inventory;
+
+	// Las herramientas para modificar el inventario
+	void AddItem(ItemID id, int amount = 1);
+	bool HasItem(ItemID id);
+	int GetItemCount(ItemID id);
 private:
 
 	void GodModeMove(float dt);

@@ -47,15 +47,6 @@ enum class GameUI_ID {
 	INV_DESC_TEXT
 };
 
-struct InventorySlot {
-	GameUI_ID id;
-	const char* name;
-	const char* description;
-	float relX, relY;
-	bool isUnlocked = false; // Esto debería venir de tu clase Player
-};
-struct InvItemDef { int id; const char* name; float x; float y; SDL_Texture* tex; }; 
-
 struct ButtonDef { int id; const char* text; };
 
 struct SDL_Texture;
@@ -107,7 +98,7 @@ private:
 	void CreateInventoryUI();
 	void CreatePauseMenuUI();
 	void CreatePauseSettingUI() ;
-
+	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
 
