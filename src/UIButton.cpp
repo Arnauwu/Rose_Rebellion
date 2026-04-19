@@ -47,7 +47,7 @@ void UIButton::Draw() const
 {
 	if (!visible) return;
 
-	// 1. Dibujar el fondo del botón según estado
+	// Draw Bg button
 	SDL_Color color = { 100, 100, 100, 255 }; // Normal
 	if (state == UIElementState::FOCUSED) color = { 150, 150, 150, 255 };
 	if (state == UIElementState::PRESSED) color = { 200, 200, 200, 255 };

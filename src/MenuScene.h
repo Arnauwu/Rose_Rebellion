@@ -6,6 +6,18 @@
 #include <memory>
 
 struct SDL_Texture;
+
+enum class MenuUI_ID {
+    BTN_PLAY = 1,
+    BTN_CONTINUE,
+    BTN_SETTINGS,
+    BTN_EXIT,
+    SLD_MUSIC,
+    SLD_FX,
+    CHK_FULLSCREEN,
+    BTN_BACK
+};
+
 class MenuScene : public SceneBase {
 public:
     MenuScene();
@@ -17,13 +29,11 @@ public:
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
     SDL_Texture* menuBackground = nullptr;
+    SDL_Texture* menuBackground_S = nullptr;
 
 private:
     void ShowSettings(bool show);
-
-    float bgScaleX = 1.0f;
-    float bgScaleY = 1.0f;
-    void RecalculateBackgroundScale();
+    bool isSettingsOpen = false;
 
 private:
     // UI Groups

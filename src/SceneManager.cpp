@@ -127,7 +127,7 @@ Vector2D SceneManager::GetPlayerPosition()
     if (currentScene != nullptr) {
         return currentScene->GetPlayerPosition();
     }
-    return Vector2D(0, 0); // Ojo con asegurarte de tener #include "Vector2D.h" arriba
+    return Vector2D(0, 0);
 }
 
 Player* SceneManager::GetPlayer()
