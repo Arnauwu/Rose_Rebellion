@@ -52,6 +52,17 @@ struct Door
     std::string teleportTo;
 };
 
+struct Path
+{
+    PhysBody* body;
+    std::string teleportTo;
+};
+
+struct PlayerSpawnPoint
+{
+    std::string fromRoom;
+    Vector2D position;
+};
 
 struct ObjectGroup
 {
@@ -131,7 +142,9 @@ struct MapData
     std::list<TileSet*> tilesets;
     std::list<ObjectGroup*> objectGroups;
     std::list<Door*> doors;
+    std::list<Path*> paths;
     std::list<MapLayer*> layers;
+    std::list<PlayerSpawnPoint*> spawnPoints;
 };
 
 class Map : public Module
@@ -182,9 +195,10 @@ public:
 
     // Entities
     void SpawnEntities();
-
+    Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door
     std::string DoorInfo(PhysBody* door);
+    std::string PathInfo(PhysBody* path);
 
 public: 
     std::string mapFileName;

@@ -503,6 +503,17 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 						mapData.doors.push_back(newDoor);
 					}
+					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
+					{
+						collider->ctype = ColliderType::PATH;
+
+						// TODO: Assign Listener
+
+						Door* newDoor = new Door;
+						newDoor->body = collider;
+						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						mapData.doors.push_back(newDoor);
+					}
 					else
 					{
 						collider->ctype = ColliderType::UNKNOWN;
@@ -769,36 +780,29 @@ void Map::SpawnEntities()
 				}
             }
         }
+
+
+		if (objectGroupNode.attribute("name").as_string() == std::string("PlayerSpawns"))
+		{
+
+			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
+			{
+				std::string entityType = objectNode.attribute("type").as_string();
+				float x = objectNode.attribute("x").as_float();
+				float y = objectNode.attribute("y").as_float();
+
+				Properties a;
+				LoadProperties(objectNode, a);
+
+				PlayerSpawnPoint* newSpawn = new PlayerSpawnPoint;
+				newSpawn->fromRoom = a.GetProperty("FromRoom")->value2;
+				newSpawn->position.setX(x);
+				newSpawn->position.setY(y);
+				mapData.spawnPoints.push_back(newSpawn);
+			}
+		}
     }
-    //for (const auto& mapLayer : mapData.layers)
-    //{
-    //    for (int i = 0; i < mapData.width; i++)
-    //    {
-    //        for (int j = 0; j < mapData.height; j++)
-    //        {
-    //            //Get the gid from tile
-    //            uint32_t gid = mapLayer->Get(i, j);
 
-    //            //Check if the gid is different from 0 - some tiles are empty
-    //            if (gid != 0)
-    //            {
-    //                TileSet* tileSet = GetTilesetFromTileId(gid);
-
-    //                if (tileSet != nullptr)
-    //                {
-    //                    // If it's a goldcoin
-    //                    if (tileSet->name == "goldCoin")
-    //                    {
-    //                        // Create new Coin
-    //                        std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-    //                        item->position = Vector2D(MapToWorld(i, j).getX(), MapToWorld(i, j).getY());
-    //                    }
-    //                }
-
-    //            }
-    //        }
-    //    }
-    //}
 }
 
 std::string Map::DoorInfo(PhysBody* door)
@@ -813,6 +817,26 @@ std::string Map::DoorInfo(PhysBody* door)
 	return std::string();
 }
 
+Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
+{
+	// Buscar el spawn point que coincida con la sala de origen
+	for (const auto& spawnPoint : mapData.spawnPoints)
+	{
+		if (spawnPoint->fromRoom == fromRoom)
+		{
+			return spawnPoint->position;
+		}
+	}
+
+	// Si no encuentra un spawn point específico, devuelve el primero encontrado
+	//if (!mapData.spawnPoints.empty())
+	//{
+	//	return mapData.spawnPoints.front()->position;
+	//}
+
+	// Fallback: posición por defecto
+	return Vector2D(200, 200);
+}
 
 
 

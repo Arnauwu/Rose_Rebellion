@@ -722,6 +722,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		canInteract = true;
 		interactuableBody = physB;
 		break;
+	case ColliderType::PATH:
+		interactuableBody = physB;
+		Engine::GetInstance().sceneManager->setNewMap = true;
+		break;
 
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
