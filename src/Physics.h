@@ -28,12 +28,15 @@ enum class ColliderType {
     PLAYER,
     PLAYER_ATTACK,
     ITEM,
+    HEALTH_ORB,
+    SKILL_POINT_ORB,
     CEILING,
     WALL,
     GROUND,
     AIR,
     DANGER,
     ENEMY,
+    ENEMY_ATTACK,
     SAVEPOINT,
     DOOR,
     PATH,
@@ -80,6 +83,7 @@ public:
     PhysBody* CreateRectangle(int x, int y, int width, int height, bodyType type);
     PhysBody* CreateCircle(int x, int y, int radious, bodyType type);
     PhysBody* CreateRectangleSensor(int x, int y, int width, int height, bodyType type);
+    PhysBody* CreateCircleSensor(int x, int y, int radious, bodyType type);
     PhysBody* CreateChain(int x, int y, int* points, int size, bodyType type);
 
     // Invoked from our event processing
