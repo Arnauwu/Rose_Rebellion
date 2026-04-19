@@ -15,6 +15,9 @@
 
 using namespace std;
 
+int Player::keyCount = 0;
+bool Player::glideUnlocked = false;
+
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -518,11 +521,38 @@ void Player::Dash()
 
 void Player::Interact()
 {
-	if (canInteract)
+	if (canInteract && interactuableBody != nullptr)
 	{
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		// Asegurarse que es una puerta
+		if (interactuableBody->ctype == ColliderType::DOOR)
 		{
-			Engine::GetInstance().sceneManager->setNewMap = true;
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			{
+				//Pregunta si esta puerta necesita llave
+				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
+				if (requiresKey)
+				{
+					// Si necesita
+					if (keyCount > 0)
+					{
+						//Restar una unidad cuando se usa una llave
+						keyCount--;
+						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+					else
+					{
+						LOG("Necesitas una llave para abrir, busca una ");
+					}
+				}
+				else
+				{
+					// Si no
+					LOG("Esta puerta no necesita llave ");
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+			}
 		}
 	}
 }
@@ -733,6 +763,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+
+		if (physB->listener->name == "Manta") {
+			LOG("Collision ITEM (Manta Picked Up)");
+		}
+		else if (physB->listener->name == "Key") {
+			LOG("Collision ITEM (Key Picked Up)");
+			keyCount++;
+			LOG("KeyNum: %d", keyCount);
+		}
 		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
 		break;

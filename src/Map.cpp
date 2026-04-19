@@ -20,7 +20,8 @@
 
 #include "SavePoint.h"
 #include "Item.h"
-
+#include "Keys.h"
+#include "Manta.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -501,6 +502,18 @@ bool Map::Load(std::string path, std::string fileName)
 						Door* newDoor = new Door;
 						newDoor->body = collider;
 						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+
+						//Mira si necesita una llave para abrirlo o no
+						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
+						if (needsKeyProp != nullptr)
+						{
+							newDoor->needsKey = needsKeyProp->value; // Si la propiedad "NeedsKey" de la puerta es true, esta puerta necesita una llave.
+
+						}
+						else
+						{
+							newDoor->needsKey = false; // Si no, no necesita llave
+						}
 						mapData.doors.push_back(newDoor);
 					}
 					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
@@ -778,6 +791,19 @@ void Map::SpawnEntities()
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
 					shieldKnight->position = Vector2D(x, y);
 				}
+				else if (entityType == std::string("Key"))
+				{
+					std::shared_ptr<Keys> key = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
+					if (key != nullptr) {
+						key->position = Vector2D(x, y);
+					}
+				}
+				else if (entityType == std::string("Manta")) {
+					std::shared_ptr<Manta> manta = std::dynamic_pointer_cast<Manta>(Engine::GetInstance().entityManager->CreateEntity(EntityType::MANTA));
+					if (manta != nullptr) {
+						manta->position = Vector2D(x, y);
+					}
+				}
             }
         }
 
@@ -817,6 +843,17 @@ std::string Map::DoorInfo(PhysBody* door)
 	return std::string();
 }
 
+bool Map::DoorNeedsKey(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor->body == door)
+		{
+			return ndoor->needsKey;
+		}
+	}
+	return false;
+}
 Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 {
 	// Buscar el spawn point que coincida con la sala de origen
@@ -828,13 +865,13 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 		}
 	}
 
-	// Si no encuentra un spawn point específico, devuelve el primero encontrado
+	// Si no encuentra un spawn point especÃ­fico, devuelve el primero encontrado
 	//if (!mapData.spawnPoints.empty())
 	//{
 	//	return mapData.spawnPoints.front()->position;
 	//}
 
-	// Fallback: posición por defecto
+	// Fallback: posiciÃ³n por defecto
 	return Vector2D(200, 200);
 }
 

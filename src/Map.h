@@ -50,6 +50,7 @@ struct Door
 {
     PhysBody* body;
     std::string teleportTo;
+    bool needsKey;
 };
 
 struct Path
@@ -198,6 +199,7 @@ public:
     Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door
     std::string DoorInfo(PhysBody* door);
+    bool DoorNeedsKey(PhysBody* door);
     std::string PathInfo(PhysBody* path);
 
 public: 
