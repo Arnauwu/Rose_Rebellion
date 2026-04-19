@@ -35,6 +35,9 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
+	
+	// Unlocks
+	void UnlockCape();
 
 private:
 
@@ -57,14 +60,14 @@ private:
 
 	void CameraFollows();
 
-	// Unlocks
-	void UnlockCape();
+	//// Unlocks
+	//void UnlockCape();
 
 	// DevTools / Debug
 	void DevTools(float dt);
 
 public:
-	float speed = 4.0f;
+	float speed = 6.0f;
 
 	// Texture
 	SDL_Texture* texture = nullptr;
@@ -90,7 +93,7 @@ public:
 
 	/*--- PLAYER SKILLS --- */
 	// Jump
-	float jumpForce = -7.5f; // The force to apply when jumping
+	float jumpForce = -10.0f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
 	// Extra Jump Force
@@ -103,7 +106,7 @@ public:
 	bool secondJumpUsed = false;
 	
 	// Gliding
-	bool glideUnlocked = false; 
+	static bool glideUnlocked; 
 	bool isGliding = false; // Flag
 
 	// Dash
@@ -151,6 +154,8 @@ public:
 	float safePositionTimer = 0.0f;
 	const float safePositionInterval = 0.2f;
 
+	//Item
+	static int keyCount;
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;

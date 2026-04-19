@@ -6,6 +6,8 @@
 #include "Log.h"
 
 #include "Item.h"
+#include "Keys.h"
+#include "Manta.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
 
@@ -111,6 +113,11 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::KNIGHT_BOSS:
 		entity = std::make_shared<KnightBoss>();
+	case EntityType::KEY:
+		entity = std::make_shared<Keys>();
+		break;
+	case EntityType::MANTA:
+		entity = std::make_shared<Manta>();
 		break;
 	default:
 		break;
@@ -118,7 +125,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 	if (entity != nullptr)
 	{
-		// Forzamos la inicialización si el manager
+		// Forzamos la inicializaciÃ³n si el manager
 		entity->Awake();
 		entities.push_back(entity);
 	}

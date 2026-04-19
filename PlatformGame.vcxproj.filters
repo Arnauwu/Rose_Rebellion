@@ -106,6 +106,8 @@
     </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\KnightBoss">
       <UniqueIdentifier>{f2e8abfa-aa7e-4d71-8e84-49c21c83447e}</UniqueIdentifier>
+    <Filter Include="Source Files\Game\Entity\Items\Manta">
+      <UniqueIdentifier>{705fa7c2-95be-4353-84c6-7118dcfbe85a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -239,6 +241,11 @@
     </ClCompile>
     <ClCompile Include="src\KnightBoss.cpp">
       <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
+    <ClCompile Include="src\Keys.cpp">
+      <Filter>Source Files\Game\Entity\Items\Keys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Manta.cpp">
+      <Filter>Source Files\Game\Entity\Items\Manta</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -367,6 +374,11 @@
     </ClInclude>
     <ClInclude Include="src\KnightBoss.h">
       <Filter>Source Files\Game\Entity\Enemies\KnightBoss</Filter>
+    <ClInclude Include="src\Keys.h">
+      <Filter>Source Files\Game\Entity\Items\Keys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Manta.h">
+      <Filter>Source Files\Game\Entity\Items\Manta</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

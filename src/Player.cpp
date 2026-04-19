@@ -15,6 +15,9 @@
 
 using namespace std;
 
+int Player::keyCount = 0;
+bool Player::glideUnlocked = false;
+
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -518,11 +521,38 @@ void Player::Dash()
 
 void Player::Interact()
 {
-	if (canInteract)
+	if (canInteract && interactuableBody != nullptr)
 	{
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		// Asegurarse que es una puerta
+		if (interactuableBody->ctype == ColliderType::DOOR)
 		{
-			Engine::GetInstance().sceneManager->setNewMap = true;
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			{
+				//Pregunta si esta puerta necesita llave
+				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
+				if (requiresKey)
+				{
+					// Si necesita
+					if (keyCount > 0)
+					{
+						//Restar una unidad cuando se usa una llave
+						keyCount--;
+						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+					else
+					{
+						LOG("Necesitas una llave para abrir, busca una ");
+					}
+				}
+				else
+				{
+					// Si no
+					LOG("Esta puerta no necesita llave ");
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+			}
 		}
 	}
 }
@@ -544,7 +574,7 @@ void Player::ApplyPhysics() {
 		}
 	}
 
-	if (velocity.y > 10 && currentAnimPriority != 3)
+	if (velocity.y > 5 && currentAnimPriority != 3)
 	{
 		if (lookingRight)
 		{
@@ -583,7 +613,7 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 0.75f); // -20 0.25f
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 1.0f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -682,10 +712,10 @@ bool Player::CleanUp()
 
 // Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
+	if (physA == attackCollider) { return; }
+
 	switch (physB->ctype)
 	{
-		if (physA == attackCollider) {  return; }
-
 	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead) {
@@ -722,6 +752,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		canInteract = true;
 		interactuableBody = physB;
 		break;
+	case ColliderType::PATH:
+		interactuableBody = physB;
+		Engine::GetInstance().sceneManager->setNewMap = true;
+		break;
 
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
@@ -729,6 +763,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+
+		if (physB->listener->name == "Manta") {
+			LOG("Collision ITEM (Manta Picked Up)");
+		}
+		else if (physB->listener->name == "Key") {
+			LOG("Collision ITEM (Key Picked Up)");
+			keyCount++;
+			LOG("KeyNum: %d", keyCount);
+		}
 		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
 		break;
@@ -773,6 +816,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision UNKNOWN");
 		break;
 
+	case ColliderType::PLAYER_ATTACK:
 	default:
 		break;
 	}

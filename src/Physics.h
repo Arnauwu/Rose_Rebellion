@@ -34,6 +34,7 @@ enum class ColliderType {
 
     CEILING,
     WALL,
+    PATH,
     GROUND,
     
     DANGER,
