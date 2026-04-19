@@ -54,10 +54,18 @@ bool GameScene::Start() {
 	LoadTextureIfNull(t_skilltreeUI, "Assets/Textures/UI/GameMenu/t_skilltreeUI.png");
 	LoadTextureIfNull(t_pauseUI, "Assets/Textures/UI/GameMenu/t_pauseUI.png");
 
+	//Load Items
+	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
+	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forceOrbUI.png");
+	LoadTextureIfNull(texItemOrb, "Assets/Textures/UI/Items/forestKeyUI.png");
+	LoadTextureIfNull(texItemGlide, "Assets/Textures/UI/Items/glideUI.png");
+	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
+
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
 	CreateInventoryUI();
+
 	// Pause Menu
 	CreatePauseMenuUI();
 
@@ -99,7 +107,7 @@ bool GameScene::Update(float dt) {
 				break;
 			case GameMenuTab::PAUSE_MENU:
 			case GameMenuTab::PAUSE_OPTIONS:
-				currentTextureToDraw = t_pauseUI; // Comparten el mismo fondo
+				currentTextureToDraw = t_pauseUI;
 				break;
 			default:
 				break;
@@ -123,7 +131,7 @@ bool GameScene::Update(float dt) {
 		}
 
 		if (currentMenuTab == GameMenuTab::INVENTORY) {
-			// Buscamos si algún elemento del inventario está FOCUSED
+			//TO DO: Buscamos si algún elemento del inventario está FOCUSED
 			for (auto& elem : inventoryUI) {
 				if (elem->state == UIElementState::FOCUSED) {
 				}
@@ -157,6 +165,13 @@ bool GameScene::CleanUp() {
 	UnloadTexture(t_skilltreeUI);
 	UnloadTexture(t_pauseUI);
 
+	//UnloadTexture Items
+	UnloadTexture(texItemKeyCastle);
+	UnloadTexture(texItemGlide);
+	UnloadTexture(texItemKeyForest);
+	UnloadTexture(texItemOrb);
+	UnloadTexture(texItemWeapon);
+
 	// Clean up UI vectors
 	topBarElements.clear();
 	inventoryUI.clear();
@@ -176,7 +191,6 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
 	case (int)GameUI_ID::BTN_TAB_SKILLS: ToggleGameMenu(GameMenuTab::SKILL_TREE); break;
 
-		// Controles de Pausa
 	case (int)GameUI_ID::BTN_PAUSE_RESUME:
 		ToggleGameMenu(GameMenuTab::NONE);
 		break;
@@ -205,7 +219,7 @@ void GameScene::CreateTopBarUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 
-	float wPerc = 0.15f, hPerc = 0.05f;
+	float wPerc = 0.33f, hPerc = 0.05f; 
 	float startX = 0.30f, yPos = 0.15f;
 	float spacingX = 0.20f;
 
@@ -229,23 +243,38 @@ void GameScene::CreateInventoryUI() {
 	float centerY = 0.50f;
 	float offset = 0.15f;
 
-	std::vector<InventorySlot> slots = {
-		// ARMA (Centro)
-		{ GameUI_ID::INV_ITEM_WEAPON, "Weapon", "The soul-reaping blade.", centerX, centerY },
+	// Ampliamos tu struct para que acepte un puntero a textura
+	struct InventorySlotDef {
+		GameUI_ID id;
+		const char* name;
+		const char* description;
+		float relX, relY;
+		SDL_Texture* tex; 
+	};
 
-		// AMULETOS (Vertices - X-shape)
-		{ GameUI_ID::INV_ITEM_GLIDE, "Glide",  "Float through the air.", centerX - offset, centerY - offset },
-		{ GameUI_ID::INV_ITEM_DASH,   "Dash",   "Quick burst of speed.",  centerX + offset, centerY - offset },
-		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double", "Reach higher ground.",  centerX - offset, centerY + offset },
-		{ GameUI_ID::INV_ITEM_WALL_JUMP,   "Wall J", "Climb vertical walls.", centerX + offset, centerY + offset },
+	std::vector<InventorySlotDef> slots = {
+		// ARMA (Centro)
+		{ GameUI_ID::INV_ITEM_WEAPON, "Weapon", "------", centerX, centerY, texItemWeapon },
+
+		// AMULETOS (Vertices)
+		{ GameUI_ID::INV_ITEM_GLIDE, "Glide", "Float through the air.", centerX - offset, centerY - offset, texItemGlide },
+		{ GameUI_ID::INV_ITEM_DASH, "Dash", "Quick burst of speed.", centerX + offset, centerY - offset, nullptr }, // Pon nullptr si aún no tienes textura
+		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double", "Reach higher ground.", centerX - offset, centerY + offset, nullptr },
+		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", "Climb vertical walls.", centerX + offset, centerY + offset, nullptr },
 
 		// ITEMS
-		{ GameUI_ID::INV_ITEM_KEY,    "Key",    "Opens ancient gates.",   centerX - offset, centerY },
-		{ GameUI_ID::INV_ITEM_ORB,    "Orb",    "Increases your power.",  centerX + offset, centerY  }
+		{ GameUI_ID::INV_ITEM_KEY, "Key", "Opens area doors.", centerX - offset, centerY, texItemKeyCastle },
+		{ GameUI_ID::INV_ITEM_ORB, "Orb", "Increases your power.", centerX + offset, centerY, texItemOrb }
 	};
 
 	for (const auto& slot : slots) {
 		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, 0.08f, 0.08f, sceneObserver);
+
+		// Si le hemos asignado una textura, se la ponemos al botón
+		if (slot.tex != nullptr) {
+			btn->SetTexture(slot.tex);
+		}
+
 		inventoryUI.push_back(btn);
 	}
 }
@@ -309,6 +338,40 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 	RefreshMenuUI();
 }
 
+void GameScene::UpdateInventoryVisuals() {
+	// TO DO: Al merge mirar los items
+	if (player == nullptr) return;
+
+	for (auto& btn : inventoryUI) {
+		bool hasItem = false;
+
+		// Comprobamos qué ítem es este botón y le preguntamos al Player si lo tiene
+		switch (btn->id) {
+		case (int)GameUI_ID::INV_ITEM_WEAPON:
+			hasItem = player->HasItem(ItemID::WEAPON); // < Ajusta tu enum aquí
+			break;
+		case (int)GameUI_ID::INV_ITEM_GLIDE:
+			hasItem = player->HasItem(ItemID::GLIDE);
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEY:
+			hasItem = player->HasItem(ItemID::KEY);
+			break;
+		case (int)GameUI_ID::INV_ITEM_ORB:
+			hasItem = player->HasItem(ItemID::STRENGTH_ORB);
+			break;
+
+		default:
+			continue; 
+		}
+		// Tintado de textura:
+		if (hasItem) {
+			btn->color = { 255, 255, 255, 255 }; // Blanco (Color original brillante)
+		}
+		else {
+			btn->color = { 60, 60, 60, 255 };    // Gris oscuro (Ítem bloqueado/sin conseguir)
+		}
+	}
+}
 void GameScene::RefreshMenuUI() {
 	// La Top Bar (Inventario/Mapa) solo se muestra si NO estamos en pausa general
 	bool showTopBar = (currentMenuTab == GameMenuTab::INVENTORY ||
@@ -316,11 +379,15 @@ void GameScene::RefreshMenuUI() {
 		currentMenuTab == GameMenuTab::SKILL_TREE);
 	SetUIGroupVisible(topBarElements, showTopBar);
 
+	if (currentMenuTab == GameMenuTab::INVENTORY) {
+		UpdateInventoryVisuals();
+	}
+
 	SetUIGroupVisible(inventoryUI, currentMenuTab == GameMenuTab::INVENTORY);
 	SetUIGroupVisible(mapUI, currentMenuTab == GameMenuTab::MAP);
 	SetUIGroupVisible(skillUI, currentMenuTab == GameMenuTab::SKILL_TREE);
 
-	// Los nuevos menús de pausa
+	
 	SetUIGroupVisible(pauseMainUI, currentMenuTab == GameMenuTab::PAUSE_MENU);
 	SetUIGroupVisible(pauseOptionsUI, currentMenuTab == GameMenuTab::PAUSE_OPTIONS);
 }

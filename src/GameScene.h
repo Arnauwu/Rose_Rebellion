@@ -54,6 +54,7 @@ struct InventorySlot {
 	float relX, relY;
 	bool isUnlocked = false; // Esto debería venir de tu clase Player
 };
+struct InvItemDef { int id; const char* name; float x; float y; SDL_Texture* tex; }; 
 
 struct ButtonDef { int id; const char* text; };
 
@@ -84,11 +85,20 @@ public:
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
-
+	
+	//Background textures
 	SDL_Texture* t_mapUI = nullptr;
 	SDL_Texture* t_inventoryUI = nullptr;
 	SDL_Texture* t_skilltreeUI = nullptr;
 	SDL_Texture* t_pauseUI = nullptr;
+	
+	//Items textures
+	SDL_Texture* texItemKeyCastle = nullptr;
+	SDL_Texture* texItemKeyForest = nullptr;
+
+	SDL_Texture* texItemOrb = nullptr;
+	SDL_Texture* texItemGlide = nullptr;
+	SDL_Texture* texItemWeapon = nullptr;
 
 private:
 	// Helper functions for the Game Menu

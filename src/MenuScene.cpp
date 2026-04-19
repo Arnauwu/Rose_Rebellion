@@ -14,6 +14,9 @@ bool MenuScene::Start() {
 	if (menuBackground == nullptr) {
 		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
 	}
+	if (menuBackground_S == nullptr) {
+		menuBackground_S = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu_S.png");
+	}
 	//RecalculateBackgroundScale();
 
 	auto uiManager = Engine::GetInstance().uiManager;
@@ -21,10 +24,10 @@ bool MenuScene::Start() {
 	
 	struct ButtonDef { int id; const char* text; };
 
-	float wPerc = 0.25f; // 25% of the screen width
+	float wPerc = 0.20f; // 25% of the screen width
 	float hPerc = 0.08f; // 8% of the top of the screen.
-	float spacing = 0.1f;
-	float currentY = 0.35f;
+	float spacing = 0.09f; // Space between buttons 
+	float currentY = 0.60f; // Hight
 	
 	ButtonDef mainBtnDefs[] = {
 		{ (int)MenuUI_ID::BTN_PLAY,     "Start Game" },
@@ -35,11 +38,11 @@ bool MenuScene::Start() {
 
 	for (const auto& def : mainBtnDefs) {
 		mainButtons.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, currentY, wPerc, hPerc, sceneObserver));
-		currentY += spacing; // Aumentamos la Y para el siguiente botón
+		currentY += spacing;
 	}
 
 	// MAIN MENU SETTINGS
-	float setY = 0.35f;
+	float setY = 0.45f;
 
 	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_MUSIC, "Music Volume", 0.5f, setY, 0.3f, 0.05f, sceneObserver);
 	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get())) s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
@@ -64,14 +67,18 @@ bool MenuScene::Start() {
 }
 
 bool MenuScene::Update(float dt) {
-	if (menuBackground != nullptr) {
-		int screenW, screenH;
-		Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+	int screenW, screenH;
+	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+	SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
-		SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
-		Engine::GetInstance().render->DrawTextureScaled(menuBackground, fullScreenRect);
+	SDL_Texture* currentBackground = isSettingsOpen ? menuBackground_S : menuBackground; // If false = menuBackground
+
+	// Dibujamos la textura elegida
+	if (currentBackground != nullptr) {
+		Engine::GetInstance().render->DrawTextureScaled(currentBackground, fullScreenRect);
 	}
+
 	return true;
 }
 
@@ -89,6 +96,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     case (int)MenuUI_ID::BTN_SETTINGS:
         ShowSettings(true);
         Engine::GetInstance().input->ClearMouseInput();
+		return true;
         break;
     case (int)MenuUI_ID::BTN_EXIT:
         exitGame = true;
@@ -113,6 +121,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
 }
 
 void MenuScene::ShowSettings(bool show) {
+	isSettingsOpen = show;
 	//Main Menu
 	for (auto& elem : mainButtons) {
 		if (show == true) {
@@ -144,6 +153,10 @@ bool MenuScene::CleanUp() {
 	if (menuBackground != nullptr) {
 		Engine::GetInstance().textures->UnLoad(menuBackground);
 		menuBackground = nullptr;
+	}
+	if (menuBackground_S != nullptr) {
+		Engine::GetInstance().textures->UnLoad(menuBackground_S);
+		menuBackground_S = nullptr;
 	}
 	mainButtons.clear();
 	settingsButtons.clear();
