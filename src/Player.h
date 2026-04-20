@@ -6,9 +6,16 @@
 #include <unordered_map>
 #include <SDL3/SDL.h>
 #include "Timer.h"
-#include <iostream>
 #include "CameraController.h"
+#include <iostream>
+#include <map>
 
+enum class ItemID {
+	WEAPON,
+	GLIDE,
+	KEY,
+	STRENGTH_ORB,
+};
 
 struct SDL_Texture;
 
@@ -35,7 +42,17 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
+	
+	// Unlocks
+	void UnlockCape();
 
+	//Inventary Variables
+	std::map<ItemID, int> inventory;
+
+	// Las herramientas para modificar el inventario
+	void AddItem(ItemID id, int amount = 1);
+	bool HasItem(ItemID id);
+	int GetItemCount(ItemID id);
 private:
 
 	void GodModeMove(float dt);
@@ -57,8 +74,8 @@ private:
 
 	void CameraFollows();
 
-	// Unlocks
-	void UnlockCape();
+	//// Unlocks
+	//void UnlockCape();
 
 	// DevTools / Debug
 	void DevTools(float dt);
@@ -90,7 +107,7 @@ public:
 
 	/*--- PLAYER SKILLS --- */
 	// Jump
-	float jumpForce = -10.0f; // The force to apply when jumping
+	float jumpForce = -12.0f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
 	// Extra Jump Force
@@ -103,7 +120,7 @@ public:
 	bool secondJumpUsed = false;
 	
 	// Gliding
-	bool glideUnlocked = false; 
+	static bool glideUnlocked; 
 	bool isGliding = false; // Flag
 
 	// Dash
@@ -151,6 +168,8 @@ public:
 	float safePositionTimer = 0.0f;
 	const float safePositionInterval = 0.2f;
 
+	//Item
+	static int keyCount;
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;

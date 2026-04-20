@@ -47,15 +47,23 @@ void UIButton::Draw() const
 {
 	if (!visible) return;
 
-	// 1. Dibujar el fondo del botón según estado
-	SDL_Color color = { 100, 100, 100, 255 }; // Normal
-	if (state == UIElementState::FOCUSED) color = { 150, 150, 150, 255 };
-	if (state == UIElementState::PRESSED) color = { 200, 200, 200, 255 };
+	SDL_Color bgColor = { 100, 100, 100, 255 }; // Normal
+	if (state == UIElementState::FOCUSED) bgColor = { 150, 150, 150, 255 };
+	if (state == UIElementState::PRESSED) bgColor = { 200, 200, 200, 255 };
 
-	Engine::GetInstance().render->DrawRectangle(bounds, color.r, color.g, color.b, color.a, true, false);
+	Engine::GetInstance().render->DrawRectangle(bounds, bgColor.r, bgColor.g, bgColor.b, bgColor.a, true, false);
 
+	// 2. Texto
 	if (!text.empty()) {
 		Engine::GetInstance().render->DrawTextCentered(text.c_str(), bounds, { 255, 255, 255, 255 });
+	}
+
+	if (texture != nullptr) {
+		SDL_SetTextureColorMod(texture, this->color.r, this->color.g, this->color.b);
+
+		Engine::GetInstance().render->DrawTextureScaled(texture, bounds);
+
+		SDL_SetTextureColorMod(texture, 255, 255, 255);
 	}
 }
 

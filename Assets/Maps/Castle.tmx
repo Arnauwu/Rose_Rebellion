@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="50">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="52">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -4696,6 +4696,18 @@
    <tile gid="49"/>
   </data>
  </layer>
+ <objectgroup id="16" name="Path">
+  <properties>
+   <property name="Path" type="bool" value="true"/>
+   <property name="Sensor" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="51" x="-109" y="614" width="28" height="87">
+   <properties>
+    <property name="TeleportTo" type="file" value="Forest_01.tmx"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup id="13" name="Door">
   <properties>
    <property name="Door" type="bool" value="true"/>
@@ -4707,23 +4719,18 @@
     <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
    </properties>
   </object>
-  <object id="29" x="15.5" y="657.25" width="31" height="47.5">
-   <properties>
-    <property name="TeleportTo" type="file" value="Test.tmx"/>
-   </properties>
-  </object>
   <object id="30" x="1999.5" y="656.25" width="31" height="47.5">
    <properties>
     <property name="TeleportTo" type="file" value="bosque_test.tmx"/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
+ <objectgroup color="#00aa00" id="6" name="Ground">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="9" x="3.5" y="704" width="2044.5" height="64"/>
+  <object id="9" x="-79.5" y="704" width="2127.5" height="64"/>
  </objectgroup>
  <objectgroup color="#aa5500" id="7" name="Wall">
   <properties>
@@ -4734,7 +4741,6 @@
   <object id="31" x="0" y="222" width="64" height="386"/>
   <object id="32" x="1982" y="219" width="64" height="386"/>
   <object id="33" x="2052" y="581" width="16" height="150"/>
-  <object id="34" x="-18" y="587" width="16" height="150"/>
   <object id="44" x="1408" y="480" width="160" height="32"/>
   <object id="45" x="1536" y="384" width="32" height="96"/>
   <object id="46" x="1376" y="384" width="32" height="128"/>
@@ -4750,7 +4756,7 @@
   <object id="35" x="0.969697" y="1.35868" width="61.1667" height="221.919"/>
   <object id="36" x="1988.08" y="-1.62617" width="61.1667" height="221.919"/>
  </objectgroup>
- <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
+ <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="25" name="Player" type="Player" x="958.498" y="696.947">
    <point/>
   </object>
@@ -4779,6 +4785,23 @@
    <point/>
   </object>
   <object id="42" name="Ninfa" type="Ninfa" x="1476.57" y="456.502">
+   <point/>
+  </object>
+  <object id="49" name="Key" type="Key" x="312.151" y="697.461">
+   <point/>
+  </object>
+  <object id="50" name="Manta" type="Manta" x="1420" y="698">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="15" name="PlayerSpawns">
+  <properties>
+   <property name="PlayerSpawns" type="bool" value="true"/>
+  </properties>
+  <object id="50" name="Player" x="106" y="692">
+   <properties>
+    <property name="FromRoom" type="file" value="Forest_01.tmx"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

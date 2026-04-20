@@ -6,6 +6,8 @@
 #include "Log.h"
 
 #include "Item.h"
+#include "Keys.h"
+#include "Manta.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
 
@@ -108,6 +110,12 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SHIELD_KNIGHT:
 		entity = std::make_shared<ShieldKnight>();
 		break;
+	case EntityType::KEY:
+		entity = std::make_shared<Keys>();
+		break;
+	case EntityType::MANTA:
+		entity = std::make_shared<Manta>();
+		break;
 	default:
 		break;
 	}
@@ -136,7 +144,10 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 bool EntityManager::Update(float dt)
 {
 	bool ret = true;
-
+	/*if (Engine::GetInstance().sceneManager->IsGamePaused()) {
+		return true;
+	}*/ 
+	//TO DO: Hacer que en pausa no se vea ningun enemigo
 	//List to store entities pending deletion
 	std::list<std::shared_ptr<Entity>> pendingDelete;
 

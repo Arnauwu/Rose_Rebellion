@@ -28,6 +28,5 @@ public:
 
 public:
     bool exitGame = false;
-    bool isGamePaused = false;
 
 };

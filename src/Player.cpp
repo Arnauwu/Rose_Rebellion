@@ -15,6 +15,9 @@
 
 using namespace std;
 
+int Player::keyCount = 0;
+bool Player::glideUnlocked = false;
+
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -518,11 +521,38 @@ void Player::Dash()
 
 void Player::Interact()
 {
-	if (canInteract)
+	if (canInteract && interactuableBody != nullptr)
 	{
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		// Asegurarse que es una puerta
+		if (interactuableBody->ctype == ColliderType::DOOR)
 		{
-			Engine::GetInstance().sceneManager->setNewMap = true;
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			{
+				//Pregunta si esta puerta necesita llave
+				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
+				if (requiresKey)
+				{
+					// Si necesita
+					if (keyCount > 0)
+					{
+						//Restar una unidad cuando se usa una llave
+						keyCount--;
+						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+					else
+					{
+						LOG("Necesitas una llave para abrir, busca una ");
+					}
+				}
+				else
+				{
+					// Si no
+					LOG("Esta puerta no necesita llave ");
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+			}
 		}
 	}
 }
@@ -583,7 +613,7 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 1.0f); // -20 0.25f
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-140, &animFrame, sdlFlip, 1.25f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -616,7 +646,8 @@ void Player::CameraFollows()
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
 
-	cameraController.Update(0, position, screenW, screenH, mapSize.getX(), mapSize.getY());
+	float dt = Engine::GetInstance().GetDt();
+	cameraController.Update(dt, position, screenW, screenH, mapSize.getX(), mapSize.getY());
 
 	float camX, camY;
 	cameraController.GetCameraPosition(camX, camY);
@@ -662,6 +693,8 @@ void Player::UnlockCape()
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
 	glideUnlocked = true;
+
+	AddItem(ItemID::GLIDE, 1);
 }
 
 bool Player::CleanUp()
@@ -678,6 +711,22 @@ bool Player::CleanUp()
 		attackCollider = nullptr;
 	}
 	return true;
+}
+
+// ==========================================
+// INVENTORY SYSTEM
+// ==========================================
+
+void Player::AddItem(ItemID id, int amount) {
+	inventory[id] += amount;
+}
+
+bool Player::HasItem(ItemID id) {
+	return inventory[id] > 0;
+}
+
+int Player::GetItemCount(ItemID id) {
+	return inventory[id];
 }
 
 // Define OnCollision function for the player. 
@@ -722,6 +771,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		canInteract = true;
 		interactuableBody = physB;
 		break;
+	case ColliderType::PATH:
+		interactuableBody = physB;
+		Engine::GetInstance().sceneManager->setNewMap = true;
+		break;
 
 	case ColliderType::CEILING:
 		LOG("Collision CEILING");
@@ -729,7 +782,18 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
+
+		if (physB->listener->name == "Manta") {
+			LOG("Collision ITEM (Manta Picked Up)");
+		}
+		else if (physB->listener->name == "Key") {
+			LOG("Collision ITEM (Key Picked Up)");
+			keyCount++;
+
+			AddItem(ItemID::KEY, 1);
+
+			LOG("KeyNum: %d", keyCount);
+		}
 		physB->listener->Destroy();
 		break;
 	case ColliderType::HEALTH_ORB:
@@ -746,6 +810,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
+		AddItem(ItemID::STRENGTH_ORB, 1);
+		physB->listener->Destroy(); 
 		break;
 	case ColliderType::SAVEPOINT:
 	{
