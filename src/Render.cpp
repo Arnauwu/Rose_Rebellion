@@ -60,8 +60,16 @@ bool Render::Awake()
 			}
 		}
 
-		camera.w = Engine::GetInstance().window->windowWidth * scale;
-		camera.h = Engine::GetInstance().window->windowHeight * scale;
+		int baseWidth = Engine::GetInstance().window->windowWidth;
+		int baseHeight = Engine::GetInstance().window->windowHeight;
+
+		
+		SDL_SetRenderLogicalPresentation(renderer, baseWidth, baseHeight,
+			SDL_LOGICAL_PRESENTATION_LETTERBOX);
+
+		// Como SDL ahora maneja el escalado internamente, la cámara solo necesita tu resolución base.
+		camera.w = baseWidth;
+		camera.h = baseHeight;
 		camera.x = 0;
 		camera.y = 0;
 	}

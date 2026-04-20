@@ -28,6 +28,9 @@ public:
     bool CleanUp() override;
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
+    float bgScaleX = 1.0f;
+    float bgScaleY = 1.0f;
+
     SDL_Texture* menuBackground = nullptr;
     SDL_Texture* menuBackground_S = nullptr;
 

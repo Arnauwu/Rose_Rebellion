@@ -126,7 +126,7 @@ void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer)
 	// Resize and reposition the cursor in the same relative position
 	int newW, newH;
 	SDL_GetWindowSize(window, &newW, &newH);
-	SDL_GetWindowSizeInPixels(window, &windowWidth, &windowHeight);
+	//SDL_GetWindowSizeInPixels(window, &windowWidth, &windowHeight);
 
 	SDL_WarpMouseInWindow(window, relX * newW, relY * newH);
 }

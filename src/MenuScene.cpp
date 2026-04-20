@@ -17,7 +17,6 @@ bool MenuScene::Start() {
 	if (menuBackground_S == nullptr) {
 		menuBackground_S = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu_S.png");
 	}
-	//RecalculateBackgroundScale();
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -67,10 +66,10 @@ bool MenuScene::Start() {
 }
 
 bool MenuScene::Update(float dt) {
-	int screenW, screenH;
-	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
-	SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
-
+	int windowW = Engine::GetInstance().window->windowWidth;
+	int windowH = Engine::GetInstance().window->windowHeight;
+	
+	SDL_Rect fullScreenRect = { 0, 0, windowW, windowH };
 
 	SDL_Texture* currentBackground = isSettingsOpen ? menuBackground_S : menuBackground; // If false = menuBackground
 
@@ -109,7 +108,6 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
         break;
     case (int)MenuUI_ID::CHK_FULLSCREEN:
         Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked);
-        //RecalculateBackgroundScale();
         break;
     case (int)MenuUI_ID::BTN_BACK:
         ShowSettings(false);
@@ -163,18 +161,3 @@ bool MenuScene::CleanUp() {
 	return true;
 }
 
-//void MenuScene::RecalculateBackgroundScale()
-//{
-//	if (menuBackground == nullptr) return;
-//
-//	int screenW, screenH;
-//	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
-//
-//	float texW, texH;
-//	SDL_GetTextureSize(menuBackground, &texW, &texH);
-//
-//	float engineScale = (float)Engine::GetInstance().window->GetScale();
-//
-//	bgScaleX = (float)screenW / (texW * engineScale);
-//	bgScaleY = (float)screenH / (texH * engineScale);
-//}
