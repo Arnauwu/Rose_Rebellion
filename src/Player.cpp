@@ -646,7 +646,8 @@ void Player::CameraFollows()
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
 
-	cameraController.Update(0, position, screenW, screenH, mapSize.getX(), mapSize.getY());
+	float dt = Engine::GetInstance().GetDt();
+	cameraController.Update(dt, position, screenW, screenH, mapSize.getX(), mapSize.getY());
 
 	float camX, camY;
 	cameraController.GetCameraPosition(camX, camY);

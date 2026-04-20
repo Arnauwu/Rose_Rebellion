@@ -99,8 +99,9 @@ bool GameScene::Update(float dt) {
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
-			int screenW, screenH;
-			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+			int screenW = Engine::GetInstance().window->windowWidth;
+			int screenH = Engine::GetInstance().window->windowHeight;
+
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
 			Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 180, true, false);

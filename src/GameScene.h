@@ -1,3 +1,4 @@
+    void RecalculateBackgroundScale();
 #pragma once
 #include "SceneBase.h"
 #include "Textures.h"
