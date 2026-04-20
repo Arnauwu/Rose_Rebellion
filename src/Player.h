@@ -107,7 +107,7 @@ public:
 
 	/*--- PLAYER SKILLS --- */
 	// Jump
-	float jumpForce = -10.0f; // The force to apply when jumping
+	float jumpForce = -12.0f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
 	// Extra Jump Force
