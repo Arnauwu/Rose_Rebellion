@@ -165,34 +165,35 @@ bool Map::Update(float dt)
 						//Check if the gid is different from 0 - some tiles are empty
 						if (gid != 0)
 						{
-							// Decode flip flags from GID
-							const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-							const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
-							const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
-							const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
+							// Bits on the far end of the 32-bit global tile ID are used for tile flags
+							const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+							const unsigned FLIPPED_VERTICALLY_FLAG = 0x40000000;
+							const unsigned FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 
-							//Get Flip Variables and Correct Tile GID
-							bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
-							bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
-							bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
-							uint32_t tileId = gid & TILE_ID_MASK;
+							// Read out the flags
+							bool flipped_horizontally = (gid & FLIPPED_HORIZONTALLY_FLAG);
+							bool flipped_vertically = (gid & FLIPPED_VERTICALLY_FLAG);
+							bool flipped_diagonally = (gid & FLIPPED_DIAGONALLY_FLAG);
+
+							// Clear all four flags
+ 							unsigned int tileId =  gid & ~0XF0000000;
 
 							// Determine rotation and final horizontal flip
 							float rotation = 0.0f;
 							SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
 
-							if (!flipD)
+							if (!flipped_diagonally)
 							{
-								if (flipH && flipV) { rotation = 180.0f; }
-								else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
-								else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
+								if (flipped_horizontally && flipped_vertically) { rotation = 180.0f; }
+								else if (flipped_horizontally) { sdlFlip = SDL_FLIP_HORIZONTAL; }
+								else if (flipped_vertically) { sdlFlip = SDL_FLIP_VERTICAL; }
 							}
 							else // Diagonal Flip  == True
 							{
-								if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
-								else if (flipH && !flipV) { rotation = 90.0f; }
-								else if (!flipH && flipV) { rotation = 270.0f; }
-								else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+								if (!flipped_horizontally && !flipped_vertically) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+								else if (flipped_horizontally && !flipped_vertically) { rotation = 90.0f; }
+								else if (!flipped_horizontally && flipped_vertically) { rotation = 270.0f; }
+								else if (flipped_horizontally && flipped_vertically) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
 							}
 
 							// Obtain the tile set using GetTilesetFromTileId
@@ -384,7 +385,7 @@ bool Map::Load(std::string path, std::string fileName)
 			// Iterate over all the tiles and assign the values in the data array
 			for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile"))
 			{
-				mapLayer->tiles.push_back(tileNode.attribute("gid").as_int());
+				mapLayer->tiles.push_back(tileNode.attribute("gid").as_uint());
 			}
 
 			// Add the layer to the map
