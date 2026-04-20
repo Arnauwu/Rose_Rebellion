@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="80" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="8" nextobjectid="22">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="80" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="8" nextobjectid="22">
  <tileset firstgid="1" name="Atlas_Bosque_V2 (2)" tilewidth="128" tileheight="128" tilecount="64" columns="8">
-  <image source="Forest/Atlas_Bosque_V2 (2).png" width="1024" height="1024"/>
+  <image source="Forest/Atlas_Forest.png" width="1024" height="1024"/>
  </tileset>
  <tileset firstgid="65" name="Bosque_Entero" tilewidth="1920" tileheight="1080" tilecount="1" columns="1">
-  <image source="Forest/Bosque_Entero.png" width="1920" height="1088"/>
+  <image source="Forest/Forest_Bg.png" width="1920" height="1088"/>
  </tileset>
  <tileset firstgid="66" name="princess" tilewidth="256" tileheight="256" tilecount="110" columns="11">
   <image source="../Textures/Princess/princess.PNG" width="3069" height="2562"/>
