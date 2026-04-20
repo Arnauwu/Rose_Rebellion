@@ -18,8 +18,9 @@ bool IntroScene::Start() {
 bool IntroScene::Update(float dt) {
 	introTimer -= dt;
 	if (introTexture != nullptr) {
-		int screenW, screenH;
-		Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+		int screenW = Engine::GetInstance().render->camera.w;
+		int screenH = Engine::GetInstance().render->camera.h;
+
 		SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
 		//  Dibujamos la textura forzándola a ocupar ese rectángulo

@@ -49,11 +49,12 @@ void GameScene::LoadMap(std::string mapFile)
 }
 
 bool GameScene::Start() {
+	
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	LOG("Loading Game Scene");
 
-	LoadMap("Castle.tmx");
+	LoadMap("Castle_Inside.tmx");
 	if (player != nullptr) {
 		player->position.setX(10);
 		player->position.setY(10);
@@ -99,8 +100,8 @@ bool GameScene::Update(float dt) {
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
-			int screenW = Engine::GetInstance().window->windowWidth;
-			int screenH = Engine::GetInstance().window->windowHeight;
+			int screenW = Engine::GetInstance().render->camera.w;
+			int screenH = Engine::GetInstance().render->camera.h;
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
