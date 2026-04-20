@@ -45,7 +45,9 @@ public:
 	
 	// Unlocks
 	void UnlockCape();
+	void UnlockSickle(); // 新增：解锁镰刀
 
+	
 	//Inventary Variables
 	std::map<ItemID, int> inventory;
 
@@ -170,6 +172,7 @@ public:
 
 	//Item
 	static int keyCount;
+	bool hasSickle = false; // 新增：记录是否拥有镰刀
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;

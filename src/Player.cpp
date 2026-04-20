@@ -390,7 +390,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 void Player::Attack(float dt)
 {
 	// 1. Start the attack 
-	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	if (!isAttacking && hasSickle && glideUnlocked &&Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
 		isAttacking = true;
 		anims.SetCurrent("attack");
@@ -697,6 +697,31 @@ void Player::UnlockCape()
 	AddItem(ItemID::GLIDE, 1);
 }
 
+void Player::UnlockSickle()
+{
+	hasSickle = true;
+	AddItem(ItemID::WEAPON, 1);
+
+	// 只有当玩家也拿到了斗篷时，才切换到终极(带镰刀)形态贴图
+	if (glideUnlocked)
+	{
+		Engine::GetInstance().textures->UnLoad(texture);
+
+		// 注意：这里的 ID (0, 11, 22...) 取决于你同学画的 .tsx 文件的布局，请确保和实际对其！
+		// 你需要在这里补充攻击(attack)的动画别名和它的起止ID
+		std::unordered_map<int, std::string> aliases = {
+			{0,"move_right"}, {11,"move_left"}, {22,"jump_right"}, {33,"fall_right" },
+			{44,"jump_left" } , {55,"fall_left"}, {66,"idle_right" }, {77,"idle_left" },
+			{88,"death_right"}, {99,"death_left" },
+			{110, "attack"} // 假设 110 是 attack 动画的起始 ID，请根据真实情况修改
+		};
+
+		// 【注意】请将下面的路径替换为你同学新画的包含镰刀动作的 tsx 和 png 名字
+		anims.LoadFromTSX("Assets/Textures/Princess/princess_with_sickle.tsx", aliases);
+		anims.SetCurrent("idle_right");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess_with_sickle.png");
+	}
+}
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
@@ -793,6 +818,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			AddItem(ItemID::KEY, 1);
 
 			LOG("KeyNum: %d", keyCount);
+		}
+		else if (physB->listener->name == "Sickle") {
+			LOG("Collision ITEM (Sickle Picked Up)");
 		}
 		physB->listener->Destroy();
 		break;

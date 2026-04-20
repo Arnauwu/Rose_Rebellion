@@ -22,6 +22,7 @@
 #include "Item.h"
 #include "Keys.h"
 #include "Manta.h"
+#include "Sickle.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -806,6 +807,12 @@ void Map::SpawnEntities()
 					std::shared_ptr<Manta> manta = std::dynamic_pointer_cast<Manta>(Engine::GetInstance().entityManager->CreateEntity(EntityType::MANTA));
 					if (manta != nullptr) {
 						manta->position = Vector2D(x, y);
+					}
+				}
+				else if (entityType == std::string("Sickle")) {
+					std::shared_ptr<Sickle> sickle = std::dynamic_pointer_cast<Sickle>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SICKLE));
+					if (sickle != nullptr) {
+						sickle->position = Vector2D(x, y);
 					}
 				}
             }
