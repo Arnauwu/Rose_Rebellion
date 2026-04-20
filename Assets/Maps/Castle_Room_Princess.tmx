@@ -989,7 +989,7 @@
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="3" x="34.6667" y="569.333" width="32" height="64">
+  <object id="3" x="34.6667" y="544" width="61.3333" height="89.3333">
    <properties>
     <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
    </properties>

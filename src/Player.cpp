@@ -613,7 +613,7 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-60, &animFrame, sdlFlip, 1.0f); // -20 0.25f
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-140, &animFrame, sdlFlip, 1.25f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{

@@ -4716,7 +4716,7 @@
   </properties>
   <object id="28" x="1009" y="654" width="31" height="47.5">
    <properties>
-    <property name="TeleportTo" type="file" value="PruebaCastilloInterior.tmx"/>
+    <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
    </properties>
   </object>
   <object id="30" x="1999.5" y="656.25" width="31" height="47.5">
