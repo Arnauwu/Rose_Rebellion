@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="8">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="9">
  <tileset firstgid="1" name="fondo_HabitacionPrincesa" tilewidth="1920" tileheight="1088" tilecount="1" columns="1">
   <image source="Castle/fondo_HabitacionPrincesa.png" width="1920" height="1088"/>
  </tileset>
@@ -1009,6 +1009,17 @@
  </objectgroup>
  <objectgroup id="4" name="EntitiesSpawnPoints">
   <object id="6" name="Player" type="Player" x="200.333" y="542.333">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="PlayerSpawns">
+  <properties>
+   <property name="PlayerSpawns" type="bool" value="true"/>
+  </properties>
+  <object id="8" name="PlayerSpawns" x="178.667" y="574.667">
+   <properties>
+    <property name="FromRoom" type="file" value="Castle_Inside.tmx"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
