@@ -2466,12 +2466,15 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="4" name="PlayerSpawns"/>
- <objectgroup id="2" name="Ground">
+ <objectgroup id="4" name="PlayerSpawns">
   <properties>
-   <property name="Ground" type="bool" value="true"/>
-   <property name="Square" type="bool" value="true"/>
+   <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="1" x="0" y="1920" width="5760" height="384"/>
+  <object id="4" name="PlayerSpawns" x="3592" y="240">
+   <properties>
+    <property name="FromRoom" type="file" value="Balcony.tmx"/>
+   </properties>
+   <point/>
+  </object>
  </objectgroup>
 </map>
