@@ -71,8 +71,13 @@
  <tileset firstgid="115" name="Bosque_Entero" tilewidth="1920" tileheight="1088" tilecount="1" columns="1">
   <image source="Forest/Forest_Bg.png" width="1920" height="1088"/>
  </tileset>
- <tileset firstgid="116" source="Forest/Espinas.tsx"/>
+ <tileset firstgid="116" name="Espinas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Forest/Archivo PSD Espinas.png" width="1024" height="1024"/>
+ </tileset>
  <objectgroup id="17" name="Fondo" visible="0">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <object id="315" gid="115" x="24704" y="4096" width="7296" height="4096"/>
   <object id="316" gid="115" x="17408" y="4096" width="7296" height="4096"/>
   <object id="317" gid="115" x="10112" y="4096" width="7296" height="4096"/>
@@ -16278,7 +16283,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns" visible="0">
+ <objectgroup id="15" name="PlayerSpawns">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

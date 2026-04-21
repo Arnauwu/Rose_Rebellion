@@ -71,7 +71,13 @@
  <tileset firstgid="115" name="Bosque_Entero" tilewidth="1920" tileheight="1088" tilecount="1" columns="1">
   <image source="Forest/Forest_Bg.png" width="1920" height="1088"/>
  </tileset>
+ <tileset firstgid="116" name="Espinas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Forest/Archivo PSD Espinas.png" width="1024" height="1024"/>
+ </tileset>
  <objectgroup id="17" name="Fondo" visible="0">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <object id="283" gid="115" x="15616" y="4096" width="7424" height="4160"/>
   <object id="284" gid="115" x="8192" y="4096" width="7424" height="4160"/>
   <object id="285" gid="115" x="0" y="4096" width="8192" height="4160"/>
@@ -11655,7 +11661,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -11925,7 +11931,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns" visible="0">
+ <objectgroup id="15" name="PlayerSpawns">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

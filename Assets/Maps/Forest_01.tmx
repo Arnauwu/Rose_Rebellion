@@ -4694,7 +4694,7 @@
    <tile gid="85"/>
    <tile gid="85"/>
    <tile gid="85"/>
-   <tile gid="205"/>
+   <tile/>
    <tile gid="85"/>
    <tile gid="85"/>
    <tile gid="85"/>
@@ -11649,7 +11649,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -11740,7 +11740,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns" visible="0">
+ <objectgroup id="15" name="PlayerSpawns">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
