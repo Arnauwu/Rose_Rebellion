@@ -18,6 +18,17 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
+
+	if (mapFile == "Castle_Inside.tmx") {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba2.wav"); // Música Interior Castillo
+	}
+	else if (mapFile == "Castle.tmx") {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba2.wav"); // Música Exterior Castillo
+	}
+	else if (mapFile.find("Forest_01") != std::string::npos) {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav"); // Música Bosque
+	}
+
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
 	printf("prevoius map : %s", previousMap);
 	//Load the map. 

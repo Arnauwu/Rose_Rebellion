@@ -174,6 +174,11 @@ public:
 	static int keyCount;
 	bool hasSickle = false; 
 private: 
+
+	int jumpFx = -1;
+	int attackFx = -1;
+	int pickItemFx = -1;
+
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 
