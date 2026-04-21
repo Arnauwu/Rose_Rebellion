@@ -55,14 +55,10 @@ bool SceneManager::PostUpdate() {
         }
     }
 
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
-        if (currentSceneID != SceneID::MENU) {
-            ChangeScene(SceneID::MENU);
-        }
-        else {
-            return false;
-        }
+    if (currentSceneID == SceneID::MENU && Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
+        return false;
     }
+
     return ret;
 }
 
@@ -80,6 +76,9 @@ bool SceneManager::CleanUp() {
 
 void SceneManager::ChangeScene(SceneID newScene) {
     LOG("Changing Scene");
+
+    isGamePaused = false;
+    Engine::GetInstance().input->ClearMouseInput();
 
     if (currentScene != nullptr) {
         currentScene->CleanUp();

@@ -77,11 +77,18 @@ public:
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
 	
+	//Buttons textures
+	SDL_Texture* buttonUI = nullptr;
+	SDL_Texture* textBgUI = nullptr;
+	SDL_Texture* keyFrameUI = nullptr;
+	SDL_Texture* orbFrameUI = nullptr;
+	SDL_Texture* skillFrameUI = nullptr;
+
 	//Background textures
-	SDL_Texture* t_mapUI = nullptr;
-	SDL_Texture* t_inventoryUI = nullptr;
-	SDL_Texture* t_skilltreeUI = nullptr;
-	SDL_Texture* t_pauseUI = nullptr;
+	SDL_Texture* texMapUI = nullptr;
+	SDL_Texture* texInventoryUI = nullptr;
+	SDL_Texture* texSkilltreeUI = nullptr;
+	SDL_Texture* texPauseUI = nullptr;
 	
 	//Items textures
 	SDL_Texture* texItemKeyCastle = nullptr;
@@ -114,7 +121,9 @@ private:
 	std::vector<std::shared_ptr<UIElement>> inventoryUI;
 	std::vector<std::shared_ptr<UIElement>> mapUI;
 	std::vector<std::shared_ptr<UIElement>> skillUI;
-
+	
+	// Descriptión Panel
+	std::shared_ptr<UIElement> descPanel = nullptr;
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;

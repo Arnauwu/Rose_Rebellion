@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="180" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="287">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="377">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -71,7 +71,13 @@
  <tileset firstgid="115" name="Bosque_Entero" tilewidth="1920" tileheight="1088" tilecount="1" columns="1">
   <image source="Forest/Forest_Bg.png" width="1920" height="1088"/>
  </tileset>
- <objectgroup id="17" name="Fondo">
+ <tileset firstgid="116" name="Espinas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Forest/Archivo PSD Espinas.png" width="1024" height="1024"/>
+ </tileset>
+ <objectgroup id="17" name="Fondo" visible="0">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <object id="283" gid="115" x="15616" y="4096" width="7424" height="4160"/>
   <object id="284" gid="115" x="8192" y="4096" width="7424" height="4160"/>
   <object id="285" gid="115" x="0" y="4096" width="8192" height="4160"/>
@@ -3266,7 +3272,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="94"/>
+   <tile gid="86"/>
    <tile gid="95"/>
    <tile gid="95"/>
    <tile gid="95"/>
@@ -3446,12 +3452,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3626,12 +3632,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3806,12 +3812,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3986,12 +3992,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="111"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4948,7 +4954,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="114"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
@@ -5128,7 +5134,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="114"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
@@ -5308,7 +5314,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="114"/>
+   <tile gid="84"/>
    <tile/>
    <tile/>
    <tile/>
@@ -11679,169 +11685,59 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground">
+ <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="123" x="14336" y="3840" width="7936" height="256"/>
+  <object id="123" x="14352" y="3840" width="7920" height="128"/>
   <object id="224" x="18176" y="3712" width="384" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="225" x="22272" y="3200" width="768" height="896">
+  <object id="225" x="22016" y="3200" width="768" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="226" x="22144" y="3200" width="128" height="384">
+  <object id="229" x="22284.7" y="1152" width="499.333" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="227" x="22016" y="3200" width="128" height="128">
+  <object id="230" x="21259.5" y="1920" width="490.5" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="228" x="22784" y="256" width="256" height="2944">
+  <object id="231" x="20224" y="2560" width="500.5" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="229" x="22272" y="1152" width="512" height="256">
+  <object id="236" x="17408" y="768" width="4224" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="230" x="21248" y="1920" width="512" height="256">
+  <object id="240" x="16640" y="1792" width="1792" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="231" x="20224" y="2560" width="512" height="256">
+  <object id="241" x="16013" y="2816" width="3443" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="232" x="20224" y="2816" width="384" height="128">
+  <object id="252" x="2444" y="3840" width="11490.5" height="128"/>
+  <object id="255" x="11264" y="3712" width="1920" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="233" x="20224" y="2944" width="128" height="128">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="234" x="19328" y="2816" width="896" height="512">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="235" x="19456" y="1280" width="768" height="1536">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="236" x="17408" y="768" width="3840" height="512">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="237" x="21248" y="768" width="128" height="384">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="238" x="21376" y="768" width="128" height="256">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="239" x="21504" y="768" width="128" height="128">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="240" x="16000" y="1792" width="2432" height="512">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="241" x="16000" y="2816" width="3328" height="384">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="242" x="16000" y="3200" width="1408" height="128">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="243" x="15488" y="0" width="1152" height="1792">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="244" x="15232" y="0" width="116" height="384">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="245" x="15104" y="0" width="116" height="256">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="246" x="14976" y="0" width="116" height="128">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="247" x="16640" y="0" width="6400" height="256">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="248" x="15360" y="0" width="116" height="512">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="249" x="15872" y="1792" width="116" height="384">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="250" x="15744" y="1792" width="116" height="256">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="251" x="15616" y="1792" width="116" height="128">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="252" x="2432" y="3840" width="11520" height="256"/>
-  <object id="253" x="14336" y="4096" width="116" height="384">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="254" x="13824" y="4096" width="116" height="384">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="255" x="11264" y="3712" width="1908" height="128">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="256" x="8064" y="3712" width="2420" height="128">
+  <object id="256" x="8064" y="3712" width="2432" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
@@ -11851,127 +11747,87 @@
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="258" x="9600" y="2688" width="768" height="128">
+  <object id="258" x="9609.03" y="2688" width="750.364" height="72">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="259" x="10880" y="3072" width="512" height="128">
+  <object id="259" x="10887.3" y="3072" width="496" height="59">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="260" x="7296" y="3072" width="512" height="128">
+  <object id="260" x="7306.76" y="3071.94" width="484.576" height="62.1282">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="261" x="8320" y="2688" width="768" height="128">
+  <object id="261" x="8331.5" y="2688" width="745.5" height="65">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="262" x="9088" y="2176" width="512" height="128">
+  <object id="262" x="9099.5" y="2176" width="489.333" height="66.6667">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="263" x="8576" y="1664" width="384" height="128">
+  <object id="263" x="8586.67" y="1664" width="362" height="60.6667">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="264" x="9088" y="1280" width="384" height="128">
+  <object id="264" x="9095.33" y="1280" width="365" height="61.5">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="265" x="9600" y="768" width="3200" height="256">
+  <object id="265" x="9616.67" y="768" width="3170" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="266" x="8064" y="640" width="768" height="256">
+  <object id="266" x="8064" y="640" width="751" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="267" x="8064" y="896" width="512" height="128">
+  <object id="268" x="4864" y="768" width="3200" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="268" x="4352" y="768" width="3712" height="256">
+  <object id="269" x="4491.5" y="1408" width="618.75" height="62.6667">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="269" x="4480" y="1408" width="640" height="128">
+  <object id="270" x="4108.5" y="640" width="755.5" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="270" x="4096" y="640" width="768" height="128">
+  <object id="272" x="512" y="3840" width="1522.67" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="271" x="4096" y="768" width="256" height="128">
+  <object id="273" x="256" y="2816" width="242" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="272" x="0" y="3840" width="2048" height="256">
+  <object id="276" x="525.333" y="1920" width="242.667" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="273" x="256" y="2816" width="256" height="1024">
+  <object id="277" x="256" y="1024" width="244" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
   </object>
-  <object id="274" x="0" y="0" width="256" height="3840">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="275" x="768" y="512" width="256" height="2944">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="276" x="512" y="1920" width="256" height="256">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="277" x="256" y="1024" width="256" height="256">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="278" x="1024" y="512" width="640" height="256">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="279" x="1408" y="0" width="256" height="512">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="280" x="256" y="0" width="1152" height="128">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="281" x="2432" y="4096" width="116" height="384">
-   <properties>
-    <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
-   </properties>
-  </object>
-  <object id="282" x="1920" y="4096" width="116" height="384">
+  <object id="278" x="782.667" y="512" width="625.333" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_03.tmx"/>
    </properties>
@@ -11982,90 +11838,93 @@
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
   </properties>
-  <object id="124" x="22656" y="384" width="19" height="1216"/>
-  <object id="125" x="21635.5" y="2048.83" width="13" height="382.167"/>
-  <object id="126" x="20995.8" y="2432.25" width="9.33333" height="1663.5"/>
-  <object id="127" x="19571.3" y="2944.75" width="9.33333" height="1151.25"/>
-  <object id="129" x="17777.3" y="2816" width="9.33333" height="128"/>
-  <object id="130" x="17280" y="2816" width="9.33333" height="128"/>
-  <object id="131" x="15618.7" y="641.102" width="9.33333" height="1535.25"/>
-  <object id="132" x="15346.7" y="256.542" width="9.33333" height="2038.28"/>
-  <object id="133" x="14724.3" y="381.86" width="9.33333" height="1547.28"/>
-  <object id="134" x="11507.3" y="768.36" width="9.33333" height="1021.28"/>
-  <object id="135" x="10500" y="1281.36" width="9.33333" height="1533.28"/>
-  <object id="136" x="6513.83" y="640.86" width="9.33333" height="1533.28"/>
-  <object id="137" x="2675.33" y="2941.33" width="9.33333" height="384"/>
-  <object id="138" x="2309.33" y="2816" width="9.33333" height="509"/>
-  <object id="139" x="1650.24" y="3201.68" width="10.3333" height="380"/>
-  <object id="142" x="22919.8" y="128" width="19" height="250.667"/>
-  <object id="204" x="-128" y="1920" width="128" height="1280"/>
+  <object id="204" x="13936.5" y="3840" width="10" height="638"/>
+  <object id="328" x="14340.7" y="3841.83" width="10" height="638"/>
+  <object id="330" x="16002" y="2815" width="10" height="512"/>
+  <object id="331" x="22272" y="3584" width="128" height="256"/>
+  <object id="332" x="22144" y="3328" width="128" height="256"/>
+  <object id="334" x="20725" y="2559" width="7" height="256"/>
+  <object id="335" x="20096" y="1280" width="128" height="1280"/>
+  <object id="336" x="22784" y="256" width="128" height="2944"/>
+  <object id="337" x="16512" y="256" width="128" height="1536"/>
+  <object id="338" x="17408" y="896" width="128" height="256"/>
+  <object id="339" x="19456" y="1280" width="128" height="1536"/>
+  <object id="340" x="18304" y="1920" width="128" height="256"/>
+  <object id="341" x="15488" y="512" width="128" height="1280"/>
+  <object id="342" x="1408" y="128" width="256" height="512"/>
+  <object id="343" x="768" y="640" width="256" height="2688"/>
+  <object id="344" x="498.667" y="2816" width="13.3333" height="1024"/>
+  <object id="345" x="128" y="128" width="128" height="2688"/>
+  <object id="346" x="2432" y="3840" width="10.4545" height="639.697"/>
+  <object id="347" x="2034.92" y="3840.18" width="10.4545" height="639.697"/>
+  <object id="348" x="4096" y="640" width="10.4545" height="256"/>
+  <object id="349" x="8816.5" y="639.667" width="10.4545" height="256"/>
+  <object id="350" x="9605" y="767.667" width="10.4545" height="256"/>
+  <object id="352" x="12788" y="768" width="6.4545" height="256"/>
+  <object id="354" x="21248" y="1920" width="10.4545" height="256"/>
+  <object id="356" x="21751.8" y="1919" width="7.4545" height="256"/>
+  <object id="357" x="22272" y="1152" width="10.4545" height="256"/>
+  <object id="360" x="7299.75" y="3072" width="6.2045" height="128"/>
+  <object id="361" x="7793" y="3071.67" width="10.4545" height="128"/>
+  <object id="362" x="8324.5" y="2688" width="5.9545" height="128"/>
+  <object id="363" x="9079" y="2687.5" width="5.4545" height="128"/>
+  <object id="364" x="9091.75" y="2175.75" width="6.4545" height="128"/>
+  <object id="365" x="9590.5" y="2175.5" width="5.7045" height="128"/>
+  <object id="366" x="9603.5" y="2688" width="4.7045" height="128"/>
+  <object id="367" x="10360.3" y="2688" width="4.2045" height="128"/>
+  <object id="368" x="10883.5" y="3072" width="2.7045" height="128"/>
+  <object id="369" x="11384.5" y="3071.75" width="3.9545" height="128"/>
+  <object id="370" x="8579.5" y="1664" width="5.78783" height="128"/>
+  <object id="371" x="8950" y="1663.33" width="6.12117" height="128"/>
+  <object id="372" x="9088" y="1280" width="6.12117" height="128"/>
+  <object id="374" x="4482.75" y="1408" width="7.7045" height="128"/>
+  <object id="375" x="5111.45" y="1407.45" width="5.72723" height="128"/>
+  <object id="376" x="9462.25" y="1279.25" width="6.12117" height="128"/>
  </objectgroup>
  <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="140" x="22656.3" y="1601.1" width="385" height="61.7933"/>
-  <object id="141" x="16640.8" y="65.1034" width="6277" height="61.7933"/>
-  <object id="143" x="15360" y="128" width="1280" height="128"/>
-  <object id="144" x="15631.2" y="2048.12" width="1005.33" height="128"/>
-  <object id="145" x="16638.7" y="1922.67" width="1144" height="124"/>
-  <object id="146" x="17792" y="1664" width="128" height="252"/>
-  <object id="147" x="17918" y="1410" width="128" height="252"/>
-  <object id="148" x="18049" y="1280" width="255" height="252"/>
-  <object id="149" x="18306.5" y="1153" width="121" height="252"/>
-  <object id="150" x="18430.5" y="1154" width="253" height="125"/>
-  <object id="151" x="18687.5" y="1025" width="381" height="129"/>
-  <object id="152" x="18946.5" y="898.5" width="381" height="124"/>
-  <object id="153" x="19328" y="768" width="637" height="129"/>
-  <object id="154" x="19840" y="640" width="1127.67" height="129"/>
-  <object id="155" x="17292.5" y="2891.06" width="482" height="52"/>
-  <object id="156" x="14727" y="2176" width="615.333" height="126"/>
-  <object id="157" x="13312" y="2048" width="1408" height="126"/>
-  <object id="158" x="13440" y="2176" width="256" height="126"/>
-  <object id="160" x="14592" y="256" width="128" height="126"/>
-  <object id="161" x="12032" y="128" width="2560" height="126"/>
-  <object id="162" x="11904" y="256" width="128" height="126"/>
-  <object id="163" x="11776" y="384" width="128" height="126"/>
-  <object id="165" x="11648" y="512" width="128" height="126"/>
-  <object id="166" x="11520" y="640" width="128" height="126"/>
-  <object id="167" x="12672" y="2816" width="256" height="126"/>
-  <object id="168" x="10752" y="2688" width="2304" height="126"/>
-  <object id="169" x="10496" y="2816" width="256" height="126"/>
-  <object id="170" x="10496" y="2944" width="128" height="126"/>
-  <object id="171" x="10368" y="896" width="128" height="382"/>
-  <object id="172" x="10240" y="768" width="128" height="126"/>
-  <object id="173" x="10112" y="512" width="128" height="256"/>
-  <object id="174" x="9984" y="256" width="128" height="256"/>
-  <object id="175" x="9856" y="128" width="128" height="128"/>
-  <object id="176" x="8960" y="0" width="896" height="128"/>
-  <object id="177" x="7040" y="0" width="1280" height="128"/>
-  <object id="178" x="6912" y="128" width="128" height="128"/>
-  <object id="179" x="6784" y="256" width="128" height="128"/>
-  <object id="180" x="6656" y="384" width="128" height="128"/>
-  <object id="181" x="6528" y="512" width="128" height="128"/>
-  <object id="182" x="6383.09" y="2046.91" width="128" height="128"/>
-  <object id="183" x="6272" y="2176" width="128" height="128"/>
-  <object id="184" x="6144" y="2304" width="128" height="128"/>
-  <object id="185" x="6016" y="2432" width="128" height="128"/>
-  <object id="186" x="4992" y="2560" width="1024" height="128"/>
-  <object id="187" x="4864" y="2432" width="128" height="128"/>
-  <object id="188" x="4736" y="2304" width="128" height="128"/>
-  <object id="189" x="4608" y="2176" width="128" height="128"/>
-  <object id="190" x="3328" y="2048" width="1280" height="128"/>
-  <object id="191" x="3200" y="2176" width="128" height="128"/>
-  <object id="192" x="3072" y="2304" width="128" height="128"/>
-  <object id="193" x="2944" y="2432" width="128" height="128"/>
-  <object id="194" x="2816" y="2560" width="128" height="128"/>
-  <object id="195" x="2688" y="2688" width="128" height="256"/>
-  <object id="196" x="2176" y="2688" width="128" height="128"/>
-  <object id="197" x="2048" y="2560" width="128" height="128"/>
-  <object id="198" x="1920" y="2432" width="128" height="128"/>
-  <object id="199" x="1792" y="2304" width="128" height="128"/>
-  <object id="200" x="1664" y="2176" width="128" height="128"/>
-  <object id="201" x="1536" y="2048" width="128" height="128"/>
-  <object id="202" x="1408" y="1920" width="128" height="128"/>
-  <object id="203" x="0" y="1792" width="1408" height="128"/>
+  <object id="203" x="256" y="0" width="1152" height="128"/>
+  <object id="288" x="256" y="1152" width="245.333" height="128"/>
+  <object id="289" x="524.667" y="2049.33" width="243.333" height="126.667"/>
+  <object id="290" x="774" y="3328" width="243.833" height="126.667"/>
+  <object id="291" x="4108" y="768" width="244" height="126.667"/>
+  <object id="292" x="4352" y="896" width="4224" height="126.667"/>
+  <object id="293" x="8576" y="768" width="238.667" height="126.667"/>
+  <object id="294" x="9616.33" y="896" width="3170" height="126.667"/>
+  <object id="296" x="16000" y="2176" width="2432" height="126.667"/>
+  <object id="297" x="16015" y="3200" width="1393" height="126.667"/>
+  <object id="298" x="17408" y="3072" width="1920" height="126.667"/>
+  <object id="299" x="19328" y="3200" width="896" height="126.667"/>
+  <object id="300" x="20224" y="2944" width="128" height="126.667"/>
+  <object id="301" x="20352" y="2816" width="256" height="126.667"/>
+  <object id="302" x="20608" y="2688" width="116" height="126.667"/>
+  <object id="303" x="20096" y="3072" width="128" height="126.667"/>
+  <object id="304" x="20224" y="1152" width="1024" height="126.667"/>
+  <object id="305" x="21248" y="1024" width="128" height="126.667"/>
+  <object id="306" x="21376" y="896" width="128" height="126.667"/>
+  <object id="307" x="16640" y="128" width="6144" height="126.667"/>
+  <object id="308" x="17408" y="1152" width="2048" height="126.667"/>
+  <object id="309" x="15872" y="2048" width="128" height="126.667"/>
+  <object id="310" x="15744" y="1920" width="128" height="126.667"/>
+  <object id="311" x="15616" y="1792" width="128" height="126.667"/>
+  <object id="313" x="15360" y="384" width="128" height="126.667"/>
+  <object id="314" x="15232" y="256" width="128" height="126.667"/>
+  <object id="315" x="15104" y="128" width="128" height="126.667"/>
+  <object id="316" x="1664" y="0" width="13440" height="126.667"/>
+  <object id="317" x="1024" y="640" width="640" height="126.667"/>
+  <object id="318" x="22284" y="1280" width="500" height="126.667"/>
+  <object id="319" x="21261" y="2048" width="489" height="126.667"/>
+  <object id="320" x="10887.3" y="3135.25" width="496.5" height="64.75"/>
+  <object id="321" x="9609.67" y="2762" width="749.765" height="54"/>
+  <object id="322" x="8332" y="2755.67" width="744" height="60.3335"/>
+  <object id="323" x="7308" y="3136.17" width="483.75" height="63.8333"/>
+  <object id="324" x="4491.67" y="1474.33" width="617.833" height="60.3337"/>
+  <object id="325" x="8587.33" y="1727.33" width="361.667" height="64.0003"/>
+  <object id="326" x="9096.33" y="1345.67" width="362.667" height="61.5"/>
+  <object id="327" x="9099.75" y="2245.5" width="489.75" height="58.5"/>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="52" name="Player" type="Player" x="13510.7" y="3921.33">
