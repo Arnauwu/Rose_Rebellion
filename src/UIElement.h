@@ -28,7 +28,7 @@ public:
 
 	UIElement(UIElementType type, int id) : type(type), id(id), state(UIElementState::NORMAL) {}
 
-	// DECLARACIÓN: Solo definimos qué variables recibe, la lógica va al .cpp
+	// DECLARACIÓN: Solo definimos qu?variables recibe, la lógica va al .cpp
 	UIElement(UIElementType type, int id, float anchorX, float anchorY, float wPercent, float hPercent, const char* text = "");
 
 	// DECLARACIONES:
