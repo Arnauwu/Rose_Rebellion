@@ -10263,5 +10263,8 @@
    </properties>
    <point/>
   </object>
+  <object id="26" name="Sickle" type="Sickle" x="1227.84" y="934.465">
+   <point/>
+  </object>
  </objectgroup>
 </map>

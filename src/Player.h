@@ -45,7 +45,9 @@ public:
 	
 	// Unlocks
 	void UnlockCape();
+	void UnlockSickle();
 
+	
 	//Inventary Variables
 	std::map<ItemID, int> inventory;
 
@@ -170,6 +172,7 @@ public:
 
 	//Item
 	static int keyCount;
+	bool hasSickle = false; 
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
