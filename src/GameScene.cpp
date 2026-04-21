@@ -54,7 +54,7 @@ bool GameScene::Start() {
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	LOG("Loading Game Scene");
 
-	LoadMap("Castle_Inside.tmx");
+	LoadMap("Castle.tmx");
 	if (player != nullptr) {
 		player->position.setX(10);
 		player->position.setY(10);

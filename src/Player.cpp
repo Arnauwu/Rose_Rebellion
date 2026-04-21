@@ -393,7 +393,14 @@ void Player::Attack(float dt)
 	if (!isAttacking && hasSickle && glideUnlocked &&Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
 		isAttacking = true;
-		anims.SetCurrent("attack");
+
+		if (lookingRight) {
+			anims.SetCurrent("attack_right");
+		}
+		else {
+			anims.SetCurrent("attack_left");
+		}
+
 		currentAnimPriority = 4;
 
 		currentAttackTime = 0.0f;
@@ -448,7 +455,13 @@ void Player::Attack(float dt)
 		if (currentAttackTime >= attackDuration)
 		{
 			isAttacking = false;
-			anims.SetCurrent("idle");
+			if (lookingRight) {
+				anims.SetCurrent("idle_right");
+			}
+			else {
+				anims.SetCurrent("idle_left");
+			}
+			
 			currentAnimPriority = 0;
 
 			// Destroy the collider
@@ -706,20 +719,25 @@ void Player::UnlockSickle()
 	if (glideUnlocked)
 	{
 		Engine::GetInstance().textures->UnLoad(texture);
-
-		// 注意：这里的 ID (0, 11, 22...) 取决于你同学画的 .tsx 文件的布局，请确保和实际对其！
-		// 你需要在这里补充攻击(attack)的动画别名和它的起止ID
-		std::unordered_map<int, std::string> aliases = {
-			{0,"move_right"}, {11,"move_left"}, {22,"jump_right"}, {33,"fall_right" },
-			{44,"jump_left" } , {55,"fall_left"}, {66,"idle_right" }, {77,"idle_left" },
-			{88,"death_right"}, {99,"death_left" },
-			{110, "attack"} // 假设 110 是 attack 动画的起始 ID，请根据真实情况修改
+		
+		std::unordered_map<int, std::string> aliases = { {0,"move_right"},
+											 {11,"move_left"},
+											 {22,"jump_right"},
+											 {33,"fall_right" },
+											 {44,"jump_left" } ,
+											 {55,"fall_left"},
+											 {66,"death_right" },
+											 {77,"death_left" } ,
+											 {88,"idle_right"},
+											 {110,"idle_left" },
+											 {132,"attack_right"},
+											 {143,"attack_left"}
 		};
 
-		// 【注意】请将下面的路径替换为你同学新画的包含镰刀动作的 tsx 和 png 名字
-		anims.LoadFromTSX("Assets/Textures/Princess/princess_with_sickle.tsx", aliases);
+	
+		anims.LoadFromTSX("Assets/Textures/Princess/SS_Princesa_Capucha.tsx", aliases);
 		anims.SetCurrent("idle_right");
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess_with_sickle.png");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/SS_Princesa_Capucha.png");
 	}
 }
 bool Player::CleanUp()
