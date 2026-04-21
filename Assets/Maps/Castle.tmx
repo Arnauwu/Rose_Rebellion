@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="19" nextobjectid="56">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="20" nextobjectid="69">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -64,6 +64,9 @@
     <property name="Ground" value=""/>
    </properties>
   </tile>
+ </tileset>
+ <tileset firstgid="51" name="Pueblerino_Cerdo" tilewidth="256" tileheight="256" tilecount="1" columns="1">
+  <image source="../Textures/NPCs/Pueblerino_Cerdo.png" trans="ffffff" width="256" height="256"/>
  </tileset>
  <layer id="1" name="Map" width="64" height="24">
   <properties>
@@ -1336,10 +1339,10 @@
    <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>
@@ -1400,10 +1403,10 @@
    <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>
@@ -1464,10 +1467,10 @@
    <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
-   <tile gid="30"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="30"/>
    <tile gid="30"/>
    <tile gid="30"/>
@@ -4696,6 +4699,24 @@
    <tile gid="49"/>
   </data>
  </layer>
+ <objectgroup id="19" name="NPC">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
+  <object id="56" gid="30" x="1600" y="640" width="32" height="32"/>
+  <object id="57" gid="30" x="1632" y="640" width="32" height="32"/>
+  <object id="58" gid="30" x="1664" y="640" width="32" height="32"/>
+  <object id="59" gid="30" x="1696" y="640" width="32" height="32"/>
+  <object id="60" gid="30" x="1600" y="672" width="32" height="32"/>
+  <object id="61" gid="30" x="1632" y="672" width="32" height="32"/>
+  <object id="62" gid="30" x="1664" y="672" width="32" height="32"/>
+  <object id="63" gid="30" x="1696" y="672" width="32" height="32"/>
+  <object id="64" gid="30" x="1600" y="704" width="32" height="32"/>
+  <object id="65" gid="30" x="1632" y="704" width="32" height="32"/>
+  <object id="66" gid="30" x="1664" y="704" width="32" height="32"/>
+  <object id="67" gid="30" x="1696" y="704" width="32" height="32"/>
+  <object id="68" gid="51" x="1632" y="704" width="47" height="47"/>
+ </objectgroup>
  <objectgroup id="16" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>

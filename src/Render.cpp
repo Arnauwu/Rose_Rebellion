@@ -284,8 +284,8 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 	SDL_FPoint pivot;
 	if (pivotX != INT_MAX && pivotY != INT_MAX)
 	{
-		pivot.x = (float)pivotX * scale;
-		pivot.y = (float)pivotY * scale;
+		pivot.x = (float)pivotX * scale * adjustableScale;
+		pivot.y = (float)pivotY * scale * adjustableScale;
 		p = &pivot;
 	}
 
