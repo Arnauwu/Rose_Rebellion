@@ -20,8 +20,8 @@ UIElement::UIElement(UIElementType type, int id, float anchorX, float anchorY, f
 
 void UIElement::RecalculateBounds()
 {
-	int screenW = Engine::GetInstance().window->windowWidth;
-	int screenH = Engine::GetInstance().window->windowHeight;
+	int screenW = Engine::GetInstance().render->camera.w;
+	int screenH = Engine::GetInstance().render->camera.h;
 
 	bounds.w = (int)(screenW * relW);
 	bounds.h = (int)(screenH * relH);
