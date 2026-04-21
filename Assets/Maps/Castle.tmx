@@ -4793,6 +4793,18 @@
   <object id="50" name="Manta" type="Manta" x="1420" y="698">
    <point/>
   </object>
+  <object id="52" name="ShieldKnight" type="ShieldKnight" x="495" y="346">
+   <point/>
+  </object>
+  <object id="53" name="Manta" type="Manta" x="409" y="468">
+   <point/>
+  </object>
+  <object id="54" name="SkillPointOrb" type="SkillPointOrb" x="586" y="461">
+   <point/>
+  </object>
+  <object id="55" name="HealthOrb" type="HealthOrb" x="364" y="371">
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns">
   <properties>

@@ -23,7 +23,7 @@ bool SkillPointOrb::Awake() {
 bool SkillPointOrb::Start() {
 
 	//initilize textures
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Item/SkillPointOrb/SkillPointOrb.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/SkillPointOrb/SkillPointOrb.png");
 
 	// Add a physics to an item - initialize the physics body
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
@@ -52,7 +52,7 @@ bool SkillPointOrb::Update(float dt)
 	position.setX((float)x);
 	position.setY((float)y);
 
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - texH / 2, nullptr, SDL_FLIP_NONE, 0.5f);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x , y, nullptr, SDL_FLIP_NONE, 0.5f);
 
 	return true;
 }

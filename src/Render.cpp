@@ -60,8 +60,8 @@ bool Render::Awake()
 			}
 		}
 
-		int baseWidth = Engine::GetInstance().window->windowWidth;
-		int baseHeight = Engine::GetInstance().window->windowHeight;
+		int baseWidth = 1920;
+		int baseHeight = 1080;
 
 		
 		SDL_SetRenderLogicalPresentation(renderer, baseWidth, baseHeight,

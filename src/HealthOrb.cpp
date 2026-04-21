@@ -52,7 +52,7 @@ bool HealthOrb::Update(float dt)
 	position.setX((float)x);
 	position.setY((float)y);
 
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - texH / 2, nullptr, SDL_FLIP_NONE, 0.5f);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, nullptr, SDL_FLIP_NONE, 0.5f);
 
 	return true;
 }

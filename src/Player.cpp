@@ -45,14 +45,9 @@ bool Player::Start()
 	// Load Textures
 	if (!glideUnlocked)
 	{
-		std::unordered_map<int, std::string> aliases = { {0,"move_right"},
-												 {11,"move_left"},
-												 {22,"jump_right"},
-												 {33,"fall_right" },
-												 {44,"jump_left" } ,
-												 {55,"fall_left"},
-												 {66,"dash" }
-		};
+		std::unordered_map<int, std::string> aliases = GetAliases("capeless");
+
+
 		anims.LoadFromTSX("Assets/Textures/Princess/Princess_Capeless.tsx", aliases);
 		anims.SetCurrent("idle_right");
 
@@ -60,17 +55,8 @@ bool Player::Start()
 	}
 	else
 	{
-		std::unordered_map<int, std::string> aliases = { {0,"move_right"},
-												 {11,"move_left"},
-												 {22,"jump_right"},
-												 {33,"fall_right" },
-												 {44,"jump_left" } ,
-												 {55,"fall_left"},
-												 {66,"idle_right" },
-												 {77,"idle_left" } ,
-												 {88,"death_right"},
-												 {99,"death_left" }
-		};
+		std::unordered_map<int, std::string> aliases = GetAliases("cape");
+
 		anims.LoadFromTSX("Assets/Textures/Princess/Princess.tsx", aliases);
 		
 		anims.SetCurrent("idle_right");
@@ -390,10 +376,20 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 void Player::Attack(float dt)
 {
 	// 1. Start the attack 
-	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
 	{
 		isAttacking = true;
-		anims.SetCurrent("attack");
+		if (lookingRight)
+		{
+			anims.SetCurrent("attack_right");
+			anims.GetAnim("attack_right")->SetLoop(false);
+		}
+		else
+		{
+			anims.SetCurrent("attack_left");
+			anims.GetAnim("attack_left")->SetLoop(false);
+		}
+
 		currentAnimPriority = 4;
 
 		currentAttackTime = 0.0f;
@@ -445,11 +441,15 @@ void Player::Attack(float dt)
 		}
 
 		// End the attack when the time runs out
-		if (currentAttackTime >= attackDuration)
+		if (currentAttackTime >= attackDuration && 
+			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() || anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
 		{
 			isAttacking = false;
+			
+
 			anims.SetCurrent("idle");
 			currentAnimPriority = 0;
+
 
 			// Destroy the collider
 			if (attackCollider != nullptr)
@@ -470,6 +470,15 @@ void Player::Glide() // Gliding
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
 			isGliding = true;
+			if (lookingRight)
+			{
+				anims.SetCurrent("glide_right");
+			}
+			else
+			{
+				anims.SetCurrent("glide_left");
+			}
+			currentAnimPriority = 5;
 		}
 		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
 		{
@@ -673,21 +682,50 @@ void Player::CameraFollows()
 	}
 }
 
+std::unordered_map<int, std::string> Player::GetAliases(string name)
+{
+	std::unordered_map<int, std::string> aliases;
+	if (name == "capeless")
+	{
+		aliases =						{{0,"move_right"},
+										 {12,"move_left"},
+										 {24,"jump_right"},
+										 {36,"fall_right" },
+										 {48,"jump_left" } ,
+										 {60,"fall_left"},
+										 {72,"death_right"},
+										 {84,"death_left" },
+										 {96,"idle_right" },
+										 {120,"idle_left" }
+		};
+	}
+	else if (name == "cape")
+	{
+		aliases =						{{0,"move_right"},
+										 {12,"move_left"},
+										 {24,"jump_right"},
+										 {36,"fall_right" },
+										 {48,"jump_left" } ,
+										 {60,"fall_left"},
+										 {72,"death_right" },
+										 {84,"death_left" } ,
+										 {96,"idle_right"},
+										 {120,"idle_left" },
+										 {144,"attack_right" },
+										 {156,"attack_left" } ,
+										 {168,"glide_right"},
+										 {192,"glide_left" },
+		
+		};
+	}
+	return aliases;
+}
+
 void Player::UnlockCape()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
 	
-	std::unordered_map<int, std::string> aliases = { {0,"move_right"},
-											 {11,"move_left"},
-											 {22,"jump_right"},
-											 {33,"fall_right" },
-											 {44,"jump_left" } ,
-											 {55,"fall_left"},
-											 {66,"idle_right" },
-											 {77,"idle_left" } ,
-											 {88,"death_right"},
-											 {99,"death_left" }
-	};
+	std::unordered_map<int, std::string> aliases = GetAliases("cape");
 	anims.LoadFromTSX("Assets/Textures/Princess/princess.tsx", aliases);
 	anims.SetCurrent("front");
 
@@ -748,9 +786,16 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isJumping = false;
 		secondJumpUsed = false;
 
-		if (currentAnimPriority < 1)
+		if (currentAnimPriority > 1)
 		{
-			anims.SetCurrent("idle");
+			if (lookingRight)
+			{
+				anims.SetCurrent("idle_right");
+			}
+			else
+			{
+				anims.SetCurrent("idle_left");
+			}
 			currentAnimPriority = 0;
 		}
 
