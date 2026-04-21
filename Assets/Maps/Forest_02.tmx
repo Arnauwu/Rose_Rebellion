@@ -2887,15 +2887,15 @@
    <tile/>
    <tile/>
    <tile gid="76"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
-   <tile gid="112"/>
+   <tile gid="124"/>
+   <tile gid="125"/>
+   <tile gid="126"/>
+   <tile gid="126"/>
+   <tile gid="126"/>
+   <tile gid="126"/>
+   <tile gid="126"/>
+   <tile gid="127"/>
+   <tile gid="128"/>
    <tile gid="78"/>
    <tile gid="87"/>
    <tile gid="87"/>
@@ -5139,9 +5139,9 @@
    <tile gid="79"/>
    <tile gid="79"/>
    <tile gid="80"/>
+   <tile gid="124"/>
+   <tile gid="125"/>
    <tile gid="126"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
    <tile gid="127"/>
    <tile gid="128"/>
    <tile gid="78"/>
@@ -5719,28 +5719,28 @@
    <tile gid="87"/>
    <tile gid="87"/>
    <tile gid="88"/>
-   <tile gid="126"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="128"/>
+   <tile gid="120"/>
    <tile gid="124"/>
    <tile gid="125"/>
    <tile gid="126"/>
    <tile gid="127"/>
    <tile gid="128"/>
-   <tile gid="124"/>
-   <tile gid="125"/>
-   <tile gid="124"/>
-   <tile gid="125"/>
-   <tile gid="126"/>
-   <tile gid="127"/>
-   <tile gid="128"/>
-   <tile gid="124"/>
-   <tile gid="125"/>
-   <tile gid="126"/>
-   <tile gid="128"/>
+   <tile gid="118"/>
+   <tile gid="119"/>
+   <tile gid="120"/>
+   <tile gid="118"/>
+   <tile gid="119"/>
+   <tile gid="120"/>
+   <tile gid="118"/>
+   <tile gid="120"/>
+   <tile gid="116"/>
+   <tile gid="117"/>
+   <tile gid="116"/>
+   <tile gid="117"/>
+   <tile gid="118"/>
+   <tile gid="119"/>
+   <tile gid="119"/>
+   <tile gid="120"/>
    <tile gid="86"/>
    <tile gid="87"/>
    <tile gid="87"/>
@@ -5815,17 +5815,17 @@
    <tile gid="87"/>
    <tile gid="87"/>
    <tile gid="88"/>
+   <tile gid="125"/>
    <tile gid="126"/>
    <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
    <tile gid="128"/>
+   <tile gid="118"/>
+   <tile gid="120"/>
+   <tile gid="116"/>
+   <tile gid="117"/>
+   <tile gid="124"/>
+   <tile gid="125"/>
+   <tile gid="127"/>
    <tile gid="86"/>
    <tile gid="87"/>
    <tile gid="87"/>
@@ -11647,7 +11647,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -11676,7 +11676,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground">
+ <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -11732,7 +11732,7 @@
   <object id="264" x="7688.96" y="768" width="367.417" height="73.3333"/>
   <object id="265" x="7560.67" y="1408" width="367.417" height="73.3333"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -11796,7 +11796,7 @@
   <object id="294" x="8452.21" y="383.333" width="3.58333" height="128"/>
   <object id="295" x="8825.88" y="384" width="3.58333" height="128"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling">
+ <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -11886,7 +11886,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns">
+ <objectgroup id="15" name="PlayerSpawns" visible="0">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

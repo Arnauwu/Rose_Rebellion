@@ -74,11 +74,16 @@
  <tileset firstgid="116" name="Espinas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Forest/Archivo PSD Espinas.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="180" source="Forest/Espinas.tsx"/>
+ <tileset firstgid="180" name="Espinas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Forest/Archivo PSD Espinas.png" width="1024" height="1024"/>
+ </tileset>
  <tileset firstgid="244" name="Forest_Bg" tilewidth="1920" tileheight="1088" tilecount="1" columns="1">
   <image source="Forest/Forest_Bg.png" width="1920" height="1088"/>
  </tileset>
- <objectgroup id="18" name="Fondo" visible="0">
+ <objectgroup id="18" name="Fondo">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <object id="77" gid="115" x="15488" y="4224" width="7552" height="4224"/>
   <object id="79" gid="115" x="0" y="4224" width="7936" height="4224"/>
   <object id="82" gid="244" x="7936" y="4224" width="7552" height="4224"/>
@@ -5314,23 +5319,23 @@
    <tile gid="87"/>
    <tile gid="87"/>
    <tile gid="88"/>
-   <tile gid="189"/>
+   <tile gid="184"/>
+   <tile gid="182"/>
+   <tile gid="183"/>
+   <tile gid="183"/>
+   <tile gid="183"/>
+   <tile gid="184"/>
    <tile gid="188"/>
    <tile gid="189"/>
-   <tile gid="188"/>
-   <tile gid="189"/>
-   <tile gid="190"/>
-   <tile gid="191"/>
-   <tile gid="191"/>
    <tile gid="191"/>
    <tile gid="192"/>
-   <tile gid="190"/>
-   <tile gid="192"/>
-   <tile gid="188"/>
-   <tile gid="189"/>
-   <tile gid="190"/>
-   <tile gid="191"/>
-   <tile gid="192"/>
+   <tile gid="182"/>
+   <tile gid="184"/>
+   <tile gid="182"/>
+   <tile gid="183"/>
+   <tile gid="183"/>
+   <tile gid="183"/>
+   <tile gid="184"/>
    <tile gid="86"/>
    <tile gid="87"/>
    <tile gid="87"/>
@@ -5406,9 +5411,9 @@
    <tile gid="87"/>
    <tile gid="87"/>
    <tile gid="88"/>
+   <tile gid="189"/>
    <tile gid="190"/>
    <tile gid="191"/>
-   <tile gid="192"/>
    <tile gid="86"/>
    <tile gid="87"/>
    <tile gid="87"/>
@@ -11644,7 +11649,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -11668,7 +11673,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground">
+ <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -11688,7 +11693,7 @@
   <object id="75" x="1416" y="2560" width="364" height="78.6667"/>
   <object id="110" x="900.219" y="2304" width="247.25" height="61.7199"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -11717,7 +11722,7 @@
   <object id="114" x="1147.8" y="2304" width="3.57579" height="128"/>
   <object id="115" x="896" y="2304" width="3.57579" height="128"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling">
+ <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -11735,7 +11740,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns">
+ <objectgroup id="15" name="PlayerSpawns" visible="0">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

@@ -11655,7 +11655,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -11679,7 +11679,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground">
+ <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -11827,7 +11827,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -11875,7 +11875,7 @@
   <object id="375" x="5111.45" y="1407.45" width="5.72723" height="128"/>
   <object id="376" x="9462.25" y="1279.25" width="6.12117" height="128"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling">
+ <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>

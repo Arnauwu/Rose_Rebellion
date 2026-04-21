@@ -6492,8 +6492,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="124"/>
-   <tile gid="125"/>
+   <tile gid="116"/>
+   <tile gid="117"/>
    <tile/>
    <tile/>
    <tile/>
@@ -8002,10 +8002,10 @@
    <tile gid="87"/>
    <tile gid="88"/>
    <tile gid="126"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
-   <tile gid="127"/>
+   <tile gid="126"/>
+   <tile gid="126"/>
+   <tile gid="126"/>
+   <tile gid="126"/>
    <tile gid="127"/>
    <tile gid="128"/>
    <tile gid="86"/>
@@ -8050,20 +8050,20 @@
    <tile gid="87"/>
    <tile gid="87"/>
    <tile gid="88"/>
-   <tile gid="125"/>
-   <tile gid="126"/>
-   <tile gid="127"/>
-   <tile gid="128"/>
-   <tile gid="124"/>
+   <tile gid="117"/>
+   <tile gid="118"/>
+   <tile gid="119"/>
+   <tile gid="120"/>
+   <tile gid="116"/>
    <tile gid="86"/>
    <tile gid="87"/>
    <tile gid="87"/>
    <tile gid="88"/>
-   <tile gid="125"/>
-   <tile gid="126"/>
-   <tile gid="127"/>
-   <tile gid="128"/>
-   <tile gid="124"/>
+   <tile gid="118"/>
+   <tile gid="119"/>
+   <tile gid="120"/>
+   <tile gid="116"/>
+   <tile gid="117"/>
    <tile gid="86"/>
    <tile gid="87"/>
    <tile gid="87"/>
@@ -16143,7 +16143,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground">
+ <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -16185,7 +16185,7 @@
   <object id="312" x="21376" y="4096" width="896" height="128"/>
   <object id="321" x="29696" y="768" width="896" height="128"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -16224,7 +16224,7 @@
   <object id="398" x="28786" y="3840" width="8" height="256"/>
   <object id="399" x="29440" y="3584" width="8" height="512"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling">
+ <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
