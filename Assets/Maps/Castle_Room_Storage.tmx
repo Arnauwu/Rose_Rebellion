@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="12">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="15">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -2027,6 +2027,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
   <object id="2" x="0" y="1280" width="3840" height="384"/>
+  <object id="14" x="391.5" y="1131" width="174.5" height="149.5"/>
  </objectgroup>
  <objectgroup id="11" name="Wall">
   <properties>
@@ -2045,6 +2046,9 @@
  </objectgroup>
  <objectgroup id="6" name="EntitiesSpawnPoints">
   <object id="1" name="Player" type="Player" x="3362.33" y="1085.33">
+   <point/>
+  </object>
+  <object id="12" name="Manta" type="Manta" x="477" y="1089.33">
    <point/>
   </object>
  </objectgroup>

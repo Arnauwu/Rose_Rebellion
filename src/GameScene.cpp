@@ -450,7 +450,7 @@ void GameScene::UpdateInventoryVisuals() {
 			btn->color = { 255, 255, 255, 255 }; // White tint --> Normal texture
 		}
 		else {
-			btn->color = { 60, 60, 60, 255 };    // Gray tint
+			btn->color = { 110, 110, 110, 255 };    // Gray tint
 		}
 	}
 }
