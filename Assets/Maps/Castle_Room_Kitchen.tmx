@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="9" tilewidth="128" tileheight="128" infinite="0" nextlayerid="17" nextobjectid="21">
+ <tileset firstgid="1" name="Guia_Fondos_Tiled_(2)" tilewidth="1920" tileheight="1080" tilecount="1" columns="1">
+  <image source="Castle/Guia_Fondos_Tiled_(2).png" width="1920" height="1088"/>
+ </tileset>
+ <objectgroup id="7" name="BG">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
+  <object id="15" gid="1" x="0" y="1152" width="1920" height="1152"/>
+ </objectgroup>
+ <layer id="1" name="Map" width="15" height="9" visible="0">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
+  <data>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+  </data>
+ </layer>
+ <objectgroup id="3" name="Door">
+  <properties>
+   <property name="Door" type="bool" value="true"/>
+   <property name="Sensor" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="3" x="1486" y="186" width="392" height="764">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="2" name="Ground">
+  <properties>
+   <property name="Ground" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="2" x="-1.33333" y="952" width="1921.33" height="200"/>
+ </objectgroup>
+ <objectgroup id="5" name="Wall">
+  <properties>
+   <property name="Square" type="bool" value="true"/>
+   <property name="Wall" type="bool" value="true"/>
+  </properties>
+  <object id="16" x="1920" y="0" width="128" height="948"/>
+  <object id="17" x="-128" y="0" width="128" height="896"/>
+ </objectgroup>
+ <objectgroup id="6" name="Ceiling">
+  <properties>
+   <property name="Ceiling" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="18" x="0" y="-128" width="1920" height="128"/>
+ </objectgroup>
+ <objectgroup id="4" name="EntitiesSpawnPoints">
+  <object id="6" name="Player" type="Player" x="4471" y="1978.33">
+   <point/>
+  </object>
+  <object id="20" name="Key" type="Key" x="874.5" y="632.5">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="PlayerSpawns">
+  <properties>
+   <property name="PlayerSpawns" type="bool" value="true"/>
+  </properties>
+  <object id="8" name="PlayerSpawns" x="4476" y="1981.33">
+   <properties>
+    <property name="FromRoom" type="file" value="Castle_Inside.tmx"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+</map>
