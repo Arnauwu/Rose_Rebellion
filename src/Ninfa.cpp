@@ -38,7 +38,7 @@ bool Ninfa::Start()
     //Enemigo volador sprite
     
     std::unordered_map<int, std::string> aliases = {
-        {0, "idle"}, {3, "fly"}, {8, "attack"}, {16, "dead"}
+        {0, "idle"}, {3, "fly"}, {13, "attack"},{26, "attack"}, {39, "dead"}
     };
     anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.tsx", aliases);
     anims.SetCurrent("idle");
@@ -98,11 +98,14 @@ bool Ninfa::Update(float dt)
     }
 
     // Lógica al morir
-    if (isdead && anims.GetCurrentName() != "dead" )
+    if (isdead )
     {
         // Se ejecuta solo una vez al morir
-        if (!physicsDisabledOnDeath)
+        if (anims.GetCurrentName() != "dead")
         {
+            anims.SetCurrent("dead");
+            anims.GetAnim("dead")->SetLoop(false);
+
             // Vuelve a tener gravedad para que caiga al suelo
             if (pbody != nullptr && !B2_IS_NULL(pbody->body)) {
                 Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f);
@@ -114,14 +117,10 @@ bool Ninfa::Update(float dt)
 
             //!
             pbody->ctype = ColliderType::UNKNOWN;
-
-            physicsDisabledOnDeath = true;
         }
 
-        // Temporizador para que desaparezca el cadáver
-        deathTimer += dt;
 
-        if (deathTimer >= 1250.0f)
+        if (anims.GetAnim("dead")->HasFinishedOnce())
         {
             pendingToDelete = true;
         }

@@ -40,12 +40,12 @@ bool SwordKnight::CleanUp()
 
 bool SwordKnight::Start()
 {
-	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{8,"hurt"},{16,"dead"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
 
-	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
+	// Initialize parameters
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
 	//Load Audio
 
@@ -160,13 +160,13 @@ void SwordKnight::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isAttacking == false)
 	{
-		anims.SetCurrent("spin"); // TO DO: CHANGE TO Idle/ or make it WALK
+		anims.SetCurrent("idle"); // TO DO: CHANGE TO Idle/ or make it WALK
 		velocity.x = 0;
 		return;
 	}
 	else if (playerTileDist >= 3 && isAttacking == false)
 	{
-		anims.SetCurrent("spin"); // TO DO: CHANGE TO WALK
+		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -179,12 +179,12 @@ void SwordKnight::Move() {
 		if (nextTile.getX() > tilePos.getX())
 		{
 			velocity.x = speed;
-			lookingRight = !true; // ! because Default anim looking left
+			lookingRight = true;
 		}
 		else if (nextTile.getX() < tilePos.getX())
 		{
 			velocity.x = -speed;
-			lookingRight = !false;
+			lookingRight = false;
 		}
 		else
 		{
@@ -210,7 +210,7 @@ void SwordKnight::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt");
+;
 		if (lookingRight)
 		{
 			velocity.x = knockbackForce;
@@ -280,7 +280,6 @@ void SwordKnight::Attack()
 	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000)
 	{
 		isAttacking = true;
-		anims.SetCurrent("startSpin"); // Windup
 		startAttack.Start();
 		return;
 	}
@@ -294,7 +293,7 @@ void SwordKnight::Attack()
 	}
 	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr)
 	{
-		anims.SetCurrent("hurt"); //Attack
+		anims.SetCurrent("sword_attack"); //Attack
 		
 		//CreateHitbox
 		float attackX = position.getX();

@@ -43,6 +43,10 @@ public:
 		section = { 0, 0, 0, 0 };
 	}
 
+	void SetBgTexture(SDL_Texture* tex) {
+		bgTexture = tex;
+	}
+
 	void SetPivot(float pX, float pY) {
 		pivotX = pX;
 		pivotY = pY;
@@ -84,6 +88,7 @@ public:
 
 	SDL_Texture* texture;
 	SDL_Rect section;
+	SDL_Texture* bgTexture = nullptr;
 
 	Module* observer = nullptr;
 	bool pendingToDelete = false;

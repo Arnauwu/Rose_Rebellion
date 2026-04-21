@@ -45,9 +45,4 @@ public:
 	Timer stateTimer;
 	float windupDurationMs=0.0f;
 	float cooldownDurationMs=0.0f;
-	
-	float deathTimer = 0.0f; 
-	bool physicsDisabledOnDeath = false; 
-	
-
 };
