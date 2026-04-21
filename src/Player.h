@@ -45,7 +45,7 @@ public:
 	
 	// Unlocks
 	void UnlockCape();
-	void UnlockSickle(); // 新增：解锁镰刀
+	void UnlockSickle();
 
 	
 	//Inventary Variables
@@ -172,7 +172,7 @@ public:
 
 	//Item
 	static int keyCount;
-	bool hasSickle = false; // 新增：记录是否拥有镰刀
+	bool hasSickle = false; 
 private: 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;

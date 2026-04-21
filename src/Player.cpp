@@ -376,7 +376,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 void Player::Attack(float dt)
 {
 	// 1. Start the attack 
-	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
+	if (!isAttacking && hasSickle && glideUnlocked && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
 	{
 		isAttacking = true;
 		if (lookingRight)
@@ -721,6 +721,7 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 	return aliases;
 }
 
+
 void Player::UnlockCape()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
@@ -733,6 +734,13 @@ void Player::UnlockCape()
 	glideUnlocked = true;
 
 	AddItem(ItemID::GLIDE, 1);
+}
+
+void Player::UnlockSickle()
+{
+	hasSickle = true;
+	AddItem(ItemID::WEAPON, 1);
+	LOG("Sickle Unlocked! You can attack now if you have the cape.");
 }
 
 bool Player::CleanUp()
@@ -838,6 +846,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			AddItem(ItemID::KEY, 1);
 
 			LOG("KeyNum: %d", keyCount);
+		}
+		else if (physB->listener->name == "Sickle") {
+			LOG("Collision ITEM (Sickle Picked Up)");
 		}
 		physB->listener->Destroy();
 		break;
