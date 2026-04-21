@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="28" height="18" tilewidth="128" tileheight="128" infinite="0" nextlayerid="11" nextobjectid="24">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="28" height="18" tilewidth="128" tileheight="128" infinite="0" nextlayerid="12" nextobjectid="26">
  <tileset firstgid="1" name="Atlas_Exterior_Castillo" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Exterior/Atlas_Exterior_Castillo.png" width="1024" height="1024"/>
   <tile id="11">
@@ -9,14 +9,27 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="65" name="Fondo_Exterior_Castillo" tilewidth="1920" tileheight="1080" tilecount="1" columns="1">
-  <image source="Castle/Exterior/Fondo_Exterior_Castillo.JPG" width="1920" height="1080"/>
+ <tileset firstgid="65" name="Atlas_Exterior_Castillo_Oscuro" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Castle/Exterior/Atlas_Exterior_Castillo_Oscuro.png" width="1024" height="1024"/>
+ </tileset>
+ <tileset firstgid="129" name="Fondo_Ventana" tilewidth="128" tileheight="128" tilecount="120" columns="15">
+  <image source="Castle/Exterior/Fondo_Ventana.png" width="1920" height="1080"/>
+ </tileset>
+ <tileset firstgid="249" name="Fons_Esquerra_Exterior_Castell" tilewidth="128" tileheight="128" tilecount="120" columns="15">
+  <image source="Castle/Exterior/Fons_Esquerra_Exterior_Castell.png" width="1920" height="1080"/>
+ </tileset>
+ <tileset firstgid="369" name="Fondo_Ventana" tilewidth="1920" tileheight="1080" tilecount="1" columns="1">
+  <image source="Castle/Exterior/Fondo_Ventana.png" width="1920" height="1080"/>
+ </tileset>
+ <tileset firstgid="370" name="Fons_Esquerra_Exterior_Castell" tilewidth="1920" tileheight="1080" tilecount="1" columns="1">
+  <image source="Castle/Exterior/Fons_Esquerra_Exterior_Castell.png" width="1920" height="1080"/>
  </tileset>
  <objectgroup id="6" name="BG">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="4" gid="65" x="378.222" y="1620" width="3205.78" height="1612"/>
+  <object id="24" gid="369" x="0" y="1716" width="3584" height="1716"/>
+  <object id="25" gid="370" x="0" y="3152" width="3584" height="1446"/>
  </objectgroup>
  <layer id="1" name="Castillo" width="28" height="18">
   <properties>
@@ -107,6 +120,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="66"/>
+   <tile gid="3221225553"/>
    <tile/>
    <tile/>
    <tile/>
@@ -133,6 +148,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="74"/>
+   <tile gid="76"/>
+   <tile gid="69"/>
    <tile/>
    <tile/>
    <tile/>
@@ -158,15 +176,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="82"/>
+   <tile gid="84"/>
+   <tile gid="77"/>
+   <tile gid="2147483713"/>
    <tile/>
    <tile/>
    <tile/>
@@ -191,11 +204,11 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="66"/>
+   <tile gid="68"/>
+   <tile gid="67"/>
+   <tile gid="77"/>
+   <tile gid="69"/>
    <tile/>
    <tile/>
    <tile gid="15"/>
@@ -529,15 +542,6 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="9" name="Wall">
-  <properties>
-   <property name="Square" type="bool" value="true"/>
-   <property name="Wall" type="bool" value="true"/>
-  </properties>
-  <object id="11" x="1024" y="768" width="128" height="256"/>
-  <object id="13" x="384" y="0" width="128" height="256"/>
-  <object id="20" x="896" y="768" width="128" height="128"/>
- </objectgroup>
  <objectgroup id="7" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
@@ -549,11 +553,28 @@
     <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
    </properties>
   </object>
-  <object id="22" x="384" y="2688" width="3456" height="128">
+  <object id="22" x="384" y="2688" width="3200" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Nexo.tmx"/>
    </properties>
   </object>
+ </objectgroup>
+ <objectgroup id="2" name="Ground">
+  <properties>
+   <property name="Ground" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="6" x="-128" y="896" width="1024" height="128"/>
+  <object id="19" x="934" y="662" width="218" height="106"/>
+ </objectgroup>
+ <objectgroup id="9" name="Wall">
+  <properties>
+   <property name="Square" type="bool" value="true"/>
+   <property name="Wall" type="bool" value="true"/>
+  </properties>
+  <object id="11" x="1024" y="768" width="128" height="256"/>
+  <object id="13" x="384" y="0" width="128" height="256"/>
+  <object id="20" x="896" y="768" width="128" height="128"/>
  </objectgroup>
  <objectgroup id="8" name="Ceiling">
   <properties>
@@ -566,18 +587,10 @@
   <object id="16" x="512" y="1280" width="128" height="128"/>
   <object id="17" x="384" y="1408" width="128" height="256"/>
   <object id="18" x="256" y="1664" width="128" height="1024"/>
-  <object id="23" x="3840" y="0" width="128" height="2688"/>
- </objectgroup>
- <objectgroup id="2" name="Ground">
-  <properties>
-   <property name="Ground" type="bool" value="true"/>
-   <property name="Square" type="bool" value="true"/>
-  </properties>
-  <object id="6" x="-128" y="896" width="1024" height="128"/>
-  <object id="19" x="934" y="662" width="218" height="106"/>
+  <object id="23" x="3584" y="0" width="128" height="2688"/>
  </objectgroup>
  <objectgroup id="10" name="EntitiesSpawnPoints">
-  <object id="21" name="Player" type="Player" x="590" y="719">
+  <object id="21" name="Player" type="Player" x="158" y="731">
    <point/>
   </object>
  </objectgroup>
@@ -585,7 +598,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="10" name="PlayerSpawns" x="588.848" y="719.636">
+  <object id="10" name="PlayerSpawns" x="160.848" y="723.636">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Inside.tmx"/>
    </properties>
