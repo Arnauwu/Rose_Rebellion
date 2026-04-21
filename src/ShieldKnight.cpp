@@ -40,12 +40,12 @@ bool ShieldKnight::CleanUp()
 
 bool ShieldKnight::Start()
 {
-	std::unordered_map<int, std::string> aliases = { {0,"attack"},{16,"defend"},{24,"run"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/ShieldKnight/ShieldKnight.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
 
-	// Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/ShieldKnight/ShieldKnight.png");
+	// Initialize parameters
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
 	//Load Audio
 
@@ -210,7 +210,6 @@ void ShieldKnight::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt");
 		if (lookingRight)
 		{
 			velocity.x = knockbackForce;
@@ -280,7 +279,7 @@ void ShieldKnight::Attack()
 	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000)
 	{
 		isAttacking = true;
-		anims.SetCurrent("attack"); // Windup
+		anims.SetCurrent("defend"); // Windup
 		startAttack.Start();
 		return;
 	}
@@ -294,7 +293,7 @@ void ShieldKnight::Attack()
 	}
 	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr)
 	{
-		anims.SetCurrent("hurt"); //Attack
+		anims.SetCurrent("assault"); //Attack
 
 		//CreateHitbox
 		float attackX = position.getX();
