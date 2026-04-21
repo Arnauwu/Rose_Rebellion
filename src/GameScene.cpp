@@ -99,13 +99,20 @@ bool GameScene::Update(float dt) {
 
 	auto input = Engine::GetInstance().input;
 
+	if (input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
+		if (currentMenuTab != GameMenuTab::NONE) {
+			ToggleGameMenu(GameMenuTab::NONE);
+		}
+		else {
+			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+		}
+	}
 	// --- SUB-MENU INPUT HANDLING ---
 	// Toggle menus based on keyboard shortcuts
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
 	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
 	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
-	if (input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) ToggleGameMenu(GameMenuTab::PAUSE_MENU);
-
+	
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
@@ -151,13 +158,13 @@ bool GameScene::Update(float dt) {
 			return true;
 		}
 
-		if (currentMenuTab == GameMenuTab::INVENTORY) {
+		//if (currentMenuTab == GameMenuTab::INVENTORY) {
 
-			for (auto& elem : inventoryUI) {
-				if (elem->state == UIElementState::FOCUSED) {
-				}
-			}
-		}
+		//	for (auto& elem : inventoryUI) {
+		//		if (elem->state == UIElementState::FOCUSED) {
+		//		}
+		//	}
+		//}
 	}
 	return true;
 
@@ -180,6 +187,13 @@ bool GameScene::CleanUp() {
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
+	// UnloadTexture BG buttons
+	UnloadTexture(buttonUI);
+	UnloadTexture(skillFrameUI);
+	UnloadTexture(orbFrameUI);
+	UnloadTexture(keyFrameUI);
+	UnloadTexture(textBgUI);
+
 	//UnloadTexture
 	UnloadTexture(texInventoryUI);
 	UnloadTexture(texMapUI);
@@ -193,15 +207,19 @@ bool GameScene::CleanUp() {
 	UnloadTexture(texItemOrb);
 	UnloadTexture(texItemWeapon);
 
-	// Clean up UI vectors
-	topBarElements.clear();
-	inventoryUI.clear();
-	mapUI.clear();
-	skillUI.clear();
+	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
+		for (auto& elem : group) {
+			if (elem) elem->CleanUp(); 
+		}
+		group.clear();
+	};
 
-	//Clean up UI Pause Vectos
-	pauseMainUI.clear();
-	pauseOptionsUI.clear();
+	deleteGroup(topBarElements);
+	deleteGroup(inventoryUI);
+	deleteGroup(mapUI);
+	deleteGroup(skillUI);
+	deleteGroup(pauseMainUI);
+	deleteGroup(pauseOptionsUI);
 
 	return true;
 }
@@ -220,8 +238,8 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 		RefreshMenuUI();
 		break;
 	case (int)GameUI_ID::BTN_PAUSE_MAINMENU:
-		Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU);
-		break;
+		ToggleGameMenu(GameMenuTab::NONE); 
+		Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU); break;
 	case (int)GameUI_ID::BTN_OPTIONS_BACK:
 		currentMenuTab = GameMenuTab::PAUSE_MENU;
 		RefreshMenuUI();
@@ -321,7 +339,7 @@ void GameScene::CreateInventoryUI() {
 
 	for (const auto& slot : slots) {
 		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, slot.w, slot.h, sceneObserver);
-		
+
 		btn->SetBgTexture(skillFrameUI);
 
 		// Si le hemos asignado una textura, se la ponemos al botón
