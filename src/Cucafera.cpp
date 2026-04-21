@@ -27,6 +27,8 @@ bool Cucafera::Awake() {
 
 bool Cucafera::Start()
 {
+	deathSoundId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
 	anims.SetCurrent("idle");
@@ -93,6 +95,8 @@ bool Cucafera::Update(float dt)
 	
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
+		Engine::GetInstance().audio->PlayFx(deathSoundId);
+
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
 		anims.GetAnim("dead")->SetLoop(false);
 		anims.SetCurrent("dead");

@@ -42,6 +42,10 @@ bool Player::Start()
 {
 	// Initialize Player parameters
 
+	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	pickItemFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+
 	// Load Textures
 	if (!glideUnlocked)
 	{
@@ -321,6 +325,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		// Base Jump 
 		if (isJumping == false && onGround == true)
 		{
+			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
@@ -343,6 +348,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 		// Double Jump
 		else if ( doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
+			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 			if (lookingRight == true)
@@ -378,6 +384,7 @@ void Player::Attack(float dt)
 	// 1. Start the attack 
 	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
 	{
+		Engine::GetInstance().audio->PlayFx(attackFx);
 		isAttacking = true;
 		if (lookingRight)
 		{
@@ -545,6 +552,7 @@ void Player::Interact()
 					// Si necesita
 					if (keyCount > 0)
 					{
+						Engine::GetInstance().audio->PlayFx(pickItemFx);
 						//Restar una unidad cuando se usa una llave
 						keyCount--;
 						LOG("Has usado una llave. Te quedan: %d ", keyCount);
@@ -552,11 +560,13 @@ void Player::Interact()
 					}
 					else
 					{
+						Engine::GetInstance().audio->PlayFx(pickItemFx);
 						LOG("Necesitas una llave para abrir, busca una ");
 					}
 				}
 				else
 				{
+					Engine::GetInstance().audio->PlayFx(pickItemFx);
 					// Si no
 					LOG("Esta puerta no necesita llave ");
 					Engine::GetInstance().sceneManager->setNewMap = true;
@@ -839,6 +849,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 			LOG("KeyNum: %d", keyCount);
 		}
+		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();
 		break;
 	case ColliderType::HEALTH_ORB:
@@ -850,18 +861,21 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			{
 				currentHealth = maxHealth;
 			}
+			Engine::GetInstance().audio->PlayFx(pickItemFx);
 			physB->listener->Destroy();
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
+		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy(); 
 		break;
 	case ColliderType::SAVEPOINT:
 	{
 		LOG("Collision SavePoint");
 		SavePoint* sp = (SavePoint*)physB->listener;
+		Engine::GetInstance().audio->PlayFx(pickItemFx); //fx
 		sp->Activate();
 
 		int spX, spY;
@@ -871,10 +885,12 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}  
 
 	case ColliderType::ENEMY:
+		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		TakeDamage(10); // Contact Damage
 		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
+		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
 			break;
