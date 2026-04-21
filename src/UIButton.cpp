@@ -47,15 +47,14 @@ void UIButton::Draw() const
 {
 	if (!visible) return;
 
-	SDL_Color bgColor = { 100, 100, 100, 255 }; // Normal
-	if (state == UIElementState::FOCUSED) bgColor = { 150, 150, 150, 255 };
-	if (state == UIElementState::PRESSED) bgColor = { 200, 200, 200, 255 };
-
-	Engine::GetInstance().render->DrawRectangle(bounds, bgColor.r, bgColor.g, bgColor.b, bgColor.a, true, false);
-
-	// 2. Texto
-	if (!text.empty()) {
-		Engine::GetInstance().render->DrawTextCentered(text.c_str(), bounds, { 255, 255, 255, 255 });
+	if (drawBasic) {
+        SDL_Color bgColor = { 100, 100, 100, 255 };
+        if (state == UIElementState::FOCUSED) bgColor = { 150, 150, 150, 255 };
+        if (state == UIElementState::PRESSED) bgColor = { 200, 200, 200, 255 };
+        Engine::GetInstance().render->DrawRectangle(bounds, bgColor.r, bgColor.g, bgColor.b, bgColor.a, true, false);
+    }
+	if (bgTexture != nullptr) {
+		Engine::GetInstance().render->DrawTextureScaled(bgTexture, bounds);
 	}
 
 	if (texture != nullptr) {
@@ -65,7 +64,12 @@ void UIButton::Draw() const
 
 		SDL_SetTextureColorMod(texture, 255, 255, 255);
 	}
+
+	if (!text.empty()) {
+		Engine::GetInstance().render->DrawTextCentered(text.c_str(), bounds, { 255, 255, 255, 255 });
+	}
 }
+
 
 bool UIButton::CleanUp()
 {
