@@ -76,8 +76,8 @@ private:
 
 	void CameraFollows();
 
-	//// Unlocks
-	//void UnlockCape();
+	//// Helpers
+	std::unordered_map<int, std::string> GetAliases(std::string name);
 
 	// DevTools / Debug
 	void DevTools(float dt);
@@ -186,7 +186,7 @@ private:
 		Jump = 2
 		Fall = 3
 		Attack = 4
-
+		Glide = 5
 
 		Death = 99
 	*/
