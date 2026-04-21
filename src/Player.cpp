@@ -689,25 +689,35 @@ void Player::CameraFollows()
 void Player::UnlockCape()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
-	
-	std::unordered_map<int, std::string> aliases = { {0,"move_right"},
-											 {11,"move_left"},
-											 {22,"jump_right"},
-											 {33,"fall_right" },
-											 {44,"jump_left" } ,
-											 {55,"fall_left"},
-											 {66,"idle_right" },
-											 {77,"idle_left" } ,
-											 {88,"death_right"},
-											 {99,"death_left" }
-	};
-	anims.LoadFromTSX("Assets/Textures/Princess/princess.tsx", aliases);
-	anims.SetCurrent("front");
-
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
 	glideUnlocked = true;
-
 	AddItem(ItemID::GLIDE, 1);
+
+	
+	if (hasSickle)
+	{
+		std::unordered_map<int, std::string> aliases = {
+			{0,"move_right"}, {11,"move_left"}, {22,"jump_right"}, {33,"fall_right" },
+			{44,"jump_left" } , {55,"fall_left"}, {66,"death_right" }, {77,"death_left" } ,
+			{88,"idle_right"}, {110,"idle_left" }, {132,"attack_right"}, {143,"attack_left"}
+		};
+
+		anims.LoadFromTSX("Assets/Textures/Princess/SS_Princesa_Capucha.tsx", aliases);
+		anims.SetCurrent("idle_right");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/SS_Princesa_Capucha.png");
+	}
+	else
+	{
+		std::unordered_map<int, std::string> aliases = {
+			{0,"move_right"}, {11,"move_left"}, {22,"jump_right"}, {33,"fall_right" },
+			{44,"jump_left" } , {55,"fall_left"}, {66,"idle_right" }, {77,"idle_left" } ,
+			{88,"death_right"}, {99,"death_left" }
+		};
+		anims.LoadFromTSX("Assets/Textures/Princess/princess.tsx", aliases);
+
+		anims.SetCurrent("idle_right");
+
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
+	}
 }
 
 void Player::UnlockSickle()
@@ -715,7 +725,6 @@ void Player::UnlockSickle()
 	hasSickle = true;
 	AddItem(ItemID::WEAPON, 1);
 
-	// 只有当玩家也拿到了斗篷时，才切换到终极(带镰刀)形态贴图
 	if (glideUnlocked)
 	{
 		Engine::GetInstance().textures->UnLoad(texture);
