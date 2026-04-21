@@ -33,7 +33,7 @@ bool Manta::Update(float dt) {
 		//Posicion donde renderiza la manta
 		int x, y;
 		pbody->GetPosition(x, y);
-		Engine::GetInstance().render->DrawTexture(texture, x - 10, y - 10);
+		Engine::GetInstance().render->DrawTexture(texture, x - texture->w / 2, y - texture->h / 2);
 	}
 	return true;
 }
