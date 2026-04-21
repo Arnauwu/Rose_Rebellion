@@ -882,10 +882,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 			LOG("KeyNum: %d", keyCount);
 		}
-		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
 		}
+		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();
 		break;
 	case ColliderType::HEALTH_ORB:

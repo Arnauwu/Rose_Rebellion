@@ -18,6 +18,9 @@
  <tileset firstgid="321" name="Fondo_Ventana" tilewidth="1920" tileheight="1080" tilecount="1" columns="1">
   <image source="Castle/Exterior/Fondo_Ventana.png" width="1920" height="1080"/>
  </tileset>
+ <tileset firstgid="322" name="Atlas_Exterior_Castillo_Oscuro" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Castle/Exterior/Atlas_Exterior_Castillo_Oscuro.png" width="1024" height="1024"/>
+ </tileset>
  <objectgroup id="12" name="BG">
   <properties>
    <property name="Draw" type="bool" value="true"/>
@@ -1749,7 +1752,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="197"/>
    <tile gid="198"/>
    <tile gid="199"/>
    <tile gid="200"/>
@@ -1779,7 +1782,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="205"/>
    <tile gid="206"/>
    <tile gid="207"/>
    <tile gid="208"/>
@@ -1809,7 +1812,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="213"/>
    <tile gid="214"/>
    <tile gid="215"/>
    <tile gid="216"/>
@@ -1839,7 +1842,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="221"/>
    <tile gid="222"/>
    <tile gid="223"/>
    <tile gid="224"/>
@@ -1869,7 +1872,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="229"/>
    <tile gid="230"/>
    <tile gid="231"/>
    <tile gid="232"/>
@@ -1977,36 +1980,36 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
+   <tile gid="347"/>
   </data>
  </layer>
  <objectgroup id="8" name="Door">
