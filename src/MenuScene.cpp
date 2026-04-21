@@ -66,8 +66,8 @@ bool MenuScene::Start() {
 }
 
 bool MenuScene::Update(float dt) {
-	int windowW = Engine::GetInstance().window->windowWidth;
-	int windowH = Engine::GetInstance().window->windowHeight;
+	int windowW = Engine::GetInstance().render->camera.w;
+	int windowH = Engine::GetInstance().render->camera.h;
 	
 	SDL_Rect fullScreenRect = { 0, 0, windowW, windowH };
 

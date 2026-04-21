@@ -20,6 +20,8 @@
 
 #include "SavePoint.h"
 #include "Item.h"
+#include "HealthOrb.h"
+#include "SkillPointOrb.h"
 #include "Keys.h"
 #include "Manta.h"
 #include "Sickle.h"
@@ -770,6 +772,16 @@ void Map::SpawnEntities()
 						player->position = Vector2D(x, y);
 					}
 					Engine::GetInstance().sceneManager->SetPlayer(player);
+				}
+				else if (entityType == std::string("HealthOrb"))
+				{
+					std::shared_ptr<HealthOrb> healthOrb = std::dynamic_pointer_cast<HealthOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB));
+					healthOrb->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("SkillPointOrb"))
+				{
+					std::shared_ptr<SkillPointOrb> skillPointOrb = std::dynamic_pointer_cast<SkillPointOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SKILL_POINT_ORB));
+					skillPointOrb->position = Vector2D(x, y);
 				}
                 else if (entityType == std::string("Spider"))
                 {
