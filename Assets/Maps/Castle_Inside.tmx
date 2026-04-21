@@ -5857,8 +5857,5 @@
   <object id="1" name="Player" type="Player" x="4827" y="3741">
    <point/>
   </object>
-  <object id="26" name="Sickle" type="Sickle" x="1227.84" y="934.465">
-   <point/>
-  </object>
  </objectgroup>
 </map>
