@@ -382,7 +382,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 void Player::Attack(float dt)
 {
 	// 1. Start the attack 
-	if (!isAttacking && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
+	if (!isAttacking && hasSickle && glideUnlocked && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
 	{
 		Engine::GetInstance().audio->PlayFx(attackFx);
 		isAttacking = true;
@@ -666,30 +666,55 @@ void Player::CameraFollows()
 	int screenH = Engine::GetInstance().render->camera.h;
 
 	float dt = Engine::GetInstance().GetDt();
-	cameraController.Update(dt, position, screenW, screenH, mapSize.getX(), mapSize.getY());
 
+	//Eje Y
+	// Guarda la última posición Y del jugador cuando está tocando el suelo. 
+	static float lastGroundY = position.getY();
+	if (onGround) {
+		lastGroundY = position.getY();
+	}
+
+	// la cámara intenta seguir directamente al jugador.
+	Vector2D targetCamPos = position;
+
+	// Verifica si el jugador está en el aire (saltando o cayendo).
+	if (!onGround) {
+		// Define el límite máximo que la cámara puede subir al saltar.
+		float maxCameraUpward = 40.0f;
+
+		if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
+			// Bloquea la posición Y de la cámara para asegurar que el suelo siga siendo visible
+			targetCamPos.setY(lastGroundY - maxCameraUpward);
+		}
+	}
+	// Envía la posición objetivo calculada al controlador de cámara original.
+	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
 	float camX, camY;
 	cameraController.GetCameraPosition(camX, camY);
-	Engine::GetInstance().render->camera.x = (int)camX;
+
+	// Eje X
+	// Calcula la posición para que el jugador se mantenga justo en el centro de la pantalla.
+	float targetCamX = -position.getX() + (screenW / 2.0f);
+
+	// Limita la cámara en los bordes izquierdo y derecho para no ver fuera del mapa
+	if (targetCamX > 0) targetCamX = 0;
+	float minCamX = -(mapSize.getX() - screenW);
+	if (targetCamX < minCamX) targetCamX = minCamX;
+
+	
+	float dtSeconds = dt / 1000.0f;
+	float currentCamX_f = Engine::GetInstance().render->camera.x;
+
+	if (dtSeconds > 0.0f) {
+		// Aplica una interpolación para que el movimiento horizontal sea suave y fluido.
+		float lerpX = 8.0f * dtSeconds; 
+		if (lerpX > 1.0f) lerpX = 1.0f;
+		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
+	}
+
+	// Asigna las posiciones finales calculadas a la cámara del motor
+	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
 	Engine::GetInstance().render->camera.y = (int)camY;
-	
-	float limitLeft = Engine::GetInstance().render->camera.w / 4;
-	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
-	
-	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) 
-	{
-		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
-	}
-	// If player is at the far left, lock camera to the map's left edge to hide the outside area.
-	else if (position.getX() <= limitLeft)
-	{
-		Engine::GetInstance().render->camera.x = 0;
-	}
-	// Player at far right: Lock camera to the right boundary.
-	else if (position.getX() >= limitRight)
-	{
-		Engine::GetInstance().render->camera.x = -(mapSize.getX() - Engine::GetInstance().render->camera.w);
-	}
 }
 
 std::unordered_map<int, std::string> Player::GetAliases(string name)
@@ -731,6 +756,7 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 	return aliases;
 }
 
+
 void Player::UnlockCape()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
@@ -743,6 +769,13 @@ void Player::UnlockCape()
 	glideUnlocked = true;
 
 	AddItem(ItemID::GLIDE, 1);
+}
+
+void Player::UnlockSickle()
+{
+	hasSickle = true;
+	AddItem(ItemID::WEAPON, 1);
+	LOG("Sickle Unlocked! You can attack now if you have the cape.");
 }
 
 bool Player::CleanUp()
@@ -850,6 +883,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			LOG("KeyNum: %d", keyCount);
 		}
 		Engine::GetInstance().audio->PlayFx(pickItemFx);
+		else if (physB->listener->name == "Sickle") {
+			LOG("Collision ITEM (Sickle Picked Up)");
+		}
 		physB->listener->Destroy();
 		break;
 	case ColliderType::HEALTH_ORB:

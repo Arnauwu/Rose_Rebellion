@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="36">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="38">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -10170,7 +10170,7 @@
   </properties>
   <object id="27" x="5888" y="6" width="148" height="503">
    <properties>
-    <property name="TeleportTo" type="file" value="Balcony.tmx"/>
+    <property name="TeleportTo" type="file" value="Castle_Balcony.tmx"/>
    </properties>
   </object>
  </objectgroup>
@@ -10225,7 +10225,7 @@
   <object id="20" x="5376" y="512" width="512" height="128"/>
  </objectgroup>
  <objectgroup id="3" name="EntitiesSpawnPoints">
-  <object id="1" name="Player" type="Player" x="4859" y="3693">
+  <object id="1" name="Player" type="Player" x="4875" y="3829">
    <point/>
   </object>
  </objectgroup>
@@ -10247,7 +10247,19 @@
   </object>
   <object id="34" name="PlayerSpawns" x="5546" y="340">
    <properties>
-    <property name="FromRoom" type="file" value="Balcony.tmx"/>
+    <property name="FromRoom" type="file" value="Castle_Balcony.tmx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="36" name="PlayerSpawns" x="2176" y="2424">
+   <properties>
+    <property name="FromRoom" type="file" value="Castle_Room_Kitchen.tmx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="37" name="PlayerSpawns" x="4878" y="3824">
+   <properties>
+    <property name="FromRoom" type="file" value="Castle.tmx"/>
    </properties>
    <point/>
   </object>
