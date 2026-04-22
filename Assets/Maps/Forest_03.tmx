@@ -5470,7 +5470,7 @@
   </object>
   <object id="131" x="1536" y="2688" width="512" height="128">
    <properties>
-    <property name="TeleportTo" type="file" value="Castle.tmx"/>
+    <property name="TeleportTo" type="file" value="Forest_04.tmx"/>
    </properties>
   </object>
  </objectgroup>
@@ -5614,7 +5614,7 @@
   </object>
   <object id="283" name="Player" type="Player" x="2176.24" y="1899.64">
    <properties>
-    <property name="FromRoom" type="file" value="Forest_02.tmx"/>
+    <property name="FromRoom" type="file" value="Forest_04.tmx"/>
    </properties>
    <point/>
   </object>
