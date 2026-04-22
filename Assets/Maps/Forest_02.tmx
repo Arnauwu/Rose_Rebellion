@@ -3796,7 +3796,7 @@
   </object>
   <object id="220" name="Player" type="Player" x="3010.12" y="233.273">
    <properties>
-    <property name="FromRoom" type="file" value="OldForest_03.tmx"/>
+    <property name="FromRoom" type="file" value="Forest_03.tmx"/>
    </properties>
    <point/>
   </object>
