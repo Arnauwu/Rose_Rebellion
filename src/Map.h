@@ -3,6 +3,7 @@
 #include "Module.h"
 #include <list>
 #include <vector>
+#include <string>
 
 #include <box2d/box2d.h>
 #include "Animation.h"
@@ -51,6 +52,7 @@ struct Door
     PhysBody* body;
     std::string teleportTo;
     bool needsKey;
+    std::string uniqueId;
 };
 
 struct Path
@@ -206,6 +208,7 @@ public:
     Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door
     std::string DoorInfo(PhysBody* door);
+    std::string GetDoorUniqueId(PhysBody* door);
     bool DoorNeedsKey(PhysBody* door);
     std::string PathInfo(PhysBody* path);
 

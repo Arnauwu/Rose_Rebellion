@@ -523,6 +523,8 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor->body = collider;
 						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 
+						newDoor->uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+
 						//Mira si necesita una llave para abrirlo o no
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						if (needsKeyProp != nullptr)
@@ -533,6 +535,12 @@ bool Map::Load(std::string path, std::string fileName)
 						else
 						{
 							newDoor->needsKey = false; // Si no, no necesita llave
+						}
+						for (const std::string& unlockedId : Player::unlockedDoors) {
+							if (unlockedId == newDoor->uniqueId) {
+								newDoor->needsKey = false; 
+								break;
+							}
 						}
 						mapData.doors.push_back(newDoor);
 					}
@@ -920,7 +928,17 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 }
 
 
-
+std::string Map::GetDoorUniqueId(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor->body == door)
+		{
+			return ndoor->uniqueId;
+		}
+	}
+	return "";
+}
 
 
 

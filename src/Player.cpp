@@ -18,7 +18,7 @@ using namespace std;
 int Player::keyCount = 0;
 bool Player::glideUnlocked = false;
 bool Player::hasSickle = false;
-
+std::vector<std::string> Player::unlockedDoors;
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -558,6 +558,12 @@ void Player::Interact()
 						//Restar una unidad cuando se usa una llave
 						keyCount--;
 						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+
+						std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
+						if (!doorId.empty()) {
+							Player::unlockedDoors.push_back(doorId);
+						}
+
 						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else
