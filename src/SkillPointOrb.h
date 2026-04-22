@@ -2,6 +2,7 @@
 #include "Item.h"
 #include "Entity.h"
 #include <SDL3/SDL.h>
+#include <string>
 
 struct SDL_Texture;
 
@@ -22,6 +23,8 @@ public:
 
 	bool Destroy();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB);
+
 public:
 
 private:
@@ -32,4 +35,5 @@ private:
 
 	// Add a physics to an item
 	PhysBody* pbody;
+	std::string uniqueID;
 };
