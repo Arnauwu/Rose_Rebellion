@@ -174,7 +174,7 @@ void SwordKnight::Move() {
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 3 && isAttacking == false)
+	else if (playerTileDist >= 2 && isAttacking == false)
 	{
 		Engine::GetInstance().audio->PlayFx(caminarEspada);
 		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK

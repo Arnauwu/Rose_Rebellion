@@ -51,7 +51,7 @@ bool KnightBoss::Start() {
 	speed = 1.5f;
 	knockbackForce = 1.0f;
 
-	maxHealth = 100;
+	maxHealth = 200;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -127,7 +127,8 @@ void KnightBoss::GetPhysicsValues() {
 	velocity = { 0, velocity.y };
 }
 
-void KnightBoss::Move() {
+void KnightBoss::Move() 
+{
 
 	Vector2D tilePos = GetTilePos();
 
@@ -156,7 +157,7 @@ void KnightBoss::Move() {
 	}
 
 	// 3. Tomar decisión si estás muy cerca
-	if (playerTileDist <= 3 && !isKnockedback) {
+	if (playerTileDist <= 2 && !isKnockedback) {
 
 		// Mirar hacia el jugador
 		Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
@@ -196,11 +197,11 @@ void KnightBoss::Move() {
 
 		if (nextTile.getX() > tilePos.getX()) {
 			velocity.x = speed;
-			lookingRight = !true;
+			lookingRight = true;
 		}
 		else if (nextTile.getX() < tilePos.getX()) {
 			velocity.x = -speed;
-			lookingRight = !false;
+			lookingRight = false;
 		}
 		else {
 			velocity.x = 0;
@@ -254,8 +255,12 @@ void KnightBoss::Draw(float dt)
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	// MODIFICADO: Invertimos el flip para que coincida con el asset de la Ninfa
-	SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+	//SDLFlip
+	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+	if (!lookingRight)
+	{
+		sdlFlip = SDL_FLIP_HORIZONTAL;
+	}
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -281,19 +286,21 @@ void KnightBoss::SwordAttack()
 		if (startAttack.ReadMSec() > 500 && swordHitbox == nullptr) {
 
 			// Calculamos dónde aparece la espada dependiendo de a dónde mire
-			int hX = lookingRight ? position.getX() + 70 : position.getX() - 70;
+			int attW = 120,  attH = 160;
+			int hX = lookingRight ? position.getX() + texW /2: position.getX() - texW / 2;
 			int hY = position.getY();
 
 			// Creamos un rectángulo físico
-			swordHitbox = Engine::GetInstance().physics->CreateRectangle(hX, hY, 80, 40, bodyType::KINEMATIC);
+			swordHitbox = Engine::GetInstance().physics->CreateRectangle(hX, hY, attW, attH, bodyType::KINEMATIC);
 			swordHitbox->listener = this;
-			swordHitbox->ctype = ColliderType::ENEMY;
+			swordHitbox->ctype = ColliderType::ENEMY_ATTACK;
 
 			// (Línea de SetSensor eliminada por incompatibilidad con Box2D v3)
 		}
 
 		// 2. DESTRUIR HITBOX: Al terminar el ataque
-		if (startAttack.ReadMSec() >= attackCooldown) {
+		if (startAttack.ReadMSec() >= attackCooldown) 
+		{
 			isAttacking = false;
 			anims.SetCurrent("idle");
 			attackStep++;
@@ -308,7 +315,7 @@ void KnightBoss::SwordAttack()
 	}
 }
 
-void KnightBoss::ShieldDash()
+void KnightBoss::ShieldDash() // TO DO: MAKE IT WORK (doesnt work because pbody collider)
 {
 	if (isDashing) {
 		anims.SetCurrent("walk");
@@ -331,6 +338,12 @@ void KnightBoss::ShieldDash()
 }
 
 void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB) {
+	if (physA == swordHitbox)
+	{
+		return;
+	}
+
+
 	switch (physB->ctype)
 	{
 	case ColliderType::WALL:
