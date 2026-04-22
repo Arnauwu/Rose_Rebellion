@@ -11673,7 +11673,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
+ <objectgroup color="#00aa00" id="6" name="Ground">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -11693,7 +11693,7 @@
   <object id="75" x="1416" y="2560" width="364" height="78.6667"/>
   <object id="110" x="900.219" y="2304" width="247.25" height="61.7199"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
+ <objectgroup color="#aa5500" id="7" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -11722,7 +11722,7 @@
   <object id="114" x="1147.8" y="2304" width="3.57579" height="128"/>
   <object id="115" x="896" y="2304" width="3.57579" height="128"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
+ <objectgroup color="#00aaff" id="8" name="Ceiling">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
