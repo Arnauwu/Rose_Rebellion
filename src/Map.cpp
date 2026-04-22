@@ -519,6 +519,8 @@ bool Map::Load(std::string path, std::string fileName)
 					{
 						collider->ctype = ColliderType::DOOR;
 
+						// TODO: Assign Listener
+
 						Door* newDoor = new Door;
 						newDoor->body = collider;
 						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
@@ -563,6 +565,8 @@ bool Map::Load(std::string path, std::string fileName)
 					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
 					{
 						collider->ctype = ColliderType::PATH;
+
+						// TODO: Assign Listener
 
 						Door* newDoor = new Door;
 						newDoor->body = collider;
