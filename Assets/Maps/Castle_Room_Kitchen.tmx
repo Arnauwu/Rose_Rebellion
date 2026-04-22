@@ -189,7 +189,7 @@
   <object id="18" x="0" y="-128" width="1920" height="128"/>
  </objectgroup>
  <objectgroup id="4" name="EntitiesSpawnPoints">
-  <object id="20" name="Key" type="Key" x="874.5" y="632.5">
+  <object id="20" name="Key" type="Key" x="874.5" y="619.5">
    <point/>
   </object>
   <object id="22" name="Player" type="Player" x="2054.55" y="-21.2121">
