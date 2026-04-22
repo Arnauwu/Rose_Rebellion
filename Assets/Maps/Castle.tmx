@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="19" nextobjectid="57">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="19" nextobjectid="57">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -65,7 +65,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="51" name="Pueblerino_Cerdo" tilewidth="256" tileheight="256" tilecount="1" columns="1">
+ <tileset firstgid="51" name="Pueblerino_Cerdo" tilewidth="256" tileheight="256" tilecount="0" columns="1">
   <image source="../Textures/NPCs/Pueblerino_Cerdo.png" trans="ffffff" width="256" height="256"/>
  </tileset>
  <layer id="1" name="Map" width="64" height="24">
@@ -4725,7 +4725,7 @@
   </properties>
   <object id="51" x="-109" y="614" width="28" height="87">
    <properties>
-    <property name="TeleportTo" type="file" value="Forest_01.tmx"/>
+    <property name="TeleportTo" type="file" value="NewForest_01.tmx"/>
    </properties>
   </object>
  </objectgroup>

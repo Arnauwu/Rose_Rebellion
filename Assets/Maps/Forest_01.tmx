@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="19" nextobjectid="117">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="180" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="19" nextobjectid="117">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -80,7 +80,7 @@
  <tileset firstgid="244" name="Forest_Bg" tilewidth="1920" tileheight="1088" tilecount="1" columns="1">
   <image source="Forest/Forest_Bg.png" width="1920" height="1088"/>
  </tileset>
- <objectgroup id="18" name="Fondo">
+ <objectgroup id="18" name="Fondo" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
