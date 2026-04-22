@@ -60,6 +60,7 @@ void GameScene::LoadMap(std::string mapFile)
 }
 
 bool GameScene::Start() {
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -236,6 +237,7 @@ bool GameScene::CleanUp() {
 }
 
 bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
+	Engine::GetInstance().audio->PlayFx(uiClick);
 	switch (uiElement->id) {
 	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;

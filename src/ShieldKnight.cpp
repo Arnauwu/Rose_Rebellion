@@ -40,6 +40,10 @@ bool ShieldKnight::CleanUp()
 
 bool ShieldKnight::Start()
 {
+	morirEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	atacarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	caminarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+
 	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
@@ -117,6 +121,7 @@ bool ShieldKnight::Update(float dt)
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
 
+		Engine::GetInstance().audio->PlayFx(morirEscudo);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 	}
@@ -166,6 +171,7 @@ void ShieldKnight::Move() {
 	}
 	else if (playerTileDist >= 5 && isAttacking == false)
 	{
+		Engine::GetInstance().audio->PlayFx(caminarEscudo);
 		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
 		if (pathfinding->pathTiles.back() == tilePos)
@@ -278,6 +284,7 @@ void ShieldKnight::Attack()
 {
 	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000)
 	{
+		Engine::GetInstance().audio->PlayFx(atacarEscudo);
 		isAttacking = true;
 		anims.SetCurrent("defend"); // Windup
 		startAttack.Start();

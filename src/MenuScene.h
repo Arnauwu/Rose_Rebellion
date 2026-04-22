@@ -38,6 +38,8 @@ private:
     void ShowSettings(bool show);
     bool isSettingsOpen = false;
 
+    int uiClick;
+
 private:
     // UI Groups
     std::vector<std::shared_ptr<UIElement>> mainButtons;

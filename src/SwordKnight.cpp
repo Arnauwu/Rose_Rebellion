@@ -40,6 +40,10 @@ bool SwordKnight::CleanUp()
 
 bool SwordKnight::Start()
 {
+	caminarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	morirEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	atacarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+
 	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
@@ -117,6 +121,7 @@ bool SwordKnight::Update(float dt)
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
 
+		Engine::GetInstance().audio->PlayFx(morirEspada);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 	}
@@ -166,6 +171,7 @@ void SwordKnight::Move() {
 	}
 	else if (playerTileDist >= 3 && isAttacking == false)
 	{
+		Engine::GetInstance().audio->PlayFx(caminarEspada);
 		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
 		if (pathfinding->pathTiles.back() == tilePos)
@@ -293,6 +299,7 @@ void SwordKnight::Attack()
 	}
 	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr)
 	{
+		Engine::GetInstance().audio->PlayFx(atacarEspada);
 		anims.SetCurrent("sword_attack"); //Attack
 		
 		//CreateHitbox

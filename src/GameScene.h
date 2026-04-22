@@ -109,6 +109,8 @@ private:
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
 
+	int uiClick;
+
 private:
 	// The player pointer
 	Player* player = nullptr;

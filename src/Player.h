@@ -177,7 +177,20 @@ private:
 
 	int jumpFx = -1;
 	int attackFx = -1;
+	int dashPrincesa;
+	int morirPrincesa;
+	int planearPrincesa;
+	int recibirDamage;
+	int caminarPrincesa;
+
 	int pickItemFx = -1;
+	int savePointFx;
+	int openDoor;
+	int closedDoor;
+	int orbFx;
+	int respawnFx;
+
+
 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;

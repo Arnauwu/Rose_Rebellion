@@ -41,5 +41,7 @@ public:
 
 	PhysBody* attackHitbox = nullptr;
 
-	int deathSoundId;
+	int morirEscudo;
+	int atacarEscudo;
+	int caminarEscudo;
 };

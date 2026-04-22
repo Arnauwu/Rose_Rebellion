@@ -10,6 +10,7 @@
 #include "Render.h"
 #include "Log.h"
 #include "EntityManager.h"
+#include "Audio.h"
 
 Ninfa::Ninfa() : Enemy(EntityType::NINFA)
 {
@@ -34,7 +35,10 @@ bool Ninfa::Awake() {
 
 bool Ninfa::Start()
 {
-   
+   morirNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+   atacarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+   volarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+
     //Enemigo volador sprite
     
     std::unordered_map<int, std::string> aliases = {
@@ -103,6 +107,7 @@ bool Ninfa::Update(float dt)
         // Se ejecuta solo una vez al morir
         if (anims.GetCurrentName() != "dead")
         {
+            Engine::GetInstance().audio->PlayFx(morirNinfa);
             anims.SetCurrent("dead");
             anims.GetAnim("dead")->SetLoop(false);
 
@@ -254,6 +259,7 @@ void Ninfa::Move() {
     }
     case NinfaState::ATTACK:
     {
+        Engine::GetInstance().audio->PlayFx(atacarNinfa);
         ShootProjectile(); // Dispara la bala
         currentState = NinfaState::COOLDOWN;
         stateTimer.Start();
