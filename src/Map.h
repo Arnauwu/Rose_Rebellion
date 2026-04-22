@@ -154,7 +154,6 @@ struct MapData
     std::list<TileSet*> tilesets;
     std::list<ObjectGroup*> objectGroups;
     std::list<Door*> doors;
-    std::list<Path*> paths;
     std::list<MapLayer*> layers;
     std::list<PlayerSpawnPoint*> spawnPoints;
 };

@@ -919,7 +919,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::PATH:
 		interactuableBody = physB;
-		Engine::GetInstance().sceneManager->setNewMap = true;
+ 		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
 
 	case ColliderType::CEILING:

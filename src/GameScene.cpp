@@ -29,18 +29,26 @@ void GameScene::LoadMap(std::string mapFile)
 		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav"); // Música Bosque
 	}
 
-	std::string previousMap = Engine::GetInstance().map->mapFileName;
-	printf("prevoius map : %s", previousMap);
 	//Load the map. 
 	if (mapFile == "")
 	{
 		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
 	}
+
+	// Fail-Save
+	if (mapFile == "")
+	{
+		return;
+	}
+
 	Engine::GetInstance().sceneManager->setNewMap = false;
 
 	Engine::GetInstance().entityManager->CleanUp();
 	player = nullptr;
 	Engine::GetInstance().sceneManager->SetPlayer(nullptr);
+
+	std::string previousMap = Engine::GetInstance().map->mapFileName;
+	printf("prevoius map : %s", previousMap);
 
 	Engine::GetInstance().map->CleanUp();
 
