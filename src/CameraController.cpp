@@ -12,14 +12,14 @@ CameraController::~CameraController()
 
 void CameraController::Update(float dt, Vector2D playerPos, int screenW, int screenH, float mapWidth, float mapHeight)
 {
-	// Calcular posición objetivo: centrar en el jugador con offset vertical mínimo
+	// Calcular posicion objetivo: centrar en el jugador con offset vertical minimo
 	targetX = -playerPos.getX() + (screenW / 2.0f);
-	targetY = -playerPos.getY() + (screenH / 1.25f) - verticalOffset;
+	targetY = -playerPos.getY() + (screenH / 1.75f) - verticalOffset;
 
-	// Limitar la cámara dentro de los bordes del mapa
+	// Limitar la camara dentro de los bordes del mapa
 	ClampToMapBounds(currentX, currentY, screenW, screenH, mapWidth, mapHeight);
-
-	// Suavizar movimiento de la cámara usando interpolación lineal
+	
+	// Suavizar movimiento de la camara usando interpolacion lineal
 	currentX += (targetX - currentX) * smoothSpeed;
 	currentY += (targetY - currentY) * smoothSpeed;
 

@@ -198,6 +198,8 @@ private:
 	float stepTimer = 0.0f;
 	float timeBetweenSteps = 0.35f;
 
+	float lookDownTimer = 0.0f;
+	float currentCameraYOffset = 0.0f;
 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
