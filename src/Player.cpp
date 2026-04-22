@@ -456,13 +456,13 @@ void Player::Attack(float dt)
 		{
 			// Prompt text
 			if (!hasSickle && !glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cloak."); 
+				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape."); 
 			}
 			else if (!hasSickle) {
 				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle."); 
 			}
 			else if (!glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Layer."); 
+				Engine::GetInstance().hud->ShowNotification("You need to find the Cape."); 
 			}
 		}
 	}
@@ -576,6 +576,24 @@ void Player::Interact()
 		{
 			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 			{
+				bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
+				if (isMaintenance)
+				{
+					Engine::GetInstance().audio->PlayFx(pickItemFx); 
+					
+					Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
+					return; 
+				}
+
+				bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
+				if (isClosed)
+				{
+					Engine::GetInstance().audio->PlayFx(pickItemFx);
+
+					Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
+					return;
+				}
+
 				//Pregunta si esta puerta necesita llave
 				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
 

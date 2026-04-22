@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="43">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="46">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -10190,6 +10190,7 @@
   </properties>
   <object id="9" x="5130" y="3441" width="364" height="527">
    <properties>
+    <property name="DoorClosed" type="bool" value="true"/>
     <property name="TeleportTo" type="file" value="Castle.tmx"/>
    </properties>
   </object>
@@ -10207,6 +10208,12 @@
   <object id="25" x="264.667" y="489.333" width="364" height="635">
    <properties>
     <property name="TeleportTo" type="file" value="Castle_Room_Princess.tmx"/>
+   </properties>
+  </object>
+  <object id="45" x="3834" y="2018.33" width="364" height="635.333">
+   <properties>
+    <property name="TeleportTo" type="file" value=""/>
+    <property name="UnderMaintenance" type="bool" value="true"/>
    </properties>
   </object>
  </objectgroup>

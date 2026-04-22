@@ -53,6 +53,8 @@ struct Door
     std::string teleportTo;
     bool needsKey;
     std::string uniqueId;
+    bool underMaintenance;
+    bool DoorClose;
 };
 
 struct Path
@@ -210,6 +212,8 @@ public:
     std::string DoorInfo(PhysBody* door);
     std::string GetDoorUniqueId(PhysBody* door);
     bool DoorNeedsKey(PhysBody* door);
+    bool DoorUnderMaintenance(PhysBody* door);
+    bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
 
 public: 

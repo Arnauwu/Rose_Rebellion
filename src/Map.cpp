@@ -542,6 +542,22 @@ bool Map::Load(std::string path, std::string fileName)
 								break;
 							}
 						}
+
+						Properties::Property* maintenanceProp = obj->properties.GetProperty("UnderMaintenance");
+						if (maintenanceProp != nullptr) {
+							newDoor->underMaintenance = maintenanceProp->value; 
+						}
+						else {
+							newDoor->underMaintenance = false;
+						}
+
+						Properties::Property* closedProp = obj->properties.GetProperty("DoorClosed");
+						if (closedProp != nullptr) {
+							newDoor->DoorClose = closedProp->value;
+						}
+						else {
+							newDoor->DoorClose = false; 
+						}
 						mapData.doors.push_back(newDoor);
 					}
 					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
@@ -940,8 +956,28 @@ std::string Map::GetDoorUniqueId(PhysBody* door)
 	return "";
 }
 
+bool Map::DoorUnderMaintenance(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor->body == door)
+		{
+			return ndoor->underMaintenance;
+		}
+	}
+	return false;
+}
 
-
+bool Map::DoorClosed(PhysBody* door) {
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor->body == door)
+		{
+			return ndoor->DoorClose;
+		}
+	}
+	return false;
+}
 
 
 
