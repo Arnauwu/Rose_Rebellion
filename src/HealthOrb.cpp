@@ -41,7 +41,7 @@ bool HealthOrb::Start() {
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	
 	texH = 32; texW = 32;
-	pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH, bodyType::DYNAMIC);
 
 	Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 
@@ -65,7 +65,7 @@ bool HealthOrb::Update(float dt)
 	position.setY((float)y);
 
 	if(texture != nullptr) {
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, nullptr, SDL_FLIP_NONE, 0.5f);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, nullptr, SDL_FLIP_NONE, 1.0f);
 	}
 
 	return true;

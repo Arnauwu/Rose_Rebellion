@@ -20,7 +20,7 @@ bool Sickle::Start() {
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Sickle/Sickle.png");
 
    
-    pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), 10, bodyType::KINEMATIC);
+    pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);
     pbody->listener = this;
     pbody->ctype = ColliderType::ITEM;
 

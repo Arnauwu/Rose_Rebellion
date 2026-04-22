@@ -24,7 +24,7 @@ bool Keys::Start()
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/obj_llave_castillo_game.png");
 
     //Fisica
-    pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), 10, bodyType::KINEMATIC);
+    pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);
     pbody->listener = this;
     pbody->ctype = ColliderType::ITEM;
 
