@@ -10200,7 +10200,7 @@
   </object>
   <object id="24" x="3464.67" y="492" width="364" height="631">
    <properties>
-    <property name="Needskey" type="bool" value="true"/>
+    <property name="NeedsKey" type="bool" value="true"/>
     <property name="TeleportTo" type="file" value="Castle_Room_Storage.tmx"/>
    </properties>
   </object>
