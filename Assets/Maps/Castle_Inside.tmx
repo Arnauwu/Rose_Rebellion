@@ -10229,18 +10229,6 @@
   <object id="1" name="Player" type="Player" x="6275" y="301">
    <point/>
   </object>
-  <object id="38" name="ShieldKnight" type="ShieldKnight" x="1500" y="944">
-   <point/>
-  </object>
-  <object id="39" name="Cucafera" type="Cucafera" x="2552" y="3756">
-   <point/>
-  </object>
-  <object id="40" name="SwordKnight" type="SwordKnight" x="2880" y="948">
-   <point/>
-  </object>
-  <object id="41" name="Ninfa" type="Ninfa" x="2688" y="2068">
-   <point/>
-  </object>
  </objectgroup>
  <objectgroup id="16" name="PlayerSpawns">
   <properties>
