@@ -46,7 +46,18 @@ bool Player::Start()
 
 	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	dashPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	morirPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	planearPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	recibirDamage = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	caminarPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+
 	pickItemFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	savePointFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	openDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	closedDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	orbFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	respawnFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
 	// Load Textures
 	if (!glideUnlocked)
@@ -131,6 +142,7 @@ bool Player::Update(float dt)
 	if (isdead && currentAnimPriority < 99)
 	{
 		currentAnimPriority = 99;
+		Engine::GetInstance().audio->PlayFx(morirPrincesa);
 
 		if (lookingRight)
 		{
@@ -200,6 +212,7 @@ void Player::Move() {
 	// Move Left
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false) 
 	{
+		Engine::GetInstance().audio->PlayFx(caminarPrincesa);
 		velocity.x = -speed;
 		lookingRight = false;
 		if (currentAnimPriority == 3)
@@ -219,6 +232,7 @@ void Player::Move() {
 	// Move Right
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
 	{
+		Engine::GetInstance().audio->PlayFx(caminarPrincesa);
 		velocity.x = speed;
 		lookingRight = true;
 		if (currentAnimPriority == 3)
@@ -293,7 +307,7 @@ void Player::Respawn()
 		// Use RespawnPosition
 		SetPosition(respawnPosition);
 		currentHealth = maxHealth;
-
+		Engine::GetInstance().audio->PlayFx(respawnFx);
 		isJumping = false;
 		isdead = false;
 		anims.SetCurrent("idle");
@@ -316,7 +330,7 @@ void Player::RespawnFromVoid() {
 	isJumping = false;	
 	secondJumpUsed = false;
 	anims.SetCurrent("idle");
-
+	Engine::GetInstance().audio->PlayFx(respawnFx);
 	LOG("Player reset to last safe position: %.2f, %.2f", respawnPosition.getX(), respawnPosition.getY());
 }
 
@@ -478,6 +492,7 @@ void Player::Glide() // Gliding
 	{
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
+			Engine::GetInstance().audio->PlayFx(planearPrincesa);
 			isGliding = true;
 			if (lookingRight)
 			{
@@ -512,7 +527,7 @@ void Player::Dash()
 		{
 			velocity.x = -dashForce;
 		}
-
+		Engine::GetInstance().audio->PlayFx(dashPrincesa);
 		isDashing = true;
 		dashTimer.Start();
 	}
@@ -554,7 +569,7 @@ void Player::Interact()
 					// Si necesita
 					if (keyCount > 0)
 					{
-						Engine::GetInstance().audio->PlayFx(pickItemFx);
+						Engine::GetInstance().audio->PlayFx(openDoor);
 						//Restar una unidad cuando se usa una llave
 						keyCount--;
 						LOG("Has usado una llave. Te quedan: %d ", keyCount);
@@ -568,13 +583,13 @@ void Player::Interact()
 					}
 					else
 					{
-						Engine::GetInstance().audio->PlayFx(pickItemFx);
+						Engine::GetInstance().audio->PlayFx(closedDoor);
 						LOG("Necesitas una llave para abrir, busca una ");
 					}
 				}
 				else
 				{
-					Engine::GetInstance().audio->PlayFx(pickItemFx);
+					
 					// Si no
 					LOG("Esta puerta no necesita llave ");
 					Engine::GetInstance().sceneManager->setNewMap = true;
@@ -906,21 +921,21 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			{
 				currentHealth = maxHealth;
 			}
-			Engine::GetInstance().audio->PlayFx(pickItemFx);
+			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
-		Engine::GetInstance().audio->PlayFx(pickItemFx);
+		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy(); 
 		break;
 	case ColliderType::SAVEPOINT:
 	{
 		LOG("Collision SavePoint");
 		SavePoint* sp = (SavePoint*)physB->listener;
-		Engine::GetInstance().audio->PlayFx(pickItemFx); //fx
+		Engine::GetInstance().audio->PlayFx(savePointFx); //fx
 		sp->Activate();
 
 		int spX, spY;
@@ -930,12 +945,12 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}  
 
 	case ColliderType::ENEMY:
-		Engine::GetInstance().audio->PlayFx(pickItemFx);
+		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(10); // Contact Damage
 		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
-		Engine::GetInstance().audio->PlayFx(pickItemFx);
+		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
 			break;

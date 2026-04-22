@@ -36,5 +36,8 @@ public:
 	bool isRolling = false;
 	Timer startAttack;
 
-	int deathSoundId;
+	int morirCucafera;
+	int rodarCucafera;
+	int chocarCucafera;
+	int caminarCucafera;
 };

@@ -11,6 +11,7 @@ MenuScene::~MenuScene() {}
 bool MenuScene::Start() {
 
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav");
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
 	if (menuBackground == nullptr) {
 		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
@@ -83,6 +84,7 @@ bool MenuScene::Update(float dt) {
 }
 
 bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
+	Engine::GetInstance().audio->PlayFx(uiClick);
     auto sceneManager = Engine::GetInstance().sceneManager;
 
     switch (uiElement->id)

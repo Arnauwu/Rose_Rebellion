@@ -28,14 +28,14 @@ bool HomingProjectile::Start()
     //Enemigo volador sprite
 
     std::unordered_map<int, std::string> aliases = {
-        {0, "idle"}, {3, "fly"}, {13, "attack"},{26, "attack"}, {39, "dead"},{39, "dead"}, { 52, "bullet" }
+        {0, "bullet"}
     };
-    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.tsx", aliases);
+    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.tsx", aliases);
     anims.SetCurrent("bullet");
 
 
     // Textura temporal para pruebas (testear)
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.png");
 
    //Fisica
     int radius = 6; // El área de impacto de las balas es más pequeña, lo que da a los jugadores más margen para esquivarlas.

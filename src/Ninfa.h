@@ -45,4 +45,8 @@ public:
 	Timer stateTimer;
 	float windupDurationMs=0.0f;
 	float cooldownDurationMs=0.0f;
+
+	int volarNinfa;
+	int atacarNinfa;
+	int morirNinfa;
 };

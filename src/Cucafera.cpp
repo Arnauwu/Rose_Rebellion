@@ -27,7 +27,10 @@ bool Cucafera::Awake() {
 
 bool Cucafera::Start()
 {
-	deathSoundId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	morirCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	rodarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	chocarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	caminarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
@@ -95,7 +98,7 @@ bool Cucafera::Update(float dt)
 	
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
-		Engine::GetInstance().audio->PlayFx(deathSoundId);
+		Engine::GetInstance().audio->PlayFx(morirCucafera);
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
 		anims.GetAnim("dead")->SetLoop(false);
@@ -149,6 +152,7 @@ void Cucafera::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isRolling == false && isKnockedback == false)
 	{
+		Engine::GetInstance().audio->PlayFx(caminarCucafera);
 		anims.SetCurrent("walk"); // TO DO: CHANGE TO Idle/ or make it WALK
 		velocity.x = 0;
 		return;
@@ -265,6 +269,7 @@ void Cucafera::RollAttack()
 {
 	if (isRolling == false && isKnockedback == false)
 	{
+		Engine::GetInstance().audio->PlayFx(rodarCucafera);
 		isRolling = true;
 		anims.SetCurrent("startSpin");
 		startAttack.Start();
