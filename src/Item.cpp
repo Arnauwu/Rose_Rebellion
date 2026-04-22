@@ -8,7 +8,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
-
+#include  "Map.h"
 Item::Item() : Entity(EntityType::ITEM)
 {
 	name = "item";
@@ -67,4 +67,28 @@ bool Item::Destroy()
 	active = false;
 	pendingToDelete = true;
 	return true;
+}
+
+bool Item::CheckIfCollected() {
+	// ??????ID???: "Castle_Inside.tmx_Key_120_240"
+	std::string currentMap = Engine::GetInstance().map->mapFileName;
+	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)position.getX()) + "_" + std::to_string((int)position.getY());
+
+	// ????ID???????????
+	if (Engine::GetInstance().sceneManager->collectedItems.count(uniqueID) > 0) {
+		// ???????????????? true
+		this->Destroy();
+		return true;
+	}
+	return false; // ??????? false
+}
+
+void Item::SetCollected() {
+	if (!isPicked) {
+		isPicked = true;
+		// ??????ID?????"???"????
+		Engine::GetInstance().sceneManager->collectedItems.insert(uniqueID);
+		// ????????
+		this->Destroy();
+	}
 }

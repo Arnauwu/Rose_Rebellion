@@ -6,7 +6,8 @@
 #include "UICheckBox.h"
 #include "UISlider.h"
 #include "SceneBase.h"
-
+#include <set>
+#include <string>
 
 enum class SceneID
 {
@@ -48,6 +49,8 @@ public:
     bool setNewMap = false;
     bool isGamePaused = false;
 
+    std::set<std::string> collectedItems;
+    std::set<std::string> openedDoors;
 private:
     // The currently active scene object
     SceneBase* currentScene = nullptr;

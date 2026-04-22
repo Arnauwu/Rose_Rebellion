@@ -16,6 +16,7 @@ bool Manta::Awake() {
 }
 
 bool Manta::Start() {
+	if (CheckIfCollected()) return true;
 	//Textura
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Manta/obj_capa_game.png");
 
@@ -53,7 +54,7 @@ void Manta::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		Player* player = (Player*)physB->listener;
 		player->UnlockCape();
-
+		SetCollected();
 		isPicked = false;
 	}
 }

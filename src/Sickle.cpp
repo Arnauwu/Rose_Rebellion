@@ -16,7 +16,7 @@ bool Sickle::Awake() {
 }
 
 bool Sickle::Start() {
-   
+    if (CheckIfCollected()) return true;
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Sickle/Sickle.png");
 
    
@@ -49,6 +49,7 @@ void Sickle::OnCollision(PhysBody* physA, PhysBody* physB) {
     if (physB->ctype == ColliderType::PLAYER) {
         Player* player = (Player*)physB->listener;
         player->UnlockSickle();
+        SetCollected();
         isPicked = true;
     }
 }

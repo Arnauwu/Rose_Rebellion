@@ -19,6 +19,7 @@ bool Keys::Awake()
 
 bool Keys::Start()
 {
+    if (CheckIfCollected()) return true;
    //Textura
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/obj_llave_castillo_game.png");
 
@@ -55,5 +56,7 @@ bool Keys::CleanUp()
 
 void Keys::OnCollision(PhysBody* physA, PhysBody* physB)
 {
-    // Aquí podemos añadir un efecto de sonido al recoger la llave.
+    if (physB->ctype == ColliderType::PLAYER) {
+        SetCollected();
+    }
 }

@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 
+
 SkillPointOrb::SkillPointOrb() : Entity(EntityType::ITEM)
 {
 	name = "SkillPointOrb";
@@ -22,6 +23,7 @@ bool SkillPointOrb::Awake() {
 
 bool SkillPointOrb::Start() {
 
+	
 	//initilize textures
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/SkillPointOrb/SkillPointOrb.png");
 
