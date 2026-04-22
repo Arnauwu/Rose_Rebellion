@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="38">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="42">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -10226,7 +10226,19 @@
   <object id="20" x="5376" y="512" width="512" height="128"/>
  </objectgroup>
  <objectgroup id="3" name="EntitiesSpawnPoints">
-  <object id="1" name="Player" type="Player" x="4875" y="3829">
+  <object id="1" name="Player" type="Player" x="6275" y="301">
+   <point/>
+  </object>
+  <object id="38" name="ShieldKnight" type="ShieldKnight" x="1500" y="944">
+   <point/>
+  </object>
+  <object id="39" name="Cucafera" type="Cucafera" x="2552" y="3756">
+   <point/>
+  </object>
+  <object id="40" name="SwordKnight" type="SwordKnight" x="2880" y="948">
+   <point/>
+  </object>
+  <object id="41" name="Ninfa" type="Ninfa" x="2688" y="2068">
    <point/>
   </object>
  </objectgroup>
@@ -10234,31 +10246,31 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="32" name="PlayerSpawns" x="736" y="876">
+  <object id="32" name="PlayerSpawns" x="454" y="984">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Room_Princess.tmx"/>
    </properties>
    <point/>
   </object>
-  <object id="33" name="PlayerSpawns" x="4008" y="835">
+  <object id="33" name="PlayerSpawns" x="3648" y="995">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Room_Storage.tmx"/>
    </properties>
    <point/>
   </object>
-  <object id="34" name="PlayerSpawns" x="5546" y="340">
+  <object id="34" name="PlayerSpawns" x="5662" y="472">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Balcony.tmx"/>
    </properties>
    <point/>
   </object>
-  <object id="36" name="PlayerSpawns" x="2176" y="2424">
+  <object id="36" name="PlayerSpawns" x="1852" y="2516">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Room_Kitchen.tmx"/>
    </properties>
    <point/>
   </object>
-  <object id="37" name="PlayerSpawns" x="4878" y="3824">
+  <object id="37" name="PlayerSpawns" x="5338" y="3928">
    <properties>
     <property name="FromRoom" type="file" value="Castle.tmx"/>
    </properties>

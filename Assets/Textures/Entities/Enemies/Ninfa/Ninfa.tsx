@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.1" name="Ninfa" tilewidth="256" tileheight="256" tilecount="104" columns="13">
+<tileset version="1.10" tiledversion="1.11.2" name="Ninfa" tilewidth="256" tileheight="256" tilecount="104" columns="13">
  <image source="Ninfa.png" width="3328" height="2048"/>
  <tile id="0">
   <animation>
@@ -61,6 +61,13 @@
    <frame tileid="46" duration="150"/>
    <frame tileid="47" duration="150"/>
    <frame tileid="48" duration="150"/>
+  </animation>
+ </tile>
+ <tile id="52">
+  <animation>
+   <frame tileid="53" duration="200"/>
+   <frame tileid="54" duration="200"/>
+   <frame tileid="55" duration="200"/>
   </animation>
  </tile>
 </tileset>
