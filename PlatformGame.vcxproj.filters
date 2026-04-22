@@ -107,6 +107,9 @@
     <Filter Include="Source Files\Game\Entity\Items\Manta">
       <UniqueIdentifier>{705fa7c2-95be-4353-84c6-7118dcfbe85a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Items\Sickle">
+      <UniqueIdentifier>{22e68f4e-c50a-4419-a8d9-e8f508f3416e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -243,6 +246,9 @@
     <ClCompile Include="src\Manta.cpp">
       <Filter>Source Files\Game\Entity\Items\Manta</Filter>
     </ClCompile>
+    <ClCompile Include="src\Sickle.cpp">
+      <Filter>Source Files\Game\Entity\Items\Sickle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -373,6 +379,9 @@
     </ClInclude>
     <ClInclude Include="src\Manta.h">
       <Filter>Source Files\Game\Entity\Items\Manta</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sickle.h">
+      <Filter>Source Files\Game\Entity\Items\Sickle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

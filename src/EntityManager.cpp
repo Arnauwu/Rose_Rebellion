@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "Keys.h"
 #include "Manta.h"
+#include "Sickle.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
 
@@ -115,6 +116,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::MANTA:
 		entity = std::make_shared<Manta>();
+		break;
+	case EntityType::SICKLE:
+		entity = std::make_shared<Sickle>();
 		break;
 	default:
 		break;

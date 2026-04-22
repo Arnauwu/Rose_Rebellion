@@ -10,6 +10,7 @@ MenuScene::~MenuScene() {}
 
 bool MenuScene::Start() {
 
+	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav");
 
 	if (menuBackground == nullptr) {
 		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");

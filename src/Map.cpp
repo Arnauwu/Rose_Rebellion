@@ -1,4 +1,3 @@
-
 #include "Engine.h"
 #include "Render.h"
 #include "Textures.h"
@@ -24,6 +23,7 @@
 #include "SkillPointOrb.h"
 #include "Keys.h"
 #include "Manta.h"
+#include "Sickle.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -288,6 +288,20 @@ bool Map::CleanUp()
 		objectGroup->objects.clear();
 	}
 	mapData.objectGroups.clear();
+
+	// Clean up spawn points
+	for (const auto& spawnPoint : mapData.spawnPoints)
+	{
+		delete spawnPoint;
+	}
+	mapData.spawnPoints.clear();
+
+	// Clean up doors
+	for (const auto& door : mapData.doors)
+	{
+		delete door;
+	}
+	mapData.doors.clear();
 
 	// Clean up collider list
 	for (const auto& collider : colliderList)
@@ -820,6 +834,12 @@ void Map::SpawnEntities()
 						manta->position = Vector2D(x, y);
 					}
 				}
+				else if (entityType == std::string("Sickle")) {
+					std::shared_ptr<Sickle> sickle = std::dynamic_pointer_cast<Sickle>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SICKLE));
+					if (sickle != nullptr) {
+						sickle->position = Vector2D(x, y);
+					}
+				}
             }
         }
 
@@ -837,9 +857,13 @@ void Map::SpawnEntities()
 				LoadProperties(objectNode, a);
 
 				PlayerSpawnPoint* newSpawn = new PlayerSpawnPoint;
-				newSpawn->fromRoom = a.GetProperty("FromRoom")->value2;
+				newSpawn->fromRoom = a.GetProperty("FromRoom") ? a.GetProperty("FromRoom")->value2 : "UNKNOWN";
 				newSpawn->position.setX(x);
 				newSpawn->position.setY(y);
+				
+				LOG("Loaded spawn point - FromRoom: '%s', Position: (%.0f, %.0f)", 
+					newSpawn->fromRoom.c_str(), x, y);
+				
 				mapData.spawnPoints.push_back(newSpawn);
 			}
 		}
@@ -877,19 +901,29 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 	{
 		if (spawnPoint->fromRoom == fromRoom)
 		{
+			LOG("Found spawn point for room '%s' at (%.0f, %.0f)", 
+				fromRoom.c_str(), spawnPoint->position.getX(), spawnPoint->position.getY());
 			return spawnPoint->position;
 		}
 	}
 
-	// Si no encuentra un spawn point específico, devuelve el primero encontrado
-	//if (!mapData.spawnPoints.empty())
-	//{
-	//	return mapData.spawnPoints.front()->position;
-	//}
+	// Si no encuentra el spawn point específico, usa el primero disponible
+	if (!mapData.spawnPoints.empty())
+	{
+		LOG("WARNING: Spawn point from room '%s' not found. Using first available spawn point.", fromRoom.c_str());
+		return mapData.spawnPoints.front()->position;
+	}
 
-	// Fallback: posición por defecto
+	// Fallback: posición por defecto (solo si no hay spawn points en absoluto)
+	LOG("ERROR: No spawn points found in map for room '%s'. Using default position (200, 200)", fromRoom.c_str());
 	return Vector2D(200, 200);
 }
+
+
+
+
+
+
 
 
 

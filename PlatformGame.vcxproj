@@ -175,6 +175,7 @@
     <ClCompile Include="src\SavePoint.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\ShieldKnight.cpp" />
+    <ClCompile Include="src\Sickle.cpp" />
     <ClCompile Include="src\SkillPointOrb.cpp" />
     <ClCompile Include="src\SpiderEnemy.cpp" />
     <ClCompile Include="src\SwordKnight.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="src\SceneBase.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShieldKnight.h" />
+    <ClInclude Include="src\Sickle.h" />
     <ClInclude Include="src\SkillPointOrb.h" />
     <ClInclude Include="src\SpiderEnemy.h" />
     <ClInclude Include="src\SwordKnight.h" />

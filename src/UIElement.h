@@ -28,7 +28,7 @@ public:
 
 	UIElement(UIElementType type, int id) : type(type), id(id), state(UIElementState::NORMAL) {}
 
-	// DECLARACIÓN: Solo definimos qué variables recibe, la lógica va al .cpp
+	// DECLARACIÓN: Solo definimos qu?variables recibe, la lógica va al .cpp
 	UIElement(UIElementType type, int id, float anchorX, float anchorY, float wPercent, float hPercent, const char* text = "");
 
 	// DECLARACIONES:
@@ -41,6 +41,10 @@ public:
 	{
 		texture = tex;
 		section = { 0, 0, 0, 0 };
+	}
+
+	void SetBgTexture(SDL_Texture* tex) {
+		bgTexture = tex;
 	}
 
 	void SetPivot(float pX, float pY) {
@@ -84,6 +88,7 @@ public:
 
 	SDL_Texture* texture;
 	SDL_Rect section;
+	SDL_Texture* bgTexture = nullptr;
 
 	Module* observer = nullptr;
 	bool pendingToDelete = false;
