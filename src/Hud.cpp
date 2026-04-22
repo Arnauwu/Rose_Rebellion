@@ -20,7 +20,7 @@ bool Hud::Awake() { return true; }
 
 bool Hud::Start() {
     LOG("Loading HUD");
-    lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/Vides_V1.png");
+    lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Vides_V1.png");
 
 
     sectionWidth = 211;

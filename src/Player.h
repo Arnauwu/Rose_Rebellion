@@ -195,6 +195,8 @@ private:
 	int respawnFx;
 
 	bool wasWalking = false;
+	float stepTimer = 0.0f;
+	float timeBetweenSteps = 0.35f;
 
 
 	PhysBody* attackCollider = nullptr;

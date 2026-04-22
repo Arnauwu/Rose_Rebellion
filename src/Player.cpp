@@ -44,6 +44,8 @@ bool Player::Start()
 {
 	// Initialize Player parameters
 
+	Engine::GetInstance().sceneManager->SetPlayer(this);
+
 	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
 	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
 	dashPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_dash.wav");
@@ -267,20 +269,30 @@ void Player::Move() {
 			currentAnimPriority = 0;
 		}
 	}
+	bool isWalkingConditions = (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead);
 
-	if (!onGround || isDashing || isAttacking || isdead) {
-		isMovingThisFrame = false;
+	if (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead)
+	{
+		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
+
+		if (stepTimer >= timeBetweenSteps)
+		{
+			// OJO: Le pasamos 0 repeticiones para que sea súper ligero para la memoria
+			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
+			stepTimer = 0.0f;
+		}
 	}
+	else
+	{
+		// Forzamos el contador para que al aterrizar el primer paso suene de inmediato
+		stepTimer = timeBetweenSteps;
+		if (wasWalking)
+		{
+			Engine::GetInstance().audio->StopFx(caminarPrincesa);
+		}
 
-	if (isMovingThisFrame && !wasWalking) {
-		Engine::GetInstance().audio->PlayFx(caminarPrincesa, 99); 
 	}
-
-	else if (!isMovingThisFrame && wasWalking) {
-		Engine::GetInstance().audio->StopFx(caminarPrincesa);
-	}
-
-	wasWalking = isMovingThisFrame;
+	wasWalking = isWalkingConditions;
 }
 
 void Player::Knockback()
