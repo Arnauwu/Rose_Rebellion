@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="15" nextobjectid="26">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="16" nextobjectid="29">
  <tileset firstgid="1" name="Atlas_Exterior_Castillo" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Exterior/Atlas_Exterior_Castillo.png" width="1024" height="1024"/>
  </tileset>
@@ -3822,13 +3822,25 @@
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="7" x="0" y="1280" width="9216" height="384"/>
+  <object id="7" x="-204" y="1280" width="9420" height="384"/>
  </objectgroup>
  <objectgroup id="11" name="Ceiling">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
+ </objectgroup>
+ <objectgroup id="15" name="Path">
+  <properties>
+   <property name="Path" type="bool" value="true"/>
+   <property name="Sensor" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="26" x="-410" y="966" width="200" height="312">
+   <properties>
+    <property name="TeleportTo" type="file" value="Forest_01.tmx"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="12" name="Wall">
   <properties>
@@ -3859,7 +3871,13 @@
   </properties>
   <object id="4" name="PlayerSpawns" x="7184" y="344">
    <properties>
-    <property name="FromRoom" type="file" value="Balcony.tmx"/>
+    <property name="FromRoom" type="file" value="Castle_Balcony.tmx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="28" name="PlayerSpawns" x="128" y="1280">
+   <properties>
+    <property name="FromRoom" type="file" value="Forest_01.tmx"/>
    </properties>
    <point/>
   </object>
