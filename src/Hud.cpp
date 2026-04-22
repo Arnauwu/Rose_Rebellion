@@ -57,7 +57,7 @@ bool Hud::Update(float dt) {
     }
 
     if (notificationTimer > 0.0f) {
-        notificationTimer -= dt / 1000.0f; // 将毫秒转换为秒
+        notificationTimer -= dt / 1000.0f; 
         if (notificationTimer < 0.0f) {
             notificationTimer = 0.0f;
         }
@@ -147,46 +147,37 @@ void Hud::ShowNotification(const std::string& message) {
 void Hud::DrawNotification() {
     if (notificationTimer > 0.0f && !notificationText.empty()) {
         Uint8 alphaText = 255;
-        Uint8 alphaBg = 160; // 背景框的初始透明度（0-255，越小越透明）
+        Uint8 alphaBg = 160;
 
-        // 渐变消失逻辑：在最后 1 秒内逐渐变透明
+        // Desapareciendo lentamente
         if (notificationTimer < 1.0f) {
             alphaText = (Uint8)(255.0f * notificationTimer);
             alphaBg = (Uint8)(160.0f * notificationTimer);
         }
 
-        Player* player = Engine::GetInstance().sceneManager->GetPlayer();
-        if (player == nullptr || player->pbody == nullptr) return;
+        // Tamaño de pantalla
+        int screenW = Engine::GetInstance().render->camera.w;
+        int screenH = Engine::GetInstance().render->camera.h;
 
-        // 2. 获取玩家的世界坐标 (中心点)
-        int px, py;
-        player->pbody->GetPosition(px,py);
-
-        // 3. 结合摄像机偏移量，将世界坐标转换为屏幕显示的坐标
-        int camX = Engine::GetInstance().render->camera.x;
-        int camY = Engine::GetInstance().render->camera.y;
-
-        int screenX = px + camX;
-        int screenY = py + camY;
-
-        // 4. 定义提示框的大小 (因为跟随人物，可以稍微调小一点)
+        // Tamaño del cuadro de solicitud
         int rectW = 600;
         int rectH = 70;
 
-        // 5. 将背景框的中心点对齐玩家，并往上移动 (例如人物上方 120 像素)
-        // 如果你想让它更靠下，把 - 120 改成 - 80 或更小
+        // Ubicación del aviso
+        int posY = screenH / 8;
+
         SDL_Rect bgRect = {
-            screenX - rectW / 2,
-            screenY -800 ,
+            screenW / 2 - rectW / 2,
+            posY+60,
             rectW,
             rectH
         };
 
-        // 6. 绘制背景框
+        // Draw
         Engine::GetInstance().render->DrawRectangle(bgRect, 220, 220, 220, alphaBg, true, false);
 
-        // 7. 绘制文字
-        SDL_Color color = { 0, 0, 0, alphaText }; // 黑色文字
+        // Draw txto
+        SDL_Color color = { 0, 0, 0, alphaText }; // color negro
         SDL_Rect textBounds = { bgRect.x + 10, bgRect.y + 5, bgRect.w - 20, bgRect.h - 10 };
 
         Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color);
