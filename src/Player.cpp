@@ -424,18 +424,18 @@ void Player::Attack(float dt)
 			{
 				// first attack
 				damage = 10;
-				currentAttackWidth = 20;
-				currentAttackHeight = 32;
-				currentAttackOffsetX = 32;
+				currentAttackWidth = 60;
+				currentAttackHeight = 64;
+				currentAttackOffsetX = texW / 2 + currentAttackWidth / 2;
 				LOG("Attack 1 started (Normal)");
 			}
 			else
 			{
 				// second attack
 				damage = 15;
-				currentAttackWidth = 45;
-				currentAttackHeight = 40;
-				currentAttackOffsetX = 45;
+				currentAttackWidth = 120;
+				currentAttackHeight = 90;
+				currentAttackOffsetX = texW / 2 + currentAttackWidth / 2;
 				LOG("Attack 2 started (Heavy)");
 			}
 
@@ -474,7 +474,7 @@ void Player::Attack(float dt)
 
 		// Update the collider's position so that it follows the player whilst attacking
 		if (attackCollider != nullptr) {
-			int attackOffsetX = lookingRight ? 32 : -32;
+			int attackOffsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
 			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
 		}
 

@@ -20,6 +20,8 @@
 #include "ShieldKnight.h"
 #include "Ninfa.h"
 
+#include "KnightBoss.h"
+
 EntityManager::EntityManager() : Module()
 {
 	name = "entitymanager";
@@ -111,6 +113,11 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SHIELD_KNIGHT:
 		entity = std::make_shared<ShieldKnight>();
 		break;
+
+	case EntityType::KNIGHT_BOSS:
+		entity = std::make_shared<KnightBoss>();
+		break;
+
 	case EntityType::KEY:
 		entity = std::make_shared<Keys>();
 		break;

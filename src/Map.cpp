@@ -17,6 +17,8 @@
 #include "ShieldKnight.h"
 #include "Ninfa.h"
 
+#include "KnightBoss.h"
+
 #include "SavePoint.h"
 #include "Item.h"
 #include "HealthOrb.h"
@@ -792,8 +794,9 @@ void Map::SpawnEntities()
                 float x = objectNode.attribute("x").as_float();
                 float y = objectNode.attribute("y").as_float();
 
+				//Player
                 if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
-               {
+                {
 					Player* player = Engine::GetInstance().sceneManager->GetPlayer();
 
 					if (player == NULL) 
@@ -810,16 +813,9 @@ void Map::SpawnEntities()
 					}
 					Engine::GetInstance().sceneManager->SetPlayer(player);
 				}
-				else if (entityType == std::string("HealthOrb"))
-				{
-					std::shared_ptr<HealthOrb> healthOrb = std::dynamic_pointer_cast<HealthOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB));
-					healthOrb->position = Vector2D(x, y);
-				}
-				else if (entityType == std::string("SkillPointOrb"))
-				{
-					std::shared_ptr<SkillPointOrb> skillPointOrb = std::dynamic_pointer_cast<SkillPointOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SKILL_POINT_ORB));
-					skillPointOrb->position = Vector2D(x, y);
-				}
+
+
+				//Enemies
                 else if (entityType == std::string("Spider"))
                 {
                     std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
@@ -845,6 +841,15 @@ void Map::SpawnEntities()
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
 					shieldKnight->position = Vector2D(x, y);
 				}
+
+				//Bosses
+				else if (entityType == std::string("KnightBoss"))
+				{
+					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
+					knightBoss->position = Vector2D(x, y);
+				}
+
+				//Items
 				else if (entityType == std::string("Key"))
 				{
 					std::shared_ptr<Keys> key = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
@@ -863,6 +868,16 @@ void Map::SpawnEntities()
 					if (sickle != nullptr) {
 						sickle->position = Vector2D(x, y);
 					}
+				}
+				else if (entityType == std::string("HealthOrb"))
+				{
+					std::shared_ptr<HealthOrb> healthOrb = std::dynamic_pointer_cast<HealthOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB));
+					healthOrb->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("SkillPointOrb"))
+				{
+					std::shared_ptr<SkillPointOrb> skillPointOrb = std::dynamic_pointer_cast<SkillPointOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SKILL_POINT_ORB));
+					skillPointOrb->position = Vector2D(x, y);
 				}
             }
         }
