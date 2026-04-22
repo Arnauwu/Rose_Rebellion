@@ -17,6 +17,8 @@ using namespace std;
 
 int Player::keyCount = 0;
 bool Player::glideUnlocked = false;
+bool Player::hasSickle = false;
+
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -71,8 +73,8 @@ bool Player::Start()
 
 	// Physics
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
-	texW = 32;
-	texH = 32;
+	texW = 128;
+	texH = 128;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
@@ -632,7 +634,7 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y-140, &animFrame, sdlFlip, 1.25f); // -20 0.25f
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h/3, &animFrame, sdlFlip, 1.25f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -1086,6 +1088,7 @@ void Player::DevTools(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_9) == KEY_DOWN)
 	{
 		UnlockCape();
+		hasSickle = true;
 	}
 }
 

@@ -38,7 +38,7 @@ bool Ninfa::Start()
     //Enemigo volador sprite
     
     std::unordered_map<int, std::string> aliases = {
-        {0, "idle"}, {3, "fly"}, {13, "attack"},{26, "attack"}, {39, "dead"}
+        {0, "idle"}, {3, "fly"}, {13, "attack"},{26, "attack"}, {39, "dead"},{39, "dead"}, { 52, "bullet" }
     };
     anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.tsx", aliases);
     anims.SetCurrent("idle");
@@ -48,8 +48,8 @@ bool Ninfa::Start()
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
    
    // Physic Body
-    texW = 32; 
-    texH = 32;
+    texW = 64; 
+    texH = 64;
     pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
     pbody->listener = this;
     pbody->ctype = ColliderType::ENEMY;
@@ -318,7 +318,7 @@ void Ninfa::Draw(float dt)
         pathfinding->DrawPath();
     }
     // Pruebas (Testing)
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 0.5);
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 0.75);
 
 }
 

@@ -40,8 +40,8 @@ bool Cucafera::Start()
 
 
 	//Add physics to the enemy - initialize physics body
-	texW = 32;
-	texH = 32;
+	texW = 64;
+	texH = 64;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
@@ -258,7 +258,7 @@ void Cucafera::Draw(float dt)
 	}
 
 	//Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x - texW / 2, y - animFrame.h / 6, &animFrame, sdlFlip, 0.5);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
 }
 
 void Cucafera::RollAttack()

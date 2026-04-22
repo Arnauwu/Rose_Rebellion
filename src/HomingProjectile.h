@@ -33,4 +33,6 @@ public:
 
     Timer lifeTimer;
     float lifeTimeMS;
+private:
+    AnimationSet anims;
 };

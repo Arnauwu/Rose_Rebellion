@@ -2394,7 +2394,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="8" name="PlayerSpawns" x="329.334" y="1080.33">
+  <object id="8" name="PlayerSpawns" x="320.734" y="1206.47">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Inside.tmx"/>
    </properties>

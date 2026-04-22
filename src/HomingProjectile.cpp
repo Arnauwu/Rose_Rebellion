@@ -25,8 +25,17 @@ HomingProjectile::~HomingProjectile() {}
 
 bool HomingProjectile::Start()
 {
-   //Textura
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa_P.png");
+    //Enemigo volador sprite
+
+    std::unordered_map<int, std::string> aliases = {
+        {0, "bullet"}
+    };
+    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.tsx", aliases);
+    anims.SetCurrent("bullet");
+
+
+    // Textura temporal para pruebas (testear)
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.png");
 
    //Fisica
     int radius = 6; // El área de impacto de las balas es más pequeña, lo que da a los jugadores más margen para esquivarlas.
@@ -99,15 +108,25 @@ void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB)
 
 void HomingProjectile::Draw(float dt)
 {
+    if (Engine::GetInstance().sceneManager->isGamePaused == false) {
+
+        anims.Update(dt);
+    }
+    const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
     int x, y;
     pbody->GetPosition(x, y);
+    position.setX((float)x);
+    position.setY((float)y);
+
+    // Invierte (voltea) la textura del enemigo según su dirección
+    SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+
 
     // Girar la textura para que apunte hacia la dirección de movimiento
     double angle = std::atan2(currentVelocity.getY(), currentVelocity.getX()) * (180.0 / PI);
 
-    SDL_Rect sect = { 0,0,texture->w, texture->h };
-
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &sect, SDL_FLIP_NONE, 0.1, angle, texture->w/2,texture->h/2);
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1, angle, animFrame.w/2, animFrame.h/2);
 }
 
 Vector2D HomingProjectile::GetPosition()
