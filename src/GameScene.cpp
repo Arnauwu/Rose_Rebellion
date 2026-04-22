@@ -19,16 +19,6 @@ GameScene::~GameScene() {
 void GameScene::LoadMap(std::string mapFile)
 {
 
-	if (mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
-	}
-	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
-	}
-	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
-	}
-
 	//Load the map. 
 	if (mapFile == "")
 	{
@@ -39,6 +29,16 @@ void GameScene::LoadMap(std::string mapFile)
 	if (mapFile == "")
 	{
 		return;
+	}
+
+	if (mapFile == "Castle_Inside.tmx") {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
+	}
+	else if (mapFile == "Nexo.tmx") {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
+	}
+	else if (mapFile.find("Forest_01") != std::string::npos) {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
