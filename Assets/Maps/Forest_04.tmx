@@ -1897,7 +1897,7 @@
    <tile gid="37"/>
   </data>
  </layer>
- <layer id="10" name="GroundNavLayer" width="103" height="18">
+ <layer id="10" name="GroundNavLayer" width="103" height="18" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -3759,7 +3759,7 @@
    <tile gid="197"/>
   </data>
  </layer>
- <layer id="19" name="AirNavLayer" width="103" height="18">
+ <layer id="19" name="AirNavLayer" width="103" height="18" visible="0">
   <properties>
    <property name="Air" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -5722,7 +5722,7 @@
   </properties>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
-  <object id="302" name="Player" x="8576" y="1456">
+  <object id="302" name="Player" type="Player" x="8576" y="1456">
    <point/>
   </object>
   <object id="365" name="Ninfa" type="Ninfa" x="11264" y="896">
@@ -5743,7 +5743,7 @@
   <object id="371" name="KnightBoss" type="KnightBoss" x="3072" y="1920">
    <point/>
   </object>
-  <object id="372" name="Dash" type="Dash " x="640" y="1536">
+  <object id="372" name="Dash" type="Dash" x="640" y="1536">
    <point/>
   </object>
  </objectgroup>
