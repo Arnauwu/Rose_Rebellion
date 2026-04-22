@@ -54,7 +54,7 @@ void Pathfinding::DrawPath() {
     for (const auto& pathTile : visited) {
         Vector2D pathTileWorld = Engine::GetInstance().map.get()->MapToWorld((int)pathTile.getX(), (int)pathTile.getY());
         // we use the second tile in the tileset to draw the visited. That's why we use rect x=33
-        SDL_Rect rect = { 33,1,map->GetTileWidth(),map->GetTileHeight() };
+        SDL_Rect rect = { 128,0,map->GetTileWidth(),map->GetTileHeight() };
         Engine::GetInstance().render->DrawTexture(pathTex, (int)pathTileWorld.getX(), (int)pathTileWorld.getY(), &rect);
     }
 
@@ -71,7 +71,7 @@ void Pathfinding::DrawPath() {
         //Get the position of the frontier tile in the world
         Vector2D pos = Engine::GetInstance().map.get()->MapToWorld(frontierTile.getX(), frontierTile.getY());
         //Draw the frontier tile
-        SDL_Rect rect = { 0,0,32,32 };
+        SDL_Rect rect = { 0,0,128,128 };
         Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
         //Remove the front element from the queue
         frontierAStarCopy.pop();

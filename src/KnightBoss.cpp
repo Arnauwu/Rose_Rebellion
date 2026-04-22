@@ -112,7 +112,7 @@ void KnightBoss::PerformPathfinding()
 	Vector2D pos = GetPosition();
 	Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
 
-	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
+	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 128;
 	int iter = 0;
 
 	while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)

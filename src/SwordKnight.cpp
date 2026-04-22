@@ -147,7 +147,7 @@ void SwordKnight::PerformPathfinding()
 	//Get the position of the player
 	Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
 
-	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
+	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 128;
 	int iter = 0;
 
 	while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
@@ -304,15 +304,15 @@ void SwordKnight::Attack()
 		//CreateHitbox
 		float attackX = position.getX();
 		float attackY = position.getY();
-		int attackW = 75; int attackH = 30;
+		int attackW = 150; int attackH = 90;
 
 		if (lookingRight)
 		{
-			attackX -= texW / 2;
+			attackX += texW / 2;
 		}
 		else
 		{
-			attackX += texW / 2;
+			attackX -= texW / 2;
 		}
 
 		attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, attackW, attackH, bodyType::STATIC);
