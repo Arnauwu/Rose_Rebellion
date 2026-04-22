@@ -3797,13 +3797,13 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="132" name="Player" type="Player" x="7330" y="2042">
+  <object id="132" name="Player" type="Player" x="7308.79" y="1893.52">
    <properties>
     <property name="FromRoom" type="file" value="Forest_02.tmx"/>
    </properties>
    <point/>
   </object>
-  <object id="283" name="Player" type="Player" x="2152" y="2036">
+  <object id="283" name="Player" type="Player" x="2176.24" y="1899.64">
    <properties>
     <property name="FromRoom" type="file" value="Forest_02.tmx"/>
    </properties>

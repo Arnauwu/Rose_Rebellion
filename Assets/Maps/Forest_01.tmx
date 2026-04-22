@@ -3726,13 +3726,13 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="50" name="Player" type="Player" x="12655.4" y="1897.21">
+  <object id="50" name="Player" type="Player" x="12670.6" y="1772.97">
    <properties>
     <property name="FromRoom" type="file" value="Nexo.tmx"/>
    </properties>
    <point/>
   </object>
-  <object id="132" name="Player" type="Player" x="250" y="746">
+  <object id="132" name="Player" type="Player" x="250" y="626">
    <properties>
     <property name="FromRoom" type="file" value="Forest_02.tmx"/>
    </properties>
