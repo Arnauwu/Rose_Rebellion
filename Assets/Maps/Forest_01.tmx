@@ -3662,7 +3662,7 @@
   </properties>
   <object id="126" x="13184" y="1536" width="128" height="384">
    <properties>
-    <property name="TeleportTo" type="file" value="Castle.tmx"/>
+    <property name="TeleportTo" type="file" value="Nexo.tmx"/>
    </properties>
   </object>
   <object id="131" x="-512" y="384" width="128" height="384">
@@ -3728,7 +3728,7 @@
   </properties>
   <object id="50" name="Player" type="Player" x="12655.4" y="1897.21">
    <properties>
-    <property name="FromRoom" type="file" value="Castle.tmx"/>
+    <property name="FromRoom" type="file" value="Nexo.tmx"/>
    </properties>
    <point/>
   </object>
