@@ -110,6 +110,12 @@
     <Filter Include="Source Files\Game\Entity\Items\Sickle">
       <UniqueIdentifier>{22e68f4e-c50a-4419-a8d9-e8f508f3416e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Bosses">
+      <UniqueIdentifier>{7371f354-1e96-4b51-9cbb-019c10ada71a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Bosses\Knight">
+      <UniqueIdentifier>{07ccddc3-1cdd-4b8e-8164-c59a764de334}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -249,6 +255,9 @@
     <ClCompile Include="src\Sickle.cpp">
       <Filter>Source Files\Game\Entity\Items\Sickle</Filter>
     </ClCompile>
+    <ClCompile Include="src\KnightBoss.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\Knight</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -382,6 +391,9 @@
     </ClInclude>
     <ClInclude Include="src\Sickle.h">
       <Filter>Source Files\Game\Entity\Items\Sickle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KnightBoss.h">
+      <Filter>Source Files\Game\Entity\Bosses\Knight</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

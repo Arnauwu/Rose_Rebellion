@@ -22,6 +22,8 @@ enum class EntityType
 	NINFA,
 	ENEMY_PROJECTILE,
   
+	KNIGHT_BOSS,
+
 	SAVEPOINT,
 	UNKNOWN
 };

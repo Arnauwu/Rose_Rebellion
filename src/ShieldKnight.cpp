@@ -40,10 +40,6 @@ bool ShieldKnight::CleanUp()
 
 bool ShieldKnight::Start()
 {
-	morirEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	atacarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	caminarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-
 	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
@@ -52,7 +48,9 @@ bool ShieldKnight::Start()
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
 	//Load Audio
-
+	morirEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	atacarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	caminarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
 	//Add physics to the enemy - initialize physics body
 	texW = 256;
@@ -124,6 +122,11 @@ bool ShieldKnight::Update(float dt)
 		Engine::GetInstance().audio->PlayFx(morirEscudo);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
+	}
+
+	if (anims.GetAnim("dead")->HasFinishedOnce())
+	{
+		pendingToDelete = true;
 	}
 
 	Draw(dt);

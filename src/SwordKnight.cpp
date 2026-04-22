@@ -126,6 +126,11 @@ bool SwordKnight::Update(float dt)
 		pbody->ctype = ColliderType::UNKNOWN;
 	}
 
+	if (anims.GetAnim("dead")->HasFinishedOnce())
+	{
+		pendingToDelete = true;
+	}
+
 	Draw(dt);
 
 	return true;
