@@ -397,59 +397,129 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 
 void Player::Attack(float dt)
 {
+	//// 1. Start the attack 
+	//if (!isAttacking && hasSickle && glideUnlocked && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
+	//{
+	//	Engine::GetInstance().audio->PlayFx(attackFx);
+	//	isAttacking = true;
+	//	if (lookingRight)
+	//	{
+	//		anims.SetCurrent("attack_right");
+	//		anims.GetAnim("attack_right")->SetLoop(false);
+	//	}
+	//	else
+	//	{
+	//		anims.SetCurrent("attack_left");
+	//		anims.GetAnim("attack_left")->SetLoop(false);
+	//	}
+
+	//	currentAnimPriority = 4;
+
+	//	currentAttackTime = 0.0f;
+	//	timeSinceLastAttack = 0.0f;
+
+	//	if (comboStep == 0)
+	//	{
+	//		// first attack
+	//		damage = 10;
+	//		currentAttackWidth = 20;
+	//		currentAttackHeight = 32;
+	//		currentAttackOffsetX = 32;
+	//		LOG("Attack 1 started (Normal)");
+	//	}
+	//	else
+	//	{
+	//		// second attack
+	//		damage = 15;
+	//		currentAttackWidth = 45;
+	//		currentAttackHeight = 40;
+	//		currentAttackOffsetX = 45;
+	//		LOG("Attack 2 started (Heavy)");
+	//	}
+
+	//	// combo
+	//	comboStep = (comboStep + 1) % 2;
+
+	//	// calculate current attack
+	//	int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
+	//	int attackX = position.getX() + offsetX;
+	//	int attackY = position.getY();
+
+	//	// create collider attack
+	//	attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
+	//	attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+	//	attackCollider->listener = this;
+
+	//}
 	// 1. Start the attack 
-	if (!isAttacking && hasSickle && glideUnlocked && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
 	{
-		Engine::GetInstance().audio->PlayFx(attackFx);
-		isAttacking = true;
-		if (lookingRight)
+		// 检查玩家是否同时拥有镰刀和斗篷
+		if (hasSickle && glideUnlocked)
 		{
-			anims.SetCurrent("attack_right");
-			anims.GetAnim("attack_right")->SetLoop(false);
+			Engine::GetInstance().audio->PlayFx(attackFx);
+			isAttacking = true;
+			if (lookingRight)
+			{
+				anims.SetCurrent("attack_right");
+				anims.GetAnim("attack_right")->SetLoop(false);
+			}
+			else
+			{
+				anims.SetCurrent("attack_left");
+				anims.GetAnim("attack_left")->SetLoop(false);
+			}
+
+			currentAnimPriority = 4;
+
+			currentAttackTime = 0.0f;
+			timeSinceLastAttack = 0.0f;
+
+			if (comboStep == 0)
+			{
+				// first attack
+				damage = 10;
+				currentAttackWidth = 20;
+				currentAttackHeight = 32;
+				currentAttackOffsetX = 32;
+				LOG("Attack 1 started (Normal)");
+			}
+			else
+			{
+				// second attack
+				damage = 15;
+				currentAttackWidth = 45;
+				currentAttackHeight = 40;
+				currentAttackOffsetX = 45;
+				LOG("Attack 2 started (Heavy)");
+			}
+
+			// combo
+			comboStep = (comboStep + 1) % 2;
+
+			// calculate current attack
+			int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
+			int attackX = position.getX() + offsetX;
+			int attackY = position.getY();
+
+			// create collider attack
+			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
+			attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+			attackCollider->listener = this;
 		}
 		else
 		{
-			anims.SetCurrent("attack_left");
-			anims.GetAnim("attack_left")->SetLoop(false);
+			// 【新增】提示玩家缺少特定物品
+			if (!hasSickle && !glideUnlocked) {
+				Engine::GetInstance().hud->ShowNotification("Necesitas encontrar la Hoz y la Capa."); // "需要找到镰刀和斗篷"
+			}
+			else if (!hasSickle) {
+				Engine::GetInstance().hud->ShowNotification("Necesitas buscar la Hoz."); // "你需要寻找镰刀"
+			}
+			else if (!glideUnlocked) {
+				Engine::GetInstance().hud->ShowNotification("Necesitas buscar la Capa."); // "你需要寻找斗篷"
+			}
 		}
-
-		currentAnimPriority = 4;
-
-		currentAttackTime = 0.0f;
-		timeSinceLastAttack = 0.0f;
-
-		if (comboStep == 0)
-		{
-			// first attack
-			damage = 10;
-			currentAttackWidth = 20;
-			currentAttackHeight = 32;
-			currentAttackOffsetX = 32;
-			LOG("Attack 1 started (Normal)");
-		}
-		else
-		{
-			// second attack
-			damage = 15;
-			currentAttackWidth = 45;
-			currentAttackHeight = 40;
-			currentAttackOffsetX = 45;
-			LOG("Attack 2 started (Heavy)");
-		}
-
-		// combo
-		comboStep = (comboStep + 1) % 2;
-
-		// calculate current attack
-		int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
-		int attackX = position.getX() + offsetX;
-		int attackY = position.getY();
-
-		// create collider attack
-		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
-		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
-		attackCollider->listener = this;
-
 	}
 
 	// 2. Control the duration of the attack
@@ -585,6 +655,7 @@ void Player::Interact()
 					{
 						Engine::GetInstance().audio->PlayFx(closedDoor);
 						LOG("Necesitas una llave para abrir, busca una ");
+						Engine::GetInstance().hud->ShowNotification("Necesitas una Llave para abrir esta puerta.");
 					}
 				}
 				else
@@ -897,6 +968,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
+			Engine::GetInstance().hud->ShowNotification("Has obtenido la Capa."); // 获得斗篷
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
@@ -905,9 +977,12 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			AddItem(ItemID::KEY, 1);
 
 			LOG("KeyNum: %d", keyCount);
+			Engine::GetInstance().hud->ShowNotification("Has obtenido una Llave."); // 获得一把钥匙
+
 		}
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
+			Engine::GetInstance().hud->ShowNotification("Has obtenido la Hoz."); // 获得镰刀
 		}
 		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();
@@ -923,6 +998,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			}
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
+			Engine::GetInstance().hud->ShowNotification("Has recuperado salud."); // 恢复了血量
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
@@ -930,6 +1006,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		AddItem(ItemID::STRENGTH_ORB, 1);
 		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy(); 
+		Engine::GetInstance().hud->ShowNotification("Has obtenido un Orbe de Poder."); // 获得了技能点
 		break;
 	case ColliderType::SAVEPOINT:
 	{

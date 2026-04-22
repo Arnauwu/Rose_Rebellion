@@ -11,7 +11,7 @@
 #include <map>
 #include <vector>
 #include <string>
-
+#include "Hud.h"
 
 enum class ItemID {
 	WEAPON,
