@@ -20,13 +20,13 @@ void GameScene::LoadMap(std::string mapFile)
 {
 
 	if (mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba2.wav"); // Música Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
 	}
-	else if (mapFile == "Castle.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba2.wav"); // Música Exterior Castillo
+	else if (mapFile == "Nexo.tmx") {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav"); // Música Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
 	}
 
 	//Load the map. 
@@ -68,7 +68,7 @@ void GameScene::LoadMap(std::string mapFile)
 }
 
 bool GameScene::Start() {
-	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();

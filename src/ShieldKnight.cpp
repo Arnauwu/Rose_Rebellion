@@ -48,8 +48,8 @@ bool ShieldKnight::Start()
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
 	//Load Audio
-	morirEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	atacarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	morirEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	atacarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
 	caminarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
 	//Add physics to the enemy - initialize physics body

@@ -44,20 +44,20 @@ bool Player::Start()
 {
 	// Initialize Player parameters
 
-	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	dashPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	morirPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	planearPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	recibirDamage = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
+	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
+	dashPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_dash.wav");
+	morirPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Muerte.wav");
+	planearPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Planear.wav");
+	recibirDamage = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
 	caminarPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
-	pickItemFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	savePointFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	openDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	closedDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	orbFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	respawnFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	pickItemFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Llave_Item.wav");
+	savePointFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
+	openDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/OpenDoor.wav");
+	closedDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
+	orbFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_OrbeFuerza_Item.wav");
+	respawnFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
 
 	// Load Textures
 	if (!glideUnlocked)
@@ -212,7 +212,6 @@ void Player::Move() {
 	// Move Left
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false) 
 	{
-		Engine::GetInstance().audio->PlayFx(caminarPrincesa);
 		velocity.x = -speed;
 		lookingRight = false;
 		if (currentAnimPriority == 3)
@@ -232,7 +231,6 @@ void Player::Move() {
 	// Move Right
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
 	{
-		Engine::GetInstance().audio->PlayFx(caminarPrincesa);
 		velocity.x = speed;
 		lookingRight = true;
 		if (currentAnimPriority == 3)
@@ -507,7 +505,9 @@ void Player::Glide() // Gliding
 	{
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
-			Engine::GetInstance().audio->PlayFx(planearPrincesa);
+			if (!isGliding) {
+				Engine::GetInstance().audio->PlayFx(planearPrincesa);
+			}
 			isGliding = true;
 			if (lookingRight)
 			{

@@ -41,8 +41,8 @@ bool SwordKnight::CleanUp()
 bool SwordKnight::Start()
 {
 	caminarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	morirEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	atacarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	morirEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	atacarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
 
 	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);

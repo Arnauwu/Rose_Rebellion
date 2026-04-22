@@ -35,8 +35,8 @@ bool Ninfa::Awake() {
 
 bool Ninfa::Start()
 {
-   morirNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-   atacarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+   morirNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Muerte.wav");
+   atacarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Ataquefuerte.wav");
    volarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
     //Enemigo volador sprite

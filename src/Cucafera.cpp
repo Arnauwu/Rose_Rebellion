@@ -27,9 +27,9 @@ bool Cucafera::Awake() {
 
 bool Cucafera::Start()
 {
-	morirCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	rodarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
-	chocarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	morirCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav");
+	rodarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
+	chocarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Chocar.wav");
 	caminarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
 
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
