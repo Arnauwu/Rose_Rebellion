@@ -18,7 +18,7 @@ using namespace std;
 int Player::keyCount = 0;
 bool Player::glideUnlocked = false;
 bool Player::hasSickle = false;
-
+std::vector<std::string> Player::unlockedDoors;
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -398,58 +398,73 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 void Player::Attack(float dt)
 {
 	// 1. Start the attack 
-	if (!isAttacking && hasSickle && glideUnlocked && Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
 	{
-		Engine::GetInstance().audio->PlayFx(attackFx);
-		isAttacking = true;
-		if (lookingRight)
+		if (hasSickle && glideUnlocked)
 		{
-			anims.SetCurrent("attack_right");
-			anims.GetAnim("attack_right")->SetLoop(false);
+			Engine::GetInstance().audio->PlayFx(attackFx);
+			isAttacking = true;
+			if (lookingRight)
+			{
+				anims.SetCurrent("attack_right");
+				anims.GetAnim("attack_right")->SetLoop(false);
+			}
+			else
+			{
+				anims.SetCurrent("attack_left");
+				anims.GetAnim("attack_left")->SetLoop(false);
+			}
+
+			currentAnimPriority = 4;
+
+			currentAttackTime = 0.0f;
+			timeSinceLastAttack = 0.0f;
+
+			if (comboStep == 0)
+			{
+				// first attack
+				damage = 10;
+				currentAttackWidth = 20;
+				currentAttackHeight = 32;
+				currentAttackOffsetX = 32;
+				LOG("Attack 1 started (Normal)");
+			}
+			else
+			{
+				// second attack
+				damage = 15;
+				currentAttackWidth = 45;
+				currentAttackHeight = 40;
+				currentAttackOffsetX = 45;
+				LOG("Attack 2 started (Heavy)");
+			}
+
+			// combo
+			comboStep = (comboStep + 1) % 2;
+
+			// calculate current attack
+			int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
+			int attackX = position.getX() + offsetX;
+			int attackY = position.getY();
+
+			// create collider attack
+			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
+			attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+			attackCollider->listener = this;
 		}
 		else
 		{
-			anims.SetCurrent("attack_left");
-			anims.GetAnim("attack_left")->SetLoop(false);
+			// Prompt text
+			if (!hasSickle && !glideUnlocked) {
+				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape."); 
+			}
+			else if (!hasSickle) {
+				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle."); 
+			}
+			else if (!glideUnlocked) {
+				Engine::GetInstance().hud->ShowNotification("You need to find the Cape."); 
+			}
 		}
-
-		currentAnimPriority = 4;
-
-		currentAttackTime = 0.0f;
-		timeSinceLastAttack = 0.0f;
-
-		if (comboStep == 0)
-		{
-			// first attack
-			damage = 10;
-			currentAttackWidth = 20;
-			currentAttackHeight = 32;
-			currentAttackOffsetX = 32;
-			LOG("Attack 1 started (Normal)");
-		}
-		else
-		{
-			// second attack
-			damage = 15;
-			currentAttackWidth = 45;
-			currentAttackHeight = 40;
-			currentAttackOffsetX = 45;
-			LOG("Attack 2 started (Heavy)");
-		}
-
-		// combo
-		comboStep = (comboStep + 1) % 2;
-
-		// calculate current attack
-		int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
-		int attackX = position.getX() + offsetX;
-		int attackY = position.getY();
-
-		// create collider attack
-		attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
-		attackCollider->ctype = ColliderType::PLAYER_ATTACK;
-		attackCollider->listener = this;
-
 	}
 
 	// 2. Control the duration of the attack
@@ -561,6 +576,24 @@ void Player::Interact()
 		{
 			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 			{
+				bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
+				if (isMaintenance)
+				{
+					Engine::GetInstance().audio->PlayFx(pickItemFx); 
+					
+					Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
+					return; 
+				}
+
+				bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
+				if (isClosed)
+				{
+					Engine::GetInstance().audio->PlayFx(pickItemFx);
+
+					Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
+					return;
+				}
+
 				//Pregunta si esta puerta necesita llave
 				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
 
@@ -573,12 +606,19 @@ void Player::Interact()
 						//Restar una unidad cuando se usa una llave
 						keyCount--;
 						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+
+						std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
+						if (!doorId.empty()) {
+							Player::unlockedDoors.push_back(doorId);
+						}
+
 						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else
 					{
 						Engine::GetInstance().audio->PlayFx(closedDoor);
 						LOG("Necesitas una llave para abrir, busca una ");
+						Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 					}
 				}
 				else
@@ -891,6 +931,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
+			Engine::GetInstance().hud->ShowNotification("You have obtained the Cape."); 
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
@@ -899,9 +940,12 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			AddItem(ItemID::KEY, 1);
 
 			LOG("KeyNum: %d", keyCount);
+			Engine::GetInstance().hud->ShowNotification("You have obtained a Key."); 
+
 		}
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
+			Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle."); 
 		}
 		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();
@@ -917,6 +961,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			}
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
+			Engine::GetInstance().hud->ShowNotification("You have recovered your health."); 
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
@@ -924,6 +969,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		AddItem(ItemID::STRENGTH_ORB, 1);
 		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy(); 
+		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power."); 
 		break;
 	case ColliderType::SAVEPOINT:
 	{

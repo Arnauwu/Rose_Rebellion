@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include <SDL3/SDL.h>
+#include <string>
 
 struct SDL_Texture;
 
@@ -22,10 +23,13 @@ public:
 
 	bool Destroy();
 
+	bool CheckIfCollected(); 
+
+	void SetCollected();
 public:
 
 	bool isPicked = false;
-
+	std::string uniqueID;
 private:
 
 	SDL_Texture* texture;

@@ -9,6 +9,9 @@
 #include "CameraController.h"
 #include <iostream>
 #include <map>
+#include <vector>
+#include <string>
+#include "Hud.h"
 
 enum class ItemID {
 	WEAPON,
@@ -173,6 +176,7 @@ public:
 	//Item
 	static int keyCount;
 	static bool hasSickle; 
+	static std::vector<std::string> unlockedDoors;
 private: 
 
 	int jumpFx = -1;

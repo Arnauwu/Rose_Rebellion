@@ -2,7 +2,7 @@
 
 #include "Entity.h"
 #include <SDL3/SDL.h>
-
+#include <string>
 struct SDL_Texture;
 
 class HealthOrb : public Entity
@@ -22,6 +22,8 @@ public:
 
 	bool Destroy();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB);
+
 public:
 
 private:
@@ -32,4 +34,5 @@ private:
 
 	// Add a physics to an item
 	PhysBody* pbody;
+	std::string uniqueID;
 };

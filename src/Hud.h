@@ -20,10 +20,12 @@ public:
     bool PostUpdate() override;
     bool CleanUp() override;
 
+    void ShowNotification(const std::string& message);
 private:
     void DrawPlayerHealthBar();
     void DrawDiamondCounter();
     void DrawMineralIndicator();
+    void DrawNotification();
 private:
 
     SDL_Texture* lifeBarTexture = nullptr;
@@ -42,4 +44,9 @@ private:
     const float BASE_SCREEN_WIDTH = 1280.0f;
     const float UI_SCALE_FACTOR = 4.0f;
     const float UI_MARGIN = 20.0f;
+
+    //  Notificacion
+    std::string notificationText;
+    float notificationTimer = 0.0f;
+    const float NOTIFICATION_DURATION = 3.0f;
 };
