@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="15">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="15">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -25,103 +25,13 @@
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="11" gid="321" x="172" y="2072" width="3440" height="1560"/>
+  <object id="11" gid="321" x="172" y="1688" width="3440" height="1560"/>
  </objectgroup>
- <layer id="1" name="Muro" width="30" height="13">
+ <layer id="1" name="Muro" width="30" height="10">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <data>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="33"/>
-   <tile gid="34"/>
-   <tile gid="33"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="41"/>
-   <tile gid="42"/>
-   <tile gid="41"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
-   <tile gid="25"/>
-   <tile gid="26"/>
-   <tile gid="25"/>
    <tile gid="33"/>
    <tile gid="34"/>
    <tile gid="33"/>
@@ -424,101 +334,11 @@
    <tile gid="41"/>
   </data>
  </layer>
- <layer id="2" name="Suelo" width="30" height="13">
+ <layer id="2" name="Suelo" width="30" height="10">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <data>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -821,101 +641,11 @@
    <tile gid="231"/>
   </data>
  </layer>
- <layer id="4" name="Puerta" width="30" height="13">
+ <layer id="4" name="Puerta" width="30" height="10">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <data>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1218,22 +948,11 @@
    <tile/>
   </data>
  </layer>
- <layer id="3" name="Decoración" width="30" height="13">
+ <layer id="3" name="Decoración" width="30" height="10">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <data>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile gid="71"/>
@@ -1252,8 +971,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="71"/>
+   <tile gid="72"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1282,8 +1001,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="79"/>
+   <tile gid="80"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1300,85 +1019,6 @@
    <tile gid="88"/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile gid="174"/>
    <tile/>
    <tile gid="95"/>
@@ -1391,8 +1031,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="87"/>
+   <tile gid="88"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1615,101 +1255,11 @@
    <tile/>
   </data>
  </layer>
- <layer id="5" name="Ventana" width="30" height="13">
+ <layer id="5" name="Ventana" width="30" height="10">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <data>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -2018,7 +1568,7 @@
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="3" x="3206.67" y="622" width="365.333" height="654.667">
+  <object id="3" x="3206.67" y="238" width="365.333" height="654.667">
    <properties>
     <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
    </properties>
@@ -2029,16 +1579,16 @@
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="2" x="0" y="1280" width="3840" height="384"/>
-  <object id="14" x="391.5" y="1131" width="174.5" height="149.5"/>
+  <object id="2" x="0" y="896" width="3840" height="384"/>
+  <object id="14" x="391.5" y="747" width="174.5" height="149.5"/>
  </objectgroup>
  <objectgroup id="11" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
   </properties>
-  <object id="8" x="3840" y="0" width="128" height="1280"/>
-  <object id="9" x="-128" y="0" width="128" height="1280"/>
+  <object id="8" x="3840" y="0" width="128" height="896"/>
+  <object id="9" x="-128" y="0" width="128" height="896"/>
  </objectgroup>
  <objectgroup id="10" name="Ceiling">
   <properties>
@@ -2048,10 +1598,10 @@
   <object id="7" x="0" y="-128" width="3840" height="128"/>
  </objectgroup>
  <objectgroup id="6" name="EntitiesSpawnPoints">
-  <object id="1" name="Player" type="Player" x="3362.33" y="1085.33">
+  <object id="1" name="Player" type="Player" x="3362.33" y="701.33">
    <point/>
   </object>
-  <object id="12" name="Manta" type="Manta" x="477" y="1089.33">
+  <object id="12" name="Manta" type="Manta" x="477" y="705.33">
    <point/>
   </object>
  </objectgroup>
@@ -2059,7 +1609,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="6" name="PlayerSpawns" x="3387.14" y="1169">
+  <object id="6" name="PlayerSpawns" x="3387.14" y="785">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Inside.tmx"/>
    </properties>

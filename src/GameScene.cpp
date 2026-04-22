@@ -31,7 +31,7 @@ void GameScene::LoadMap(std::string mapFile)
 		return;
 	}
 
-	if (mapFile == "Castle_Inside.tmx") {
+	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
 		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
@@ -74,7 +74,7 @@ bool GameScene::Start() {
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	LOG("Loading Game Scene");
 
-	LoadMap("Castle_Inside.tmx");
+	LoadMap("Castle_Room_Princess.tmx");
 	if (player != nullptr) {
 		player->position.setX(10);
 		player->position.setY(10);
