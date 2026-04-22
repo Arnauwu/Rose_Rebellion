@@ -172,7 +172,7 @@ public:
 
 	//Item
 	static int keyCount;
-	bool hasSickle = false; 
+	static bool hasSickle; 
 private: 
 
 	int jumpFx = -1;
