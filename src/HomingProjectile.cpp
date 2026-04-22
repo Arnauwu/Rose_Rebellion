@@ -105,7 +105,9 @@ void HomingProjectile::Draw(float dt)
     // Girar la textura para que apunte hacia la dirección de movimiento
     double angle = std::atan2(currentVelocity.getY(), currentVelocity.getX()) * (180.0 / PI);
 
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x - texture->w/2, y - texture->h/2, nullptr, SDL_FLIP_NONE, 0.1, angle, texture->w /2, texture->h/2);
+    SDL_Rect sect = { 0,0,texture->w, texture->h };
+
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &sect, SDL_FLIP_NONE, 0.1, angle, texture->w/2,texture->h/2);
 }
 
 Vector2D HomingProjectile::GetPosition()

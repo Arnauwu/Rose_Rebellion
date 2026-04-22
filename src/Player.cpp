@@ -52,20 +52,20 @@ bool Player::Start()
 		std::unordered_map<int, std::string> aliases = GetAliases("capeless");
 
 
-		anims.LoadFromTSX("Assets/Textures/Princess/Princess_Capeless.tsx", aliases);
+		anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess_Capeless.tsx", aliases);
 		anims.SetCurrent("idle_right");
 
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/Princess_Capeless.png");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess_Capeless.png");
 	}
 	else
 	{
 		std::unordered_map<int, std::string> aliases = GetAliases("cape");
 
-		anims.LoadFromTSX("Assets/Textures/Princess/Princess.tsx", aliases);
+		anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess.tsx", aliases);
 		
 		anims.SetCurrent("idle_right");
 
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/Princess.png");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess.png");
 	}
 
 
@@ -762,10 +762,11 @@ void Player::UnlockCape()
 	Engine::GetInstance().textures->UnLoad(texture);
 	
 	std::unordered_map<int, std::string> aliases = GetAliases("cape");
-	anims.LoadFromTSX("Assets/Textures/Princess/princess.tsx", aliases);
-	anims.SetCurrent("front");
+	anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess.tsx", aliases);
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Princess/princess.png");
+	anims.SetCurrent("idle_right");
+
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess.png");
 	glideUnlocked = true;
 
 	AddItem(ItemID::GLIDE, 1);
