@@ -25,6 +25,7 @@ bool SkillPointOrb::Awake() {
 
 bool SkillPointOrb::Start() {
 
+	//	//Ensure the item does not reappear
 	std::string currentMap = Engine::GetInstance().map->mapFileName;
 	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)position.getX()) + "_" + std::to_string((int)position.getY());
 
