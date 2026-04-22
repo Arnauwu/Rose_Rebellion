@@ -50,7 +50,7 @@ bool ShieldKnight::Start()
 	//Load Audio
 	morirEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
 	atacarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
-	caminarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	caminarEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
 
 	//Add physics to the enemy - initialize physics body
 	texW = 256;
@@ -129,6 +129,18 @@ bool ShieldKnight::Update(float dt)
 		pendingToDelete = true;
 	}
 
+	bool isWalking = (velocity.x != 0 && !isdead && !isKnockedback);
+
+	if (isWalking && !wasWalking) {
+		Engine::GetInstance().audio->PlayFx(caminarEscudo, 99);
+	}
+
+	else if (!isWalking && wasWalking) {
+		Engine::GetInstance().audio->StopFx(caminarEscudo);
+	}
+
+	wasWalking = isWalking;
+
 	Draw(dt);
 
 	return true;
@@ -174,7 +186,6 @@ void ShieldKnight::Move() {
 	}
 	else if (playerTileDist >= 5 && isAttacking == false)
 	{
-		Engine::GetInstance().audio->PlayFx(caminarEscudo);
 		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
 		if (pathfinding->pathTiles.back() == tilePos)

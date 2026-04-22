@@ -50,7 +50,7 @@ bool Player::Start()
 	morirPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Muerte.wav");
 	planearPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Planear.wav");
 	recibirDamage = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
-	caminarPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	caminarPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Caminar_Piedra.wav");
 
 	pickItemFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Llave_Item.wav");
 	savePointFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
@@ -208,12 +208,14 @@ void Player::GetPhysicsValues()
 }
 
 void Player::Move() {
-	
+	bool isMovingThisFrame = false;
+
 	// Move Left
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false) 
 	{
 		velocity.x = -speed;
 		lookingRight = false;
+		isMovingThisFrame = true;
 		if (currentAnimPriority == 3)
 		{
 			anims.SetCurrent("fall_left");
@@ -233,6 +235,7 @@ void Player::Move() {
 	{
 		velocity.x = speed;
 		lookingRight = true;
+		isMovingThisFrame = true;
 		if (currentAnimPriority == 3)
 		{
 			anims.SetCurrent("fall_right");
@@ -247,6 +250,7 @@ void Player::Move() {
 			currentAnimPriority = 1;
 		}
 	}
+
 	else
 	{
 		if (!isAttacking && !isJumping && !isDashing)
@@ -263,6 +267,20 @@ void Player::Move() {
 			currentAnimPriority = 0;
 		}
 	}
+
+	if (!onGround || isDashing || isAttacking || isdead) {
+		isMovingThisFrame = false;
+	}
+
+	if (isMovingThisFrame && !wasWalking) {
+		Engine::GetInstance().audio->PlayFx(caminarPrincesa, 99); 
+	}
+
+	else if (!isMovingThisFrame && wasWalking) {
+		Engine::GetInstance().audio->StopFx(caminarPrincesa);
+	}
+
+	wasWalking = isMovingThisFrame;
 }
 
 void Player::Knockback()

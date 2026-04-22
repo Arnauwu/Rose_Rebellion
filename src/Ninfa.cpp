@@ -37,7 +37,7 @@ bool Ninfa::Start()
 {
    morirNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Muerte.wav");
    atacarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Ataquefuerte.wav");
-   volarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+   volarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Walking.wav");
 
     //Enemigo volador sprite
     
@@ -130,6 +130,18 @@ bool Ninfa::Update(float dt)
             pendingToDelete = true;
         }
     }
+
+    bool isWalking = (velocity.x != 0 && !isdead && !isKnockedback);
+
+    if (isWalking && !wasWalking) {
+        Engine::GetInstance().audio->PlayFx(volarNinfa, 99);
+    }
+
+    else if (!isWalking && wasWalking) {
+        Engine::GetInstance().audio->StopFx(volarNinfa);
+    }
+
+    wasWalking = isWalking;
 
     Draw(dt);
     return true;

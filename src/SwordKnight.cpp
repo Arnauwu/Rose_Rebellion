@@ -40,7 +40,7 @@ bool SwordKnight::CleanUp()
 
 bool SwordKnight::Start()
 {
-	caminarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	caminarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
 	morirEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
 	atacarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
 
@@ -131,6 +131,18 @@ bool SwordKnight::Update(float dt)
 		pendingToDelete = true;
 	}
 
+	bool isWalking = (velocity.x != 0 && !isdead && !isKnockedback);
+
+	if (isWalking && !wasWalking) {
+		Engine::GetInstance().audio->PlayFx(caminarEspada, 99);
+	}
+
+	else if (!isWalking && wasWalking) {
+		Engine::GetInstance().audio->StopFx(caminarEspada);
+	}
+
+	wasWalking = isWalking;
+
 	Draw(dt);
 
 	return true;
@@ -176,7 +188,6 @@ void SwordKnight::Move() {
 	}
 	else if (playerTileDist >= 2 && isAttacking == false)
 	{
-		Engine::GetInstance().audio->PlayFx(caminarEspada);
 		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
 		if (pathfinding->pathTiles.back() == tilePos)

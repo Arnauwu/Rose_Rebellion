@@ -7,6 +7,7 @@ Audio::Audio() {
     music_stream_ = nullptr;
     for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
         sfx_pool_[i] = nullptr;
+        sfx_playing_[i] = -1;
     }
 }
 
@@ -20,6 +21,22 @@ bool Audio::LoadWavFile(const char* path, SoundData& out) {
         SDL_Log("SDL_LoadWAV failed for %s: %s", path, SDL_GetError());
         return false;
     }
+    return true;
+}
+
+bool Audio::Update(float dt) {
+
+    // Look if system is working and exist music
+    if (active && music_stream_ != nullptr && music_data_.buf != nullptr) {
+
+        // Look if the song finish
+        if (SDL_GetAudioStreamQueued(music_stream_) == 0) {
+
+            // Repete the music
+            SDL_PutAudioStreamData(music_stream_, music_data_.buf, music_data_.len);
+        }
+    }
+
     return true;
 }
 
@@ -223,6 +240,7 @@ bool Audio::PlayFx(int id, int repeat) {
     for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
         if (SDL_GetAudioStreamQueued(sfx_pool_[i]) == 0) {
             streamToUse = sfx_pool_[i];
+            sfx_playing_[i] = id;
             break;
         }
     }
@@ -270,6 +288,19 @@ void Audio::SetSFXVolume(float volume)
     for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
         if (sfx_pool_[i] != nullptr) {
             SDL_SetAudioStreamGain(sfx_pool_[i], sfx_volume_);
+        }
+    }
+}
+
+void Audio::StopFx(int id) {
+    if (!active || id <= 0) return;
+
+    // Buscamos en todos los canales de audio si este sonido se está reproduciendo
+    for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
+        // Si el stream existe y el ID coincide con el que queremos parar
+        if (sfx_pool_[i] != nullptr && sfx_playing_[i] == id) {
+            SDL_ClearAudioStream(sfx_pool_[i]); // Esto limpia la cola, deteniendo el sonido
+            sfx_playing_[i] = -1;               // Olvidamos el registro
         }
     }
 }

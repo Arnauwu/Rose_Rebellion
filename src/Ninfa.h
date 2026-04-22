@@ -31,6 +31,7 @@ protected:
 	void ApplyPhysics()override;
 	void Draw(float dt); 
 
+	bool wasWalking = false;
 private:
 	void PerformPathfinding();
 	void ShootProjectile();

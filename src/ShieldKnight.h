@@ -30,6 +30,7 @@ private:
 	void Draw(float dt);
 
 	void Attack();
+	bool wasWalking = false;
 
 public:
 

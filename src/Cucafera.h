@@ -30,6 +30,8 @@ private:
 	
 	void RollAttack();
 
+	bool wasWalking = false;
+
 public:
 
 	//Declare enemy parameters

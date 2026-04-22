@@ -194,6 +194,7 @@ private:
 	int orbFx;
 	int respawnFx;
 
+	bool wasWalking = false;
 
 
 	PhysBody* attackCollider = nullptr;
