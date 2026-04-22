@@ -3705,7 +3705,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
+ <objectgroup color="#00aa00" id="6" name="Ground">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -3722,9 +3722,9 @@
   <object id="228" x="5120" y="768" width="256" height="26"/>
   <object id="229" x="5376" y="640" width="256" height="26"/>
   <object id="230" x="5632" y="512" width="2048" height="26"/>
-  <object id="231" x="4608" y="1152" width="512" height="26"/>
-  <object id="232" x="4096" y="1408" width="256" height="26"/>
-  <object id="233" x="5376" y="1408" width="256" height="26"/>
+  <object id="231" x="4480" y="1152" width="768" height="26"/>
+  <object id="232" x="4094" y="1534" width="256" height="26"/>
+  <object id="233" x="5374" y="1536" width="256" height="26"/>
   <object id="234" x="5760" y="1920" width="768" height="26"/>
   <object id="235" x="4480" y="1920" width="768" height="26"/>
   <object id="236" x="3200" y="1920" width="768" height="26"/>
@@ -3739,7 +3739,7 @@
   <object id="245" x="8832" y="1152" width="1152" height="26"/>
   <object id="246" x="8576" y="768" width="256" height="26"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
+ <objectgroup color="#aa5500" id="7" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -3769,9 +3769,9 @@
   <object id="268" x="4480" y="1947.67" width="768" height="98.6667"/>
   <object id="269" x="3200" y="1947.33" width="766.833" height="98.6667"/>
   <object id="270" x="5762.13" y="1949.06" width="765.871" height="98.6667"/>
-  <object id="271" x="5376" y="1436.67" width="254.75" height="98.6667"/>
-  <object id="272" x="4608" y="1180.17" width="510.75" height="98.6667"/>
-  <object id="273" x="4096" y="1436.67" width="255.25" height="98.6667"/>
+  <object id="271" x="5374" y="1564.67" width="254.75" height="98.6667"/>
+  <object id="272" x="4480" y="1180.17" width="768" height="98.6667"/>
+  <object id="273" x="4094" y="1562.67" width="255.25" height="98.6667"/>
   <object id="274" x="8575.29" y="796" width="254.75" height="98.6667"/>
   <object id="275" x="11263.3" y="1692" width="254.75" height="98.6667"/>
   <object id="276" x="11648" y="1436.67" width="254.75" height="98.6667"/>
