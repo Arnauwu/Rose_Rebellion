@@ -746,6 +746,19 @@ void Player::Draw(float dt)
 	}
 }
 
+void Player::SetCameraMode(CameraMode mode) {
+	currentCameraMode = mode;
+
+	if (currentCameraMode == CameraMode::CLASSIC) {
+		cameraController.SetYDivisor(1.25f); // Vuelve a la vista original
+		cameraController.SetSmoothSpeed(0.15f);
+		currentCameraYOffset = 0.0f; // Resetea cualquier offset dinámico
+	}
+	else {
+		cameraController.SetYDivisor(1.75f); // Vista de exploración
+	}
+}
+
 void Player::CameraFollows()
 {
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
@@ -754,45 +767,57 @@ void Player::CameraFollows()
 	float dt = Engine::GetInstance().GetDt();
 	float dtSeconds = dt / 1000.0f;
 
-	// --- 1. LÓGICA DE VISIÓN VERTICAL (Look Down & Anticipación) ---
-	float targetYOffset = 0.0f;
+	Vector2D targetCamPos = position;
 
-	// Mirar hacia abajo: Si está quieto y pulsa 'S'
-	if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-		lookDownTimer += dtSeconds;
-		if (lookDownTimer >= 0.3f) {
-			targetYOffset = 200.0f; // Empuja la cámara para ver qué hay abajo
+	// First camara tracking method
+	if (currentCameraMode == CameraMode::DYNAMIC)
+	{
+		float targetYOffset = 0.0f;
+
+		if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			lookDownTimer += dtSeconds;
+			if (lookDownTimer >= 0.3f) { targetYOffset = 200.0f; }
+		}
+		else {
+			lookDownTimer = 0.0f;
+		}
+
+		if (!onGround && velocity.y > 2.0f) {
+			targetYOffset = 100.0f + (velocity.y * 5.0f);
+			cameraController.SetSmoothSpeed(0.25f);
+		}
+		else if (onGround) {
+			cameraController.SetSmoothSpeed(0.15f);
+		}
+
+		float lerpY = 4.0f * dtSeconds;
+		if (lerpY > 1.0f) lerpY = 1.0f;
+		currentCameraYOffset += (targetYOffset - currentCameraYOffset) * lerpY;
+
+		targetCamPos.setY(targetCamPos.getY() + currentCameraYOffset);
+	}
+	//The second camara tracking method
+	else if (currentCameraMode == CameraMode::CLASSIC)
+	{
+		static float lastGroundY = position.getY();
+		if (onGround) {
+			lastGroundY = position.getY();
+		}
+
+		if (!onGround) {
+			float maxCameraUpward = 40.0f;
+			if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
+				targetCamPos.setY(lastGroundY - maxCameraUpward);
+			}
 		}
 	}
-	else {
-		lookDownTimer = 0.0f;
-	}
 
-	// Anticipación de caída: Si cae, la cámara se adelanta al jugador
-	if (!onGround && velocity.y > 2.0f) {
-		targetYOffset = 100.0f + (velocity.y * 5.0f);
-		cameraController.SetSmoothSpeed(0.25f); // Acelera el seguimiento al caer para no perder al jugador
-	}
-	else if (onGround) {
-		cameraController.SetSmoothSpeed(0.15f); // Restaura la velocidad suave normal
-	}
-
-	// Interpolar offset suavemente
-	float lerpY = 4.0f * dtSeconds;
-	if (lerpY > 1.0f) lerpY = 1.0f;
-	currentCameraYOffset += (targetYOffset - currentCameraYOffset) * lerpY;
-
-	// --- 2. ACTUALIZAR OBJETIVO DE LA CÁMARA ---
-	Vector2D targetCamPos = position;
-	targetCamPos.setY(targetCamPos.getY() + currentCameraYOffset);
-
-	// (Hemos eliminado el bloqueo de lastGroundY para que la cámara respire libremente)
-
+	// Manda la posición a CameraController
 	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
 	float camX, camY;
 	cameraController.GetCameraPosition(camX, camY);
 
-	// --- 3. LÓGICA HORIZONTAL (Eje X) ---
+	// Lógica del Eje X (Común para ambos modos)
 	float targetCamX = -position.getX() + (screenW / 2.0f);
 	if (targetCamX > 0) targetCamX = 0;
 	float minCamX = -(mapSize.getX() - screenW);
@@ -805,7 +830,6 @@ void Player::CameraFollows()
 		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
 	}
 
-	// --- 4. APLICAR POSICIÓN ---
 	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
 	Engine::GetInstance().render->camera.y = (int)camY;
 }

@@ -1,4 +1,4 @@
-#include "GameScene.h"
+ï»¿#include "GameScene.h"
 #include "Engine.h"
 #include "Input.h"
 #include "Map.h"
@@ -18,27 +18,24 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-
-	//Load the map. 
 	if (mapFile == "")
 	{
 		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
 	}
 
-	// Fail-Save
 	if (mapFile == "")
 	{
 		return;
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav");
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav");
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
@@ -48,23 +45,34 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().sceneManager->SetPlayer(nullptr);
 
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
-	printf("prevoius map : %s", previousMap);
+	printf("prevoius map : %s", previousMap.c_str());
 
 	Engine::GetInstance().map->CleanUp();
 
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
 	Engine::GetInstance().map->SpawnEntities();
 
-	Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-
-	if (Engine::GetInstance().sceneManager->GetPlayer() != nullptr)
+	// Camara mode
+	player = Engine::GetInstance().sceneManager->GetPlayer();
+	if (player != nullptr)
 	{
-		Engine::GetInstance().sceneManager->GetPlayer()->position = spawnPos;
+	
+		Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
+		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
+
+		// ASIGNAR EL MODO DE CÃMARA AQUÃ
+		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx"|| mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
+			player->SetCameraMode(CameraMode::CLASSIC); 
+			LOG("Camera Mode set to CLASSIC");
+		}
+		else {
+			player->SetCameraMode(CameraMode::DYNAMIC);
+			LOG("Camera Mode set to DYNAMIC");
+		}
 	}
 
 	Engine::GetInstance().entityManager->Start();
-
 }
 
 bool GameScene::Start() {
@@ -269,7 +277,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
 
-		// Gestión texto de los objetos del inventario
+		// Gestié«‡ texto de los objetos del inventario
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
 		if (player && player->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
@@ -349,7 +357,7 @@ void GameScene::CreateInventoryUI() {
 
 		// AMULETOS (Vertices)
 		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si aún no tienes textura
+		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si aé·‘ no tienes textura
 		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 
@@ -363,7 +371,7 @@ void GameScene::CreateInventoryUI() {
 
 		btn->SetBgTexture(skillFrameUI);
 
-		// Si le hemos asignado una textura, se la ponemos al botón
+		// Si le hemos asignado una textura, se la ponemos al boté«‡
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}

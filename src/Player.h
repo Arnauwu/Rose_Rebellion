@@ -20,6 +20,11 @@ enum class ItemID {
 	STRENGTH_ORB,
 };
 
+enum class CameraMode {
+	CLASSIC,  // Para la fortaleza (M¨¦todo original: 1.25f, bloqueo de salto Y)
+	DYNAMIC   // Para exploraci¨®n (Nuevo m¨¦todo: 1.75f, Look down, anticipaci¨®n)
+};
+
 struct SDL_Texture;
 
 class Player : public Entity
@@ -58,6 +63,10 @@ public:
 	void AddItem(ItemID id, int amount = 1);
 	bool HasItem(ItemID id);
 	int GetItemCount(ItemID id);
+
+	// Select camara follow mode
+	void SetCameraMode(CameraMode mode);
+	CameraMode GetCameraMode() const { return currentCameraMode; }
 private:
 
 	void GodModeMove(float dt);
@@ -78,6 +87,7 @@ private:
 	void Draw(float dt);
 
 	void CameraFollows();
+	CameraMode currentCameraMode = CameraMode::DYNAMIC;
 
 	//// Helpers
 	std::unordered_map<int, std::string> GetAliases(std::string name);
