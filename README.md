@@ -1,6 +1,6 @@
-# Video Game Development – CITM UPC
+# Project 2 – CITM UPC
 
-This repository is part of the **Video Game Development course** at the **CITM (Center for Imaging and Multimedia Technology)**, Universitat Politècnica de Catalunya (UPC).
+This repository is part of the **Project 2** at the **CITM (Center for Imaging and Multimedia Technology)**, Universitat Politècnica de Catalunya (UPC).
 
 ---
 
@@ -44,6 +44,7 @@ This release represents the vertical slice of the project.
 * **Enemies:** Implementation of 3 diferrent enemies, one of them fly enemy to create more diversity, and the first boss.
 * **Follow Camera:** Creation of a camera that follow to the player.
 * **Maps:** All the rooms of the castle, the town of the kingdom and part of the forest map with a change map system.
+* **Item interaction:** Proper management of existing items in the game, to provide diversity
 
 ---
 
@@ -92,17 +93,11 @@ Debug keys implemented to assist in testing features and states.
 ## 🔧 Optimizations & Fixes
 
 ### ⚡ Optimizations
-
+* **Pathfiding A*:** for a correct and better entities tracking.
+* **Render Logic:** Optimized sprite batching and implemented rotated tiles to reduce memory usage.
 
 ### 🪲 Bug Fixes
-
-
----
-
-## ❤️ Credits & Acknowledgements
-
-### 🔗 Work Distribution
-
+Use a lot of ram memory in walk in entities, that cause slight loss of frames.
 
 ---
 
