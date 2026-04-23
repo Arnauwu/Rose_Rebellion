@@ -93,13 +93,13 @@ Debug keys implemented to assist in testing features and states.
 ## 🔧 Optimizations & Fixes
 
 ### ⚡ Optimizations
-* **Pathfiding A*:** for a correct and better entities tracking.
-* **Lazy Pathfiding*:** for a stable use of memory.
+* **Pathfiding A'*':** for a correct and better entities tracking.
+* **Lazy Pathfiding:** for a stable use of memory.
 * **Render Logic:** Optimized sprite batching and implemented rotated tiles to reduce memory usage.
 
 ### 🪲 Bug Fixes
-Use a lot of ram memory in walk in entities, that cause slight loss of frames.
-Some room transitions detect a false path leading to higher use of ram than expected, causes the game to be stoped some frames
+* Use a lot of ram memory in walk in entities, that cause slight loss of frames.
+* Some room transitions detect a false path leading to higher use of ram than expected, causes the game to be stoped some frames
 ---
 
 ## 🔗 Assets
