@@ -141,30 +141,40 @@ bool Player::Update(float dt)
 		ApplyPhysics();
 	}
 
-	if (isdead && currentAnimPriority < 99)
+	if (isdead)
 	{
-		currentAnimPriority = 99;
-		Engine::GetInstance().audio->PlayFx(morirPrincesa);
-
-		if (lookingRight)
+		if (currentAnimPriority < 99) 
 		{
-			anims.GetAnim("death_right")->SetLoop(false);
-			anims.SetCurrent("death_right");
-		}
-		else
-		{
-			anims.GetAnim("death_left")->SetLoop(false);
-			anims.SetCurrent("death_left");
-		}
+			currentAnimPriority = 99;
+			Engine::GetInstance().audio->PlayFx(morirPrincesa);
 
+			if (lookingRight)
+			{
+				anims.GetAnim("death_right")->SetLoop(false);
+				anims.SetCurrent("death_right");
+			}
+			else
+			{
+				anims.GetAnim("death_left")->SetLoop(false);
+				anims.SetCurrent("death_left");
+			}
 
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-		if (attackCollider != nullptr)
-		{
-			Engine::GetInstance().physics->DeletePhysBody(attackCollider);
-			attackCollider = nullptr;
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+			
+			if (attackCollider != nullptr)
+			{
+				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+				attackCollider = nullptr;
+			}
 		}
-		
+		else 
+		{
+			if ((lookingRight && anims.GetAnim("death_right")->HasFinishedOnce()) || 
+				(!lookingRight && anims.GetAnim("death_left")->HasFinishedOnce())) 
+			{
+				Engine::GetInstance().sceneManager->ChangeScene(SceneID::GAMEOVER);
+			}
+		}
 	}
 
 	CameraFollows();
@@ -333,11 +343,12 @@ void Player::Respawn()
 		}
 
 		// Use RespawnPosition
-		SetPosition(respawnPosition);
+		/*SetPosition(respawnPosition);*/
 		currentHealth = maxHealth;
 		Engine::GetInstance().audio->PlayFx(respawnFx);
 		isJumping = false;
 		isdead = false;
+
 		anims.SetCurrent("idle");
 	}
 }
