@@ -19,12 +19,12 @@ In a world oppressed by a dragon, a princess with must fight the dragon to save 
 ## 🧱 Project Details
 
 * **Team Members:**
-    * González Olivé Arnau – Lead Game Designer, Narrative Designer, Lead Development, Level Designer - [Enlace al perfil]
-    * Yangfeng XU – Developer Gameplay, Developer Engineer - [Enlace al perfil]
-    * Corredor Mayol Jan– Developer Gameplay, Technical Artist, Level Designer, Developer Engineer - [Enlace al perfil]
-    * Jiménez Marquina Marc – Lead Game Designer, Developer Gameplay - [Enlace al perfil]
-    * Mateo Guerrero Rubén – Producer, Lead Development, Developer Gameplay - [Enlace al perfil]
-    * Wu Bole – Developer Gameplay - [Enlace al perfil]
+    * González Olivé Arnau – Lead Game Designer, Narrative Designer, Lead Development, Level Designer - [Enlace al perfil](https://github.com/Arnauwu)
+    * Yangfeng XU – Developer Gameplay, Developer Engineer - [Enlace al perfil](https://github.com/yangfeng-xu)
+    * Corredor Mayol Jan– Developer Gameplay, Technical Artist, Level Designer, Developer Engineer - [Enlace al perfil](https://github.com/JanCorredor)
+    * Jiménez Marquina Marc – Lead Game Designer, Developer Gameplay - [Enlace al perfil](https://github.com/MarcJM-00)
+    * Mateo Guerrero Rubén – Producer, Lead Development, Developer Gameplay - [Enlace al perfil](https://github.com/Rubenmg0)
+    * Wu Bole – Developer Gameplay - [Enlace al perfil](https://github.com/Bole05)
 
 ---
 
@@ -67,8 +67,8 @@ This release represents the vertical slice of the project.
 | Open door | W |
 | Jump | Space |
 | Attack | F |
-| Dash | ctrl |
-| Glide | Shift |
+| Dash | LCtrl |
+| Glide | LShift |
 | Open inventory | I |
 | Open map | M |
 | Open skill tree | N |
@@ -82,9 +82,9 @@ Debug keys implemented to assist in testing features and states.
 | Action | Key |
 | :--- | :--- |
 | Respawn to the last savepoint | R |
-| Teleport to a specific place | T |
+| Teleport to 0,0 | T |
 | Add skill orb | P |
-| Obtain directly ammo and blanked “manta” | 9 |
+| Give yourself the Blanket (Glide) & Sickle (Attack) | 9 |
 | View Colliders and Pathfinding routes | F9 |
 | God Mode | F10 |
 
@@ -94,11 +94,12 @@ Debug keys implemented to assist in testing features and states.
 
 ### ⚡ Optimizations
 * **Pathfiding A*:** for a correct and better entities tracking.
+* **Lazy Pathfiding*:** for a stable use of memory.
 * **Render Logic:** Optimized sprite batching and implemented rotated tiles to reduce memory usage.
 
 ### 🪲 Bug Fixes
 Use a lot of ram memory in walk in entities, that cause slight loss of frames.
-
+Some room transitions detect a false path leading to higher use of ram than expected, causes the game to be stoped some frames
 ---
 
 ## 🔗 Assets
