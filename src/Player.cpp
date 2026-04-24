@@ -18,6 +18,10 @@ using namespace std;
 int Player::keyCount = 0;
 bool Player::glideUnlocked = false;
 bool Player::hasSickle = false;
+bool Player::dashUnlocked = false;
+bool Player::doubleJumpUnlocked = false;
+
+
 std::vector<std::string> Player::unlockedDoors;
 
 Player::Player() : Entity(EntityType::PLAYER)
@@ -109,7 +113,8 @@ bool Player::Start()
 	cameraController.SetVerticalOffset(-25.0f);  // Offset vertixal 
 
 	respawnPosition = position;
-
+	lastSafePosition = position;
+	safePositionTimer.Start();
 	return true;
 }
 
@@ -184,10 +189,9 @@ bool Player::Update(float dt)
 	DevTools(dt);
 
 	// TO DO: Revisar esto a fondo
-	if (onGround && onWall && !isJumping && !isdead)
+	if (onGround && !onWall && !onAir && !isdead)
 	{
-		safePositionTimer += dt / 1000.0f;
-		if (safePositionTimer >= 0.2f)
+		if (safePositionTimer.ReadMSec() >= safePositionInterval)
 		{
 		
 			Vector2D start = position;
@@ -196,7 +200,8 @@ bool Player::Update(float dt)
 			if (Engine::GetInstance().physics->Raycast(start, end))
 			{
 				lastSafePosition = position;
-				safePositionTimer = 0.0f;
+				LOG("lastSafePosition saved");
+				safePositionTimer.Start();
 			}
 		}
 	}
@@ -353,9 +358,8 @@ void Player::Respawn()
 	}
 }
 
-void Player::RespawnFromVoid() { 
-	//TO DO: Aplicar daño 
-
+void Player::RespawnFromVoid() 
+{ 
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 
 	if (isAttacking && attackCollider != nullptr) {
@@ -364,13 +368,13 @@ void Player::RespawnFromVoid() {
 		isAttacking = false;
 	}
 
-	SetPosition(respawnPosition);
+	SetPosition(lastSafePosition);
 
 	isJumping = false;	
 	secondJumpUsed = false;
 	anims.SetCurrent("idle");
 	Engine::GetInstance().audio->PlayFx(respawnFx);
-	LOG("Player reset to last safe position: %.2f, %.2f", respawnPosition.getX(), respawnPosition.getY());
+	LOG("Player reset to last safe position: %.2f, %.2f", lastSafePosition.getX(), lastSafePosition.getY());
 }
 
 void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
@@ -583,6 +587,7 @@ void Player::Dash()
 		{
 			velocity.x = -dashForce;
 		}
+
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
 		isDashing = true;
 		dashTimer.Start();
@@ -599,6 +604,7 @@ void Player::Dash()
 		{
 			velocity.x = -dashForce;
 		}
+		velocity.y = 0;
 
 		if (dashTimer.ReadMSec() > dashDurationMS)
 		{
@@ -917,8 +923,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
 		LOG("Collision with DANGER zone!");
-		if (!godMode && !isdead) {
-			RespawnFromVoid();
+		if (!godMode && !isdead) 
+		{
+			TakeDamage(10); // Environmental Damage
+			if (!isdead)
+			{
+				RespawnFromVoid();
+			}
 		}
 		break;
 
@@ -942,6 +953,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		}
 
 		onGround = true;
+		onAir = false;
+		onWall = false;
 		break;
 
 	case ColliderType::WALL:
@@ -952,6 +965,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		anims.SetCurrent("wall"); //TODO: On wall anim
 		onWall = true;
+		onAir = false;
+		onGround = false;
 		break;
 
 	case ColliderType::DOOR:
@@ -1191,6 +1206,8 @@ void Player::DevTools(float dt)
 	{
 		UnlockCape();
 		hasSickle = true;
+		dashUnlocked = true;
+		doubleJumpUnlocked = true;
 	}
 }
 

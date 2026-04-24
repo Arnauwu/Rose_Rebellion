@@ -121,7 +121,7 @@ public:
 	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
 
 	// Double Jump
-	bool doubleJumpUnlocked = false; 
+	static bool doubleJumpUnlocked;
 	bool secondJumpUsed = false;
 	
 	// Gliding
@@ -129,9 +129,9 @@ public:
 	bool isGliding = false; // Flag
 
 	// Dash
-	bool dashUnlocked = false; 
+	static bool dashUnlocked;
 	bool isDashing = false; // Flag to check if the player has dashed
-	float dashForce = 15.0f;
+	float dashForce = 30.0f;
 
 	Timer dashTimer;
 	float dashDurationMS = 300;
@@ -170,8 +170,8 @@ public:
 
 	// Last Postion
 	Vector2D lastSafePosition;
-	float safePositionTimer = 0.0f;
-	const float safePositionInterval = 0.2f;
+	Timer safePositionTimer;
+	const int safePositionInterval = 1000; //In Ms
 
 	//Item
 	static int keyCount;
@@ -218,5 +218,4 @@ private:
 
 	CameraController cameraController;
 	Vector2D respawnPosition;
-
 };

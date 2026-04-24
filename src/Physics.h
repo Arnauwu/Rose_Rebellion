@@ -25,25 +25,33 @@ enum bodyType {
 };
 
 enum class ColliderType {
+    //Player
     PLAYER,
     PLAYER_ATTACK,
 
+    //Items
     ITEM,
     HEALTH_ORB,
     SKILL_POINT_ORB,
 
+    //Map
     CEILING,
     WALL,
-    PATH,
     GROUND,
     
+    //Hazards
     DANGER,
 
+    //Enemies
     ENEMY,
     ENEMY_ATTACK,
     
+
+    //General Entities
     SAVEPOINT,
-    
+
+    //Movement between maps
+    PATH,
     DOOR,
     
     

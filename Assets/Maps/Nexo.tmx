@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="20" nextobjectid="86">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="20" nextobjectid="87">
  <tileset firstgid="1" name="Atlas_Exterior_Castillo" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Exterior/Atlas_Exterior_Castillo.png" width="1024" height="1024"/>
  </tileset>
@@ -5805,7 +5805,7 @@
   <object id="83" x="5365" y="1166" width="11" height="114"/>
   <object id="84" x="5231" y="1040" width="17" height="112"/>
  </objectgroup>
- <objectgroup id="3" name="EntitiesSpawnPoints">
+ <objectgroup id="3" name="EntitiesSpawnPoints" visible="0">
   <object id="2" name="Player" type="Player" x="6336.12" y="1176.73">
    <point/>
   </object>
@@ -5829,6 +5829,12 @@
   <object id="4" name="PlayerSpawns" x="7184" y="344">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Balcony.tmx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="86" name="PlayerSpawns" x="84.6061" y="1250.42">
+   <properties>
+    <property name="FromRoom" type="file" value="Forest_01.tmx"/>
    </properties>
    <point/>
   </object>

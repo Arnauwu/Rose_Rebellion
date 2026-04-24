@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="100" height="18" tilewidth="128" tileheight="128" infinite="0" nextlayerid="20" nextobjectid="232">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="100" height="18" tilewidth="128" tileheight="128" infinite="0" nextlayerid="21" nextobjectid="242">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -22,29 +22,30 @@
  <tileset firstgid="195" name="MapMetadata" tilewidth="128" tileheight="128" tilecount="2" columns="2">
   <image source="Pathfinding/MapMetadata.png" trans="ffffff" width="256" height="128"/>
  </tileset>
- <objectgroup id="18" name="Fondo" visible="0">
+ <objectgroup id="18" name="Fondo">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="136" gid="194" x="8960" y="2304" width="3840" height="2304"/>
-  <object id="137" gid="65" x="5120" y="2304" width="3840" height="2304"/>
-  <object id="138" gid="65" x="1280" y="2304" width="3840" height="2304"/>
-  <object id="139" gid="65" x="-2560" y="2304" width="3840" height="2304"/>
+  <object id="236" gid="65" x="10089.4" y="1664" width="2710.59" height="1536"/>
+  <object id="237" gid="65" x="7424" y="1664" width="2710.59" height="1536"/>
+  <object id="238" gid="65" x="4736" y="1664" width="2710.59" height="1536"/>
+  <object id="239" gid="65" x="2048" y="1664" width="2710.59" height="1536"/>
+  <object id="240" gid="65" x="-640" y="1664" width="2710.59" height="1536"/>
  </objectgroup>
  <layer id="1" name="Map" width="100" height="18">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <data>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="36"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="38"/>
    <tile gid="37"/>
@@ -136,15 +137,15 @@
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="37"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="36"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="38"/>
    <tile gid="37"/>
@@ -3654,12 +3655,6 @@
   <data>
    <tile gid="195"/>
    <tile gid="195"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
    <tile gid="195"/>
    <tile gid="195"/>
    <tile gid="195"/>
@@ -3754,12 +3749,8 @@
    <tile gid="195"/>
    <tile gid="195"/>
    <tile gid="195"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
-   <tile gid="196"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
    <tile gid="195"/>
    <tile gid="195"/>
    <tile gid="195"/>
@@ -3778,6 +3769,16 @@
    <tile gid="195"/>
    <tile gid="195"/>
    <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
+   <tile gid="195"/>
    <tile gid="196"/>
    <tile gid="196"/>
    <tile gid="196"/>
@@ -4137,7 +4138,7 @@
    <tile gid="195"/>
    <tile gid="195"/>
    <tile gid="195"/>
-   <tile gid="195"/>
+   <tile gid="196"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4237,7 +4238,7 @@
    <tile gid="195"/>
    <tile gid="195"/>
    <tile gid="195"/>
-   <tile gid="195"/>
+   <tile gid="196"/>
    <tile/>
    <tile/>
    <tile/>
@@ -5454,18 +5455,27 @@
    <tile gid="195"/>
   </data>
  </layer>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup color="#aa0000" id="20" name="Spikes">
+  <properties>
+   <property name="Danger" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="232" x="11008" y="2090" width="1024" height="86"/>
+  <object id="233" x="1024" y="1706" width="384" height="86"/>
+  <object id="234" x="2688" y="2081.33" width="3200" height="94.6667"/>
+ </objectgroup>
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="126" x="13056" y="512" width="128" height="384">
+  <object id="126" x="13056" y="128" width="128" height="768">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_01.tmx"/>
    </properties>
   </object>
-  <object id="131" x="-512" y="384" width="128" height="384">
+  <object id="131" x="-512" y="256" width="128" height="512">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_04.tmx"/>
    </properties>
@@ -5476,7 +5486,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
+ <objectgroup color="#00aa00" id="6" name="Ground">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -5508,7 +5518,7 @@
   <object id="188" x="256" y="1152" width="128" height="22"/>
   <object id="189" x="-384" y="768" width="640" height="22"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
+ <objectgroup color="#aa5500" id="7" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -5537,12 +5547,12 @@
   <object id="210" x="256" y="1176.5" width="128" height="359.5"/>
   <object id="211" x="128" y="794" width="128" height="358"/>
   <object id="212" x="1024" y="256" width="384" height="1152"/>
-  <object id="213" x="1024" y="-128" width="1792" height="384"/>
-  <object id="214" x="3200" y="-128" width="9600" height="256"/>
+  <object id="213" x="-512" y="-128" width="3328" height="384"/>
+  <object id="214" x="3200" y="-128" width="9984" height="256"/>
   <object id="215" x="11904" y="525.333" width="384" height="114.667"/>
   <object id="216" x="11136" y="398.5" width="384" height="113.5"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
+ <objectgroup color="#00aaff" id="8" name="Ceiling">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
