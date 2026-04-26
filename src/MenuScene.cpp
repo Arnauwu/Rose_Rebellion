@@ -90,7 +90,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     switch (uiElement->id)
     {
     case (int)MenuUI_ID::BTN_PLAY:
-        sceneManager->ChangeScene(SceneID::GAME);
+        sceneManager->ChangeScene(SceneID::INTRO_CINEMATIC);
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
         // Lógica de continuar

@@ -5,6 +5,8 @@
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
+enum class FadeDirection { FADE_IN, FADE_OUT };
+
 class Render : public Module
 {
 public:
@@ -56,6 +58,13 @@ public:
 	// See if Rect is on screen
 	bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
 
+	//Fade functions
+	void StartFade(FadeDirection dir, float durationMs);
+	void UpdateFade(float dt);
+	void DrawFade();
+	bool IsFadeComplete() const;
+	float GetFadeAlpha() const;
+
 public:
 
 	SDL_Renderer* renderer;
@@ -71,5 +80,15 @@ public:
 private:
 	bool vsync = false;
 	TTF_Font* font;
+	TTF_Font* dialogueFont = nullptr;
+	
+	//Fade variables
+	bool fadeActive_ = false;
+	FadeDirection fadeDir_ = FadeDirection::FADE_IN;
+	float fadeDurationMs_ = 500.0f;
+	float fadeElapsedMs_ = 0.0f;
+	float fadeAlpha_ = 0.0f;
+
+	//zoom
 	float zoomLevel = 1.0f;
 };

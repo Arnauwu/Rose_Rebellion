@@ -116,8 +116,25 @@ bool GameScene::Start() {
 
 
 bool GameScene::Update(float dt) {
-
+	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
+
+	if (mapState == MapTransitionState::FADING_OUT) {
+
+		if (render->IsFadeComplete()) {
+
+			LoadMap(nextMapName);
+
+			mapState = MapTransitionState::FADING_IN;
+			render->StartFade(FadeDirection::FADE_IN, mapFadeTime);
+		}
+		return true;
+	}
+	else if (mapState == MapTransitionState::FADING_IN) {
+		if (render->IsFadeComplete()) {
+			mapState = MapTransitionState::NONE;
+		}
+	}
 
 	if (input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
 		if (currentMenuTab != GameMenuTab::NONE) {
@@ -177,14 +194,6 @@ bool GameScene::Update(float dt) {
 
 			return true;
 		}
-
-		//if (currentMenuTab == GameMenuTab::INVENTORY) {
-
-		//	for (auto& elem : inventoryUI) {
-		//		if (elem->state == UIElementState::FOCUSED) {
-		//		}
-		//	}
-		//}
 	}
 	return true;
 
@@ -192,10 +201,21 @@ bool GameScene::Update(float dt) {
 
 bool GameScene::PostUpdate() {
 
-	// If the player has touched a door, the engine will have set this variable to true
-	if (Engine::GetInstance().sceneManager->setNewMap == true) {
-		// Loading function with an empty string so that it reads the door information
-		LoadMap("");
+	auto sceneManager = Engine::GetInstance().sceneManager;
+
+	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
+
+		sceneManager->setNewMap = false; 
+
+		if (player && player->interactuableBody) {
+			nextMapName = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
+		}
+		else {
+			nextMapName = "";
+		}
+
+		mapState = MapTransitionState::FADING_OUT;
+		Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, mapFadeTime);
 	}
 
 	return true;

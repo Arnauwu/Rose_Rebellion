@@ -108,6 +108,7 @@ private:
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
+	void RequestMapChange(std::string mapFile);
 
 	int uiClick;
 
@@ -129,4 +130,16 @@ private:
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
+
+	//MapChanging Variables
+	// Fade point
+	enum class MapTransitionState {
+		NONE,
+		FADING_OUT,
+		FADING_IN
+	};
+
+	MapTransitionState mapState = MapTransitionState::NONE;
+	std::string nextMapName = "";
+	float mapFadeTime = 500.0f;
 };

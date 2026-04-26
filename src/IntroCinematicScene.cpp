@@ -26,7 +26,7 @@ bool IntroCinematicScene::Start() {
     Engine::GetInstance().audio->PlayMusic(nullptr);
 
     // Usamos el módulo de FFmpeg que ya tienes programado
-    if (!Engine::GetInstance().cinematics->PlayVideo("assets/video/intro.mp4")) {
+    if (!Engine::GetInstance().cinematics->PlayVideo("Assets/Cinematica/intro.mp4")) {
         LOG("Failed to play intro cinematic. Skipping to Game.");
         Engine::GetInstance().sceneManager->ChangeScene(SceneID::GAME);
     }

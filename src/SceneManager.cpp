@@ -3,12 +3,15 @@
 #include "Log.h"
 #include "Input.h"
 #include "Audio.h"
-
+#include "Render.h"
 #include "Player.h"
 #include "Vector2D.h"
+
+//Scenes
 #include "GameScene.h"
 #include "IntroScene.h"
 #include "MenuScene.h"
+#include "IntroCinematicScene.h"
 #include "GameOverScene.h"
 
 SceneManager::SceneManager() : Module() {
@@ -23,18 +26,29 @@ bool SceneManager::Awake() {
 }
 
 bool SceneManager::Start() {
-    ChangeScene(SceneID::INTRO);
+    nextSceneID = SceneID::INTRO;
+    PerformSceneChange();
     return true;
 }
 
 bool SceneManager::PreUpdate() {
-  if (currentScene != nullptr) {
+    if (currentScene != nullptr) {
         return currentScene->PreUpdate();
     }
     return true;
 }
 
 bool SceneManager::Update(float dt) {
+
+    if (isFadingOut && Engine::GetInstance().render->IsFadeComplete()) {
+
+        PerformSceneChange();
+        isFadingOut = false;
+
+        Engine::GetInstance().render->StartFade(FadeDirection::FADE_IN, currentFadeTime);
+    }
+
+    // 2. Lógica de la escena actual (sigue ejecutándose mientras se hace el fade)
     if (currentScene != nullptr) {
         return currentScene->Update(dt);
     }
@@ -71,11 +85,24 @@ bool SceneManager::CleanUp() {
     return true;
 }
 
-void SceneManager::ChangeScene(SceneID newScene) {
-    LOG("Changing Scene");
+void SceneManager::ChangeScene(SceneID newScene, float fadeTime) {
+    if (isFadingOut || nextSceneID == newScene) {
+        return; 
+    }
+
+    LOG("Scene change requested to ID: %d", (int)newScene);
+    nextSceneID = newScene;
+    isFadingOut = true;
+    currentFadeTime = fadeTime;
+
+    Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, fadeTime);
+}
+
+void SceneManager::PerformSceneChange() {
+    LOG("Performing actual scene swap in memory");
 
     isGamePaused = false;
-    Engine::GetInstance().input->ClearMouseInput();
+    Engine::GetInstance().input->ClearMouseInput(); // Súper útil para no arrastrar clics
 
     if (currentScene != nullptr) {
         currentScene->CleanUp();
@@ -83,28 +110,32 @@ void SceneManager::ChangeScene(SceneID newScene) {
         currentScene = nullptr;
     }
 
-    currentSceneID = newScene;
+    currentSceneID = nextSceneID;
 
-    switch (newScene)
+    switch (currentSceneID)
     {
     case SceneID::INTRO:
-         currentScene = new IntroScene();
+        currentScene = new IntroScene();
         break;
     case SceneID::MENU:
-         currentScene = new MenuScene();
+        currentScene = new MenuScene();
+        break;
+    case SceneID::INTRO_CINEMATIC:
+        currentScene = new IntroCinematicScene();
         break;
     case SceneID::GAME:
-         currentScene = new GameScene();
+        currentScene = new GameScene();
         break;
     case SceneID::GAMEOVER:
         currentScene = new GameOverScene();
         break;
     case SceneID::WIN:
-        // currentScene = new WinScene();
+        //currentScene = new WinScene();
+        break;
+    default:
         break;
     }
 
-    // Initialize the scene
     if (currentScene != nullptr) {
         currentScene->Awake();
         currentScene->Start();

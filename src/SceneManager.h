@@ -16,7 +16,8 @@ enum class SceneID
     INTRO_CINEMATIC,
     GAME,
     GAMEOVER,
-    WIN
+    WIN,
+    NONE
 };
 
 class SceneManager : public Module
@@ -34,13 +35,14 @@ public:
     bool CleanUp() override;
 
     // Changes the current active scene
-    void ChangeScene(SceneID newScene);
+    void ChangeScene(SceneID newScene, float fadeTime = 800.0f);
 
     // Module UI override
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
     bool IsGamePaused() const { return isGamePaused; }
     void SetGamePaused(bool paused) { isGamePaused = paused; }
+
     // --- NEW: Bridge methods to satisfy old code ---
     Vector2D GetPlayerPosition();
     Player* GetPlayer();
@@ -53,9 +55,14 @@ public:
     std::set<std::string> collectedItems;
     std::set<std::string> openedDoors;
 private:
+    void PerformSceneChange();
+private:
     // The currently active scene object
-    SceneBase* currentScene = nullptr;
+    SceneID nextSceneID = SceneID::NONE;
+    bool isFadingOut = false;
+    float currentFadeTime = 800.0f;
 
     // Tracks the current ID
-    SceneID currentSceneID;
+    SceneBase* currentScene = nullptr;
+    SceneID currentSceneID = SceneID::NONE;
 };
