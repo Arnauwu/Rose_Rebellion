@@ -98,6 +98,7 @@ public:
 	float knockbackForce;
 	bool isKnockedback = false;
 	float knockbackTime = 500.0f;
+	bool hitFromRight = false;
 
 
 	/*--- PLAYER STATES INFO --- */

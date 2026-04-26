@@ -5809,13 +5809,13 @@
   <object id="2" name="Player" type="Player" x="6336.12" y="1176.73">
    <point/>
   </object>
-  <object id="13" name="SwordKnight" type="SwordKnight" x="2304" y="1152">
+  <object id="13" name="SwordKnight" type="SwordKnight" x="2304" y="1024">
    <point/>
   </object>
-  <object id="14" name="SwordKnight" type="SwordKnight" x="640" y="1152">
+  <object id="14" name="SwordKnight" type="SwordKnight" x="640" y="1024">
    <point/>
   </object>
-  <object id="16" name="ShieldKnight" type="ShieldKnight" x="1024" y="1152">
+  <object id="16" name="ShieldKnight" type="ShieldKnight" x="1024" y="1024">
    <point/>
   </object>
   <object id="34" name="Sickle" type="Sickle" x="3876" y="1118">
@@ -5826,7 +5826,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="4" name="PlayerSpawns" x="7184" y="344">
+  <object id="4" name="PlayerSpawns" x="7064" y="160">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Balcony.tmx"/>
    </properties>
