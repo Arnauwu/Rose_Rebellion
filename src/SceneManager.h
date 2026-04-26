@@ -13,6 +13,7 @@ enum class SceneID
 {
     INTRO,
     MENU,
+    INTRO_CINEMATIC,
     GAME,
     GAMEOVER,
     WIN

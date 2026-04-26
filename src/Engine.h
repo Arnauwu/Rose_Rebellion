@@ -17,6 +17,7 @@ class EntityManager;
 class SceneManager;
 class Map;
 class Physics;
+class Cinematics;
 class UIManager;
 class Hud;
 
@@ -102,6 +103,9 @@ public:
 	std::shared_ptr<Map> map;
 
 	std::shared_ptr<Physics> physics;
+
+	// Cinematic Module
+	std::shared_ptr<Cinematics> cinematics;
 
 	// UI module and Hud module
 	std::shared_ptr<UIManager> uiManager;

@@ -116,6 +116,9 @@
     <Filter Include="Source Files\Game\Entity\Bosses\Knight">
       <UniqueIdentifier>{07ccddc3-1cdd-4b8e-8164-c59a764de334}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Cinematics">
+      <UniqueIdentifier>{e2708243-23a8-4adf-91fb-988c5b306e1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -261,6 +264,9 @@
     <ClCompile Include="src\GameOverScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\Cinematics.cpp">
+      <Filter>Source Files\Engine\Cinematics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -400,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="src\GameOverScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Cinematics.h">
+      <Filter>Source Files\Engine\Cinematics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
