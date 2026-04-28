@@ -153,6 +153,7 @@
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\GameOverScene.cpp" />
     <ClCompile Include="src\Keys.cpp" />
     <ClCompile Include="src\KnightBoss.cpp" />
     <ClCompile Include="src\Manta.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\GameOverScene.h" />
     <ClInclude Include="src\Keys.h" />
     <ClInclude Include="src\KnightBoss.h" />
     <ClInclude Include="src\Manta.h" />

@@ -10,7 +10,7 @@ MenuScene::~MenuScene() {}
 
 bool MenuScene::Start() {
 
-	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav");
+	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
 	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
 
 	if (menuBackground == nullptr) {

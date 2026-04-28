@@ -2036,7 +2036,7 @@
   <object id="12" x="0" y="-128" width="3200" height="128"/>
  </objectgroup>
  <objectgroup id="4" name="EntitiesSpawnPoints">
-  <object id="6" name="Player" type="Player" x="331" y="832">
+  <object id="6" name="Player" type="Player" x="2147" y="912">
    <point/>
   </object>
  </objectgroup>

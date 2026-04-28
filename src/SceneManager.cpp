@@ -8,7 +8,8 @@
 #include "Vector2D.h"
 #include "GameScene.h"
 #include "IntroScene.h"
- #include "MenuScene.h"
+#include "MenuScene.h"
+#include "GameOverScene.h"
 
 SceneManager::SceneManager() : Module() {
     name = "scene_manager";
@@ -100,7 +101,7 @@ void SceneManager::ChangeScene(SceneID newScene) {
          currentScene = new GameScene();
         break;
     case SceneID::GAMEOVER:
-        // currentScene = new GameOverScene();
+        currentScene = new GameOverScene();
         break;
     case SceneID::WIN:
         // currentScene = new WinScene();

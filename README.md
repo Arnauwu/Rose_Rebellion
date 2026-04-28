@@ -1,6 +1,6 @@
-# Video Game Development – CITM UPC
+# Project 2 – CITM UPC
 
-This repository is part of the **Video Game Development course** at the **CITM (Center for Imaging and Multimedia Technology)**, Universitat Politècnica de Catalunya (UPC).
+This repository is part of the **Project 2** at the **CITM (Center for Imaging and Multimedia Technology)**, Universitat Politècnica de Catalunya (UPC).
 
 ---
 
@@ -19,12 +19,12 @@ In a world oppressed by a dragon, a princess with must fight the dragon to save 
 ## 🧱 Project Details
 
 * **Team Members:**
-    * González Olivé Arnau – Lead Game Designer, Narrative Designer, Lead Development, Level Designer - [Enlace al perfil]
-    * Yangfeng XU – Developer Gameplay, Developer Engineer - [Enlace al perfil]
-    * Corredor Mayol Jan– Developer Gameplay, Technical Artist, Level Designer, Developer Engineer - [Enlace al perfil]
-    * Jiménez Marquina Marc – Lead Game Designer, Developer Gameplay - [Enlace al perfil]
-    * Mateo Guerrero Rubén – Producer, Lead Development, Developer Gameplay - [Enlace al perfil]
-    * Wu Bole – Developer Gameplay - [Enlace al perfil]
+    * González Olivé Arnau – Lead Game Designer, Narrative Designer, Lead Development, Level Designer - [Enlace al perfil](https://github.com/Arnauwu)
+    * Yangfeng XU – Developer Gameplay, Developer Engineer - [Enlace al perfil](https://github.com/yangfeng-xu)
+    * Corredor Mayol Jan– Developer Gameplay, Technical Artist, Level Designer, Developer Engineer - [Enlace al perfil](https://github.com/JanCorredor)
+    * Jiménez Marquina Marc – Lead Game Designer, Developer Gameplay - [Enlace al perfil](https://github.com/MarcJM-00)
+    * Mateo Guerrero Rubén – Producer, Lead Development, Developer Gameplay - [Enlace al perfil](https://github.com/Rubenmg0)
+    * Wu Bole – Developer Gameplay - [Enlace al perfil](https://github.com/Bole05)
 
 ---
 
@@ -44,6 +44,7 @@ This release represents the vertical slice of the project.
 * **Enemies:** Implementation of 3 diferrent enemies, one of them fly enemy to create more diversity, and the first boss.
 * **Follow Camera:** Creation of a camera that follow to the player.
 * **Maps:** All the rooms of the castle, the town of the kingdom and part of the forest map with a change map system.
+* **Item interaction:** Proper management of existing items in the game, to provide diversity
 
 ---
 
@@ -66,8 +67,8 @@ This release represents the vertical slice of the project.
 | Open door | W |
 | Jump | Space |
 | Attack | F |
-| Dash | ctrl |
-| Glide | Shift |
+| Dash | LCtrl |
+| Glide | LShift |
 | Open inventory | I |
 | Open map | M |
 | Open skill tree | N |
@@ -81,9 +82,9 @@ Debug keys implemented to assist in testing features and states.
 | Action | Key |
 | :--- | :--- |
 | Respawn to the last savepoint | R |
-| Teleport to a specific place | T |
+| Teleport to 0,0 | T |
 | Add skill orb | P |
-| Obtain directly ammo and blanked “manta” | 9 |
+| Give yourself the Blanket (Glide) & Sickle (Attack) | 9 |
 | View Colliders and Pathfinding routes | F9 |
 | God Mode | F10 |
 
@@ -92,18 +93,13 @@ Debug keys implemented to assist in testing features and states.
 ## 🔧 Optimizations & Fixes
 
 ### ⚡ Optimizations
-
+* **Pathfiding A'*':** for a correct and better entities tracking.
+* **Lazy Pathfiding:** for a stable use of memory.
+* **Render Logic:** Optimized sprite batching and implemented rotated tiles to reduce memory usage.
 
 ### 🪲 Bug Fixes
-
-
----
-
-## ❤️ Credits & Acknowledgements
-
-### 🔗 Work Distribution
-
-
+* Use a lot of ram memory in walk in entities, that cause slight loss of frames.
+* Some room transitions detect a false path leading to higher use of ram than expected, causes the game to be stoped some frames
 ---
 
 ## 🔗 Assets
