@@ -15,7 +15,6 @@ class Textures;
 class Audio;
 class EntityManager;
 class SceneManager;
-class GameManager;
 class Map;
 class Physics;
 class Cinematics;
@@ -100,7 +99,6 @@ public:
 
 	std::shared_ptr<EntityManager> entityManager;
 	std::shared_ptr<SceneManager> sceneManager;
-	std::shared_ptr<GameManager> gameManager;
 
 	std::shared_ptr<Map> map;
 

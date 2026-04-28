@@ -9,7 +9,6 @@
 #include "Textures.h"
 #include "Audio.h"
 #include "EntityManager.h"
-#include "GameManager.h"
 #include "SceneManager.h"
 #include "Map.h"
 #include "Physics.h"
@@ -58,7 +57,6 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(map));
     AddModule(std::static_pointer_cast<Module>(entityManager));
     AddModule(std::static_pointer_cast<Module>(sceneManager));
-    AddModule(std::static_pointer_cast<Module>(gameManager));
 
     // Cinematic Manager
     AddModule(std::static_pointer_cast<Module>(cinematics));

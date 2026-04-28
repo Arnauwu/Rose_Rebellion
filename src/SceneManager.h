@@ -43,8 +43,17 @@ public:
     bool IsGamePaused() const { return isGamePaused; }
     void SetGamePaused(bool paused) { isGamePaused = paused; }
 
+    // --- NEW: Bridge methods to satisfy old code ---
+    Vector2D GetPlayerPosition();
+    Player* GetPlayer();
+    void SetPlayer(Player* p);
+
+    // The boolean you were using to trigger map changes
+    bool setNewMap = false;
     bool isGamePaused = false;
 
+    std::set<std::string> collectedItems;
+    std::set<std::string> openedDoors;
 private:
     void PerformSceneChange();
 private:

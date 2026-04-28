@@ -270,9 +270,6 @@
     <ClCompile Include="src\IntroCinematicScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameManager.cpp">
-      <Filter>Source Files\Engine\Scenes</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -418,9 +415,6 @@
     </ClInclude>
     <ClInclude Include="src\IntroCinematicScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameManager.h">
-      <Filter>Source Files\Engine\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
