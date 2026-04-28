@@ -473,20 +473,7 @@ bool Map::Load(std::string path, std::string fileName)
 		// Creation of colliders and assign their type
 		for (const auto& objectsGroups : mapData.objectGroups)
 		{
-
-			if (objectsGroups->properties.GetProperty("SavePoint") != NULL && objectsGroups->properties.GetProperty("SavePoint")->value)
-			{
-				for (const auto& obj : objectsGroups->objects)
-				{
-					std::shared_ptr<Entity> newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::SAVEPOINT);
-					SavePoint* sp = (SavePoint*)newEntity.get();
-
-					sp->position = Vector2D(obj->x, obj->y);
-					LOG("SUCCESS: Found SavePoint Layer in Tiled!");
-				}
-			}
-
-			else if (objectsGroups->properties.GetProperty("Square") != NULL and objectsGroups->properties.GetProperty("Square")->value) // Square
+			if (objectsGroups->properties.GetProperty("Square") != NULL and objectsGroups->properties.GetProperty("Square")->value) // Square
 			{
 				for (const auto& obj : objectsGroups->objects)
 				{
@@ -815,6 +802,13 @@ void Map::SpawnEntities()
 					Engine::GetInstance().entityManager->SetPlayer(player);
 				}
 
+				else if (entityType == std::string("SavePoint"))
+				{
+					std::shared_ptr<SavePoint> sp = std::dynamic_pointer_cast<SavePoint>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SAVEPOINT));
+					if (sp != nullptr) {
+						sp->position = Vector2D(x, y);
+					}
+				}
 
 				//Enemies
 				else if (entityType == std::string("Spider"))

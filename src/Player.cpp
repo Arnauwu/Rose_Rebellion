@@ -1021,6 +1021,18 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		int spX, spY;
 		physB->GetPosition(spX, spY);
 		respawnPosition = Vector2D((float)spX, (float)spY);
+
+		auto& gameState = GameManager::GetInstance().gameState;
+		gameState.playerPosition = respawnPosition;
+		gameState.currentHealth = this->currentHealth;
+		gameState.currentMap = Engine::GetInstance().map->mapFileName;
+
+		if (GameManager::GetInstance().SaveGame("savegame.dat")) {
+			Engine::GetInstance().hud->ShowNotification("Partida Guardada");
+		}
+		else {
+			Engine::GetInstance().hud->ShowNotification("Error al guardar partida");
+		}
 		break;
 	}  
 

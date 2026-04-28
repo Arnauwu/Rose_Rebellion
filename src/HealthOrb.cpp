@@ -39,7 +39,6 @@ bool HealthOrb::Start() {
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/HealthOrb/HealthOrb.png");
 
 	// Add a physics to an item - initialize the physics body
-	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	
 	texH = 32; texW = 32;
 	pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH, bodyType::DYNAMIC);

@@ -395,9 +395,6 @@
     <ClInclude Include="src\HomingProjectile.h">
       <Filter>Source Files\Game\Entity\Enemies\Ninfa</Filter>
     </ClInclude>
-    <ClInclude Include="SavePoint.h">
-      <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
-    </ClInclude>
     <ClInclude Include="src\Keys.h">
       <Filter>Source Files\Game\Entity\Items\Keys</Filter>
     </ClInclude>
@@ -421,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="src\GameManager.h">
       <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SavePoint.h">
+      <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

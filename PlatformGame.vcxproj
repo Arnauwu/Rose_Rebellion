@@ -195,7 +195,6 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SavePoint.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\CameraController.h" />
@@ -228,6 +227,7 @@
     <ClInclude Include="src\Physics.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
+    <ClInclude Include="src\SavePoint.h" />
     <ClInclude Include="src\SceneBase.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShieldKnight.h" />

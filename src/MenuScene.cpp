@@ -96,7 +96,13 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
         sceneManager->ChangeScene(SceneID::INTRO_CINEMATIC);
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
-        // Lógica de continuar
+		if (GameManager::GetInstance().LoadGame("savegame.dat")) {
+			LOG("Partida cargada con éxito. Entrando al juego...");
+			sceneManager->ChangeScene(SceneID::GAME);
+		}
+		else {
+			LOG("Error: No se ha encontrado partida o el archivo está corrupto.");
+		}
         break;
     case (int)MenuUI_ID::BTN_SETTINGS:
         ShowSettings(true);
