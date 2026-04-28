@@ -43,7 +43,7 @@ public:
 	int atacarNinfa;
 
 	float flapTimer = 0.0f;
-	float timeBetweenFlaps = 0.35f; // Ajústalo a la velocidad de la animación de las alas
+	float timeBetweenFlaps = 4.0f; // Ajústalo a la velocidad de la animación de las alas
 	bool wasFlying = false;
 
 	float targetOffsetX = 0.0f;

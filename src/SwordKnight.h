@@ -38,7 +38,7 @@ public:
 	int atacarCaballero;
 
 	float stepTimer = 0.0f;
-	float timeBetweenSteps = 0.45f; 
+	float timeBetweenSteps = 59.0f; 
 	bool wasWalking = false;
 
 	//Declare enemy parameters
