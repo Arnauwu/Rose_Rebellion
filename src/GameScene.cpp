@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "Map.h"
 #include "SceneManager.h"
+#include "GameScene.h"
 #include "EntityManager.h"
 #include "UIManager.h"
 #include "window.h"

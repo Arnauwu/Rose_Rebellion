@@ -44,7 +44,8 @@ public:
     void SetGamePaused(bool paused) { isGamePaused = paused; }
 
     bool isGamePaused = false;
-
+public:
+    SceneBase* GetCurrentScene() const { return currentScene; }
 private:
     void PerformSceneChange();
 private:
