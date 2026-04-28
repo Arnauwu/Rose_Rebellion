@@ -18,15 +18,18 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-
+	if (mapFile == "")
+	{
+		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
+	}
 	if (mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba2.wav"); // Música Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Cambia por tu wav de castillo
 	}
-	else if (mapFile == "Castle.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba2.wav"); // Música Exterior Castillo
+	else if (mapFile == "Nexo.tmx") {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); 
 	}
-	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav"); // Música Bosque
+	else if (mapFile == "bosque_test.tmx" || mapFile == "Forest_01.tmx") {
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Cambia por tu wav de bosque
 	}
 
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
@@ -60,6 +63,7 @@ void GameScene::LoadMap(std::string mapFile)
 }
 
 bool GameScene::Start() {
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/ClicMenu.wav");
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -236,6 +240,7 @@ bool GameScene::CleanUp() {
 }
 
 bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
+	Engine::GetInstance().audio->PlayFx(uiClick);
 	switch (uiElement->id) {
 	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;

@@ -9,7 +9,7 @@ MenuScene::MenuScene() : SceneBase() {}
 MenuScene::~MenuScene() {}
 
 bool MenuScene::Start() {
-
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/ClicMenu.wav");
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav");
 
 	if (menuBackground == nullptr) {
@@ -83,6 +83,7 @@ bool MenuScene::Update(float dt) {
 }
 
 bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
+	Engine::GetInstance().audio->PlayFx(uiClick);
     auto sceneManager = Engine::GetInstance().sceneManager;
 
     switch (uiElement->id)

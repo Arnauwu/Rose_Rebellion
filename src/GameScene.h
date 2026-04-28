@@ -110,6 +110,8 @@ private:
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
 
 private:
+	int uiClick;
+
 	// The player pointer
 	Player* player = nullptr;
 

@@ -31,7 +31,14 @@ private:
 	void RollAttack();
 
 public:
+	int morirCucafera;
+	int rodarCucafera;
+	int chocarCucafera;
+	int caminarCucafera;
 
+	float stepTimer = 0.0f;
+	float timeBetweenSteps = 0.3f; 
+	bool wasWalking = false;
 	//Declare enemy parameters
 	bool isRolling = false;
 	Timer startAttack;

@@ -41,9 +41,6 @@
     <Filter Include="Source Files\Game\Entity\Enemies\Cucafera">
       <UniqueIdentifier>{2cb2e297-aabb-4212-b99c-9ab73afbeb27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Entity\Enemies\ShieldKnight">
-      <UniqueIdentifier>{5b1be39f-d31c-4162-aa7f-ad8994d69bfa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\SwordKnight">
       <UniqueIdentifier>{e4d0c36d-5642-4552-9802-f8ff8dbbef73}</UniqueIdentifier>
     </Filter>
@@ -110,6 +107,9 @@
     <Filter Include="Source Files\Game\Entity\Items\Sickle">
       <UniqueIdentifier>{22e68f4e-c50a-4419-a8d9-e8f508f3416e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\ShieldKnight">
+      <UniqueIdentifier>{5b1be39f-d31c-4162-aa7f-ad8994d69bfa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -172,7 +172,7 @@
       <Filter>Source Files\Game\Entity\Enemies\SwordKnight</Filter>
     </ClCompile>
     <ClCompile Include="src\ShieldKnight.cpp">
-      <Filter>Source Files\Game\Entity\Enemies\ShieldKnight</Filter>
+      <Filter>Source Files\Game\ShieldKnight</Filter>
     </ClCompile>
     <ClCompile Include="src\Textures.cpp">
       <Filter>Source Files\Engine\Render</Filter>
@@ -303,7 +303,7 @@
       <Filter>Source Files\Game\Entity\Enemies\SwordKnight</Filter>
     </ClInclude>
     <ClInclude Include="src\ShieldKnight.h">
-      <Filter>Source Files\Game\Entity\Enemies\ShieldKnight</Filter>
+      <Filter>Source Files\Game\ShieldKnight</Filter>
     </ClInclude>
     <ClInclude Include="src\Textures.h">
       <Filter>Source Files\Engine\Render</Filter>

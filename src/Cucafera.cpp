@@ -27,7 +27,10 @@ bool Cucafera::Awake() {
 
 bool Cucafera::Start()
 {
-	deathSoundId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/jump.wav");
+	morirCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav");
+	caminarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
+	rodarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
+	chocarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Chocar.wav");
 
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
@@ -95,7 +98,7 @@ bool Cucafera::Update(float dt)
 	
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
-		Engine::GetInstance().audio->PlayFx(deathSoundId);
+		Engine::GetInstance().audio->PlayFx(morirCucafera);
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
 		anims.GetAnim("dead")->SetLoop(false);
@@ -145,7 +148,7 @@ void Cucafera::GetPhysicsValues() {
 void Cucafera::Move() {
 
 	Vector2D tilePos = GetTilePos();
-
+	bool isMovingThisFrame = false;
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isRolling == false && isKnockedback == false)
 	{
@@ -169,11 +172,13 @@ void Cucafera::Move() {
 		{
 			velocity.x = speed;
 			lookingRight = !true; // ! because Default anim looking left
+			isMovingThisFrame = true;
 		}
 		else if (nextTile.getX() < tilePos.getX())
 		{
 			velocity.x = -speed;
 			lookingRight = !false;
+			isMovingThisFrame = true;
 		}
 		else
 		{
@@ -192,7 +197,29 @@ void Cucafera::Move() {
 			RollAttack();
 		}
 	}
-	return;
+	bool isWalkingConditions = (isMovingThisFrame && !isRolling && !isKnockedback && !isdead);
+
+	if (isWalkingConditions)
+	{
+		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
+
+		if (stepTimer >= timeBetweenSteps)
+		{
+			Engine::GetInstance().audio->PlayFx(caminarCucafera, 0);
+			stepTimer = 0.0f;
+		}
+	}
+	else
+	{
+		stepTimer = timeBetweenSteps;
+
+		if (wasWalking)
+		{
+			Engine::GetInstance().audio->StopFx(caminarCucafera);
+		}
+	}
+
+	wasWalking = isWalkingConditions;
 }
 
 void Cucafera::Knockback()
@@ -293,6 +320,10 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::WALL:
 	case ColliderType::PLAYER:
+		if (isRolling) {
+			Engine::GetInstance().audio->PlayFx(chocarCucafera, 0);
+		}
+		break;
 	case ColliderType::ENEMY:
 		isRolling = false;
 		break;

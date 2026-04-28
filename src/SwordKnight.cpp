@@ -40,6 +40,10 @@ bool SwordKnight::CleanUp()
 
 bool SwordKnight::Start()
 {
+	morirCaballero = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	atacarCaballero = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
+	caminarCaballero = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
+
 	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
@@ -117,6 +121,8 @@ bool SwordKnight::Update(float dt)
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
 
+		Engine::GetInstance().audio->PlayFx(morirCaballero, 0);
+		Engine::GetInstance().audio->StopFx(caminarCaballero);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 	}
@@ -200,7 +206,29 @@ void SwordKnight::Move() {
 	{
 		Attack();
 	}
-	return;
+	bool isWalkingConditions = (velocity.x != 0 && !isKnockedback && !isdead);
+
+	if (isWalkingConditions)
+	{
+		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
+
+		if (stepTimer >= timeBetweenSteps)
+		{
+			Engine::GetInstance().audio->PlayFx(caminarCaballero, 0); // Paso metálico
+			stepTimer = 0.0f;
+		}
+	}
+	else
+	{
+		stepTimer = timeBetweenSteps; // Forzar que suene de inmediato al volver a andar
+
+		if (wasWalking)
+		{
+			Engine::GetInstance().audio->StopFx(caminarCaballero);
+		}
+	}
+
+	wasWalking = isWalkingConditions;
 }
 
 void SwordKnight::Knockback()
@@ -293,6 +321,7 @@ void SwordKnight::Attack()
 	}
 	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr)
 	{
+		Engine::GetInstance().audio->PlayFx(atacarCaballero, 0);
 		anims.SetCurrent("sword_attack"); //Attack
 		
 		//CreateHitbox

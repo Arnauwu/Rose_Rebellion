@@ -18,6 +18,8 @@ public:
     // Destructor
     virtual ~Audio();
 
+    bool Update(float dt);
+
     // Called before render is available
     bool Awake();
 
@@ -40,6 +42,8 @@ public:
     float GetMusicVolume() const { return music_volume_; }
     float GetSFXVolume()   const { return sfx_volume_; }
 
+    void StopFx(int id);
+
 private:
 
     struct SoundData {
@@ -61,6 +65,7 @@ private:
     std::vector<SoundData> sfx_; // 1-based indexing outwardly
     static const int MAX_SFX_STREAMS = 16; // Maximos sonidos simultaneos
     SDL_AudioStream* sfx_pool_[MAX_SFX_STREAMS];
+    int sfx_playing_[MAX_SFX_STREAMS];
     // Volume control
     float music_volume_ = 1.0f; // 0.0 = mute, 1.0 = full
     float sfx_volume_ = 1.0f;

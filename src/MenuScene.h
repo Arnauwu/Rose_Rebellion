@@ -35,6 +35,8 @@ public:
     SDL_Texture* menuBackground_S = nullptr;
 
 private:
+    int uiClick;
+
     void ShowSettings(bool show);
     bool isSettingsOpen = false;
 

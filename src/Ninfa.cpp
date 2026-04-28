@@ -10,6 +10,7 @@
 #include "Render.h"
 #include "Log.h"
 #include "EntityManager.h"
+#include "Audio.h"
 
 Ninfa::Ninfa() : Enemy(EntityType::NINFA)
 {
@@ -34,7 +35,10 @@ bool Ninfa::Awake() {
 
 bool Ninfa::Start()
 {
-   
+   morirNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Muerte.wav");
+   atacarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Ataquefuerte.wav");
+   volarNinfa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Walking.wav");
+
     //Enemigo volador sprite
     
     std::unordered_map<int, std::string> aliases = {
@@ -103,6 +107,8 @@ bool Ninfa::Update(float dt)
         // Se ejecuta solo una vez al morir
         if (anims.GetCurrentName() != "dead")
         {
+            Engine::GetInstance().audio->PlayFx(morirNinfa);
+            Engine::GetInstance().audio->StopFx(volarNinfa);
             anims.SetCurrent("dead");
             anims.GetAnim("dead")->SetLoop(false);
 
@@ -272,6 +278,29 @@ void Ninfa::Move() {
         break;
     }
     }
+    bool isFlyingConditions = ((velocity.x != 0 || velocity.y != 0) && !isKnockedback && !isdead);
+
+    if (isFlyingConditions)
+    {
+        flapTimer += Engine::GetInstance().GetDt() / 1000.0f;
+
+        if (flapTimer >= timeBetweenFlaps)
+        {
+            Engine::GetInstance().audio->PlayFx(volarNinfa, 0); // Sonido de aleteo
+            flapTimer = 0.0f;
+        }
+    }
+    else
+    {
+        flapTimer = timeBetweenFlaps; // Forzar para que suene de inmediato al reanudar vuelo
+
+        if (wasFlying)
+        {
+            Engine::GetInstance().audio->StopFx(volarNinfa);
+        }
+    }
+
+    wasFlying = isFlyingConditions;
 }
 void Ninfa::ApplyPhysics() {
     Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
@@ -323,6 +352,7 @@ void Ninfa::Draw(float dt)
 }
 
 void Ninfa::ShootProjectile() {
+    Engine::GetInstance().audio->PlayFx(atacarNinfa, 0);
     Vector2D spawnPos = GetPosition();
     // Genera la bala un poco por delante del enemigo volador para que no colisione consigo mismo
     spawnPos.setX(lookingRight ? spawnPos.getX() + 20.0f : spawnPos.getX() - 20.0f);

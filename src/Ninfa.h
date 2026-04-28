@@ -38,6 +38,14 @@ private:
 public:
 	NinfaState currentState;
 
+	int volarNinfa;
+	int morirNinfa;
+	int atacarNinfa;
+
+	float flapTimer = 0.0f;
+	float timeBetweenFlaps = 0.35f; // Ajústalo a la velocidad de la animación de las alas
+	bool wasFlying = false;
+
 	float targetOffsetX = 0.0f;
 	float targetOffsetY = 0.0f;
 	float attackRange = 0.0f;
