@@ -92,7 +92,7 @@ bool Player::Start()
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 2, texW, texH, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -918,6 +918,24 @@ int Player::GetItemCount(ItemID id) {
 // Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	if (physA == attackCollider) { return; }
+
+	//TO DO CHECK THIS
+	PlayerShapeType typeA = (PlayerShapeType)(uintptr_t)physA->GetUserData();
+
+ 	if ( typeA == PlayerShapeType::SHAPE_BOTTOM)
+	{
+		LOG("Collision inf circle");
+	}
+	else if (typeA == PlayerShapeType::SHAPE_MIDDLE)
+	{
+		LOG("Collision middle");
+	}
+	else if (typeA == PlayerShapeType::SHAPE_TOP)
+	{
+		LOG("Collision sup circle");
+	}
+
+
 
 	switch (physB->ctype)
 	{
