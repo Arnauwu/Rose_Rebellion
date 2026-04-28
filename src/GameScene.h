@@ -68,11 +68,6 @@ public:
 	// UI Event delegation
 	bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
-	// Bridge methods for Map, HUD and Enemies
-	Vector2D GetPlayerPosition() override;
-	Player* GetPlayer() override;
-	void SetPlayer(Player* p) override;
-
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
@@ -113,8 +108,6 @@ private:
 	int uiClick;
 
 private:
-	// The player pointer
-	Player* player = nullptr;
 
 	// Current state of the game menu
 	GameMenuTab currentMenuTab = GameMenuTab::NONE;

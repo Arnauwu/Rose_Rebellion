@@ -159,8 +159,8 @@ void Ninfa::PerformPathfinding()
     Vector2D pos = GetPosition();
 
     //Get the position of the player
-    Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
-
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    Vector2D playerPos = player->GetPosition();
     playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 128;
     int iter = 0;
 
@@ -173,7 +173,8 @@ void Ninfa::PerformPathfinding()
 void Ninfa::Move() {
     if (isdead || isKnockedback) return;
 
-    Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    Vector2D playerPos = player->GetPosition();
     Vector2D myPos = GetPosition();
     float distToPlayer = (playerPos - myPos).magnitude();
 

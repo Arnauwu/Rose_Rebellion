@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "UIManager.h"
 #include "SceneManager.h"
+#include "GameManager.h"
+
 #include "Window.h"
 #include "Log.h"
 
@@ -90,6 +92,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     switch (uiElement->id)
     {
     case (int)MenuUI_ID::BTN_PLAY:
+		GameManager::GetInstance().StartNewGame();
         sceneManager->ChangeScene(SceneID::INTRO_CINEMATIC);
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:

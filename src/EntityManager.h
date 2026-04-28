@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include <list>
 
+class Player;
 class EntityManager : public Module
 {
 public:
@@ -34,8 +35,10 @@ public:
 
 	void AddEntity(std::shared_ptr<Entity> entity);
 
-public:
+	Player* GetPlayer() const { return playerPtr; }
+	void SetPlayer(Player* p) { playerPtr = p; }
 
+private:
 	std::list<std::shared_ptr<Entity>> entities;
-
+	Player* playerPtr = nullptr;
 };

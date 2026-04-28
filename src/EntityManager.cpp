@@ -72,6 +72,7 @@ bool EntityManager::CleanUp()
 		if (entity->active == false) continue;
 		ret = entity->Destroy();
 	}
+	playerPtr = nullptr;
 
 	return ret;
 }

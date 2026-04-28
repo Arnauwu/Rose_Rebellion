@@ -5,6 +5,8 @@
 #include "Input.h"
 #include "Render.h"
 #include "SceneManager.h"
+#include "GameManager.h"
+
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -14,11 +16,6 @@
 #include <unordered_map>
 
 using namespace std;
-
-int Player::keyCount = 0;
-bool Player::glideUnlocked = false;
-bool Player::hasSickle = false;
-std::vector<std::string> Player::unlockedDoors;
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -34,9 +31,11 @@ Player::~Player()
 
 bool Player::Awake() 
 {
-
+	Engine::GetInstance().entityManager->SetPlayer(this);
 	// Initialize Player parameters
-	position = Vector2D(96, 96);
+	position = GameManager::GetInstance().gameState.playerPosition;
+	currentHealth = GameManager::GetInstance().gameState.currentHealth;
+
 	return true;
 }
 
@@ -44,7 +43,7 @@ bool Player::Start()
 {
 	// Initialize Player parameters
 
-	Engine::GetInstance().sceneManager->SetPlayer(this);
+	Engine::GetInstance().entityManager->SetPlayer(this);
 
 	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
 	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
@@ -62,7 +61,7 @@ bool Player::Start()
 	respawnFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
 
 	// Load Textures
-	if (!glideUnlocked)
+	if (!GameManager::GetInstance().gameState.glideUnlocked)
 	{
 		std::unordered_map<int, std::string> aliases = GetAliases("capeless");
 
@@ -116,6 +115,7 @@ bool Player::Start()
 bool Player::Update(float dt)
 {
 	if (pbody == nullptr) return true;
+	Engine::GetInstance().entityManager->SetPlayer(this);
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
@@ -439,7 +439,7 @@ void Player::Attack(float dt)
 	// 1. Start the attack 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
 	{
-		if (hasSickle && glideUnlocked)
+		if (GameManager::GetInstance().gameState.hasSickle && GameManager::GetInstance().gameState.glideUnlocked)
 		{
 			Engine::GetInstance().audio->PlayFx(attackFx);
 			isAttacking = true;
@@ -494,13 +494,13 @@ void Player::Attack(float dt)
 		else
 		{
 			// Prompt text
-			if (!hasSickle && !glideUnlocked) {
+			if (!GameManager::GetInstance().gameState.hasSickle && !GameManager::GetInstance().gameState.glideUnlocked) {
 				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape."); 
 			}
-			else if (!hasSickle) {
+			else if (!GameManager::GetInstance().gameState.hasSickle) {
 				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle."); 
 			}
-			else if (!glideUnlocked) {
+			else if (!GameManager::GetInstance().gameState.glideUnlocked) {
 				Engine::GetInstance().hud->ShowNotification("You need to find the Cape."); 
 			}
 		}
@@ -542,7 +542,7 @@ void Player::Attack(float dt)
 
 void Player::Glide() // Gliding
 {
-	if (glideUnlocked)
+	if (GameManager::GetInstance().gameState.glideUnlocked)
 	{
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
@@ -641,18 +641,17 @@ void Player::Interact()
 				if (requiresKey)
 				{
 					// Si necesita
-					if (keyCount > 0)
+					if (GameManager::GetInstance().gameState.keyCount > 0)
 					{
 						Engine::GetInstance().audio->PlayFx(openDoor);
 						//Restar una unidad cuando se usa una llave
-						keyCount--;
-						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+						GameManager::GetInstance().gameState.keyCount--;
+						LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
 
 						std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 						if (!doorId.empty()) {
-							Player::unlockedDoors.push_back(doorId);
+							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 						}
-
 						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else
@@ -865,14 +864,14 @@ void Player::UnlockCape()
 	anims.SetCurrent("idle_right");
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess.png");
-	glideUnlocked = true;
+	GameManager::GetInstance().gameState.glideUnlocked = true;
 
 	AddItem(ItemID::GLIDE, 1);
 }
 
 void Player::UnlockSickle()
 {
-	hasSickle = true;
+	GameManager::GetInstance().gameState.hasSickle = true;
 	AddItem(ItemID::WEAPON, 1);
 	LOG("Sickle Unlocked! You can attack now if you have the cape.");
 }
@@ -976,11 +975,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
-			keyCount++;
+			GameManager::GetInstance().gameState.keyCount++;
 
 			AddItem(ItemID::KEY, 1);
 
-			LOG("KeyNum: %d", keyCount);
+			LOG("KeyNum: %d", GameManager::GetInstance().gameState.keyCount);
 			Engine::GetInstance().hud->ShowNotification("You have obtained a Key."); 
 
 		}
@@ -1190,7 +1189,7 @@ void Player::DevTools(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_9) == KEY_DOWN)
 	{
 		UnlockCape();
-		hasSickle = true;
+		GameManager::GetInstance().gameState.hasSickle = true;
 	}
 }
 

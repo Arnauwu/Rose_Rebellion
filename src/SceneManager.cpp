@@ -148,26 +148,3 @@ bool SceneManager::OnUIMouseClickEvent(UIElement* uiElement) {
     }
     return true;
 }
-
-Vector2D SceneManager::GetPlayerPosition()
-{
-    if (currentScene != nullptr) {
-        return currentScene->GetPlayerPosition();
-    }
-    return Vector2D(0, 0);
-}
-
-Player* SceneManager::GetPlayer()
-{
-    if (currentScene != nullptr) {
-        return currentScene->GetPlayer();
-    }
-    return nullptr;
-}
-
-void SceneManager::SetPlayer(Player* p)
-{
-    if (currentScene != nullptr) {
-        currentScene->SetPlayer(p);
-    }
-}
