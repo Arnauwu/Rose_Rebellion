@@ -72,7 +72,6 @@ public:
 	Vector2D GetPlayerPosition() override;
 	Player* GetPlayer() override;
 	void SetPlayer(Player* p) override;
-	void RequestMapChange(std::string mapFile);
 
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
@@ -109,6 +108,7 @@ private:
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
+	void RequestMapChange(std::string mapFile);
 
 	int uiClick;
 

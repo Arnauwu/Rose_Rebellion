@@ -7,7 +7,6 @@
 #include "SceneManager.h"
 #include "Log.h"
 #include "Physics.h"
-#include "GameManager.h"
 #include "EntityManager.h"
 #include "Map.h"
 
@@ -30,7 +29,7 @@ bool HealthOrb::Start() {
 	std::string currentMap = Engine::GetInstance().map->mapFileName;
 	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)position.getX()) + "_" + std::to_string((int)position.getY());
 
-	if (Engine::GetInstance().gameManager->HasItem(uniqueID)) {
+	if (Engine::GetInstance().sceneManager->collectedItems.count(uniqueID) > 0) {
 		this->Destroy();
 		return true;
 	}
@@ -97,7 +96,7 @@ void HealthOrb::OnCollision(PhysBody* physA, PhysBody* physB)
 {
 	if (physB->ctype == ColliderType::PLAYER) {
 
-		Engine::GetInstance().gameManager->AddItem(uniqueID);
+		Engine::GetInstance().sceneManager->collectedItems.insert(uniqueID);
 		this->Destroy();
 	}
 }

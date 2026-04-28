@@ -5,8 +5,6 @@
 #include "Input.h"
 #include "Render.h"
 #include "SceneManager.h"
-#include "GameManager.h"
-#include "GameScene.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -44,12 +42,9 @@ bool Player::Awake()
 
 bool Player::Start() 
 {
+	// Initialize Player parameters
 
-	SceneBase* currentScene = Engine::GetInstance().sceneManager->GetCurrentScene();
-	GameScene* gameScene = dynamic_cast<GameScene*>(currentScene);
-	if (gameScene != nullptr) {
-		gameScene->SetPlayer(this);
-	}
+	Engine::GetInstance().sceneManager->SetPlayer(this);
 
 	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
 	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
@@ -122,7 +117,7 @@ bool Player::Update(float dt)
 {
 	if (pbody == nullptr) return true;
 
-	if (!Engine::GetInstance().sceneManager->IsGamePaused() && !isdead) 
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
 		
@@ -622,11 +617,8 @@ void Player::Interact()
 		{
 			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 			{
-				SceneBase* currentScene = Engine::GetInstance().sceneManager->GetCurrentScene();
-				GameScene* gameScene = dynamic_cast<GameScene*>(currentScene);
-
-				if (gameScene == nullptr) return;
-				if (Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody))
+				bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
+				if (isMaintenance)
 				{
 					Engine::GetInstance().audio->PlayFx(pickItemFx); 
 					
@@ -634,7 +626,8 @@ void Player::Interact()
 					return; 
 				}
 
-				if (Engine::GetInstance().map->DoorClosed(interactuableBody))
+				bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
+				if (isClosed)
 				{
 					Engine::GetInstance().audio->PlayFx(pickItemFx);
 
@@ -644,7 +637,6 @@ void Player::Interact()
 
 				//Pregunta si esta puerta necesita llave
 				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
-				std::string targetMap = Engine::GetInstance().map->DoorInfo(interactuableBody);
 
 				if (requiresKey)
 				{
@@ -658,25 +650,24 @@ void Player::Interact()
 
 						std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 						if (!doorId.empty()) {
-							Engine::GetInstance().gameManager->AddOpenedDoor(doorId);
+							Player::unlockedDoors.push_back(doorId);
 						}
 
-						gameScene->RequestMapChange(targetMap);
+						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else
 					{
 						Engine::GetInstance().audio->PlayFx(closedDoor);
-						Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 						LOG("Necesitas una llave para abrir, busca una ");
-
+						Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 					}
 				}
 				else
 				{
-
+					
 					// Si no
 					LOG("Esta puerta no necesita llave ");
-					gameScene->RequestMapChange(targetMap);
+					Engine::GetInstance().sceneManager->setNewMap = true;
 				}
 			}
 		}
@@ -969,13 +960,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::PATH:
 		interactuableBody = physB;
-		SceneBase* current = Engine::GetInstance().sceneManager->GetCurrentScene();
-		GameScene* gameScene = dynamic_cast<GameScene*>(current);
-
-		if (gameScene != nullptr) {
-			// Supongamos que tienes el nombre del mapa en una variable 'targetMap'
-			gameScene->RequestMapChange(map);
-		}		
+ 		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
 
 	case ColliderType::CEILING:
