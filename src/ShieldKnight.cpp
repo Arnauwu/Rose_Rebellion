@@ -347,7 +347,7 @@ void ShieldKnight::Attack()
 
 
 //Define OnCollision function for the enemy. 
-void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
+void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
 	if (physA == attackHitbox) { return; }
@@ -362,7 +362,7 @@ void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void ShieldKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void ShieldKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{

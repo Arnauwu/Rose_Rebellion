@@ -20,8 +20,8 @@ public:
 	virtual ~Enemy() {};
 	bool Update(float dt) override;
 	bool CleanUp() override;
-	void OnCollision(PhysBody* physA, PhysBody* physB) override;
-	void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
+	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
 	void SetPosition(Vector2D pos);
 	Vector2D GetPosition();
 	bool Destroy();

@@ -92,7 +92,7 @@ bool HealthOrb::Destroy()
 	return true;
 }
 
-void HealthOrb::OnCollision(PhysBody* physA, PhysBody* physB)
+void HealthOrb::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physB->ctype == ColliderType::PLAYER) {
 

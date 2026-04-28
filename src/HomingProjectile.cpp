@@ -76,7 +76,7 @@ bool HomingProjectile::Update(float dt)
     return true;
 }
 
-void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB)
+void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
     if (pendingToDelete) return;
 

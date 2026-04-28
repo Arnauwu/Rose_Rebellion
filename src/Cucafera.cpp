@@ -304,7 +304,7 @@ void Cucafera::RollAttack()
 
 
 //Define OnCollision function for the enemy. 
-void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB) {
+void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
 	case ColliderType::WALL:
@@ -323,7 +323,7 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void Cucafera::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void Cucafera::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{

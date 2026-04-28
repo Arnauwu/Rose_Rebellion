@@ -2,6 +2,7 @@
 
 #include "Input.h"
 #include "Render.h"
+#include <box2d/box2d.h>   // for ShapeId //To Do, check if you can get it from Physics.h without issues
 
 enum class EntityType
 {
@@ -84,11 +85,11 @@ public:
 		}
 	}
 
-	virtual void OnCollision(PhysBody* physA, PhysBody* physB) {
+	virtual void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 
 	};
 
-	virtual void OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
+	virtual void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 
 	};
 

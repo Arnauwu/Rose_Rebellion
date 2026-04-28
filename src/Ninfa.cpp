@@ -360,7 +360,7 @@ bool Ninfa::CleanUp() {
     return Enemy::CleanUp();
 }
 
-void Ninfa::OnCollision(PhysBody* physA, PhysBody* physB)
+void Ninfa::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
     // Si está muerto, no hace daño ni recibe más golpes
     if (isdead) return;

@@ -337,7 +337,7 @@ void KnightBoss::ShieldDash() // TO DO: MAKE IT WORK (doesnt work because pbody 
 	}
 }
 
-void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB) {
+void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	if (physA == swordHitbox)
 	{
 		return;
@@ -362,7 +362,7 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{

@@ -256,15 +256,15 @@ PhysBody* Physics::CreateCapsule(int x, int y, int radious, int width, int heigh
     b2Body_SetFixedRotation(b, true);
     
     
-    // User Data // TO DO CHECK THIS
+    // User Data
     b2Shape_SetUserData(bottomShape, (void*)(uintptr_t)SHAPE_BOTTOM);
     b2Shape_SetUserData(middleShape, (void*)(uintptr_t)SHAPE_MIDDLE);
     b2Shape_SetUserData(topShape,    (void*)(uintptr_t)SHAPE_TOP);
 
-
     //Phys
     PhysBody* pbody = new PhysBody();
     pbody->body = b;
+
     b2Body_SetUserData(b, ToUserData(pbody));
 
     return pbody;
@@ -282,6 +282,11 @@ void Physics::CreateWeldJoint(PhysBody* bodyA, PhysBody* bodyB, bool colision, b
     weldJoint.localAnchorB = localAnchorB;
 
     b2CreateWeldJoint(world, &weldJoint);
+}
+
+void* Physics::GetShapeUserData(b2ShapeId shape)
+{
+    return b2Shape_GetUserData(shape);
 }
 
 // 
@@ -359,8 +364,8 @@ void Physics::BeginContact(b2ShapeId shapeA, b2ShapeId shapeB)
     PhysBody* physB = BodyToPhys(bodyB);
     if (!physA || !physB) return;                  // user data cleared
 
-    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollision(physA, physB);
-    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollision(physB, physA);
+    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollision(physA, physB, shapeA, shapeB);
+    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollision(physB, physA, shapeA, shapeB);
 }
 
 void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
@@ -376,8 +381,8 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
     if (!physA || !physB) return;
     if (IsPendingToDelete(physA) || IsPendingToDelete(physB)) return;
 
-    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollisionEnd(physA, physB);
-    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollisionEnd(physB, physA);
+    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollisionEnd(physA, physB, shapeA, shapeB);
+    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollisionEnd(physB, physA, shapeA, shapeB);
 }
 
 
@@ -549,7 +554,7 @@ void PhysBody::SetCollisionsActive(bool active)
     }
 }
 
-void* PhysBody::GetUserData()
+void* PhysBody::GetBodyUserData()
 {
     return b2Body_GetUserData(this->body);
 }

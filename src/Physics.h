@@ -29,6 +29,8 @@ enum PlayerShapeType {
     SHAPE_MIDDLE,
     SHAPE_TOP
 };
+
+
 enum class ColliderType {
     //Player
     PLAYER,
@@ -77,7 +79,7 @@ public:
     bool  Contains(int x, int y) const;
     int   RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& normal_y) const;
 	void  SetCollisionsActive(bool active);
-    void*  GetUserData();
+    void*  GetBodyUserData();
 
 public:
     b2BodyId body;              // id instead of pointer (v3.x)
@@ -113,6 +115,10 @@ public:
 
     // Create Joint
     void CreateWeldJoint(PhysBody* bodyA, PhysBody* bodyB, bool colision, b2Vec2 localAnchorA, b2Vec2 localAnchorB);
+
+    //Getters
+    void* GetShapeUserData(b2ShapeId shape);
+
 
     // Invoked from our event processing
     void BeginContact(b2ShapeId shapeA, b2ShapeId shapeB);

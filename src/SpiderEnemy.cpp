@@ -196,7 +196,7 @@ Vector2D SpiderEnemy::GetTilePos()
     return tilePos;
 }
 
-void SpiderEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
+void SpiderEnemy::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 
 	
     switch (physB->ctype)
@@ -237,4 +237,4 @@ void SpiderEnemy::OnCollision(PhysBody* physA, PhysBody* physB) {
     }
 }
 
-void SpiderEnemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB) {}
+void SpiderEnemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {}

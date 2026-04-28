@@ -92,7 +92,7 @@ bool Player::Start()
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 2, texW, texH, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW+1, texH, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -144,6 +144,23 @@ bool Player::Update(float dt)
 		Dash();
 	
 		ApplyPhysics();
+
+		if (onGround && !onWall && !onAir && !isdead) //Save LastSafePosition
+		{
+			if (safePositionTimer.ReadMSec() >= safePositionInterval)
+			{
+		
+				Vector2D start = position;
+				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+
+				if (Engine::GetInstance().physics->Raycast(start, end))
+				{
+					lastSafePosition = position;
+					LOG("lastSafePosition saved");
+					safePositionTimer.Start();
+				}
+			}
+		}
 	}
 
 	if (isdead)
@@ -188,23 +205,7 @@ bool Player::Update(float dt)
 
 	DevTools(dt);
 
-	// TO DO: Revisar esto a fondo
-	if (onGround && !onWall && !onAir && !isdead)
-	{
-		if (safePositionTimer.ReadMSec() >= safePositionInterval)
-		{
-		
-			Vector2D start = position;
-			Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
 
-			if (Engine::GetInstance().physics->Raycast(start, end))
-			{
-				lastSafePosition = position;
-				LOG("lastSafePosition saved");
-				safePositionTimer.Start();
-			}
-		}
-	}
 	return true;
 }
 
@@ -916,11 +917,11 @@ int Player::GetItemCount(ItemID id) {
 }
 
 // Define OnCollision function for the player. 
-void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
+void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	if (physA == attackCollider) { return; }
 
 	//TO DO CHECK THIS
-	PlayerShapeType typeA = (PlayerShapeType)(uintptr_t)physA->GetUserData();
+	PlayerShapeType typeA = (PlayerShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
 
  	if ( typeA == PlayerShapeType::SHAPE_BOTTOM)
 	{
@@ -1074,13 +1075,12 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision UNKNOWN");
 		break;
 
-	case ColliderType::PLAYER_ATTACK:
 	default:
 		break;
 	}
 }
 
-void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{
@@ -1088,23 +1088,21 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		onAir = true;
 		onWall = false;
 		break;
+
 	case ColliderType::GROUND:
 		onGround = false;
 		onAir = true;
 		LOG("On Air");
-
 		break;
+
 	case ColliderType::DOOR:
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;
-	case ColliderType::ITEM:
-		LOG("End Collision ITEM");
-		break;
+
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
-	case ColliderType::CEILING:
 	default:
 		break;
 	}

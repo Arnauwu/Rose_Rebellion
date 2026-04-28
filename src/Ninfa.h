@@ -23,7 +23,7 @@ public:
 	bool Update(float dt) override;
 	bool CleanUp() override;
 
-	void OnCollision(PhysBody* physA, PhysBody* physB) override;
+	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
 protected:
 	void GetPhysicsValues() override;
 	void Move() override;

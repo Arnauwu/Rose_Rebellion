@@ -54,7 +54,7 @@ bool Keys::CleanUp()
     return true;
 }
 
-void Keys::OnCollision(PhysBody* physA, PhysBody* physB)
+void Keys::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
     if (physB->ctype == ColliderType::PLAYER) {
         SetCollected();

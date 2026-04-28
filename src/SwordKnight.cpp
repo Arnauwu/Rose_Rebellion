@@ -340,7 +340,7 @@ void SwordKnight::Attack()
 
 
 //Define OnCollision function for the enemy. 
-void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) 
+void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physA == attackHitbox) { return; }
 
@@ -357,7 +357,7 @@ void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB)
 	}
 }
 
-void SwordKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void SwordKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{

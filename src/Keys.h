@@ -12,7 +12,7 @@ public:
 	bool Update(float dt)override;
 	bool CleanUp() override;
 	
-	void OnCollision(PhysBody* physA, PhysBody* physB);
+	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 private:
 	SDL_Texture* texture = nullptr;
 	PhysBody* pbody = nullptr;
