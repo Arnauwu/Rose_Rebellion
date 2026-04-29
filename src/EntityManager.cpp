@@ -11,6 +11,8 @@
 #include "Sickle.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
+#include "DashObj.h"
+#include "DoubleJumpObj.h"
 
 #include "SavePoint.h"
 
@@ -126,6 +128,12 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::SICKLE:
 		entity = std::make_shared<Sickle>();
+		break;
+	case EntityType::DASH_OBJ:
+		entity = std::make_shared<DashObj>();
+		break;
+	case EntityType::DOUBLEJUMP_OBJ:
+		entity = std::make_shared<DoubleJumpObj>();
 		break;
 	default:
 		break;

@@ -18,6 +18,7 @@ enum class ItemID {
 	GLIDE,
 	KEY,
 	STRENGTH_ORB,
+	DASH_OBJ
 };
 
 enum class CameraMode {
@@ -54,6 +55,7 @@ public:
 	// Unlocks
 	void UnlockCape();
 	void UnlockSickle();
+	void UnlockDash();
 
 	
 	//Inventary Variables
@@ -139,7 +141,7 @@ public:
 	bool isGliding = false; // Flag
 
 	// Dash
-	bool dashUnlocked = false; 
+	static bool dashUnlocked;
 	bool isDashing = false; // Flag to check if the player has dashed
 	float dashForce = 15.0f;
 

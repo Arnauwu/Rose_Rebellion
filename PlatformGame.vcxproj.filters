@@ -116,6 +116,9 @@
     <Filter Include="Source Files\Game\Entity\Bosses\Knight">
       <UniqueIdentifier>{07ccddc3-1cdd-4b8e-8164-c59a764de334}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Items\SkillObject">
+      <UniqueIdentifier>{3280a1ad-e81d-4a75-8138-69ede91828f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -261,6 +264,12 @@
     <ClCompile Include="src\GameOverScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\DashObj.cpp">
+      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DoubleJumpObj.cpp">
+      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -400,6 +409,12 @@
     </ClInclude>
     <ClInclude Include="src\GameOverScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DashObj.h">
+      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DoubleJumpObj.h">
+      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

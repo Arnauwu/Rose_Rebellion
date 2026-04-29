@@ -18,6 +18,7 @@ using namespace std;
 int Player::keyCount = 0;
 bool Player::glideUnlocked = false;
 bool Player::hasSickle = false;
+bool Player::dashUnlocked = false; 
 std::vector<std::string> Player::unlockedDoors;
 
 Player::Player() : Entity(EntityType::PLAYER)
@@ -608,6 +609,12 @@ void Player::Dash()
 	}
 }
 
+void Player::UnlockDash() {
+	dashUnlocked = true;
+	AddItem(ItemID::DASH_OBJ, 1);
+	LOG("Dash Unlocked! You can dash");
+}
+
 void Player::Interact()
 {
 	if (canInteract && interactuableBody != nullptr)
@@ -1017,6 +1024,14 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
 			Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle."); 
+		}
+		else if (physB->listener->name == "DashObj") {
+			LOG("Collision ITEM (Dashobj Picked Up)");
+			Engine::GetInstance().hud->ShowNotification("You have obtained the DashObj.");
+		}
+		else if (physB->listener->name == "DoubleJumpObj") {
+			LOG("Collision ITEM (DoubleJumpObj Picked Up)");
+			Engine::GetInstance().hud->ShowNotification("You have obtained the DoubleJumpObj.");
 		}
 		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();
