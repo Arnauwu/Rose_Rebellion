@@ -53,7 +53,7 @@ void DoubleJumpObj::OnCollision(PhysBody* physA, PhysBody* physB) {
 	if (physB->ctype == ColliderType::PLAYER) {
 
 		Player* player = (Player*)physB->listener;
-		player->UnlockCape();
+		player->UnlockDoubleJump();
 		SetCollected();
 		isPicked = false;
 	}

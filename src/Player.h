@@ -18,7 +18,8 @@ enum class ItemID {
 	GLIDE,
 	KEY,
 	STRENGTH_ORB,
-	DASH_OBJ
+	DASH_OBJ,
+	DOUBLEJUMP_OBJ
 };
 
 enum class CameraMode {
@@ -56,6 +57,7 @@ public:
 	void UnlockCape();
 	void UnlockSickle();
 	void UnlockDash();
+	void UnlockDoubleJump();
 
 	
 	//Inventary Variables
@@ -133,7 +135,7 @@ public:
 	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
 
 	// Double Jump
-	bool doubleJumpUnlocked = false; 
+	static bool doubleJumpUnlocked; 
 	bool secondJumpUsed = false;
 	
 	// Gliding

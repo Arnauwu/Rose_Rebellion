@@ -19,6 +19,7 @@ int Player::keyCount = 0;
 bool Player::glideUnlocked = false;
 bool Player::hasSickle = false;
 bool Player::dashUnlocked = false; 
+bool Player::doubleJumpUnlocked = false;
 std::vector<std::string> Player::unlockedDoors;
 
 Player::Player() : Entity(EntityType::PLAYER)
@@ -435,6 +436,13 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 }
 
+void Player::UnlockDoubleJump() {
+	doubleJumpUnlocked = true;
+	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
+	LOG("Double Jump Unlocked! You can do a double jump");
+
+}
+
 void Player::Attack(float dt)
 {
 	// 1. Start the attack 
@@ -612,7 +620,7 @@ void Player::Dash()
 void Player::UnlockDash() {
 	dashUnlocked = true;
 	AddItem(ItemID::DASH_OBJ, 1);
-	LOG("Dash Unlocked! You can dash");
+	LOG("Dash Unlocked! You can do a dash");
 }
 
 void Player::Interact()
