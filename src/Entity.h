@@ -94,6 +94,8 @@ public:
 
 public:
 
+	bool isAwake = false;
+	bool hasStarted = false;
 	std::string name;
 	EntityType type;
 

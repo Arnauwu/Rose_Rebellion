@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<SaveGame>
+	<PlayerStats currentHealth="100" maxHealth="100" keyCount="0" currentForceOrbs="0" />
+	<Unlockables hasSickle="false" glideUnlocked="true" />
+	<WorldState currentMap="Castle_Room_Princess.tmx">
+		<Position x="1240" y="924" />
+	</WorldState>
+	<OpenedDoors>
+		<Door id="Castle_Inside.tmx_24" />
+	</OpenedDoors>
+	<CollectedItems>
+		<Item id="Castle_Room_Kitchen.tmx_Key_874_619" />
+		<Item id="Castle_Room_Storage.tmx_Manta_477_705" />
+	</CollectedItems>
+</SaveGame>

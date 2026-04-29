@@ -19,6 +19,7 @@
 
 #include "KnightBoss.h"
 
+#include "GameManager.h"
 #include "SavePoint.h"
 #include "Item.h"
 #include "HealthOrb.h"
@@ -58,9 +59,9 @@ bool Map::Update(float dt)
 	if (mapLoaded)
 	{
 		// Loop to draw all images
-		for (const auto& objectGroup : mapData.objectGroups) 
+		for (const auto& objectGroup : mapData.objectGroups)
 		{
-			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true) 
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true)
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
@@ -180,7 +181,7 @@ bool Map::Update(float dt)
 							bool flipped_diagonally = (gid & FLIPPED_DIAGONALLY_FLAG);
 
 							// Clear all four flags
- 							unsigned int tileId =  gid & ~0XF0000000;
+							unsigned int tileId = gid & ~0XF0000000;
 
 							// Determine rotation and final horizontal flip
 							float rotation = 0.0f;
@@ -271,6 +272,8 @@ TileSet* Map::GetTilesetFromTileId(int gid) const
 bool Map::CleanUp()
 {
 	LOG("Unloading map");
+	mapFileName = "";
+	mapPath = "";
 
 	// Clean up any memory allocated from tilesets/map
 	for (const auto& tileset : mapData.tilesets) {
@@ -291,18 +294,7 @@ bool Map::CleanUp()
 	}
 	mapData.objectGroups.clear();
 
-	// Clean up spawn points
-	for (const auto& spawnPoint : mapData.spawnPoints)
-	{
-		delete spawnPoint;
-	}
 	mapData.spawnPoints.clear();
-
-	// Clean up doors
-	for (const auto& door : mapData.doors)
-	{
-		delete door;
-	}
 	mapData.doors.clear();
 
 	// Clean up collider list
@@ -472,20 +464,7 @@ bool Map::Load(std::string path, std::string fileName)
 		// Creation of colliders and assign their type
 		for (const auto& objectsGroups : mapData.objectGroups)
 		{
-
-			if (objectsGroups->properties.GetProperty("SavePoint") != NULL && objectsGroups->properties.GetProperty("SavePoint")->value)
-			{
-				for (const auto& obj : objectsGroups->objects)
-				{
-					std::shared_ptr<Entity> newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::SAVEPOINT);
-					SavePoint* sp = (SavePoint*)newEntity.get();
-
-					sp->position = Vector2D(obj->x, obj->y);
-					LOG("SUCCESS: Found SavePoint Layer in Tiled!");
-				}
-			}
-
-			else if (objectsGroups->properties.GetProperty("Square") != NULL and objectsGroups->properties.GetProperty("Square")->value) // Square
+			if (objectsGroups->properties.GetProperty("Square") != NULL and objectsGroups->properties.GetProperty("Square")->value) // Square
 			{
 				for (const auto& obj : objectsGroups->objects)
 				{
@@ -521,44 +500,44 @@ bool Map::Load(std::string path, std::string fileName)
 
 						// TODO: Assign Listener
 
-						Door* newDoor = new Door;
-						newDoor->body = collider;
-						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						Door newDoor;
+						newDoor.body = collider;
+						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 
-						newDoor->uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
 
 						//Mira si necesita una llave para abrirlo o no
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						if (needsKeyProp != nullptr)
 						{
-							newDoor->needsKey = needsKeyProp->value; // Si la propiedad "NeedsKey" de la puerta es true, esta puerta necesita una llave.
-
+							newDoor.needsKey = needsKeyProp->value;
 						}
 						else
 						{
-							newDoor->needsKey = false; // Si no, no necesita llave
+							newDoor.needsKey = false;
 						}
-						for (const std::string& unlockedId : Player::unlockedDoors) {
-							if (unlockedId == newDoor->uniqueId) {
-								newDoor->needsKey = false; 
+
+						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
+							if (unlockedId == newDoor.uniqueId) {
+								newDoor.needsKey = false;
 								break;
 							}
 						}
 
 						Properties::Property* maintenanceProp = obj->properties.GetProperty("UnderMaintenance");
 						if (maintenanceProp != nullptr) {
-							newDoor->underMaintenance = maintenanceProp->value; 
+							newDoor.underMaintenance = maintenanceProp->value;
 						}
 						else {
-							newDoor->underMaintenance = false;
+							newDoor.underMaintenance = false;
 						}
 
 						Properties::Property* closedProp = obj->properties.GetProperty("DoorClosed");
 						if (closedProp != nullptr) {
-							newDoor->DoorClose = closedProp->value;
+							newDoor.DoorClose = closedProp->value;
 						}
 						else {
-							newDoor->DoorClose = false; 
+							newDoor.DoorClose = false;
 						}
 						mapData.doors.push_back(newDoor);
 					}
@@ -568,9 +547,9 @@ bool Map::Load(std::string path, std::string fileName)
 
 						// TODO: Assign Listener
 
-						Door* newDoor = new Door;
-						newDoor->body = collider;
-						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						Door newDoor;
+						newDoor.body = collider;
+						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 						mapData.doors.push_back(newDoor);
 					}
 					else
@@ -784,22 +763,22 @@ Vector2D Map::GetMapSizeInTiles()
 
 void Map::SpawnEntities()
 {
-    for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
-    {
-        if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
-        {
-            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
-            {
-                std::string entityType = objectNode.attribute("type").as_string();
-                float x = objectNode.attribute("x").as_float();
-                float y = objectNode.attribute("y").as_float();
+	for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
+	{
+		if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
+		{
+			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
+			{
+				std::string entityType = objectNode.attribute("type").as_string();
+				float x = objectNode.attribute("x").as_float();
+				float y = objectNode.attribute("y").as_float();
 
 				//Player
-                if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
-                {
-					Player* player = Engine::GetInstance().sceneManager->GetPlayer();
+				if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
+				{
+					Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-					if (player == NULL) 
+					if (player == nullptr)
 					{
 						std::shared_ptr<Player> newPlayerPtr = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
 
@@ -807,20 +786,26 @@ void Map::SpawnEntities()
 
 						player->position = Vector2D(x, y);
 					}
-					else 
+					else
 					{
-						player->position = Vector2D(x, y);
 					}
-					Engine::GetInstance().sceneManager->SetPlayer(player);
+					Engine::GetInstance().entityManager->SetPlayer(player);
 				}
 
+				else if (entityType == std::string("SavePoint"))
+				{
+					std::shared_ptr<SavePoint> sp = std::dynamic_pointer_cast<SavePoint>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SAVEPOINT));
+					if (sp != nullptr) {
+						sp->position = Vector2D(x, y);
+					}
+				}
 
 				//Enemies
-                else if (entityType == std::string("Spider"))
-                {
-                    std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
-                    spider->position = Vector2D(x, y);
-                }
+				else if (entityType == std::string("Spider"))
+				{
+					std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
+					spider->position = Vector2D(x, y);
+				}
 				else if (entityType == std::string("Cucafera"))
 				{
 					std::shared_ptr<Cucafera> cucafera = std::dynamic_pointer_cast<Cucafera>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA));
@@ -879,8 +864,8 @@ void Map::SpawnEntities()
 					std::shared_ptr<SkillPointOrb> skillPointOrb = std::dynamic_pointer_cast<SkillPointOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SKILL_POINT_ORB));
 					skillPointOrb->position = Vector2D(x, y);
 				}
-            }
-        }
+			}
+		}
 
 
 		if (objectGroupNode.attribute("name").as_string() == std::string("PlayerSpawns"))
@@ -895,28 +880,29 @@ void Map::SpawnEntities()
 				Properties a;
 				LoadProperties(objectNode, a);
 
-				PlayerSpawnPoint* newSpawn = new PlayerSpawnPoint;
-				newSpawn->fromRoom = a.GetProperty("FromRoom") ? a.GetProperty("FromRoom")->value2 : "UNKNOWN";
-				newSpawn->position.setX(x);
-				newSpawn->position.setY(y);
-				
-				LOG("Loaded spawn point - FromRoom: '%s', Position: (%.0f, %.0f)", 
-					newSpawn->fromRoom.c_str(), x, y);
-				
+				PlayerSpawnPoint newSpawn;
+				newSpawn.fromRoom = a.GetProperty("FromRoom") ? a.GetProperty("FromRoom")->value2 : "UNKNOWN";
+				newSpawn.position.setX(x);
+				newSpawn.position.setY(y);
+
+				LOG("Loaded spawn point - FromRoom: '%s', Position: (%.0f, %.0f)",
+					newSpawn.fromRoom.c_str(), x, y);
+
 				mapData.spawnPoints.push_back(newSpawn);
 			}
 		}
-    }
+	}
 
+	Engine::GetInstance().entityManager->AwakeEntities();
 }
 
 std::string Map::DoorInfo(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->teleportTo;
+			return ndoor.teleportTo;
 		}
 	}
 	return std::string();
@@ -926,23 +912,24 @@ bool Map::DoorNeedsKey(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->needsKey;
+			return ndoor.needsKey;
 		}
 	}
 	return false;
 }
+
 Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 {
 	// Buscar el spawn point que coincida con la sala de origen
 	for (const auto& spawnPoint : mapData.spawnPoints)
 	{
-		if (spawnPoint->fromRoom == fromRoom)
+		if (spawnPoint.fromRoom == fromRoom)
 		{
-			LOG("Found spawn point for room '%s' at (%.0f, %.0f)", 
-				fromRoom.c_str(), spawnPoint->position.getX(), spawnPoint->position.getY());
-			return spawnPoint->position;
+			LOG("Found spawn point for room '%s' at (%.0f, %.0f)",
+				fromRoom.c_str(), spawnPoint.position.getX(), spawnPoint.position.getY());
+			return spawnPoint.position;
 		}
 	}
 
@@ -950,7 +937,7 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 	if (!mapData.spawnPoints.empty())
 	{
 		LOG("WARNING: Spawn point from room '%s' not found. Using first available spawn point.", fromRoom.c_str());
-		return mapData.spawnPoints.front()->position;
+		return mapData.spawnPoints.front().position;
 	}
 
 	// Fallback: posición por defecto (solo si no hay spawn points en absoluto)
@@ -963,9 +950,9 @@ std::string Map::GetDoorUniqueId(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->uniqueId;
+			return ndoor.uniqueId;
 		}
 	}
 	return "";
@@ -975,9 +962,9 @@ bool Map::DoorUnderMaintenance(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->underMaintenance;
+			return ndoor.underMaintenance;
 		}
 	}
 	return false;
@@ -986,13 +973,10 @@ bool Map::DoorUnderMaintenance(PhysBody* door)
 bool Map::DoorClosed(PhysBody* door) {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->DoorClose;
+			return ndoor.DoorClose;
 		}
 	}
 	return false;
 }
-
-
-

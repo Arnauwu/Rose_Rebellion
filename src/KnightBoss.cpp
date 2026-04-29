@@ -110,7 +110,8 @@ void KnightBoss::PerformPathfinding()
 {
 	pathfinding->ResetPath(GetTilePos());
 	Vector2D pos = GetPosition();
-	Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	Vector2D playerPos = player->GetPosition();
 
 	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 128;
 	int iter = 0;
@@ -160,7 +161,8 @@ void KnightBoss::Move()
 	if (playerTileDist <= 2 && !isKnockedback) {
 
 		// Mirar hacia el jugador
-		Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+		Player* player = Engine::GetInstance().entityManager->GetPlayer();
+		Vector2D playerPos = player->GetPosition();
 		lookingRight = (playerPos.getX() > position.getX());
 
 		// EJECUTAR EL PASO DEL COMBO CORRESPONDIENTE

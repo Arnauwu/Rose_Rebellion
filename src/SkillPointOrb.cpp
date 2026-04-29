@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "GameManager.h"
 
 SkillPointOrb::SkillPointOrb() : Entity(EntityType::ITEM)
 {
@@ -29,7 +30,7 @@ bool SkillPointOrb::Start() {
 	std::string currentMap = Engine::GetInstance().map->mapFileName;
 	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)position.getX()) + "_" + std::to_string((int)position.getY());
 
-	if (Engine::GetInstance().sceneManager->collectedItems.count(uniqueID) > 0) {
+	if (GameManager::GetInstance().gameState.collectedItems.count(uniqueID) > 0) {
 		this->Destroy();
 		return true;
 	}
@@ -95,8 +96,7 @@ bool SkillPointOrb::Destroy()
 void SkillPointOrb::OnCollision(PhysBody* physA, PhysBody* physB)
 {
 	if (physB->ctype == ColliderType::PLAYER) {
-
-		Engine::GetInstance().sceneManager->collectedItems.insert(uniqueID);
+		GameManager::GetInstance().gameState.collectedItems.insert(uniqueID);
 		this->Destroy();
 	}
 }

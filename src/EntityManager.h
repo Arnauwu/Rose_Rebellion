@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include <list>
 
+class Player;
 class EntityManager : public Module
 {
 public:
@@ -25,8 +26,9 @@ public:
 	bool PostUpdate();
 
 	// Called before quitting
-	bool CleanUp();
+	bool CleanUp(bool keepPlayer = false);
 
+	void AwakeEntities();
 	// Additional methods
 	std::shared_ptr<Entity> CreateEntity(EntityType type);
 
@@ -34,8 +36,11 @@ public:
 
 	void AddEntity(std::shared_ptr<Entity> entity);
 
-public:
+	Player* GetPlayer() const { return playerPtr; }
+	void SetPlayer(Player* p) { playerPtr = p; }
 
+private:
+	bool requiresSort = false;
 	std::list<std::shared_ptr<Entity>> entities;
-
+	Player* playerPtr = nullptr;
 };

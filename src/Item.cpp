@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Render.h"
 #include "SceneManager.h"
+#include "GameManager.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -75,7 +76,7 @@ bool Item::CheckIfCollected() {
 	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)position.getX()) + "_" + std::to_string((int)position.getY());
 
 	// ????ID???????????
-	if (Engine::GetInstance().sceneManager->collectedItems.count(uniqueID) > 0) {
+	if (GameManager::GetInstance().gameState.collectedItems.count(uniqueID) > 0) {
 		// ???????????????? true
 		this->Destroy();
 		return true;
@@ -87,7 +88,7 @@ void Item::SetCollected() {
 	if (!isPicked) {
 		isPicked = true;
 		// ??????ID?????"???"????
-		Engine::GetInstance().sceneManager->collectedItems.insert(uniqueID);
+		GameManager::GetInstance().gameState.collectedItems.insert(uniqueID);
 		// ????????
 		this->Destroy();
 	}

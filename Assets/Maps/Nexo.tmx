@@ -41,6 +41,12 @@
   <object id="9" gid="130" x="1269" y="1459" width="2814" height="1514.73"/>
   <object id="10" gid="130" x="6438.67" y="1452" width="2852" height="1505.4"/>
   <object id="12" gid="130" x="-864" y="1459" width="2814" height="1514.73"/>
+  <object id="86" x="312" y="1168">
+   <properties>
+    <property name="FromRoom" type="file" value="Forest_01.tmx"/>
+   </properties>
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="16" name="BG2">
   <properties>
@@ -5819,6 +5825,12 @@
    <point/>
   </object>
   <object id="34" name="Sickle" type="Sickle" x="3876" y="1118">
+   <point/>
+  </object>
+  <object id="88" name="Player" type="Player" x="312" y="1172">
+   <properties>
+    <property name="FromRoom" type="file" value="Forest_01.tmx"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

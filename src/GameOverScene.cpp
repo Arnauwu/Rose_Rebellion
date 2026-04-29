@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "Render.h"
 #include "SceneManager.h"
+#include "GameManager.h"
+
 #include "Window.h"
 #include "Player.h"
 
@@ -12,11 +14,8 @@ GameOverScene::~GameOverScene() {}
 bool GameOverScene::Start() {
     timer = 0.0f;
 
-    Player::keyCount = 0;
-    Player::glideUnlocked = false;
-
-    Engine::GetInstance().sceneManager->collectedItems.clear();
-    Engine::GetInstance().sceneManager->openedDoors.clear();
+    GameManager::GetInstance().gameState.collectedItems.clear();
+    GameManager::GetInstance().gameState.openedDoors.clear();
 
     return true;
 }
