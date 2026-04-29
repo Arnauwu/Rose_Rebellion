@@ -220,7 +220,7 @@ PhysBody* Physics::CreateCapsule(int x, int y, int radious, int width, int heigh
 
     //Inf
     b2Circle circle;
-    circle.center = { 0.0f,  (PIXEL_TO_METERS(height) * 0.5f) };
+    circle.center = { 0.0f,PIXEL_TO_METERS(radious)*0.5f };
     circle.radius = PIXEL_TO_METERS(radious);
     
     b2ShapeDef sdef1 = b2DefaultShapeDef();
@@ -233,6 +233,11 @@ PhysBody* Physics::CreateCapsule(int x, int y, int radious, int width, int heigh
 
     //Body
     b2Polygon middl_box = b2MakeBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+    for (int i = 0; i < 4; i++)
+    {
+        middl_box.vertices[i].y -= PIXEL_TO_METERS(radious) * 1.0f;
+    }
+
 
     b2ShapeDef sdef2 = b2DefaultShapeDef();
     sdef2.density = 1.0f;

@@ -92,7 +92,7 @@ bool Player::Start()
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW+1, texH, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19/24 , texH * 3/2, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -155,8 +155,8 @@ bool Player::Update(float dt)
 
 				if (Engine::GetInstance().physics->Raycast(start, end))
 				{
+					//LOG("lastSafePosition saved");
 					lastSafePosition = position;
-					LOG("lastSafePosition saved");
 					safePositionTimer.Start();
 				}
 			}
@@ -547,7 +547,7 @@ void Player::Attack(float dt)
 
 void Player::Glide() // Gliding
 {
-	if (glideUnlocked)
+	if (glideUnlocked) // TO DO FIX Glide
 	{
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
@@ -917,30 +917,23 @@ int Player::GetItemCount(ItemID id) {
 }
 
 // Define OnCollision function for the player. 
-void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
+void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) 
+{
 	if (physA == attackCollider) { return; }
+	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER)	{return;}
 
-	//TO DO CHECK THIS
-	PlayerShapeType typeA = (PlayerShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
+	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
+	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
 
- 	if ( typeA == PlayerShapeType::SHAPE_BOTTOM)
+	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temportal? Fix
 	{
-		LOG("Collision inf circle");
+		// TO DO: Con el rectangulo (Middle) se guarda correctamente en typeA, con ambos circulos se guarda en typeB porque los detecta en shapeB
+		typeA = typeB;
 	}
-	else if (typeA == PlayerShapeType::SHAPE_MIDDLE)
-	{
-		LOG("Collision middle");
-	}
-	else if (typeA == PlayerShapeType::SHAPE_TOP)
-	{
-		LOG("Collision sup circle");
-	}
-
-
 
 	switch (physB->ctype)
 	{
-	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
+	case ColliderType::DANGER:
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead) 
 		{
@@ -952,40 +945,48 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 
-	case ColliderType::GROUND:
-		LOG("Collision GROUND");
-		// Reset the jump flag when touching the ground
-		isJumping = false;
-		secondJumpUsed = false;
+	case ColliderType::MAP:
 
-		if (currentAnimPriority > 1)
+		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
-			if (lookingRight)
+			LOG("Collision inf circle / GROUND");
+			// Reset the jump flag when touching the ground
+			isJumping = false;
+			secondJumpUsed = false;
+
+			if (currentAnimPriority > 1)
 			{
-				anims.SetCurrent("idle_right");
+				if (lookingRight)
+				{
+					anims.SetCurrent("idle_right");
+				}
+				else
+				{
+					anims.SetCurrent("idle_left");
+				}
+				currentAnimPriority = 0;
 			}
-			else
-			{
-				anims.SetCurrent("idle_left");
-			}
-			currentAnimPriority = 0;
+
+			onGround = true;
+			onAir = false;
+			onWall = false;
 		}
+		else if (typeA == ShapeType::SHAPE_MIDDLE)
+		{
+			LOG("Collision middle / WALL");
+			// Reset the jump flag
+			isJumping = false;
+			secondJumpUsed = false;
 
-		onGround = true;
-		onAir = false;
-		onWall = false;
-		break;
-
-	case ColliderType::WALL:
-		LOG("Collision WALL");
-		// Reset the jump flag
-		isJumping = false;
-		secondJumpUsed = false;
-
-		anims.SetCurrent("wall"); //TODO: On wall anim
-		onWall = true;
-		onAir = false;
-		onGround = false;
+			anims.SetCurrent("wall"); //TODO: On wall anim
+			onWall = true;
+			
+			onAir = false;
+		}
+		else if (typeA == ShapeType::SHAPE_TOP)
+		{
+			LOG("Collision sup circle / CEILING");
+		}
 		break;
 
 	case ColliderType::DOOR:
@@ -996,11 +997,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
  		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
-
-	case ColliderType::CEILING:
-		LOG("Collision CEILING");
-		break;
-
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 
@@ -1082,19 +1078,32 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
+	if (physA == attackCollider) { return; }
+	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
+
+
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
-		onAir = true;
-		onWall = false;
-		break;
+	case ColliderType::MAP:
+		if (typeA == ShapeType::SHAPE_BOTTOM)
+		{
+			onGround = false;
+			onAir = true;
+			LOG("On Air");
+		}
+		else if (typeA == ShapeType::SHAPE_MIDDLE)
+		{
+			LOG("Off WALL");		
+			onAir = true;
+			onWall = false;
 
-	case ColliderType::GROUND:
-		onGround = false;
-		onAir = true;
-		LOG("On Air");
-		break;
+		}
+		else if (typeA == ShapeType::SHAPE_TOP)
+		{
+			LOG("Collision End CEILING");
+		}
 
+		break;
 	case ColliderType::DOOR:
 		canInteract = false;
 		interactuableBody = nullptr;

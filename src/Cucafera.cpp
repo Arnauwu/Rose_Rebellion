@@ -307,7 +307,7 @@ void Cucafera::RollAttack()
 void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
+	case ColliderType::MAP:
 	case ColliderType::PLAYER:
 	case ColliderType::ENEMY:
 		isRolling = false;
@@ -327,7 +327,7 @@ void Cucafera::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA
 {
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
+	case ColliderType::MAP:
 		break;
 	default:
 		break;

@@ -346,7 +346,7 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
+	case ColliderType::MAP:
 	case ColliderType::PLAYER:
 	case ColliderType::ENEMY:
 		// Se puede frenar aquí el ataque si colisiona
@@ -366,7 +366,7 @@ void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shap
 {
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
+	case ColliderType::MAP:
 		break;
 	default:
 		break;

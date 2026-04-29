@@ -503,18 +503,27 @@ bool Map::Load(std::string path, std::string fileName)
 					{
 						collider->ctype = ColliderType::DANGER;
 					}
+
+					else if (objectsGroups->properties.GetProperty("Map") != NULL and objectsGroups->properties.GetProperty("Map")->value)
+					{
+						collider->ctype = ColliderType::MAP;
+					}
+
+					//TO DO: DELETE //RetroCompatibility with old system
 					else if (objectsGroups->properties.GetProperty("Ground") != NULL and objectsGroups->properties.GetProperty("Ground")->value)
 					{
-						collider->ctype = ColliderType::GROUND;
+						collider->ctype = ColliderType::MAP;
 					}
 					else if (objectsGroups->properties.GetProperty("Wall") != NULL and objectsGroups->properties.GetProperty("Wall")->value)
 					{
-						collider->ctype = ColliderType::WALL;
+						collider->ctype = ColliderType::MAP;
 					}
 					else if (objectsGroups->properties.GetProperty("Ceiling") != NULL and objectsGroups->properties.GetProperty("Ceiling")->value)
 					{
-						collider->ctype = ColliderType::CEILING;
+						collider->ctype = ColliderType::MAP;
 					}
+
+
 					else if (objectsGroups->properties.GetProperty("Door") != NULL and objectsGroups->properties.GetProperty("Door")->value)
 					{
 						collider->ctype = ColliderType::DOOR;
@@ -592,7 +601,7 @@ bool Map::Load(std::string path, std::string fileName)
 					}
 					else if (objectsGroups->properties.GetProperty("Ground") != NULL and objectsGroups->properties.GetProperty("Ground")->value)
 					{
-						collider->ctype = ColliderType::GROUND;
+						collider->ctype = ColliderType::MAP;
 					}
 					else
 					{
@@ -621,7 +630,7 @@ bool Map::Load(std::string path, std::string fileName)
 					}
 					else if (objectsGroups->properties.GetProperty("Ground") != NULL and objectsGroups->properties.GetProperty("Ground")->value)
 					{
-						collider->ctype = ColliderType::GROUND;
+						collider->ctype = ColliderType::MAP;
 					}
 					else
 					{

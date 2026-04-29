@@ -201,36 +201,36 @@ void SpiderEnemy::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA
 	
     switch (physB->ctype)
     {
-    case ColliderType::WALL:
-        if (velocity.y >= 0 && rule == 1 && !isStuck) {
-            currentFacing = Facing::RIGHT;
-			isStuck = true;
-            LOG("Spider rotating to WALL_RIGHT %d", rule);
-            rule = 2;
-        }
-        if (velocity.y <= 0 && rule == 3 && !isStuck) {
-            currentFacing = Facing::LEFT;
-            isStuck = true;
-            LOG("Spider rotating to WALL_LEFT %d", rule);
-            rule = 0;
-        }
-        break;
-    case ColliderType::GROUND:
-        if (rule == 0 && !isStuck) {
-        currentFacing = Facing::DOWN;
-        isStuck = true;
-        LOG("Spider rotating to GROUND %d", rule);
-        rule = 1;
-        }
-        break;
-    case ColliderType::CEILING:
-        if (rule == 2 && !isStuck) {
-        currentFacing = Facing::UP;
-        isStuck = true;
-        LOG("Spider rotating to CEILING %d", rule);
-        rule = 3;
-        }
-        break;
+   // case ColliderType::MAP: //TO DO FIX
+   //     if (velocity.y >= 0 && rule == 1 && !isStuck) {
+   //         currentFacing = Facing::RIGHT;
+			//isStuck = true;
+   //         LOG("Spider rotating to WALL_RIGHT %d", rule);
+   //         rule = 2;
+   //     }
+   //     if (velocity.y <= 0 && rule == 3 && !isStuck) {
+   //         currentFacing = Facing::LEFT;
+   //         isStuck = true;
+   //         LOG("Spider rotating to WALL_LEFT %d", rule);
+   //         rule = 0;
+   //     }
+   //     break;
+   // case ColliderType::MAP:
+   //     if (rule == 0 && !isStuck) {
+   //     currentFacing = Facing::DOWN;
+   //     isStuck = true;
+   //     LOG("Spider rotating to GROUND %d", rule);
+   //     rule = 1;
+   //     }
+   //     break;
+   // case ColliderType::MAP:
+   //     if (rule == 2 && !isStuck) {
+   //     currentFacing = Facing::UP;
+   //     isStuck = true;
+   //     LOG("Spider rotating to CEILING %d", rule);
+   //     rule = 3;
+   //     }
+   //     break;
     default:
         //currentFacing = Facing::DOWN;
         break;

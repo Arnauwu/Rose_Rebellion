@@ -24,7 +24,8 @@ enum bodyType {
     KINEMATIC
 };
 
-enum PlayerShapeType {
+enum ShapeType {
+    NONE,
     SHAPE_BOTTOM,
     SHAPE_MIDDLE,
     SHAPE_TOP
@@ -42,9 +43,7 @@ enum class ColliderType {
     SKILL_POINT_ORB,
 
     //Map
-    CEILING,
-    WALL,
-    GROUND,
+    MAP,
     
     //Hazards
     DANGER,

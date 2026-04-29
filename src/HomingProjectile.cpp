@@ -93,10 +93,9 @@ void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId s
     case ColliderType::PLAYER_ATTACK:
         Destroy();
         break;
-    case ColliderType::WALL:
-    case ColliderType::GROUND:
+
     // Si choca contra el escenario, se destruye
-    case ColliderType::CEILING:
+    case ColliderType::MAP:
         Destroy();
         break;
     case ColliderType::ENEMY:
