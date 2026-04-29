@@ -123,6 +123,12 @@ public:
 	// Double Jump
 	static bool doubleJumpUnlocked;
 	bool secondJumpUsed = false;
+
+	//Walljump
+	bool isWallJumping = false;
+	float wallJumpTimer = 0.0f;
+	const float wallJumpDuration = 0.15f;
+	int wallDirection = 0;
 	
 	// Gliding
 	static bool glideUnlocked; 

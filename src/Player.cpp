@@ -125,7 +125,14 @@ bool Player::Update(float dt)
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
-		
+
+		if (isWallJumping) {
+			wallJumpTimer -= dt / 1000.0f;
+			if (wallJumpTimer <= 0.0f) {
+				isWallJumping = false;
+			}
+		}
+
 		Move();
 
 		Knockback();
@@ -222,14 +229,17 @@ void Player::GetPhysicsValues()
 {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+	//velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+	if (!isWallJumping) {
+		velocity = { 0, velocity.y };
+	}
 }
 
 void Player::Move() {
 	bool isMovingThisFrame = false;
 
 	// Move Left
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false) 
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false && !isWallJumping)
 	{
 		velocity.x = -speed;
 		lookingRight = false;
@@ -249,7 +259,7 @@ void Player::Move() {
 		}
 	}
 	// Move Right
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false && !isWallJumping)
 	{
 		velocity.x = speed;
 		lookingRight = true;
@@ -378,12 +388,53 @@ void Player::RespawnFromVoid()
 	LOG("Player reset to last safe position: %.2f, %.2f", lastSafePosition.getX(), lastSafePosition.getY());
 }
 
-void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
+void Player::Jump(float dt)
 {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		// Base Jump 
-		if (isJumping == false && onGround == true)
+		// --- 1. WALL JUMP (Estilo Hollow Knight) ---
+		if (onWall == true)
+		{
+			Engine::GetInstance().audio->PlayFx(jumpFx);
+			isJumping = true;
+			onWall = false; // Nos despegamos de la pared
+			onAir = true;
+
+			isWallJumping = true;
+			wallJumpTimer = 0.30f;
+	
+
+			// Fuerza del rebote
+			float wJumpForceY = jumpForce;
+			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
+			float wJumpForceX = speed * 1.0f;
+
+			// Escupir al jugador en la dirección contraria a la pared
+			if (wallDirection == 1) {
+				// Pared a la derecha -> Salto a la izquierda
+				velocity.x = -wJumpForceX;
+				lookingRight = false;
+				anims.SetCurrent("jump_left");
+			}
+			else {
+				// Pared a la izquierda -> Salto a la derecha
+				velocity.x = wJumpForceX;
+				lookingRight = true;
+				anims.SetCurrent("jump_right");
+			}
+
+			// Aplicar las fuerzas directamente al cuerpo físico AHORA MISMO
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+			Engine::GetInstance().physics->SetYVelocity(pbody, wJumpForceY);
+
+			currentAnimPriority = 2;
+			isJumpKeyDown = true;
+			jumpHoldTime = 0.00f;
+
+			LOG("Wall Jump Estilo HK");
+		}
+		// --- 2. BASE JUMP ---
+		else if (isJumping == false && onGround == true)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
@@ -405,12 +456,13 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 
 			LOG("Jump");
 		}
-		// Double Jump
-		else if ( doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
+		// --- 3. DOUBLE JUMP (Arreglado: sacado fuera del Base Jump) ---
+		else if (doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
+
 			if (lookingRight == true)
 			{
 				anims.SetCurrent("jump_right");
@@ -428,11 +480,13 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			LOG("Double Jump");
 		}
 	}
+	// --- 4. EXTENDER SALTO MANTENIENDO EL BOTÓN ---
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
 		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
-		jumpHoldTime += dt/1000; //To seconds
+		jumpHoldTime += dt / 1000; //To seconds
 	}
+	// --- 5. SOLTAR BOTÓN DE SALTO ---
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
 		isJumpKeyDown = false;
@@ -687,6 +741,24 @@ void Player::ApplyPhysics() {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	}
 
+	// --- LA CLAVE DEL IMPULSO HACIA ATRÁS ---
+	// Si estamos en medio del rebote, FORZAMOS la velocidad horizontal
+	// Esto evita que Box2D mate el impulso por la fricción contra la pared
+	if (isWallJumping) {
+		float wJumpForceX = speed * 1.0f;
+		if (wallDirection == 1) {
+			velocity.x = -wJumpForceX; // Empuje continuo a la izquierda
+		}
+		else {
+			velocity.x = wJumpForceX;  // Empuje continuo a la derecha
+		}
+	}
+
+	// --- WALL SLIDE ---
+	// Añadida la condición !isWallJumping para que no te aplique el freno al saltar
+	if (onWall && !onGround && velocity.y > 0 && !isWallJumping) {
+		velocity.y = 2.0f;
+	}
 
 	if (isGliding)
 	{
@@ -982,6 +1054,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			onWall = true;
 			
 			onAir = false;
+
+			if (lookingRight) {
+				wallDirection = 1;  // La pared está a la derecha
+			}
+			else {
+				wallDirection = -1; // La pared está a la izquierda
+			}
 		}
 		else if (typeA == ShapeType::SHAPE_TOP)
 		{
