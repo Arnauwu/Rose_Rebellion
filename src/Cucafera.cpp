@@ -104,8 +104,9 @@ bool Cucafera::Update(float dt)
 		anims.GetAnim("dead")->SetLoop(false);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
+		isKnockedback = false;
 
-		//Create Health Orb
+		//Create Health Orb //To do: Change to 20%
 		std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
 		healthOrb->position.setX(this->position.getX());
 		healthOrb->position.setY(this->position.getY() - 100);
@@ -164,7 +165,7 @@ void Cucafera::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isRolling == false && isKnockedback == false)
 	{
-		anims.SetCurrent("walk"); // TO DO: CHANGE TO Idle/ or make it WALK
+		anims.SetCurrent("walk");
 		velocity.x = 0;
 		return;
 	}
@@ -272,8 +273,21 @@ void Cucafera::Draw(float dt)
 		pathfinding->DrawPath();
 	}
 
-	//Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
+	//Draw using the texture and the current animation frame
+	if (isKnockedback)
+	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
+
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
+	}
+	else
+	{
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
+	}
 }
 
 void Cucafera::RollAttack()

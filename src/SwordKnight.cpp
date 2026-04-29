@@ -123,6 +123,7 @@ bool SwordKnight::Update(float dt)
 
 		Engine::GetInstance().audio->PlayFx(morirEspada);
 		anims.SetCurrent("dead");
+		isKnockedback = false;
 		pbody->ctype = ColliderType::UNKNOWN;
 	}
 
@@ -287,8 +288,21 @@ void SwordKnight::Draw(float dt)
 		pathfinding->DrawPath();
 	}
 
-	//Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	//Draw using the texture and the current animation frame
+	if (isKnockedback)
+	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
+	}
+	else
+	{
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	}
 }
 
 void SwordKnight::Attack()

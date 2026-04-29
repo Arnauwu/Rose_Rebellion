@@ -122,6 +122,7 @@ bool ShieldKnight::Update(float dt)
 		Engine::GetInstance().audio->PlayFx(morirEscudo);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
+		isKnockedback = false;
 	}
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())
@@ -180,13 +181,13 @@ void ShieldKnight::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isAttacking == false)
 	{
-		anims.SetCurrent("idle"); // TO DO: CHANGE TO Idle/ or make it WALK
+		anims.SetCurrent("idle");
 		velocity.x = 0;
 		return;
 	}
 	else if (playerTileDist >= 5 && isAttacking == false)
 	{
-		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
+		anims.SetCurrent("run");
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -284,8 +285,21 @@ void ShieldKnight::Draw(float dt)
 		pathfinding->DrawPath();
 	}
 
-	//Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	//Draw using the texture and the current animation frame
+	if (isKnockedback)
+	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
+	}
+	else
+	{
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	}	
 }
 
 void ShieldKnight::Attack()

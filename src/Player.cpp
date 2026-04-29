@@ -176,6 +176,7 @@ bool Player::Update(float dt)
 		{
 			currentAnimPriority = 99;
 			Engine::GetInstance().audio->PlayFx(morirPrincesa);
+			isKnockedback = false;
 
 			if (lookingRight)
 			{
@@ -601,7 +602,7 @@ void Player::Attack(float dt)
 
 void Player::Glide() // Gliding
 {
-	if (glideUnlocked) // TO DO FIX Glide
+	if (glideUnlocked)
 	{
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
@@ -795,12 +796,6 @@ void Player::Draw(float dt)
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	//SDLFlip
-	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
-	if (!lookingRight)
-	{
-		//sdlFlip = SDL_FLIP_HORIZONTAL;
-	}
 
 	// Update render position using your PhysBody helper
 	int x, y;
@@ -809,7 +804,21 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h/3, &animFrame, sdlFlip, 1.25f); // -20 0.25f
+	if (isKnockedback)
+	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
+
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
+	}
+	else
+	{
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
+	}
+
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -1158,8 +1167,16 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physA == attackCollider) { return; }
-	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
+	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER) { return; }
 
+	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
+	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
+
+	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temportal? Fix
+	{
+		// TO DO: Con el rectangulo (Middle) se guarda correctamente en typeA, con ambos circulos se guarda en typeB porque los detecta en shapeB
+		typeA = typeB;
+	}
 
 	switch (physB->ctype)
 	{
