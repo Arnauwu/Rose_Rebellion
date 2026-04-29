@@ -427,5 +427,8 @@
     <Xml Include="config.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
+    <Xml Include="savegame.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
