@@ -18,8 +18,9 @@ public:
 
 private:
 	bool isActivated = false;
-	SDL_Texture* texture = NULL;
+	SDL_Texture* texture = nullptr;
 	PhysBody* pbody;
+	int texW, texH;
 	AnimationSet anims;
 };
 

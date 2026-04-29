@@ -1,9 +1,10 @@
-ï»¿#include "GameScene.h"
+#include "GameScene.h"
 #include "Engine.h"
 #include "Input.h"
 #include "Map.h"
 #include "SceneManager.h"
 #include "EntityManager.h"
+#include "GameManager.h"
 #include "UIManager.h"
 #include "window.h"
 #include "Player.h"
@@ -18,60 +19,65 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
+
+	//Load the map. 
+	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	if (mapFile == "")
 	{
-		mapFile = Engine::GetInstance().map->DoorInfo(player->interactuableBody);
+		if (p != nullptr && p->interactuableBody != nullptr) {
+			mapFile = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
+		}
 	}
 
+	// Fail-Save
 	if (mapFile == "")
 	{
 		return;
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav");
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav");
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
 
-	Engine::GetInstance().entityManager->CleanUp();
-	player = nullptr;
-	Engine::GetInstance().sceneManager->SetPlayer(nullptr);
-
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
-	printf("prevoius map : %s", previousMap.c_str());
+	LOG("MAPA PREVIO %s", previousMap);
 
+	Engine::GetInstance().entityManager->CleanUp(true);
 	Engine::GetInstance().map->CleanUp();
 
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
 	Engine::GetInstance().map->SpawnEntities();
 
-	// Camara mode
-	player = Engine::GetInstance().sceneManager->GetPlayer();
-	if (player != nullptr)
+	Player* newPlayer = Engine::GetInstance().entityManager->GetPlayer();
+	if (newPlayer != nullptr)
 	{
-	
-		Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-		player->position = spawnPos;
-		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
+		Vector2D spawnPos;
 
-		// ASIGNAR EL MODO DE CÃMARA AQUÃ
-		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx"|| mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
-			player->SetCameraMode(CameraMode::CLASSIC); 
-			LOG("Camera Mode set to CLASSIC");
+		if (previousMap == "")
+		{
+			spawnPos = GameManager::GetInstance().gameState.playerPosition;
+			LOG("Carga inicial: Usando posición del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
-		else {
-			player->SetCameraMode(CameraMode::DYNAMIC);
-			LOG("Camera Mode set to DYNAMIC");
+		else
+		{
+			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
+			LOG("Transición: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+		}
+
+		newPlayer->SetPosition(spawnPos);
+
+		if (newPlayer->pbody != nullptr) {
+			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
 		}
 	}
-
 	Engine::GetInstance().entityManager->Start();
 }
 
@@ -82,12 +88,10 @@ bool GameScene::Start() {
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	LOG("Loading Game Scene");
 
-	LoadMap("Castle_Room_Princess.tmx");
-	if (player != nullptr) {
-		player->position.setX(10);
-		player->position.setY(10);
-	}
+	Engine::GetInstance().map->mapFileName = "";
 
+	std::string mapToLoad = GameManager::GetInstance().gameState.currentMap;
+	LoadMap(mapToLoad);
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
@@ -124,8 +128,25 @@ bool GameScene::Start() {
 
 
 bool GameScene::Update(float dt) {
-
+	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
+
+	if (mapState == MapTransitionState::FADING_OUT) {
+
+		if (render->IsFadeComplete()) {
+
+			LoadMap(nextMapName);
+
+			mapState = MapTransitionState::FADING_IN;
+			render->StartFade(FadeDirection::FADE_IN, mapFadeTime);
+		}
+		return true;
+	}
+	else if (mapState == MapTransitionState::FADING_IN) {
+		if (render->IsFadeComplete()) {
+			mapState = MapTransitionState::NONE;
+		}
+	}
 
 	if (input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
 		if (currentMenuTab != GameMenuTab::NONE) {
@@ -185,14 +206,6 @@ bool GameScene::Update(float dt) {
 
 			return true;
 		}
-
-		//if (currentMenuTab == GameMenuTab::INVENTORY) {
-
-		//	for (auto& elem : inventoryUI) {
-		//		if (elem->state == UIElementState::FOCUSED) {
-		//		}
-		//	}
-		//}
 	}
 	return true;
 
@@ -200,10 +213,21 @@ bool GameScene::Update(float dt) {
 
 bool GameScene::PostUpdate() {
 
-	// If the player has touched a door, the engine will have set this variable to true
-	if (Engine::GetInstance().sceneManager->setNewMap == true) {
-		// Loading function with an empty string so that it reads the door information
-		LoadMap("");
+	auto sceneManager = Engine::GetInstance().sceneManager;
+
+	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
+
+		sceneManager->setNewMap = false; 
+		Player* p = Engine::GetInstance().entityManager->GetPlayer();
+		if (p != nullptr && p->interactuableBody != nullptr) {
+			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
+		}
+		else {
+			nextMapName = "";
+		}
+
+		mapState = MapTransitionState::FADING_OUT;
+		Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, mapFadeTime);
 	}
 
 	return true;
@@ -254,6 +278,7 @@ bool GameScene::CleanUp() {
 
 bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	Engine::GetInstance().audio->PlayFx(uiClick);
+	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	switch (uiElement->id) {
 	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
@@ -277,24 +302,24 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
 
-		// Gestié«‡ texto de los objetos del inventario
+		// Gestión texto de los objetos del inventario
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
-		if (player && player->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
+		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_GLIDE:
-		if (player && player->HasItem(ItemID::GLIDE)) descPanel->text = "Cape: Float through the air.";
+		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_KEY:
-		if (player && player->HasItem(ItemID::KEY)) descPanel->text = "Castle Key: Opens heavy doors.";
+		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_ORB:
-		if (player && player->HasItem(ItemID::STRENGTH_ORB)) descPanel->text = "Power Orb: Increases your strength.";
+		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
 		break;
 
@@ -357,7 +382,7 @@ void GameScene::CreateInventoryUI() {
 
 		// AMULETOS (Vertices)
 		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si aé·‘ no tienes textura
+		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si aún no tienes textura
 		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 
@@ -371,7 +396,7 @@ void GameScene::CreateInventoryUI() {
 
 		btn->SetBgTexture(skillFrameUI);
 
-		// Si le hemos asignado una textura, se la ponemos al boté«‡
+		// Si le hemos asignado una textura, se la ponemos al botón
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}
@@ -452,7 +477,8 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 }
 
 void GameScene::UpdateInventoryVisuals() {
-	if (player == nullptr) return;
+	Player* p = Engine::GetInstance().entityManager->GetPlayer();
+	if (p == nullptr) return;
 
 	for (auto& btn : inventoryUI) {
 		bool hasItem = false;
@@ -460,16 +486,16 @@ void GameScene::UpdateInventoryVisuals() {
 		// We check which item this button is and ask the Player if they have it
 		switch (btn->id) {
 		case (int)GameUI_ID::INV_ITEM_WEAPON:
-			hasItem = player->HasItem(ItemID::WEAPON);
+			hasItem = p->HasItem(ItemID::WEAPON);
 			break;
 		case (int)GameUI_ID::INV_ITEM_GLIDE:
-			hasItem = player->HasItem(ItemID::GLIDE);
+			hasItem = p->HasItem(ItemID::GLIDE);
 			break;
 		case (int)GameUI_ID::INV_ITEM_KEY:
-			hasItem = player->HasItem(ItemID::KEY);
+			hasItem = p->HasItem(ItemID::KEY);
 			break;
 		case (int)GameUI_ID::INV_ITEM_ORB:
-			hasItem = player->HasItem(ItemID::STRENGTH_ORB);
+			hasItem = p->HasItem(ItemID::STRENGTH_ORB);
 			break;
 
 		default:
@@ -509,23 +535,6 @@ void GameScene::SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group
 		// UIElementState enum
 		elem->state = visible ? UIElementState::NORMAL : UIElementState::DISABLED;
 	}
-}
-
-// ==========================================
-// BRIDGES FOR PLAYER
-// ==========================================
-
-Vector2D GameScene::GetPlayerPosition() {
-	if (player != nullptr) return player->position;
-	return Vector2D(0, 0);
-}
-
-Player* GameScene::GetPlayer() {
-	return player;
-}
-
-void GameScene::SetPlayer(Player* p) {
-	player = p;
 }
 
 // ==========================================

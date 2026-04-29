@@ -50,29 +50,39 @@ bool EntityManager::Awake()
 
 }
 
-bool EntityManager::Start() {
 
-	bool ret = true; 
+bool EntityManager::Start() {
+	bool ret = true;
 
 	//Iterates over the entities and calls Start
-	for(const auto entity : entities)
+	for (const auto& entity : entities)
 	{
 		if (entity->active == false) continue;
-		ret = entity->Start();
-	}
 
+		if (!entity->hasStarted) {
+			ret = entity->Start();
+			entity->hasStarted = true;
+		}
+	}
 	return ret;
 }
-
-// Called before quitting
-bool EntityManager::CleanUp()
+bool EntityManager::CleanUp(bool keepPlayer)
 {
 	bool ret = true;
 
-	for(const auto entity : entities)
+	for (const auto& entity : entities)
 	{
-		if (entity->active == false) continue;
-		ret = entity->Destroy();
+		if (keepPlayer && entity->type == EntityType::PLAYER) {
+			continue;
+		}
+
+		if (entity->active) {
+			ret = entity->Destroy(); 
+		}
+	}
+
+	if (!keepPlayer) {
+		playerPtr = nullptr;
 	}
 
 	return ret;
@@ -115,11 +125,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SHIELD_KNIGHT:
 		entity = std::make_shared<ShieldKnight>();
 		break;
-
 	case EntityType::KNIGHT_BOSS:
 		entity = std::make_shared<KnightBoss>();
 		break;
-
 	case EntityType::KEY:
 		entity = std::make_shared<Keys>();
 		break;
@@ -141,12 +149,23 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 	if (entity != nullptr)
 	{
-		// Forzamos la inicialización si el manager
-		entity->Awake();
 		entities.push_back(entity);
+		requiresSort = true;
 	}
 
 	return entity;
+}
+
+void EntityManager::AwakeEntities()
+{
+	for (const auto& entity : entities)
+	{
+		if (entity->active && !entity->isAwake)
+		{
+			entity->Awake();
+			entity->isAwake = true;
+		}
+	}
 }
 
 void EntityManager::DestroyEntity(std::shared_ptr<Entity> entity)
@@ -157,7 +176,10 @@ void EntityManager::DestroyEntity(std::shared_ptr<Entity> entity)
 
 void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 {
-	if ( entity != nullptr) entities.push_back(entity);
+	if (entity != nullptr) {
+		entities.push_back(entity);
+		requiresSort = true; 
+	}
 }
 
 bool EntityManager::Update(float dt)
@@ -170,8 +192,12 @@ bool EntityManager::Update(float dt)
 	//List to store entities pending deletion
 	std::list<std::shared_ptr<Entity>> pendingDelete;
 
-	entities.sort([](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) {
-		return a->zOrder < b->zOrder; }); // Compare who draws first 
+	if (requiresSort) {
+		entities.sort([](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) {
+			return a->zOrder < b->zOrder;
+			});
+		requiresSort = false;
+	}
 
 	//Iterates over the entities and calls Update
 	for(const auto entity : entities)

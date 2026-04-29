@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<SaveGame>
+	<PlayerStats currentHealth="100" maxHealth="100" keyCount="0" currentForceOrbs="0" />
+	<Unlockables hasSickle="true" glideUnlocked="true" />
+	<WorldState currentMap="Castle_Room_Princess.tmx">
+		<Position x="1508" y="955" />
+	</WorldState>
+	<OpenedDoors />
+	<CollectedItems />
+</SaveGame>

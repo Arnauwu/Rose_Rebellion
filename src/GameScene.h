@@ -6,7 +6,6 @@
 #include <memory>
 
 class UIElement;
-class Player;
 
 // Different sub-menus inside the game
 enum class GameMenuTab {
@@ -68,11 +67,6 @@ public:
 	// UI Event delegation
 	bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
-	// Bridge methods for Map, HUD and Enemies
-	Vector2D GetPlayerPosition() override;
-	Player* GetPlayer() override;
-	void SetPlayer(Player* p) override;
-
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
@@ -108,12 +102,11 @@ private:
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
+	void RequestMapChange(std::string mapFile);
 
 	int uiClick;
 
 private:
-	// The player pointer
-	Player* player = nullptr;
 
 	// Current state of the game menu
 	GameMenuTab currentMenuTab = GameMenuTab::NONE;
@@ -129,4 +122,16 @@ private:
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
+
+	//MapChanging Variables
+	// Fade point
+	enum class MapTransitionState {
+		NONE,
+		FADING_OUT,
+		FADING_IN
+	};
+
+	MapTransitionState mapState = MapTransitionState::NONE;
+	std::string nextMapName = "";
+	float mapFadeTime = 500.0f;
 };

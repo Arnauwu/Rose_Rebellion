@@ -4,6 +4,8 @@
 #include "Map.h"
 #include "Render.h"
 #include "SceneManager.h"
+#include "EntityManager.h"
+
 
 #define highCostTile 20
 
@@ -115,7 +117,8 @@ void Pathfinding::PropagateAStar()
     bool foundDestination = false;
 
     //Get the value of the destination
-    Vector2D playerPos = Engine::GetInstance().sceneManager.get()->GetPlayerPosition();
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    Vector2D playerPos = player->GetPosition();
     Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 
     if (!frontierAStar.empty()) {

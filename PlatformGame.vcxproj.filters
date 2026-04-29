@@ -116,8 +116,8 @@
     <Filter Include="Source Files\Game\Entity\Bosses\Knight">
       <UniqueIdentifier>{07ccddc3-1cdd-4b8e-8164-c59a764de334}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Entity\Items\SkillObject">
-      <UniqueIdentifier>{3280a1ad-e81d-4a75-8138-69ede91828f9}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine\Cinematics">
+      <UniqueIdentifier>{e2708243-23a8-4adf-91fb-988c5b306e1d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -264,11 +264,14 @@
     <ClCompile Include="src\GameOverScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\DashObj.cpp">
-      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
+    <ClCompile Include="src\Cinematics.cpp">
+      <Filter>Source Files\Engine\Cinematics</Filter>
     </ClCompile>
-    <ClCompile Include="src\DoubleJumpObj.cpp">
-      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
+    <ClCompile Include="src\IntroCinematicScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameManager.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -392,9 +395,6 @@
     <ClInclude Include="src\HomingProjectile.h">
       <Filter>Source Files\Game\Entity\Enemies\Ninfa</Filter>
     </ClInclude>
-    <ClInclude Include="SavePoint.h">
-      <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
-    </ClInclude>
     <ClInclude Include="src\Keys.h">
       <Filter>Source Files\Game\Entity\Items\Keys</Filter>
     </ClInclude>
@@ -410,15 +410,24 @@
     <ClInclude Include="src\GameOverScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\DashObj.h">
-      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
+    <ClInclude Include="src\Cinematics.h">
+      <Filter>Source Files\Engine\Cinematics</Filter>
     </ClInclude>
-    <ClInclude Include="src\DoubleJumpObj.h">
-      <Filter>Source Files\Game\Entity\Items\SkillObject</Filter>
+    <ClInclude Include="src\IntroCinematicScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameManager.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SavePoint.h">
+      <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="savegame.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
   </ItemGroup>

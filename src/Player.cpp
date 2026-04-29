@@ -5,6 +5,8 @@
 #include "Input.h"
 #include "Render.h"
 #include "SceneManager.h"
+#include "GameManager.h"
+
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -15,13 +17,6 @@
 
 using namespace std;
 
-int Player::keyCount = 0;
-bool Player::glideUnlocked = false;
-bool Player::hasSickle = false;
-bool Player::dashUnlocked = false; 
-bool Player::doubleJumpUnlocked = false;
-std::vector<std::string> Player::unlockedDoors;
-
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -29,87 +24,74 @@ Player::Player() : Entity(EntityType::PLAYER)
 	texture = nullptr;
 }
 
-Player::~Player() 
+Player::~Player()
 {
 
 }
 
-bool Player::Awake() 
+bool Player::Awake()
 {
-
-	// Initialize Player parameters
-	position = Vector2D(96, 96);
+	Engine::GetInstance().entityManager->SetPlayer(this);
+	
+	currentHealth = GameManager::GetInstance().gameState.currentHealth;
+	LOG("Player Awake: Posición final establecida en %f, %f", position.getX(), position.getY());
 	return true;
 }
 
-bool Player::Start() 
+bool Player::Start()
 {
 	// Initialize Player parameters
+	auto engine = &Engine::GetInstance();
+	auto audio = engine->audio;
+	auto textures = engine->textures;
+	auto physics = engine->physics;
 
-	Engine::GetInstance().sceneManager->SetPlayer(this);
+	Engine::GetInstance().entityManager->SetPlayer(this);
 
-	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
-	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
-	dashPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_dash.wav");
-	morirPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Muerte.wav");
-	planearPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Planear.wav");
-	recibirDamage = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
-	caminarPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Caminar_Piedra.wav");
+	jumpFx = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
+	attackFx = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
+	dashPrincesa = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_dash.wav");
+	morirPrincesa = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Muerte.wav");
+	planearPrincesa = audio->LoadFx("Assets/Audio/Fx/SE_Planear.wav");
+	recibirDamage = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
+	caminarPrincesa = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Caminar_Piedra.wav");
 
-	pickItemFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Llave_Item.wav");
-	savePointFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
-	openDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/OpenDoor.wav");
-	closedDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
-	orbFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_OrbeFuerza_Item.wav");
-	respawnFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
+	pickItemFx = audio->LoadFx("Assets/Audio/Fx/SE_Llave_Item.wav");
+	savePointFx = audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
+	openDoor = audio->LoadFx("Assets/Audio/Fx/OpenDoor.wav");
+	closedDoor = audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
+	orbFx = audio->LoadFx("Assets/Audio/Fx/SE_OrbeFuerza_Item.wav");
+	respawnFx = audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
 
-	// Load Textures
-	if (!glideUnlocked)
+	// Carga de Texturas según estado
+	if (!GameManager::GetInstance().gameState.glideUnlocked)
 	{
 		std::unordered_map<int, std::string> aliases = GetAliases("capeless");
-
-
 		anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess_Capeless.tsx", aliases);
 		anims.SetCurrent("idle_right");
-
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess_Capeless.png");
+		texture = textures->Load("Assets/Textures/Entities/Princess/Princess_Capeless.png");
 	}
 	else
 	{
 		std::unordered_map<int, std::string> aliases = GetAliases("cape");
-
 		anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess.tsx", aliases);
-		
 		anims.SetCurrent("idle_right");
-
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess.png");
+		texture = textures->Load("Assets/Textures/Entities/Princess/Princess.png");
 	}
 
-
-	// Physics
-	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
+	// Configuración de Físicas
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
-
-	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
+	pbody = physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 	pbody->listener = this;
-
-	// Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
 
-	// Initialize audio
-	//pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
-
 	knockbackForce = 5.0f;
-
 	maxHealth = 100;
 	currentHealth = maxHealth;
 
-
-	cameraController.SetSmoothSpeed(0.15f);      // 0.05f - 0.3f
-	cameraController.SetVerticalOffset(-25.0f);  // Offset vertixal 
-
+	cameraController.SetSmoothSpeed(0.15f);
+	cameraController.SetVerticalOffset(-25.0f);
 	respawnPosition = position;
 
 	return true;
@@ -118,15 +100,16 @@ bool Player::Start()
 bool Player::Update(float dt)
 {
 	if (pbody == nullptr) return true;
+	Engine::GetInstance().entityManager->SetPlayer(this);
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
-		
+
 		Move();
 
 		Knockback();
-		
+
 		Jump(dt);
 
 		timeSinceLastAttack += dt / 1000.0f; // Convert dt to seconds
@@ -135,17 +118,17 @@ bool Player::Update(float dt)
 		}
 
 		Attack(dt);
-	
+
 		Glide();
 
 		Dash();
-	
+
 		ApplyPhysics();
 	}
 
 	if (isdead)
 	{
-		if (currentAnimPriority < 99) 
+		if (currentAnimPriority < 99)
 		{
 			currentAnimPriority = 99;
 			Engine::GetInstance().audio->PlayFx(morirPrincesa);
@@ -162,17 +145,17 @@ bool Player::Update(float dt)
 			}
 
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-			
+
 			if (attackCollider != nullptr)
 			{
 				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 				attackCollider = nullptr;
 			}
 		}
-		else 
+		else
 		{
-			if ((lookingRight && anims.GetAnim("death_right")->HasFinishedOnce()) || 
-				(!lookingRight && anims.GetAnim("death_left")->HasFinishedOnce())) 
+			if ((lookingRight && anims.GetAnim("death_right")->HasFinishedOnce()) ||
+				(!lookingRight && anims.GetAnim("death_left")->HasFinishedOnce()))
 			{
 				Engine::GetInstance().sceneManager->ChangeScene(SceneID::GAMEOVER);
 			}
@@ -191,9 +174,9 @@ bool Player::Update(float dt)
 		safePositionTimer += dt / 1000.0f;
 		if (safePositionTimer >= 0.2f)
 		{
-		
+
 			Vector2D start = position;
-			Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+			Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 };
 
 			if (Engine::GetInstance().physics->Raycast(start, end))
 			{
@@ -214,7 +197,7 @@ bool Player::PostUpdate()
 	return true;
 }
 
-void Player::GetPhysicsValues() 
+void Player::GetPhysicsValues()
 {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
@@ -225,7 +208,7 @@ void Player::Move() {
 	bool isMovingThisFrame = false;
 
 	// Move Left
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false) 
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false)
 	{
 		velocity.x = -speed;
 		lookingRight = false;
@@ -277,7 +260,7 @@ void Player::Move() {
 			{
 				anims.SetCurrent("idle_left");
 			}
-			
+
 			currentAnimPriority = 0;
 		}
 	}
@@ -334,7 +317,7 @@ void Player::Knockback()
 	}
 }
 
-void Player::Respawn() 
+void Player::Respawn()
 {
 	if (isdead) {
 		// Clean Attack 
@@ -345,7 +328,6 @@ void Player::Respawn()
 		}
 
 		// Use RespawnPosition
-		/*SetPosition(respawnPosition);*/
 		currentHealth = maxHealth;
 		Engine::GetInstance().audio->PlayFx(respawnFx);
 		isJumping = false;
@@ -355,7 +337,7 @@ void Player::Respawn()
 	}
 }
 
-void Player::RespawnFromVoid() { 
+void Player::RespawnFromVoid() {
 	//TO DO: Aplicar daño 
 
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
@@ -368,7 +350,7 @@ void Player::RespawnFromVoid() {
 
 	SetPosition(respawnPosition);
 
-	isJumping = false;	
+	isJumping = false;
 	secondJumpUsed = false;
 	anims.SetCurrent("idle");
 	Engine::GetInstance().audio->PlayFx(respawnFx);
@@ -403,7 +385,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			LOG("Jump");
 		}
 		// Double Jump
-		else if ( doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
+		else if (doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
@@ -428,7 +410,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
 		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
-		jumpHoldTime += dt/1000; //To seconds
+		jumpHoldTime += dt / 1000; //To seconds
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
@@ -436,19 +418,12 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 	}
 }
 
-void Player::UnlockDoubleJump() {
-	doubleJumpUnlocked = true;
-	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
-	LOG("Double Jump Unlocked! You can do a double jump");
-
-}
-
 void Player::Attack(float dt)
 {
 	// 1. Start the attack 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
 	{
-		if (hasSickle && glideUnlocked)
+		if (GameManager::GetInstance().gameState.hasSickle && GameManager::GetInstance().gameState.glideUnlocked)
 		{
 			Engine::GetInstance().audio->PlayFx(attackFx);
 			isAttacking = true;
@@ -503,14 +478,14 @@ void Player::Attack(float dt)
 		else
 		{
 			// Prompt text
-			if (!hasSickle && !glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape."); 
+			if (!GameManager::GetInstance().gameState.hasSickle && !GameManager::GetInstance().gameState.glideUnlocked) {
+				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape.");
 			}
-			else if (!hasSickle) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle."); 
+			else if (!GameManager::GetInstance().gameState.hasSickle) {
+				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle.");
 			}
-			else if (!glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Cape."); 
+			else if (!GameManager::GetInstance().gameState.glideUnlocked) {
+				Engine::GetInstance().hud->ShowNotification("You need to find the Cape.");
 			}
 		}
 	}
@@ -527,11 +502,11 @@ void Player::Attack(float dt)
 		}
 
 		// End the attack when the time runs out
-		if (currentAttackTime >= attackDuration && 
+		if (currentAttackTime >= attackDuration &&
 			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() || anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
 		{
 			isAttacking = false;
-			
+
 
 			anims.SetCurrent("idle");
 			currentAnimPriority = 0;
@@ -551,7 +526,7 @@ void Player::Attack(float dt)
 
 void Player::Glide() // Gliding
 {
-	if (glideUnlocked)
+	if (GameManager::GetInstance().gameState.glideUnlocked)
 	{
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
@@ -579,9 +554,9 @@ void Player::Glide() // Gliding
 void Player::Dash()
 {
 	// Start Dash
-	if (dashUnlocked == true 
+	if (dashUnlocked == true
 		&& Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN
-		&& isDashing == false 
+		&& isDashing == false
 		&& dashCooldownTimer.ReadMSec() > dashCooldownMS)
 	{
 		if (lookingRight == true)
@@ -596,7 +571,7 @@ void Player::Dash()
 		isDashing = true;
 		dashTimer.Start();
 	}
-	
+
 	// While Dash
 	if (isDashing)
 	{
@@ -617,12 +592,6 @@ void Player::Dash()
 	}
 }
 
-void Player::UnlockDash() {
-	dashUnlocked = true;
-	AddItem(ItemID::DASH_OBJ, 1);
-	LOG("Dash Unlocked! You can do a dash");
-}
-
 void Player::Interact()
 {
 	if (canInteract && interactuableBody != nullptr)
@@ -635,10 +604,10 @@ void Player::Interact()
 				bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
 				if (isMaintenance)
 				{
-					Engine::GetInstance().audio->PlayFx(pickItemFx); 
-					
+					Engine::GetInstance().audio->PlayFx(pickItemFx);
+
 					Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
-					return; 
+					return;
 				}
 
 				bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
@@ -656,18 +625,17 @@ void Player::Interact()
 				if (requiresKey)
 				{
 					// Si necesita
-					if (keyCount > 0)
+					if (GameManager::GetInstance().gameState.keyCount > 0)
 					{
 						Engine::GetInstance().audio->PlayFx(openDoor);
 						//Restar una unidad cuando se usa una llave
-						keyCount--;
-						LOG("Has usado una llave. Te quedan: %d ", keyCount);
+						GameManager::GetInstance().gameState.keyCount--;
+						LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
 
 						std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 						if (!doorId.empty()) {
-							Player::unlockedDoors.push_back(doorId);
+							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 						}
-
 						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else
@@ -679,7 +647,7 @@ void Player::Interact()
 				}
 				else
 				{
-					
+
 					// Si no
 					LOG("Esta puerta no necesita llave ");
 					Engine::GetInstance().sceneManager->setNewMap = true;
@@ -723,7 +691,7 @@ void Player::ApplyPhysics() {
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 }
 
-void Player::Draw(float dt) 
+void Player::Draw(float dt)
 {
 	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
@@ -745,7 +713,7 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h/3, &animFrame, sdlFlip, 1.25f); // -20 0.25f
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1.25f); // -20 0.25f
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -772,90 +740,60 @@ void Player::Draw(float dt)
 	}
 }
 
-void Player::SetCameraMode(CameraMode mode) {
-	currentCameraMode = mode;
-
-	if (currentCameraMode == CameraMode::CLASSIC) {
-		cameraController.SetYDivisor(1.25f); // Vuelve a la vista original
-		cameraController.SetSmoothSpeed(0.15f);
-		currentCameraYOffset = 0.0f; // Resetea cualquier offset dinámico
-	}
-	else {
-		cameraController.SetYDivisor(1.75f); // Vista de exploración
-	}
-}
-
 void Player::CameraFollows()
 {
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
-	float dt = Engine::GetInstance().GetDt();
-	float dtSeconds = dt / 1000.0f;
 
+	float dt = Engine::GetInstance().GetDt();
+
+	//Eje Y
+	// Guarda la última posición Y del jugador cuando está tocando el suelo. 
+	static float lastGroundY = position.getY();
+	if (onGround) {
+		lastGroundY = position.getY();
+	}
+
+	// la cámara intenta seguir directamente al jugador.
 	Vector2D targetCamPos = position;
 
-	// First camara tracking method
-	if (currentCameraMode == CameraMode::DYNAMIC)
-	{
-		float targetYOffset = 0.0f;
+	// Verifica si el jugador está en el aire (saltando o cayendo).
+	if (!onGround) {
+		// Define el límite máximo que la cámara puede subir al saltar.
+		float maxCameraUpward = 40.0f;
 
-		if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-			lookDownTimer += dtSeconds;
-			if (lookDownTimer >= 0.3f) { targetYOffset = 200.0f; }
-		}
-		else {
-			lookDownTimer = 0.0f;
-		}
-
-		if (!onGround && velocity.y > 2.0f) {
-			targetYOffset = 100.0f + (velocity.y * 5.0f);
-			cameraController.SetSmoothSpeed(0.25f);
-		}
-		else if (onGround) {
-			cameraController.SetSmoothSpeed(0.15f);
-		}
-
-		float lerpY = 4.0f * dtSeconds;
-		if (lerpY > 1.0f) lerpY = 1.0f;
-		currentCameraYOffset += (targetYOffset - currentCameraYOffset) * lerpY;
-
-		targetCamPos.setY(targetCamPos.getY() + currentCameraYOffset);
-	}
-	//The second camara tracking method
-	else if (currentCameraMode == CameraMode::CLASSIC)
-	{
-		static float lastGroundY = position.getY();
-		if (onGround) {
-			lastGroundY = position.getY();
-		}
-
-		if (!onGround) {
-			float maxCameraUpward = 40.0f;
-			if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
-				targetCamPos.setY(lastGroundY - maxCameraUpward);
-			}
+		if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
+			// Bloquea la posición Y de la cámara para asegurar que el suelo siga siendo visible
+			targetCamPos.setY(lastGroundY - maxCameraUpward);
 		}
 	}
-
-	// Manda la posición a CameraController
+	// Envía la posición objetivo calculada al controlador de cámara original.
 	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
 	float camX, camY;
 	cameraController.GetCameraPosition(camX, camY);
 
-	// Lógica del Eje X (Común para ambos modos)
+	// Eje X
+	// Calcula la posición para que el jugador se mantenga justo en el centro de la pantalla.
 	float targetCamX = -position.getX() + (screenW / 2.0f);
+
+	// Limita la cámara en los bordes izquierdo y derecho para no ver fuera del mapa
 	if (targetCamX > 0) targetCamX = 0;
 	float minCamX = -(mapSize.getX() - screenW);
 	if (targetCamX < minCamX) targetCamX = minCamX;
 
+
+	float dtSeconds = dt / 1000.0f;
 	float currentCamX_f = Engine::GetInstance().render->camera.x;
+
 	if (dtSeconds > 0.0f) {
+		// Aplica una interpolación para que el movimiento horizontal sea suave y fluido.
 		float lerpX = 8.0f * dtSeconds;
 		if (lerpX > 1.0f) lerpX = 1.0f;
 		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
 	}
 
+	// Asigna las posiciones finales calculadas a la cámara del motor
 	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
 	Engine::GetInstance().render->camera.y = (int)camY;
 }
@@ -865,7 +803,7 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 	std::unordered_map<int, std::string> aliases;
 	if (name == "capeless")
 	{
-		aliases =						{{0,"move_right"},
+		aliases = { {0,"move_right"},
 										 {12,"move_left"},
 										 {24,"jump_right"},
 										 {36,"fall_right" },
@@ -879,7 +817,7 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 	}
 	else if (name == "cape")
 	{
-		aliases =						{{0,"move_right"},
+		aliases = { {0,"move_right"},
 										 {12,"move_left"},
 										 {24,"jump_right"},
 										 {36,"fall_right" },
@@ -893,7 +831,7 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 										 {156,"attack_left" } ,
 										 {168,"glide_right"},
 										 {192,"glide_left" },
-		
+
 		};
 	}
 	return aliases;
@@ -903,21 +841,21 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 void Player::UnlockCape()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
-	
+
 	std::unordered_map<int, std::string> aliases = GetAliases("cape");
 	anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess.tsx", aliases);
 
 	anims.SetCurrent("idle_right");
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess.png");
-	glideUnlocked = true;
+	GameManager::GetInstance().gameState.glideUnlocked = true;
 
 	AddItem(ItemID::GLIDE, 1);
 }
 
 void Player::UnlockSickle()
 {
-	hasSickle = true;
+	GameManager::GetInstance().gameState.hasSickle = true;
 	AddItem(ItemID::WEAPON, 1);
 	LOG("Sickle Unlocked! You can attack now if you have the cape.");
 }
@@ -1005,7 +943,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::PATH:
 		interactuableBody = physB;
- 		Engine::GetInstance().sceneManager->setNewMap = true;
+		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
 
 	case ColliderType::CEILING:
@@ -1017,29 +955,21 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
-			Engine::GetInstance().hud->ShowNotification("You have obtained the Cape."); 
+			Engine::GetInstance().hud->ShowNotification("You have obtained the Cape.");
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
-			keyCount++;
+			GameManager::GetInstance().gameState.keyCount++;
 
 			AddItem(ItemID::KEY, 1);
 
-			LOG("KeyNum: %d", keyCount);
-			Engine::GetInstance().hud->ShowNotification("You have obtained a Key."); 
+			LOG("KeyNum: %d", GameManager::GetInstance().gameState.keyCount);
+			Engine::GetInstance().hud->ShowNotification("You have obtained a Key.");
 
 		}
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
-			Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle."); 
-		}
-		else if (physB->listener->name == "DashObj") {
-			LOG("Collision ITEM (Dashobj Picked Up)");
-			Engine::GetInstance().hud->ShowNotification("You have obtained the DashObj.");
-		}
-		else if (physB->listener->name == "DoubleJumpObj") {
-			LOG("Collision ITEM (DoubleJumpObj Picked Up)");
-			Engine::GetInstance().hud->ShowNotification("You have obtained the DoubleJumpObj.");
+			Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle.");
 		}
 		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();
@@ -1055,15 +985,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			}
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
-			Engine::GetInstance().hud->ShowNotification("You have recovered your health."); 
+			Engine::GetInstance().hud->ShowNotification("You have recovered your health.");
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
 		Engine::GetInstance().audio->PlayFx(orbFx);
-		physB->listener->Destroy(); 
-		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power."); 
+		physB->listener->Destroy();
+		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power.");
 		break;
 	case ColliderType::SAVEPOINT:
 	{
@@ -1075,8 +1005,20 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		int spX, spY;
 		physB->GetPosition(spX, spY);
 		respawnPosition = Vector2D((float)spX, (float)spY);
+
+		auto& gameState = GameManager::GetInstance().gameState;
+		gameState.playerPosition = respawnPosition;
+		gameState.currentHealth = this->currentHealth;
+		gameState.currentMap = Engine::GetInstance().map->mapFileName;
+
+		if (GameManager::GetInstance().SaveGame("savegame.xml")) {
+			Engine::GetInstance().hud->ShowNotification("Partida Guardada");
+		}
+		else {
+			Engine::GetInstance().hud->ShowNotification("Error al guardar partida");
+		}
 		break;
-	}  
+	}
 
 	case ColliderType::ENEMY:
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
@@ -1087,9 +1029,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
-			break;
-	
-	
+		break;
+
+
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
@@ -1140,12 +1082,15 @@ Vector2D Player::GetPosition()
 
 void Player::SetPosition(Vector2D pos)
 {
-	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
+	position = pos;
+	if (pbody != nullptr) {
+		pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
+	}
 }
 
 // DevTools
 
-void Player::DevTools(float dt) 
+void Player::DevTools(float dt)
 {
 	// Teleport the player to a specific position for testing purposes
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
@@ -1161,7 +1106,7 @@ void Player::DevTools(float dt)
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f,0.0f });
 	}
-	
+
 	// GodMode (To Do: Make it work)
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
 		if (!godMode) {
@@ -1243,7 +1188,7 @@ void Player::DevTools(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_9) == KEY_DOWN)
 	{
 		UnlockCape();
-		hasSickle = true;
+		GameManager::GetInstance().gameState.hasSickle = true;
 	}
 }
 
@@ -1267,4 +1212,3 @@ void Player::GodModeMove(float dt)
 
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, godVelocity);
 }
-

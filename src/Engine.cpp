@@ -15,6 +15,7 @@
 #include "Log.h"
 #include "UIManager.h"
 #include "Hud.h"
+#include "Cinematics.h"
 
 // Constructor
 Engine::Engine() {
@@ -40,6 +41,8 @@ Engine::Engine() {
     sceneManager = std::make_shared<SceneManager>();
     map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
+
+    cinematics = std::make_shared<Cinematics>();
     uiManager = std::make_shared<UIManager>();
     hud = std::make_shared<Hud>();
 
@@ -55,7 +58,9 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(entityManager));
     AddModule(std::static_pointer_cast<Module>(sceneManager));
 
- 
+    // Cinematic Manager
+    AddModule(std::static_pointer_cast<Module>(cinematics));
+
     // Hud Manager 
     AddModule(std::static_pointer_cast<Module>(hud));
 

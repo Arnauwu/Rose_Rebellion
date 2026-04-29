@@ -139,7 +139,6 @@ public:
 	bool secondJumpUsed = false;
 	
 	// Gliding
-	static bool glideUnlocked; 
 	bool isGliding = false; // Flag
 
 	// Dash
@@ -188,9 +187,7 @@ public:
 	const float safePositionInterval = 0.2f;
 
 	//Item
-	static int keyCount;
-	static bool hasSickle; 
-	static std::vector<std::string> unlockedDoors;
+	
 private: 
 
 	int jumpFx = -1;

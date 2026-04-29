@@ -22,11 +22,6 @@ public:
     // UI Event delegation
     virtual bool OnUIMouseClickEvent(UIElement* uiElement) { return true; }
 
-    virtual Vector2D GetPlayerPosition() { return Vector2D(0, 0); }
-    virtual Player* GetPlayer() { return nullptr; }
-    virtual void SetPlayer(Player* p) {} 
-
 public:
     bool exitGame = false;
-
 };

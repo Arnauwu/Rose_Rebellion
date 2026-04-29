@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "UIManager.h"
 #include "SceneManager.h"
+#include "GameManager.h"
+
 #include "Window.h"
 #include "Log.h"
 
@@ -90,10 +92,17 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     switch (uiElement->id)
     {
     case (int)MenuUI_ID::BTN_PLAY:
-        sceneManager->ChangeScene(SceneID::GAME);
+		GameManager::GetInstance().StartNewGame();
+        sceneManager->ChangeScene(SceneID::INTRO_CINEMATIC);
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
-        // Lógica de continuar
+		if (GameManager::GetInstance().LoadGame("savegame.xml")) {
+			LOG("Partida cargada con éxito. Entrando al juego...");
+			sceneManager->ChangeScene(SceneID::GAME);
+		}
+		else {
+			LOG("Error: No se ha encontrado partida o el archivo está corrupto.");
+		}
         break;
     case (int)MenuUI_ID::BTN_SETTINGS:
         ShowSettings(true);

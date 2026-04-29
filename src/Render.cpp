@@ -105,11 +105,13 @@ bool Render::PreUpdate()
 
 bool Render::Update(float dt)
 {
+	UpdateFade(dt);
 	return true;
 }
 
 bool Render::PostUpdate()
 {
+	DrawFade();
 	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.g, background.a);
 	SDL_RenderPresent(renderer);
 	return true;
@@ -564,4 +566,54 @@ bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Colo
 void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;
+}
+
+//Fade Funtions
+void Render::StartFade(FadeDirection dir, float durationMs)
+{
+	fadeActive_ = true;
+	fadeDir_ = dir;
+	fadeDurationMs_ = durationMs;
+	fadeElapsedMs_ = 0.0f;
+	fadeAlpha_ = (dir == FadeDirection::FADE_IN) ? 255 : 0;
+}
+
+void Render::UpdateFade(float dt)
+{
+	if (!fadeActive_) return;
+
+	fadeElapsedMs_ += dt;
+	float t = fadeElapsedMs_ / fadeDurationMs_;
+	if (t > 1.0f) t = 1.0f;
+
+	if (fadeDir_ == FadeDirection::FADE_IN) {
+		fadeAlpha_ = (Uint8)(255.0f * (1.0f - t));
+	}
+	else {
+		fadeAlpha_ = (Uint8)(255.0f * t);
+	}
+
+	if (fadeElapsedMs_ >= fadeDurationMs_) {
+		fadeActive_ = false;
+	}
+}
+
+void Render::DrawFade()
+{
+	if (fadeAlpha_ == 0) return;
+
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, fadeAlpha_);
+	SDL_FRect fullscreen = { 0, 0, (float)camera.w, (float)camera.h };
+	SDL_RenderFillRect(renderer, &fullscreen);
+}
+
+bool Render::IsFadeComplete() const
+{
+	return !fadeActive_;
+}
+
+float Render::GetFadeAlpha() const
+{
+	return fadeAlpha_;
 }

@@ -6,6 +6,8 @@
 #include "Physics.h"
 #include "Textures.h"
 #include "SceneManager.h"
+#include "EntityManager.h"
+
 #include "Render.h"
 
 //PI
@@ -50,7 +52,8 @@ bool HomingProjectile::Start()
     }
 
     // Obtiene la posición del jugador para lanzar la bala en esa dirección
-    Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    Vector2D playerPos = player->position;
     Vector2D dir = (playerPos - position).normalized();
     currentVelocity = dir * speed; // Dirección multiplicada por la velocidad
 

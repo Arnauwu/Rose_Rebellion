@@ -149,13 +149,16 @@
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
+    <ClCompile Include="src\Cinematics.cpp" />
     <ClCompile Include="src\Cucafera.cpp" />
     <ClCompile Include="src\DashObj.cpp" />
     <ClCompile Include="src\DoubleJumpObj.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\GameManager.cpp" />
     <ClCompile Include="src\GameOverScene.cpp" />
+    <ClCompile Include="src\IntroCinematicScene.cpp" />
     <ClCompile Include="src\Keys.cpp" />
     <ClCompile Include="src\KnightBoss.cpp" />
     <ClCompile Include="src\Manta.cpp" />
@@ -194,10 +197,10 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SavePoint.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\CameraController.h" />
+    <ClInclude Include="src\Cinematics.h" />
     <ClInclude Include="src\Cucafera.h" />
     <ClInclude Include="src\DashObj.h" />
     <ClInclude Include="src\DoubleJumpObj.h" />
@@ -205,7 +208,9 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\GameManager.h" />
     <ClInclude Include="src\GameOverScene.h" />
+    <ClInclude Include="src\IntroCinematicScene.h" />
     <ClInclude Include="src\Keys.h" />
     <ClInclude Include="src\KnightBoss.h" />
     <ClInclude Include="src\Manta.h" />
@@ -226,6 +231,7 @@
     <ClInclude Include="src\Physics.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
+    <ClInclude Include="src\SavePoint.h" />
     <ClInclude Include="src\SceneBase.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShieldKnight.h" />
@@ -245,6 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml" />
+    <Xml Include="savegame.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

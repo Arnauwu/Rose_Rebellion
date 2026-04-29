@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Textures.h"
 #include "Render.h"
+#include "EntityManager.h"
 #include "SceneManager.h"
 #include "GameScene.h"
 #include "Player.h"
@@ -22,16 +23,14 @@ bool Hud::Start() {
     LOG("Loading HUD");
     lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Vides_V1.png");
 
-
     sectionWidth = 211;
     sectionHeight = 108;
     return true;
 }
 
 bool Hud::Update(float dt) {
-    if (Engine::GetInstance().sceneManager->GetPlayer() == nullptr) return true;
-
-    Player* player = Engine::GetInstance().sceneManager->GetPlayer();
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    if (player == nullptr) return true;
 
     if (player->maxHealth > 0) {
         int hp = player->currentHealth;
@@ -69,9 +68,9 @@ bool Hud::Update(float dt) {
 bool Hud::PostUpdate() {
 
     auto sceneManager = Engine::GetInstance().sceneManager;
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-    // Only draw life bar when player appear
-    if (sceneManager->GetPlayer() == nullptr) {
+    if (player == nullptr) {
         return true;
     }
 
@@ -90,7 +89,7 @@ bool Hud::PostUpdate() {
 void Hud::DrawPlayerHealthBar() {
     if (lifeBarTexture == nullptr) return;
 
-    Player* player = Engine::GetInstance().sceneManager->GetPlayer();
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
     // calculate current life
     if (player != nullptr) {
