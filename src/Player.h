@@ -135,14 +135,12 @@ public:
 	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
 
 	// Double Jump
-	static bool doubleJumpUnlocked; 
 	bool secondJumpUsed = false;
 	
 	// Gliding
 	bool isGliding = false; // Flag
 
 	// Dash
-	static bool dashUnlocked;
 	bool isDashing = false; // Flag to check if the player has dashed
 	float dashForce = 15.0f;
 

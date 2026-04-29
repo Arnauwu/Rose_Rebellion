@@ -5,11 +5,13 @@
 #include "Vector2D.h" 
 
 struct GameState {
-    int keyCount = 0;
-    bool hasSickle = false;
-    bool glideUnlocked = false;
+    int keyCount= false;
+    bool hasSickle= false;
+    bool glideUnlocked= false;
     int currentForceOrbs = 0;
-
+    bool doubleJumpUnlocked = false;
+    bool dashUnlocked = false;
+   
     // Player stats
     int currentHealth = 100;
     int maxHealth = 100;

@@ -15,6 +15,7 @@
 #include <iostream>
 #include <unordered_map>
 
+
 using namespace std;
 
 Player::Player() : Entity(EntityType::PLAYER)
@@ -385,7 +386,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			LOG("Jump");
 		}
 		// Double Jump
-		else if (doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
+		else if (GameManager::GetInstance().gameState.doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
@@ -554,7 +555,7 @@ void Player::Glide() // Gliding
 void Player::Dash()
 {
 	// Start Dash
-	if (dashUnlocked == true
+	if (GameManager::GetInstance().gameState.dashUnlocked == true
 		&& Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN
 		&& isDashing == false
 		&& dashCooldownTimer.ReadMSec() > dashCooldownMS)
@@ -858,6 +859,18 @@ void Player::UnlockSickle()
 	GameManager::GetInstance().gameState.hasSickle = true;
 	AddItem(ItemID::WEAPON, 1);
 	LOG("Sickle Unlocked! You can attack now if you have the cape.");
+}
+void Player::UnlockDoubleJump() {
+	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
+	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
+	LOG("Double Jump Unlocked! You can do a double jump");
+
+}
+void Player::UnlockDash() {
+	GameManager::GetInstance().gameState.dashUnlocked = true;
+	AddItem(ItemID::DASH_OBJ, 1);
+	LOG("Dash Unlocked! You can dash");
+	LOG("Dash Unlocked! You can do a dash");
 }
 
 bool Player::CleanUp()
