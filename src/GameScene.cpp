@@ -50,7 +50,7 @@ void GameScene::LoadMap(std::string mapFile)
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
 	LOG("MAPA PREVIO %s", previousMap);
 
-	Engine::GetInstance().entityManager->CleanUp();
+	Engine::GetInstance().entityManager->CleanUp(true);
 	Engine::GetInstance().map->CleanUp();
 
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
@@ -71,11 +71,13 @@ void GameScene::LoadMap(std::string mapFile)
 			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
 			LOG("Transición: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
-		newPlayer->position = spawnPos;
-		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
-	}
 
-	// 7. Arrancar las entidades (llama a Start() de todos y crea los cuerpos de Box2D en la posición correcta)
+		newPlayer->SetPosition(spawnPos);
+
+		if (newPlayer->pbody != nullptr) {
+			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
+		}
+	}
 	Engine::GetInstance().entityManager->Start();
 }
 

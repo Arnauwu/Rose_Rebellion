@@ -294,18 +294,7 @@ bool Map::CleanUp()
 	}
 	mapData.objectGroups.clear();
 
-	// Clean up spawn points
-	for (const auto& spawnPoint : mapData.spawnPoints)
-	{
-		delete spawnPoint;
-	}
 	mapData.spawnPoints.clear();
-
-	// Clean up doors
-	for (const auto& door : mapData.doors)
-	{
-		delete door;
-	}
 	mapData.doors.clear();
 
 	// Clean up collider list
@@ -511,44 +500,44 @@ bool Map::Load(std::string path, std::string fileName)
 
 						// TODO: Assign Listener
 
-						Door* newDoor = new Door;
-						newDoor->body = collider;
-						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						Door newDoor;
+						newDoor.body = collider;
+						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 
-						newDoor->uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
 
 						//Mira si necesita una llave para abrirlo o no
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						if (needsKeyProp != nullptr)
 						{
-							newDoor->needsKey = needsKeyProp->value; // Si la propiedad "NeedsKey" de la puerta es true, esta puerta necesita una llave.
-
+							newDoor.needsKey = needsKeyProp->value;
 						}
 						else
 						{
-							newDoor->needsKey = false; // Si no, no necesita llave
+							newDoor.needsKey = false;
 						}
+
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
-							if (unlockedId == newDoor->uniqueId) {
-								newDoor->needsKey = false;
+							if (unlockedId == newDoor.uniqueId) {
+								newDoor.needsKey = false;
 								break;
 							}
 						}
 
 						Properties::Property* maintenanceProp = obj->properties.GetProperty("UnderMaintenance");
 						if (maintenanceProp != nullptr) {
-							newDoor->underMaintenance = maintenanceProp->value;
+							newDoor.underMaintenance = maintenanceProp->value;
 						}
 						else {
-							newDoor->underMaintenance = false;
+							newDoor.underMaintenance = false;
 						}
 
 						Properties::Property* closedProp = obj->properties.GetProperty("DoorClosed");
 						if (closedProp != nullptr) {
-							newDoor->DoorClose = closedProp->value;
+							newDoor.DoorClose = closedProp->value;
 						}
 						else {
-							newDoor->DoorClose = false;
+							newDoor.DoorClose = false;
 						}
 						mapData.doors.push_back(newDoor);
 					}
@@ -558,9 +547,9 @@ bool Map::Load(std::string path, std::string fileName)
 
 						// TODO: Assign Listener
 
-						Door* newDoor = new Door;
-						newDoor->body = collider;
-						newDoor->teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						Door newDoor;
+						newDoor.body = collider;
+						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 						mapData.doors.push_back(newDoor);
 					}
 					else
@@ -799,7 +788,6 @@ void Map::SpawnEntities()
 					}
 					else
 					{
-						player->position = Vector2D(x, y);
 					}
 					Engine::GetInstance().entityManager->SetPlayer(player);
 				}
@@ -892,13 +880,13 @@ void Map::SpawnEntities()
 				Properties a;
 				LoadProperties(objectNode, a);
 
-				PlayerSpawnPoint* newSpawn = new PlayerSpawnPoint;
-				newSpawn->fromRoom = a.GetProperty("FromRoom") ? a.GetProperty("FromRoom")->value2 : "UNKNOWN";
-				newSpawn->position.setX(x);
-				newSpawn->position.setY(y);
+				PlayerSpawnPoint newSpawn;
+				newSpawn.fromRoom = a.GetProperty("FromRoom") ? a.GetProperty("FromRoom")->value2 : "UNKNOWN";
+				newSpawn.position.setX(x);
+				newSpawn.position.setY(y);
 
 				LOG("Loaded spawn point - FromRoom: '%s', Position: (%.0f, %.0f)",
-					newSpawn->fromRoom.c_str(), x, y);
+					newSpawn.fromRoom.c_str(), x, y);
 
 				mapData.spawnPoints.push_back(newSpawn);
 			}
@@ -912,9 +900,9 @@ std::string Map::DoorInfo(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->teleportTo;
+			return ndoor.teleportTo;
 		}
 	}
 	return std::string();
@@ -924,23 +912,24 @@ bool Map::DoorNeedsKey(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->needsKey;
+			return ndoor.needsKey;
 		}
 	}
 	return false;
 }
+
 Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 {
 	// Buscar el spawn point que coincida con la sala de origen
 	for (const auto& spawnPoint : mapData.spawnPoints)
 	{
-		if (spawnPoint->fromRoom == fromRoom)
+		if (spawnPoint.fromRoom == fromRoom)
 		{
 			LOG("Found spawn point for room '%s' at (%.0f, %.0f)",
-				fromRoom.c_str(), spawnPoint->position.getX(), spawnPoint->position.getY());
-			return spawnPoint->position;
+				fromRoom.c_str(), spawnPoint.position.getX(), spawnPoint.position.getY());
+			return spawnPoint.position;
 		}
 	}
 
@@ -948,7 +937,7 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 	if (!mapData.spawnPoints.empty())
 	{
 		LOG("WARNING: Spawn point from room '%s' not found. Using first available spawn point.", fromRoom.c_str());
-		return mapData.spawnPoints.front()->position;
+		return mapData.spawnPoints.front().position;
 	}
 
 	// Fallback: posición por defecto (solo si no hay spawn points en absoluto)
@@ -961,9 +950,9 @@ std::string Map::GetDoorUniqueId(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->uniqueId;
+			return ndoor.uniqueId;
 		}
 	}
 	return "";
@@ -973,9 +962,9 @@ bool Map::DoorUnderMaintenance(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->underMaintenance;
+			return ndoor.underMaintenance;
 		}
 	}
 	return false;
@@ -984,9 +973,9 @@ bool Map::DoorUnderMaintenance(PhysBody* door)
 bool Map::DoorClosed(PhysBody* door) {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor->body == door)
+		if (ndoor.body == door)
 		{
-			return ndoor->DoorClose;
+			return ndoor.DoorClose;
 		}
 	}
 	return false;

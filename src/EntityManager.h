@@ -26,7 +26,7 @@ public:
 	bool PostUpdate();
 
 	// Called before quitting
-	bool CleanUp();
+	bool CleanUp(bool keepPlayer = false);
 
 	void AwakeEntities();
 	// Additional methods
@@ -40,6 +40,7 @@ public:
 	void SetPlayer(Player* p) { playerPtr = p; }
 
 private:
+	bool requiresSort = false;
 	std::list<std::shared_ptr<Entity>> entities;
 	Player* playerPtr = nullptr;
 };

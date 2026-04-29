@@ -153,9 +153,9 @@ struct MapData
 	int tileHeight;
     std::list<TileSet*> tilesets;
     std::list<ObjectGroup*> objectGroups;
-    std::list<Door*> doors;
+    std::vector<Door> doors;
     std::list<MapLayer*> layers;
-    std::list<PlayerSpawnPoint*> spawnPoints;
+    std::vector<PlayerSpawnPoint> spawnPoints;
 };
 
 class Map : public Module
