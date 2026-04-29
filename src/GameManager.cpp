@@ -1,143 +1,131 @@
 #include "GameManager.h"
 #include "Log.h"
-#include <fstream>
 #include <iostream>
+
+#include "pugixml.hpp" 
 
 void GameManager::StartNewGame() {
     LOG("Iniciando nueva partida...");
-    // Reseteamos el estado a los valores por defecto definidos en el struct GameState
     gameState = GameState();
 }
 
 bool GameManager::SaveGame(const std::string& filename) {
     LOG("Guardando partida en %s", filename.c_str());
 
-    // Apertura del archivo en modo binario
-    std::ofstream file(filename, std::ios::binary);
-    if (!file.is_open()) {
-        LOG("ERROR: No se pudo abrir el archivo para guardar.");
-        return false;
+    pugi::xml_document doc;
+
+    // Root node
+    pugi::xml_node root = doc.append_child("SaveGame");
+
+    // Player statistics
+    pugi::xml_node stats = root.append_child("PlayerStats");
+    stats.append_attribute("currentHealth").set_value(gameState.currentHealth);
+    stats.append_attribute("maxHealth").set_value(gameState.maxHealth);
+    stats.append_attribute("keyCount").set_value(gameState.keyCount);
+    stats.append_attribute("currentForceOrbs").set_value(gameState.currentForceOrbs);
+
+    // Unlockables
+    pugi::xml_node unlocks = root.append_child("Unlockables");
+    unlocks.append_attribute("hasSickle").set_value(gameState.hasSickle);
+    unlocks.append_attribute("glideUnlocked").set_value(gameState.glideUnlocked);
+
+    // World Status and Position
+    pugi::xml_node world = root.append_child("WorldState");
+    world.append_attribute("currentMap").set_value(gameState.currentMap.c_str());
+
+    pugi::xml_node pos = world.append_child("Position");
+    pos.append_attribute("x").set_value(gameState.playerPosition.getX());
+    pos.append_attribute("y").set_value(gameState.playerPosition.getY());
+
+    // Open doors
+    pugi::xml_node doors = root.append_child("OpenedDoors");
+    for (const auto& doorId : gameState.openedDoors) {
+        pugi::xml_node doorNode = doors.append_child("Door");
+        doorNode.append_attribute("id").set_value(doorId.c_str());
     }
 
-    // 1. Guardar variables de estado simples
-    file.write(reinterpret_cast<char*>(&gameState.keyCount), sizeof(gameState.keyCount));
-    file.write(reinterpret_cast<char*>(&gameState.hasSickle), sizeof(gameState.hasSickle));
-    file.write(reinterpret_cast<char*>(&gameState.glideUnlocked), sizeof(gameState.glideUnlocked));
-    file.write(reinterpret_cast<char*>(&gameState.currentForceOrbs), sizeof(gameState.currentForceOrbs));
-    file.write(reinterpret_cast<char*>(&gameState.currentHealth), sizeof(gameState.currentHealth));
-    file.write(reinterpret_cast<char*>(&gameState.maxHealth), sizeof(gameState.maxHealth));
-
-    // 2. Guardar el nombre del mapa actual (string)
-    size_t mapLen = gameState.currentMap.size();
-    file.write(reinterpret_cast<char*>(&mapLen), sizeof(mapLen));
-    file.write(gameState.currentMap.c_str(), mapLen);
-
-    // 3. Guardar la posición del jugador
-    file.write(reinterpret_cast<char*>(&gameState.playerPosition), sizeof(Vector2D));
-
-    // 4. Guardar items recolectados (unordered_set de strings)
-    size_t itemsSize = gameState.collectedItems.size();
-    file.write(reinterpret_cast<char*>(&itemsSize), sizeof(itemsSize));
-    for (const auto& item : gameState.collectedItems) {
-        size_t len = item.size();
-        file.write(reinterpret_cast<char*>(&len), sizeof(len));
-        file.write(item.c_str(), len);
+    // Collected Items
+    pugi::xml_node items = root.append_child("CollectedItems");
+    for (const auto& itemId : gameState.collectedItems) {
+        pugi::xml_node itemNode = items.append_child("Item");
+        itemNode.append_attribute("id").set_value(itemId.c_str());
     }
 
-    // 5. Guardar puertas abiertas (vector de strings)
-    size_t doorsSize = gameState.openedDoors.size();
-    file.write(reinterpret_cast<char*>(&doorsSize), sizeof(doorsSize));
-    for (const auto& door : gameState.openedDoors) {
-        size_t len = door.size();
-        file.write(reinterpret_cast<char*>(&len), sizeof(len));
-        file.write(door.c_str(), len);
+    // Save the file
+    bool success = doc.save_file(filename.c_str());
+
+    if (success) {
+        LOG("Partida guardada exitosamente en formato XML.");
+    }
+    else {
+        LOG("ERROR: No se pudo guardar el archivo XML.");
     }
 
-    file.close();
-    LOG("Partida guardada exitosamente.");
-    return true;
+    return success;
 }
 
 bool GameManager::LoadGame(const std::string& filename) {
     LOG("Cargando partida desde %s", filename.c_str());
 
-    std::ifstream file(filename, std::ios::binary);
-    if (!file.is_open()) {
-        LOG("ERROR: No existe archivo de guardado.");
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(filename.c_str());
+
+    if (!result) {
+        LOG("ERROR: No existe archivo de guardado o está corrupto. Pugi error: %s", result.description());
         return false;
     }
 
-    // Usamos un estado temporal para no corromper la partida actual si la carga falla
+    pugi::xml_node root = doc.child("SaveGame");
+    if (!root) {
+        LOG("ERROR: El XML no tiene la estructura de un SaveGame válido.");
+        return false;
+    }
+
+    // Temporary security status
     GameState tempState;
 
-    // 1. Cargar variables simples
-    file.read(reinterpret_cast<char*>(&tempState.keyCount), sizeof(tempState.keyCount));
-    file.read(reinterpret_cast<char*>(&tempState.hasSickle), sizeof(tempState.hasSickle));
-    file.read(reinterpret_cast<char*>(&tempState.glideUnlocked), sizeof(tempState.glideUnlocked));
-    file.read(reinterpret_cast<char*>(&tempState.currentForceOrbs), sizeof(tempState.currentForceOrbs));
-    file.read(reinterpret_cast<char*>(&tempState.currentHealth), sizeof(tempState.currentHealth));
-    file.read(reinterpret_cast<char*>(&tempState.maxHealth), sizeof(tempState.maxHealth));
-
-    // 2. Cargar Map String con chequeo de seguridad
-    size_t mapLen;
-    file.read(reinterpret_cast<char*>(&mapLen), sizeof(mapLen));
-
-    if (mapLen > 500) { // Límite de seguridad para evitar desbordamiento
-        LOG("ERROR: Archivo corrupto (mapLen demasiado grande).");
-        file.close();
-        return false;
+    // Load statistics
+    pugi::xml_node stats = root.child("PlayerStats");
+    if (stats) {
+        tempState.currentHealth = stats.attribute("currentHealth").as_int(100);
+        tempState.maxHealth = stats.attribute("maxHealth").as_int(100);
+        tempState.keyCount = stats.attribute("keyCount").as_int(0);
+        tempState.currentForceOrbs = stats.attribute("currentForceOrbs").as_int(0);
     }
 
-    tempState.currentMap.resize(mapLen);
-    file.read(&tempState.currentMap[0], mapLen);
-
-    // 3. Cargar posición del jugador
-    file.read(reinterpret_cast<char*>(&tempState.playerPosition), sizeof(Vector2D));
-
-    // 4. Cargar items recolectados con chequeo de seguridad
-    size_t itemsSize;
-    file.read(reinterpret_cast<char*>(&itemsSize), sizeof(itemsSize));
-
-    if (itemsSize > 10000) {
-        LOG("ERROR: Archivo corrupto (itemsSize irracional).");
-        file.close();
-        return false;
+    // Load unlockables
+    pugi::xml_node unlocks = root.child("Unlockables");
+    if (unlocks) {
+        tempState.hasSickle = unlocks.attribute("hasSickle").as_bool(false);
+        tempState.glideUnlocked = unlocks.attribute("glideUnlocked").as_bool(false);
     }
 
-    for (size_t i = 0; i < itemsSize; ++i) {
-        size_t len;
-        file.read(reinterpret_cast<char*>(&len), sizeof(len));
-        if (len > 500) { file.close(); return false; }
+    // Load World State and Position
+    pugi::xml_node world = root.child("WorldState");
+    if (world) {
+        tempState.currentMap = world.attribute("currentMap").as_string("Castle_Room_Princess.tmx");
 
-        std::string item(len, '\0');
-        file.read(&item[0], len);
-        tempState.collectedItems.insert(item);
+        pugi::xml_node pos = world.child("Position");
+        if (pos) {
+            tempState.playerPosition.setX(pos.attribute("x").as_float(96.0f));
+            tempState.playerPosition.setY(pos.attribute("y").as_float(96.0f));
+        }
     }
 
-    // 5. Cargar puertas abiertas con chequeo de seguridad
-    size_t doorsSize;
-    file.read(reinterpret_cast<char*>(&doorsSize), sizeof(doorsSize));
-
-    if (doorsSize > 10000) {
-        LOG("ERROR: Archivo corrupto (doorsSize irracional).");
-        file.close();
-        return false;
+    // Load Open Doors
+    pugi::xml_node doors = root.child("OpenedDoors");
+    for (pugi::xml_node doorNode = doors.child("Door"); doorNode; doorNode = doorNode.next_sibling("Door")) {
+        tempState.openedDoors.push_back(doorNode.attribute("id").as_string());
     }
 
-    for (size_t i = 0; i < doorsSize; ++i) {
-        size_t len;
-        file.read(reinterpret_cast<char*>(&len), sizeof(len));
-        if (len > 500) { file.close(); return false; }
-
-        std::string door(len, '\0');
-        file.read(&door[0], len);
-        tempState.openedDoors.push_back(door);
+    // Load Collected Items
+    pugi::xml_node items = root.child("CollectedItems");
+    for (pugi::xml_node itemNode = items.child("Item"); itemNode; itemNode = itemNode.next_sibling("Item")) {
+        tempState.collectedItems.insert(itemNode.attribute("id").as_string());
     }
 
-    file.close();
-
-    // Si todo es correcto, aplicamos el estado cargado
+    // If everything is correct, we set the status to “loaded”
     gameState = tempState;
-    LOG("Partida cargada correctamente.");
+    LOG("Partida XML cargada correctamente.");
     return true;
 }

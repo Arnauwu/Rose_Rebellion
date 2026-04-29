@@ -96,7 +96,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
         sceneManager->ChangeScene(SceneID::INTRO_CINEMATIC);
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
-		if (GameManager::GetInstance().LoadGame("savegame.dat")) {
+		if (GameManager::GetInstance().LoadGame("savegame.xml")) {
 			LOG("Partida cargada con éxito. Entrando al juego...");
 			sceneManager->ChangeScene(SceneID::GAME);
 		}

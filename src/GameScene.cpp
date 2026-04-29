@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "SceneManager.h"
 #include "EntityManager.h"
+#include "GameManager.h"
 #include "UIManager.h"
 #include "window.h"
 #include "Player.h"
@@ -46,25 +47,36 @@ void GameScene::LoadMap(std::string mapFile)
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
 
-	Engine::GetInstance().entityManager->CleanUp();
-
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
-	printf("prevoius map : %s", previousMap);
+	LOG("MAPA PREVIO %s", previousMap);
 
+	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
 	Engine::GetInstance().map->SpawnEntities();
 
-	Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-
-	if (Engine::GetInstance().entityManager->GetPlayer() != nullptr)
+	Player* newPlayer = Engine::GetInstance().entityManager->GetPlayer();
+	if (newPlayer != nullptr)
 	{
-		Engine::GetInstance().entityManager->GetPlayer()->position = spawnPos;
+		Vector2D spawnPos;
+
+		if (previousMap == "")
+		{
+			spawnPos = GameManager::GetInstance().gameState.playerPosition;
+			LOG("Carga inicial: Usando posición del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
+		}
+		else
+		{
+			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
+			LOG("Transición: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+		}
+		newPlayer->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 	}
+
+	// 7. Arrancar las entidades (llama a Start() de todos y crea los cuerpos de Box2D en la posición correcta)
 	Engine::GetInstance().entityManager->Start();
-	
 }
 
 bool GameScene::Start() {
@@ -74,8 +86,10 @@ bool GameScene::Start() {
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	LOG("Loading Game Scene");
 
-	LoadMap("Castle_Room_Princess.tmx");
+	Engine::GetInstance().map->mapFileName = "";
 
+	std::string mapToLoad = GameManager::GetInstance().gameState.currentMap;
+	LoadMap(mapToLoad);
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");

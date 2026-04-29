@@ -6,7 +6,6 @@
 #include <memory>
 
 class UIElement;
-class Player;
 
 // Different sub-menus inside the game
 enum class GameMenuTab {

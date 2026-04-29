@@ -94,6 +94,7 @@ public:
 
 public:
 
+	bool isAwake = false;
 	std::string name;
 	EntityType type;
 

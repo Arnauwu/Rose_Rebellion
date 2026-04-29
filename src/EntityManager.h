@@ -28,6 +28,7 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	void AwakeEntities();
 	// Additional methods
 	std::shared_ptr<Entity> CreateEntity(EntityType type);
 

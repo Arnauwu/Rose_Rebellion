@@ -33,9 +33,11 @@ bool Player::Awake()
 {
 	Engine::GetInstance().entityManager->SetPlayer(this);
 	// Initialize Player parameters
-	position = GameManager::GetInstance().gameState.playerPosition;
+	if (position.getX() == 0 && position.getY() == 0) {
+		position = GameManager::GetInstance().gameState.playerPosition;
+	}
 	currentHealth = GameManager::GetInstance().gameState.currentHealth;
-
+	LOG("Player Awake: Posición final establecida en %f, %f", position.getX(), position.getY());
 	return true;
 }
 
@@ -1027,7 +1029,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		gameState.currentHealth = this->currentHealth;
 		gameState.currentMap = Engine::GetInstance().map->mapFileName;
 
-		if (GameManager::GetInstance().SaveGame("savegame.dat")) {
+		if (GameManager::GetInstance().SaveGame("savegame.xml")) {
 			Engine::GetInstance().hud->ShowNotification("Partida Guardada");
 		}
 		else {

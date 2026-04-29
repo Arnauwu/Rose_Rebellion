@@ -272,6 +272,8 @@ TileSet* Map::GetTilesetFromTileId(int gid) const
 bool Map::CleanUp()
 {
 	LOG("Unloading map");
+	mapFileName = "";
+	mapPath = "";
 
 	// Clean up any memory allocated from tilesets/map
 	for (const auto& tileset : mapData.tilesets) {
@@ -787,7 +789,7 @@ void Map::SpawnEntities()
 				{
 					Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-					if (player == NULL)
+					if (player == nullptr)
 					{
 						std::shared_ptr<Player> newPlayerPtr = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
 
@@ -903,6 +905,7 @@ void Map::SpawnEntities()
 		}
 	}
 
+	Engine::GetInstance().entityManager->AwakeEntities();
 }
 
 std::string Map::DoorInfo(PhysBody* door)
@@ -988,8 +991,3 @@ bool Map::DoorClosed(PhysBody* door) {
 	}
 	return false;
 }
-
-
-
-
-

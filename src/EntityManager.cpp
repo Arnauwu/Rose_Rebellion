@@ -114,11 +114,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SHIELD_KNIGHT:
 		entity = std::make_shared<ShieldKnight>();
 		break;
-
 	case EntityType::KNIGHT_BOSS:
 		entity = std::make_shared<KnightBoss>();
 		break;
-
 	case EntityType::KEY:
 		entity = std::make_shared<Keys>();
 		break;
@@ -134,12 +132,22 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 	if (entity != nullptr)
 	{
-		// Forzamos la inicialización si el manager
-		entity->Awake();
 		entities.push_back(entity);
 	}
 
 	return entity;
+}
+
+void EntityManager::AwakeEntities()
+{
+	for (const auto& entity : entities)
+	{
+		if (entity->active && !entity->isAwake)
+		{
+			entity->Awake();
+			entity->isAwake = true;
+		}
+	}
 }
 
 void EntityManager::DestroyEntity(std::shared_ptr<Entity> entity)
