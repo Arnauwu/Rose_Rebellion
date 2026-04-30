@@ -18,8 +18,8 @@ public:
 	bool CleanUp() override;
 	bool Start();
 	bool Update(float dt);
-	void OnCollision(PhysBody* physA, PhysBody* physB);
-	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 
 private:
 	void PerformPathfinding();
@@ -36,6 +36,7 @@ public:
 
 	//Declare enemy parameters
 	bool isAttacking = false;
+	bool hitFromRight = false;
 	Timer startAttack; // Windup
 	Timer attackDuration; // Hitbox Duration
 	Timer attackCooldown;

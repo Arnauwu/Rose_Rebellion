@@ -35,7 +35,8 @@ void Enemy::PerformPathfinding() {
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	Vector2D playerPos = player->GetPosition();
 
-	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
+	int tileW = Engine::GetInstance().map->GetTileWidth();
+    playerTileDist = (int)(sqrt(pos.distanceSquared(playerPos)) / tileW);
 	int iter = 0;
 
 	while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
@@ -86,7 +87,7 @@ bool Enemy::CleanUp()
 
 
 //Define OnCollision function for the enemy. 
-void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
+void Enemy::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
 	default:
@@ -94,7 +95,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{

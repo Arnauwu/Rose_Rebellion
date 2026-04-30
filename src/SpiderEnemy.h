@@ -19,8 +19,8 @@ public:
     bool Start();
     bool Update(float dt);
 
-    void OnCollision(PhysBody* physA, PhysBody* physB) override;
-    void OnCollisionEnd(PhysBody* physA, PhysBody* physB) override;
+    void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
+    void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
 
 private:
     void GetPhysicsValues() override;

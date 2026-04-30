@@ -76,7 +76,7 @@ bool SwordKnight::Start()
 	//Stats
 	vision = 10;
 	speed = 1.0f;
-	knockbackForce = 5.0f;
+	knockbackForce = 6.0f;
 
 	maxHealth = 50;
 	currentHealth = maxHealth;
@@ -106,7 +106,9 @@ bool SwordKnight::Update(float dt)
 		}
 
 		GetPhysicsValues();
-		Move();
+		if (!isKnockedback) {
+			Move();
+		}
 		Knockback();
 		ApplyPhysics();
 	}
@@ -123,6 +125,7 @@ bool SwordKnight::Update(float dt)
 
 		Engine::GetInstance().audio->PlayFx(morirEspada);
 		anims.SetCurrent("dead");
+		isKnockedback = false;
 		pbody->ctype = ColliderType::UNKNOWN;
 	}
 
@@ -179,15 +182,25 @@ void SwordKnight::GetPhysicsValues() {
 void SwordKnight::Move() {
 
 	Vector2D tilePos = GetTilePos();
+	Vector2D playerPos = Engine::GetInstance().entityManager->GetPlayer()->GetPosition();
 
-	// Move if player has been found
-	if (pathfinding->pathTiles.empty() && isAttacking == false)
-	{
-		anims.SetCurrent("idle"); // TO DO: CHANGE TO Idle/ or make it WALK
+	if (playerTileDist < vision) {
+		lookingRight = (playerPos.getX() > position.getX());
+	}
+
+	if (isAttacking) {
+		velocity.x = 0;
+		Attack();
+		return;
+	}
+
+	if (pathfinding->pathTiles.empty() || playerTileDist > vision) {
+		anims.SetCurrent("idle");
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 2 && isAttacking == false)
+
+	else if (playerTileDist >= 1.5 && isAttacking == false)
 	{
 		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
@@ -233,14 +246,18 @@ void SwordKnight::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-;
-		if (lookingRight)
-		{
-			velocity.x = knockbackForce;
+		anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
+		if (attackHitbox != nullptr) {
+			Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
+			attackHitbox = nullptr;
+		}
+
+		if (hitFromRight) {
+			velocity.x = -knockbackForce;
 		}
 		else
 		{
-			velocity.x = -knockbackForce;
+			velocity.x = knockbackForce;
 		}
 	}
 	if (knockbackTime <= 0)
@@ -288,19 +305,33 @@ void SwordKnight::Draw(float dt)
 		pathfinding->DrawPath();
 	}
 
-	//Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	//Draw using the texture and the current animation frame
+	if (isKnockedback)
+	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
+	}
+	else
+	{
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	}
 }
 
 void SwordKnight::Attack()
 {
-	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000)
+
+	if (isAttacking == false && attackCooldown.ReadMSec() >= 500 && !isKnockedback)
 	{
 		isAttacking = true;
 		startAttack.Start();
 		return;
 	}
-	else if (attackDuration.ReadMSec() >= 1000 && attackHitbox != nullptr)
+	else if (attackDuration.ReadMSec() >= 800 && attackHitbox != nullptr)
 	{
 		Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
 		attackHitbox = nullptr;
@@ -308,7 +339,7 @@ void SwordKnight::Attack()
 		attackCooldown.Start();
 		isAttacking = false;
 	}
-	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr)
+	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr && !isKnockedback)
 	{
 		Engine::GetInstance().audio->PlayFx(atacarEspada);
 		anims.SetCurrent("sword_attack"); //Attack
@@ -316,7 +347,7 @@ void SwordKnight::Attack()
 		//CreateHitbox
 		float attackX = position.getX();
 		float attackY = position.getY();
-		int attackW = 150; int attackH = 90;
+		int attackW = 100; int attackH = 180;
 
 		if (lookingRight)
 		{
@@ -330,7 +361,7 @@ void SwordKnight::Attack()
 		attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, attackW, attackH, bodyType::STATIC);
 		attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
 		attackHitbox->listener = this;
-		damage = 50;
+		damage = 30;
 
 		attackDuration.Start();
 	}
@@ -341,16 +372,21 @@ void SwordKnight::Attack()
 
 
 //Define OnCollision function for the enemy. 
-void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB) 
+void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physA == attackHitbox) { return; }
-
 
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
+
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
+		
+		int playerX, playerY;
+		physB->GetPosition(playerX, playerY);
+
+		hitFromRight = (playerX > position.getX());
 		break;
 
 	default:
@@ -358,7 +394,7 @@ void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB)
 	}
 }
 
-void SwordKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void SwordKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{

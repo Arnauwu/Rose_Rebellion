@@ -339,7 +339,7 @@ void KnightBoss::ShieldDash() // TO DO: MAKE IT WORK (doesnt work because pbody 
 	}
 }
 
-void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB) {
+void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	if (physA == swordHitbox)
 	{
 		return;
@@ -348,7 +348,7 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
+	case ColliderType::MAP:
 	case ColliderType::PLAYER:
 	case ColliderType::ENEMY:
 		// Se puede frenar aquí el ataque si colisiona
@@ -364,11 +364,11 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
+	case ColliderType::MAP:
 		break;
 	default:
 		break;

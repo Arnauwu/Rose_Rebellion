@@ -120,7 +120,7 @@ bool Ninfa::Update(float dt)
             b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
             Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, currentVel.y });
 
-            //!
+            isKnockedback = false;
             pbody->ctype = ColliderType::UNKNOWN;
         }
 
@@ -336,9 +336,22 @@ void Ninfa::Draw(float dt)
     {
         pathfinding->DrawPath();
     }
-    // Pruebas (Testing)
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 0.75);
 
+    //Draw using the texture and the current animation frame
+    if (isKnockedback)
+    {
+        Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+        Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+        Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 0.75);
+
+        Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+        delete r; delete g; delete b;
+    }
+    else
+    {
+        Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 0.75);
+    }
 }
 
 void Ninfa::ShootProjectile() {
@@ -361,7 +374,7 @@ bool Ninfa::CleanUp() {
     return Enemy::CleanUp();
 }
 
-void Ninfa::OnCollision(PhysBody* physA, PhysBody* physB)
+void Ninfa::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
     // Si está muerto, no hace daño ni recibe más golpes
     if (isdead) return;

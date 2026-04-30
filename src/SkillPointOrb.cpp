@@ -93,7 +93,7 @@ bool SkillPointOrb::Destroy()
 	return true;
 }
 
-void SkillPointOrb::OnCollision(PhysBody* physA, PhysBody* physB)
+void SkillPointOrb::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physB->ctype == ColliderType::PLAYER) {
 		GameManager::GetInstance().gameState.collectedItems.insert(uniqueID);

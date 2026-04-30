@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="100" height="18" tilewidth="128" tileheight="128" infinite="0" nextlayerid="20" nextobjectid="301">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="100" height="18" tilewidth="128" tileheight="128" infinite="0" nextlayerid="21" nextobjectid="305">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -5457,6 +5457,14 @@
    <tile gid="196"/>
   </data>
  </layer>
+ <objectgroup color="#aa0000" id="20" name="Spikes">
+  <properties>
+   <property name="Danger" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="301" x="7598" y="0" width="82" height="512"/>
+  <object id="302" x="2944" y="2111.64" width="3840" height="64.3636"/>
+ </objectgroup>
  <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
@@ -5487,7 +5495,6 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
   <object id="189" x="6784" y="2048" width="640" height="26"/>
-  <object id="220" x="2944" y="2176" width="3840" height="26"/>
   <object id="221" x="2048" y="2048" width="896" height="26"/>
   <object id="222" x="256" y="2048" width="1280" height="26"/>
   <object id="223" x="128" y="1024" width="128" height="26"/>
@@ -5558,14 +5565,15 @@
   <object id="281" x="8832" y="1184" width="1150.75" height="224"/>
   <object id="282" x="10240" y="924" width="128" height="100"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
+ <objectgroup color="#00aaff" id="8" name="Ceiling">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
+  <object id="304" x="640" y="-128" width="12032" height="128"/>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
-  <object id="52" name="Player" type="Player" x="12906.3" y="642.3">
+  <object id="52" name="Player" type="Player" x="7570.3" y="1466.3">
    <point/>
   </object>
   <object id="290" name="SwordKnight" type="SwordKnight" x="9344" y="1024">

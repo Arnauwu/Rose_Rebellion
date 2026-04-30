@@ -49,7 +49,7 @@ bool Manta::CleanUp() {
 	return true;
 }
 
-void Manta::OnCollision(PhysBody* physA, PhysBody* physB) {
+void Manta::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	if (physB->ctype == ColliderType::PLAYER) {
 
 		Player* player = (Player*)physB->listener;

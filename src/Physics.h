@@ -24,26 +24,40 @@ enum bodyType {
     KINEMATIC
 };
 
+enum ShapeType {
+    NONE,
+    SHAPE_BOTTOM,
+    SHAPE_MIDDLE,
+    SHAPE_TOP
+};
+
+
 enum class ColliderType {
+    //Player
     PLAYER,
     PLAYER_ATTACK,
 
+    //Items
     ITEM,
     HEALTH_ORB,
     SKILL_POINT_ORB,
 
-    CEILING,
-    WALL,
-    PATH,
-    GROUND,
+    //Map
+    MAP,
     
+    //Hazards
     DANGER,
 
+    //Enemies
     ENEMY,
     ENEMY_ATTACK,
     
+
+    //General Entities
     SAVEPOINT,
-    
+
+    //Movement between maps
+    PATH,
     DOOR,
     
     
@@ -64,6 +78,7 @@ public:
     bool  Contains(int x, int y) const;
     int   RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& normal_y) const;
 	void  SetCollisionsActive(bool active);
+    void*  GetBodyUserData();
 
 public:
     b2BodyId body;              // id instead of pointer (v3.x)
@@ -92,6 +107,17 @@ public:
     PhysBody* CreateRectangleSensor(int x, int y, int width, int height, bodyType type);
     PhysBody* CreateCircleSensor(int x, int y, int radious, bodyType type);
     PhysBody* CreateChain(int x, int y, int* points, int size, bodyType type);
+
+    
+    PhysBody* CreateCapsule(int x, int y, int radious, int width, int height, bodyType type);
+
+
+    // Create Joint
+    void CreateWeldJoint(PhysBody* bodyA, PhysBody* bodyB, bool colision, b2Vec2 localAnchorA, b2Vec2 localAnchorB);
+
+    //Getters
+    void* GetShapeUserData(b2ShapeId shape);
+
 
     // Invoked from our event processing
     void BeginContact(b2ShapeId shapeA, b2ShapeId shapeB);
