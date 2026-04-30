@@ -394,7 +394,7 @@ void Player::Jump(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		// --- 1. WALL JUMP (Estilo Hollow Knight) ---
-		if (onWall == true)
+		if (onWall == true && onGround == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
@@ -406,7 +406,7 @@ void Player::Jump(float dt)
 	
 
 			// Fuerza del rebote
-			float wJumpForceY = jumpForce;
+			float wJumpForceY = jumpForce/2;
 			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
 			float wJumpForceX = speed * 1.0f;
 
