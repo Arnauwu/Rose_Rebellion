@@ -399,6 +399,7 @@ void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shape
 		break;
 	}
 }
+}
 
 void ShieldKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
