@@ -86,7 +86,8 @@ bool Player::Start()
 	pbody->listener = this;
 	pbody->ctype = ColliderType::PLAYER;
 
-	knockbackForce = 5.0f;
+	knockbackForce = 7.0f;
+
 	maxHealth = 100;
 	currentHealth = maxHealth;
 
@@ -106,22 +107,23 @@ bool Player::Update(float dt)
 	{
 		GetPhysicsValues();
 
-		Move();
-
 		Knockback();
-
-		Jump(dt);
 
 		timeSinceLastAttack += dt / 1000.0f; // Convert dt to seconds
 		if (timeSinceLastAttack >= comboResetTime) {
 			comboStep = 0; // Reset combo
 		}
+		if (!isKnockedback) {
+			Move();
 
-		Attack(dt);
+			Jump(dt);
 
-		Glide();
+			Attack(dt);
 
-		Dash();
+			Glide();
+
+			Dash();
+		}
 
 		ApplyPhysics();
 	}
@@ -296,14 +298,19 @@ void Player::Knockback()
 
 	if (isKnockedback)
 	{
-		anims.SetCurrent("hurt");
-		if (!lookingRight) //TO DO: Improve this to apply the knockback in the same direction of the enemy attack, not just based on where the player is looking
-		{
-			velocity.x = knockbackForce;
+		isAttacking = false;
+		anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
+		if (attackCollider != nullptr) {
+			Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+			attackCollider = nullptr;
+		}
+
+		if (hitFromRight) {
+			velocity.x = -knockbackForce;
 		}
 		else
 		{
-			velocity.x = -knockbackForce;
+			velocity.x = knockbackForce;
 		}
 	}
 	if (knockbackTime <= 0)
@@ -1026,9 +1033,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
+		LOG("Hit player");
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
+
+		int enemyX, enemyY;
+		physB->GetPosition(enemyX, enemyY);
+
+		hitFromRight = (enemyX > position.getX());
 		break;
 
 

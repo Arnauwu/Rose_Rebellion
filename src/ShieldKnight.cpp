@@ -176,7 +176,7 @@ void ShieldKnight::GetPhysicsValues() {
 void ShieldKnight::Move() {
 
 	Vector2D tilePos = GetTilePos();
-	Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
+	Vector2D playerPos = Engine::GetInstance().entityManager->GetPlayer()->GetPosition();
 
 	if (playerTileDist < vision) {
 		lookingRight = (playerPos.getX() > position.getX());
