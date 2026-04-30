@@ -36,6 +36,7 @@ public:
 
 	//Declare enemy parameters
 	bool isAttacking = false;
+	bool hitFromRight = false;
 	Timer startAttack; // Windup
 	Timer attackDuration; // Hitbox Duration
 	Timer attackCooldown;

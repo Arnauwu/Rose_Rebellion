@@ -72,11 +72,11 @@ bool ShieldKnight::Start()
 	pathFindingCooldown.Start();
 
 	//Stats
-	vision = 15;
-	speed = 0.7f;
-	knockbackForce = 2.0f;
+	vision = 10;
+	speed = 0.8f;
+	knockbackForce = 4.0f;
 
-	maxHealth = 100;
+	maxHealth = 80;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -176,15 +176,25 @@ void ShieldKnight::GetPhysicsValues() {
 void ShieldKnight::Move() {
 
 	Vector2D tilePos = GetTilePos();
+	Vector2D playerPos = Engine::GetInstance().sceneManager->GetPlayerPosition();
 
-	// Move if player has been found
-	if (pathfinding->pathTiles.empty() && isAttacking == false)
-	{
-		anims.SetCurrent("idle"); // TO DO: CHANGE TO Idle/ or make it WALK
+	if (playerTileDist < vision) {
+		lookingRight = (playerPos.getX() > position.getX());
+	}
+
+	if (isAttacking) {
+		velocity.x = 0;
+		Attack();
+		return;
+	}
+
+	if (pathfinding->pathTiles.empty() || playerTileDist > vision) {
+		anims.SetCurrent("idle");
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 5 && isAttacking == false)
+
+	else if (playerTileDist >= 2 && isAttacking == false)
 	{
 		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
 
@@ -230,13 +240,18 @@ void ShieldKnight::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		if (lookingRight)
-		{
-			velocity.x = knockbackForce;
+		anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
+		if (attackHitbox != nullptr) {
+			Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
+			attackHitbox = nullptr;
+		}
+
+		if (hitFromRight) {
+			velocity.x = -knockbackForce;
 		}
 		else
 		{
-			velocity.x = -knockbackForce;
+			velocity.x = knockbackForce;
 		}
 	}
 	if (knockbackTime <= 0)
@@ -290,7 +305,7 @@ void ShieldKnight::Draw(float dt)
 
 void ShieldKnight::Attack()
 {
-	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000)
+	if (isAttacking == false && attackCooldown.ReadMSec() >= 1000 && !isKnockedback)
 	{
 		Engine::GetInstance().audio->PlayFx(atacarEscudo);
 		isAttacking = true;
@@ -306,15 +321,15 @@ void ShieldKnight::Attack()
 		attackCooldown.Start();
 		isAttacking = false;
 	}
-	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr)
+	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr && !isKnockedback)
 	{
 		anims.SetCurrent("assault"); //Attack
 
 		//CreateHitbox
-
-		int attackW = 150; int attackH = 90;
 		float attackX = position.getX();
 		float attackY = position.getY();
+		int attackW = 100; int attackH = 120;
+
 		if (lookingRight)
 		{
 			attackX += texW / 2;
@@ -327,18 +342,18 @@ void ShieldKnight::Attack()
 		attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, attackW, attackH, bodyType::STATIC);
 		attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
 		attackHitbox->listener = this;
-		damage = 50;
+		damage = 20;
 
 		attackDuration.Start();
 	}
 
 	if (lookingRight)
 	{
-		velocity.x = speed * 3;
+		velocity.x = speed * 5;
 	}
 	else
 	{
-		velocity.x = -speed * 3;
+		velocity.x = -speed * 5;
 	}
 
 	return;
@@ -347,14 +362,21 @@ void ShieldKnight::Attack()
 
 
 //Define OnCollision function for the enemy. 
-void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB) {
-	switch (physB->ctype)
-	{
+void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB)
+{
 	if (physA == attackHitbox) { return; }
 
+	switch (physB->ctype)
+	{
 	case ColliderType::PLAYER_ATTACK:
+
 		TakeDamage(physB->listener->damage);
-		isKnockedback = true; // To DO:: Knockback Resistant/Inmune??
+		isKnockedback = true;
+
+		int playerX, playerY;
+		physB->GetPosition(playerX, playerY);
+
+		hitFromRight = (playerX > position.getX());
 		break;
 
 	default:

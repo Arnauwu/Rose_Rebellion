@@ -35,7 +35,8 @@ void Enemy::PerformPathfinding() {
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	Vector2D playerPos = player->GetPosition();
 
-	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 32;
+	int tileW = Engine::GetInstance().map->GetTileWidth();
+    playerTileDist = (int)(sqrt(pos.distanceSquared(playerPos)) / tileW);
 	int iter = 0;
 
 	while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
