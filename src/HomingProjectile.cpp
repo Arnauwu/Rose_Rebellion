@@ -79,7 +79,7 @@ bool HomingProjectile::Update(float dt)
     return true;
 }
 
-void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB)
+void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
     if (pendingToDelete) return;
 
@@ -96,10 +96,9 @@ void HomingProjectile::OnCollision(PhysBody* physA, PhysBody* physB)
     case ColliderType::PLAYER_ATTACK:
         Destroy();
         break;
-    case ColliderType::WALL:
-    case ColliderType::GROUND:
+
     // Si choca contra el escenario, se destruye
-    case ColliderType::CEILING:
+    case ColliderType::MAP:
         Destroy();
         break;
     case ColliderType::ENEMY:

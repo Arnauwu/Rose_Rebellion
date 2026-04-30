@@ -210,6 +210,90 @@ PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType typ
     return pbody;
 }
 
+PhysBody* Physics::CreateCapsule(int x, int y, int radious, int width, int height, bodyType type)
+{
+    b2BodyDef def = b2DefaultBodyDef();
+    def.type = ToB2Type(type);
+    def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
+
+    b2BodyId b = b2CreateBody(world, &def);
+
+    //Inf
+    b2Circle circle;
+    circle.center = { 0.0f,PIXEL_TO_METERS(radious)*0.5f };
+    circle.radius = PIXEL_TO_METERS(radious);
+    
+    b2ShapeDef sdef1 = b2DefaultShapeDef();
+    sdef1.density = 1.0f;
+    sdef1.enableContactEvents = true;
+    sdef1.enableSensorEvents = true;
+    
+    b2ShapeId bottomShape = b2CreateCircleShape(b, &sdef1, &circle);
+    
+
+    //Body
+    b2Polygon middl_box = b2MakeBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+    for (int i = 0; i < 4; i++)
+    {
+        middl_box.vertices[i].y -= PIXEL_TO_METERS(radious) * 1.0f;
+    }
+
+
+    b2ShapeDef sdef2 = b2DefaultShapeDef();
+    sdef2.density = 1.0f;
+    sdef2.enableContactEvents = true;   // contact begin/end for this shape
+    sdef2.enableSensorEvents = true;   // so it can participate in sensor overlaps
+
+    b2ShapeId middleShape = b2CreatePolygonShape(b, &sdef2, &middl_box);
+
+    //Sup
+    b2Circle sup_circle;
+    sup_circle.center = { 0.0f, -(PIXEL_TO_METERS(height) * 0.5f + PIXEL_TO_METERS(radious) * 0.5f) };
+    sup_circle.radius = PIXEL_TO_METERS(radious);
+    b2ShapeDef sdef3 = b2DefaultShapeDef();
+    sdef3.density = 1.0f;
+    sdef3.enableContactEvents = true;
+    sdef3.enableSensorEvents = true;
+
+    b2ShapeId topShape = b2CreateCircleShape(b, &sdef3, &sup_circle);
+
+    //Other
+    b2Body_SetFixedRotation(b, true);
+    
+    
+    // User Data
+    b2Shape_SetUserData(bottomShape, (void*)(uintptr_t)SHAPE_BOTTOM);
+    b2Shape_SetUserData(middleShape, (void*)(uintptr_t)SHAPE_MIDDLE);
+    b2Shape_SetUserData(topShape,    (void*)(uintptr_t)SHAPE_TOP);
+
+    //Phys
+    PhysBody* pbody = new PhysBody();
+    pbody->body = b;
+
+    b2Body_SetUserData(b, ToUserData(pbody));
+
+    return pbody;
+}
+
+void Physics::CreateWeldJoint(PhysBody* bodyA, PhysBody* bodyB, bool colision, b2Vec2 localAnchorA, b2Vec2 localAnchorB)
+{
+    b2WeldJointDef weldJoint = b2DefaultWeldJointDef();
+    weldJoint.bodyIdA = bodyA->body;
+    weldJoint.bodyIdB = bodyB->body;
+
+    weldJoint.collideConnected = colision;
+
+    weldJoint.localAnchorA = localAnchorA;
+    weldJoint.localAnchorB = localAnchorB;
+
+    b2CreateWeldJoint(world, &weldJoint);
+}
+
+void* Physics::GetShapeUserData(b2ShapeId shape)
+{
+    return b2Shape_GetUserData(shape);
+}
+
 // 
 bool Physics::PostUpdate()
 {
@@ -285,8 +369,8 @@ void Physics::BeginContact(b2ShapeId shapeA, b2ShapeId shapeB)
     PhysBody* physB = BodyToPhys(bodyB);
     if (!physA || !physB) return;                  // user data cleared
 
-    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollision(physA, physB);
-    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollision(physB, physA);
+    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollision(physA, physB, shapeA, shapeB);
+    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollision(physB, physA, shapeA, shapeB);
 }
 
 void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
@@ -302,8 +386,8 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
     if (!physA || !physB) return;
     if (IsPendingToDelete(physA) || IsPendingToDelete(physB)) return;
 
-    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollisionEnd(physA, physB);
-    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollisionEnd(physB, physA);
+    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollisionEnd(physA, physB, shapeA, shapeB);
+    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollisionEnd(physB, physA, shapeA, shapeB);
 }
 
 
@@ -473,6 +557,11 @@ void PhysBody::SetCollisionsActive(bool active)
         else filter.maskBits = 0x0000;			  // collision with everything
         b2Shape_SetFilter(shapeId, filter);
     }
+}
+
+void* PhysBody::GetBodyUserData()
+{
+    return b2Body_GetUserData(this->body);
 }
 
 // --- helpers

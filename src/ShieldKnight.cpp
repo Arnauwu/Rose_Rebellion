@@ -122,6 +122,7 @@ bool ShieldKnight::Update(float dt)
 		Engine::GetInstance().audio->PlayFx(morirEscudo);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
+		isKnockedback = false;
 	}
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())
@@ -196,7 +197,7 @@ void ShieldKnight::Move() {
 
 	else if (playerTileDist >= 2 && isAttacking == false)
 	{
-		anims.SetCurrent("run"); // TO DO: CHANGE TO WALK
+		anims.SetCurrent("run");
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -299,8 +300,21 @@ void ShieldKnight::Draw(float dt)
 		pathfinding->DrawPath();
 	}
 
-	//Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	//Draw using the texture and the current animation frame
+	if (isKnockedback)
+	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
+	}
+	else
+	{
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+	}	
 }
 
 void ShieldKnight::Attack()
@@ -362,8 +376,10 @@ void ShieldKnight::Attack()
 
 
 //Define OnCollision function for the enemy. 
-void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB)
+void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) 
 {
+	switch (physB->ctype)
+	{
 	if (physA == attackHitbox) { return; }
 
 	switch (physB->ctype)
@@ -384,7 +400,7 @@ void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB)
 	}
 }
 
-void ShieldKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void ShieldKnight::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{

@@ -82,7 +82,9 @@ bool Player::Start()
 	// Configuración de Físicas
 	texW = 128;
 	texH = 128;
-	pbody = physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19/24 , texH * 3/2, bodyType::DYNAMIC);
+
+	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
 	pbody->ctype = ColliderType::PLAYER;
 
@@ -94,7 +96,8 @@ bool Player::Start()
 	cameraController.SetSmoothSpeed(0.15f);
 	cameraController.SetVerticalOffset(-25.0f);
 	respawnPosition = position;
-
+	lastSafePosition = position;
+	safePositionTimer.Start();
 	return true;
 }
 
@@ -106,6 +109,15 @@ bool Player::Update(float dt)
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
+
+		if (isWallJumping) {
+			wallJumpTimer -= dt / 1000.0f;
+			if (wallJumpTimer <= 0.0f) {
+				isWallJumping = false;
+			}
+		}
+
+		Move();
 
 		Knockback();
 
@@ -126,6 +138,23 @@ bool Player::Update(float dt)
 		}
 
 		ApplyPhysics();
+
+		if (onGround && !onWall && !onAir && !isdead) //Save LastSafePosition
+		{
+			if (safePositionTimer.ReadMSec() >= safePositionInterval)
+			{
+		
+				Vector2D start = position;
+				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+
+				if (Engine::GetInstance().physics->Raycast(start, end))
+				{
+					//LOG("lastSafePosition saved");
+					lastSafePosition = position;
+					safePositionTimer.Start();
+				}
+			}
+		}
 	}
 
 	if (isdead)
@@ -134,6 +163,7 @@ bool Player::Update(float dt)
 		{
 			currentAnimPriority = 99;
 			Engine::GetInstance().audio->PlayFx(morirPrincesa);
+			isKnockedback = false;
 
 			if (lookingRight)
 			{
@@ -170,23 +200,7 @@ bool Player::Update(float dt)
 
 	DevTools(dt);
 
-	// TO DO: Revisar esto a fondo
-	if (onGround && onWall && !isJumping && !isdead)
-	{
-		safePositionTimer += dt / 1000.0f;
-		if (safePositionTimer >= 0.2f)
-		{
 
-			Vector2D start = position;
-			Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 };
-
-			if (Engine::GetInstance().physics->Raycast(start, end))
-			{
-				lastSafePosition = position;
-				safePositionTimer = 0.0f;
-			}
-		}
-	}
 	return true;
 }
 
@@ -203,14 +217,17 @@ void Player::GetPhysicsValues()
 {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+	//velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+	if (!isWallJumping) {
+		velocity = { 0, velocity.y };
+	}
 }
 
 void Player::Move() {
 	bool isMovingThisFrame = false;
 
 	// Move Left
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false && !isWallJumping)
 	{
 		velocity.x = -speed;
 		lookingRight = false;
@@ -230,7 +247,7 @@ void Player::Move() {
 		}
 	}
 	// Move Right
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false && !isWallJumping)
 	{
 		velocity.x = speed;
 		lookingRight = true;
@@ -344,9 +361,8 @@ void Player::Respawn()
 	}
 }
 
-void Player::RespawnFromVoid() {
-	//TO DO: Aplicar daño 
-
+void Player::RespawnFromVoid() 
+{ 
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 
 	if (isAttacking && attackCollider != nullptr) {
@@ -355,21 +371,62 @@ void Player::RespawnFromVoid() {
 		isAttacking = false;
 	}
 
-	SetPosition(respawnPosition);
+	SetPosition(lastSafePosition);
 
 	isJumping = false;
 	secondJumpUsed = false;
 	anims.SetCurrent("idle");
 	Engine::GetInstance().audio->PlayFx(respawnFx);
-	LOG("Player reset to last safe position: %.2f, %.2f", respawnPosition.getX(), respawnPosition.getY());
+	LOG("Player reset to last safe position: %.2f, %.2f", lastSafePosition.getX(), lastSafePosition.getY());
 }
 
-void Player::Jump(float dt) //TO DO: If you try to second Jump on air while falling without the first jump it being called but not working
+void Player::Jump(float dt)
 {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		// Base Jump 
-		if (isJumping == false && onGround == true)
+		// --- 1. WALL JUMP (Estilo Hollow Knight) ---
+		if (onWall == true && onGround == false)
+		{
+			Engine::GetInstance().audio->PlayFx(jumpFx);
+			isJumping = true;
+			onWall = false; // Nos despegamos de la pared
+			onAir = true;
+
+			isWallJumping = true;
+			wallJumpTimer = 0.30f;
+	
+
+			// Fuerza del rebote
+			float wJumpForceY = jumpForce/2;
+			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
+			float wJumpForceX = speed * 1.0f;
+
+			// Escupir al jugador en la dirección contraria a la pared
+			if (wallDirection == 1) {
+				// Pared a la derecha -> Salto a la izquierda
+				velocity.x = -wJumpForceX;
+				lookingRight = false;
+				anims.SetCurrent("jump_left");
+			}
+			else {
+				// Pared a la izquierda -> Salto a la derecha
+				velocity.x = wJumpForceX;
+				lookingRight = true;
+				anims.SetCurrent("jump_right");
+			}
+
+			// Aplicar las fuerzas directamente al cuerpo físico AHORA MISMO
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+			Engine::GetInstance().physics->SetYVelocity(pbody, wJumpForceY);
+
+			currentAnimPriority = 2;
+			isJumpKeyDown = true;
+			jumpHoldTime = 0.00f;
+
+			LOG("Wall Jump Estilo HK");
+		}
+		// --- 2. BASE JUMP ---
+		else if (isJumping == false && onGround == true)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
@@ -397,6 +454,7 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
+
 			if (lookingRight == true)
 			{
 				anims.SetCurrent("jump_right");
@@ -414,11 +472,13 @@ void Player::Jump(float dt) //TO DO: If you try to second Jump on air while fall
 			LOG("Double Jump");
 		}
 	}
+	// --- 4. EXTENDER SALTO MANTENIENDO EL BOTÓN ---
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
 		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
 		jumpHoldTime += dt / 1000; //To seconds
 	}
+	// --- 5. SOLTAR BOTÓN DE SALTO ---
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
 		isJumpKeyDown = false;
@@ -574,6 +634,7 @@ void Player::Dash()
 		{
 			velocity.x = -dashForce;
 		}
+
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
 		isDashing = true;
 		dashTimer.Start();
@@ -590,6 +651,7 @@ void Player::Dash()
 		{
 			velocity.x = -dashForce;
 		}
+		velocity.y = 0;
 
 		if (dashTimer.ReadMSec() > dashDurationMS)
 		{
@@ -670,6 +732,24 @@ void Player::ApplyPhysics() {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	}
 
+	// --- LA CLAVE DEL IMPULSO HACIA ATRÁS ---
+	// Si estamos en medio del rebote, FORZAMOS la velocidad horizontal
+	// Esto evita que Box2D mate el impulso por la fricción contra la pared
+	if (isWallJumping) {
+		float wJumpForceX = speed * 1.0f;
+		if (wallDirection == 1) {
+			velocity.x = -wJumpForceX; // Empuje continuo a la izquierda
+		}
+		else {
+			velocity.x = wJumpForceX;  // Empuje continuo a la derecha
+		}
+	}
+
+	// --- WALL SLIDE ---
+	// Añadida la condición !isWallJumping para que no te aplique el freno al saltar
+	if (onWall && !onGround && velocity.y > 0 && !isWallJumping) {
+		velocity.y = 2.0f;
+	}
 
 	if (isGliding)
 	{
@@ -706,12 +786,6 @@ void Player::Draw(float dt)
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	//SDLFlip
-	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
-	if (!lookingRight)
-	{
-		//sdlFlip = SDL_FLIP_HORIZONTAL;
-	}
 
 	// Update render position using your PhysBody helper
 	int x, y;
@@ -720,7 +794,21 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1.25f); // -20 0.25f
+	if (isKnockedback)
+	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
+
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
+	}
+	else
+	{
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
+	}
+
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -900,48 +988,83 @@ int Player::GetItemCount(ItemID id) {
 }
 
 // Define OnCollision function for the player. 
-void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
+void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) 
+{
 	if (physA == attackCollider) { return; }
+	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER)	{return;}
+
+	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
+	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
+
+	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temportal? Fix
+	{
+		// TO DO: Con el rectangulo (Middle) se guarda correctamente en typeA, con ambos circulos se guarda en typeB porque los detecta en shapeB
+		typeA = typeB;
+	}
 
 	switch (physB->ctype)
 	{
-	case ColliderType::DANGER: // To Do: Mirar si queremos que sea solo cuando cae al vacio o cuando choca con pinchos
+	case ColliderType::DANGER:
 		LOG("Collision with DANGER zone!");
-		if (!godMode && !isdead) {
-			RespawnFromVoid();
-		}
-		break;
-
-	case ColliderType::GROUND:
-		LOG("Collision GROUND");
-		// Reset the jump flag when touching the ground
-		isJumping = false;
-		secondJumpUsed = false;
-
-		if (currentAnimPriority > 1)
+		if (!godMode && !isdead) 
 		{
-			if (lookingRight)
+			TakeDamage(10); // Environmental Damage
+			if (!isdead)
 			{
-				anims.SetCurrent("idle_right");
+				RespawnFromVoid();
 			}
-			else
-			{
-				anims.SetCurrent("idle_left");
-			}
-			currentAnimPriority = 0;
 		}
-
-		onGround = true;
 		break;
 
-	case ColliderType::WALL:
-		LOG("Collision WALL");
-		// Reset the jump flag
-		isJumping = false;
-		secondJumpUsed = false;
+	case ColliderType::MAP:
 
-		anims.SetCurrent("wall"); //TODO: On wall anim
-		onWall = true;
+		if (typeA == ShapeType::SHAPE_BOTTOM)
+		{
+			LOG("Collision inf circle / GROUND");
+			// Reset the jump flag when touching the ground
+			isJumping = false;
+			secondJumpUsed = false;
+
+			if (currentAnimPriority > 1)
+			{
+				if (lookingRight)
+				{
+					anims.SetCurrent("idle_right");
+				}
+				else
+				{
+					anims.SetCurrent("idle_left");
+				}
+				currentAnimPriority = 0;
+			}
+
+			onGround = true;
+			onAir = false;
+			onWall = false;
+		}
+		else if (typeA == ShapeType::SHAPE_MIDDLE)
+		{
+			LOG("Collision middle / WALL");
+			// Reset the jump flag
+			isJumping = false;
+			secondJumpUsed = false;
+
+			anims.SetCurrent("wall"); //TODO: On wall anim
+			onWall = true;
+			
+			onAir = false;
+
+			if (lookingRight) {
+				wallDirection = 1;  // La pared está a la derecha
+			}
+			else {
+				wallDirection = -1; // La pared está a la izquierda
+			}
+		}
+		else if (typeA == ShapeType::SHAPE_TOP)
+		{
+			LOG("Collision sup circle / CEILING");
+		}
 		break;
 
 	case ColliderType::DOOR:
@@ -952,11 +1075,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		interactuableBody = physB;
 		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
-
-	case ColliderType::CEILING:
-		LOG("Collision CEILING");
-		break;
-
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 
@@ -1049,37 +1167,55 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision UNKNOWN");
 		break;
 
-	case ColliderType::PLAYER_ATTACK:
 	default:
 		break;
 	}
 }
 
-void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
+	if (physA == attackCollider) { return; }
+	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER) { return; }
+
+	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
+	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
+
+	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temportal? Fix
+	{
+		// TO DO: Con el rectangulo (Middle) se guarda correctamente en typeA, con ambos circulos se guarda en typeB porque los detecta en shapeB
+		typeA = typeB;
+	}
+
 	switch (physB->ctype)
 	{
-	case ColliderType::WALL:
-		onAir = true;
-		onWall = false;
-		break;
-	case ColliderType::GROUND:
-		onGround = false;
-		onAir = true;
-		LOG("On Air");
+	case ColliderType::MAP:
+		if (typeA == ShapeType::SHAPE_BOTTOM)
+		{
+			onGround = false;
+			onAir = true;
+			LOG("On Air");
+		}
+		else if (typeA == ShapeType::SHAPE_MIDDLE)
+		{
+			LOG("Off WALL");		
+			onAir = true;
+			onWall = false;
+
+		}
+		else if (typeA == ShapeType::SHAPE_TOP)
+		{
+			LOG("Collision End CEILING");
+		}
 
 		break;
 	case ColliderType::DOOR:
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;
-	case ColliderType::ITEM:
-		LOG("End Collision ITEM");
-		break;
+
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
-	case ColliderType::CEILING:
 	default:
 		break;
 	}

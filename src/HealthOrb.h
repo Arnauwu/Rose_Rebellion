@@ -22,7 +22,7 @@ public:
 
 	bool Destroy();
 
-	void OnCollision(PhysBody* physA, PhysBody* physB);
+	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 
 public:
 

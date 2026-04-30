@@ -40,8 +40,8 @@ public:
 	bool CleanUp();
 
 	// OnCollision function for the player. 
-	void OnCollision(PhysBody* physA, PhysBody* physB);
-	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
@@ -122,16 +122,22 @@ public:
 	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
 
 	// Double Jump
-	bool doubleJumpUnlocked = false; 
+	static bool doubleJumpUnlocked;
 	bool secondJumpUsed = false;
+
+	//Walljump
+	bool isWallJumping = false;
+	float wallJumpTimer = 0.0f;
+	const float wallJumpDuration = 0.15f;
+	int wallDirection = 0;
 	
 	// Gliding
 	bool isGliding = false; // Flag
 
 	// Dash
-	bool dashUnlocked = false; 
+	static bool dashUnlocked;
 	bool isDashing = false; // Flag to check if the player has dashed
-	float dashForce = 15.0f;
+	float dashForce = 30.0f;
 
 	Timer dashTimer;
 	float dashDurationMS = 300;
@@ -170,8 +176,8 @@ public:
 
 	// Last Postion
 	Vector2D lastSafePosition;
-	float safePositionTimer = 0.0f;
-	const float safePositionInterval = 0.2f;
+	Timer safePositionTimer;
+	const int safePositionInterval = 1000; //In Ms
 
 	//Item
 	
@@ -216,5 +222,4 @@ private:
 
 	CameraController cameraController;
 	Vector2D respawnPosition;
-
 };
