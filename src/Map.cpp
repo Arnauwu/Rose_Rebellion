@@ -27,8 +27,10 @@
 #include "Keys.h"
 #include "Manta.h"
 #include "Sickle.h"
+#include "DashObj.h"
+#include "DoubleJumpObj.h"
 
-Map::Map() : Module(), mapLoaded(false)
+Map::Map() : Module(), mapLoaded(false)      
 {
 	name = "map";
 }
@@ -872,6 +874,16 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<SkillPointOrb> skillPointOrb = std::dynamic_pointer_cast<SkillPointOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SKILL_POINT_ORB));
 					skillPointOrb->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("DashObj"))
+				{
+					std::shared_ptr<DashObj> dashobj = std::dynamic_pointer_cast<DashObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DASH_OBJ));
+					dashobj->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("DoubleJumpObj"))
+				{
+					std::shared_ptr<DoubleJumpObj> doublejumpobj = std::dynamic_pointer_cast<DoubleJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DOUBLEJUMP_OBJ));
+					doublejumpobj->position = Vector2D(x, y);
 				}
 			}
 		}

@@ -28,6 +28,8 @@ bool GameManager::SaveGame(const std::string& filename) {
     pugi::xml_node unlocks = root.append_child("Unlockables");
     unlocks.append_attribute("hasSickle").set_value(gameState.hasSickle);
     unlocks.append_attribute("glideUnlocked").set_value(gameState.glideUnlocked);
+    unlocks.append_attribute("dashUnlocked").set_value(gameState.dashUnlocked);
+    unlocks.append_attribute("doubleJumpUnlocked").set_value(gameState.doubleJumpUnlocked);
 
     // World Status and Position
     pugi::xml_node world = root.append_child("WorldState");
@@ -71,7 +73,7 @@ bool GameManager::LoadGame(const std::string& filename) {
     pugi::xml_parse_result result = doc.load_file(filename.c_str());
 
     if (!result) {
-        LOG("ERROR: No existe archivo de guardado o está corrupto. Pugi error: %s", result.description());
+        LOG("ERROR: No existe archivo de guardado o est?corrupto. Pugi error: %s", result.description());
         return false;
     }
 
@@ -98,6 +100,8 @@ bool GameManager::LoadGame(const std::string& filename) {
     if (unlocks) {
         tempState.hasSickle = unlocks.attribute("hasSickle").as_bool(false);
         tempState.glideUnlocked = unlocks.attribute("glideUnlocked").as_bool(false);
+        tempState.dashUnlocked = unlocks.attribute("dashUnlocked").as_bool(false);
+        tempState.doubleJumpUnlocked = unlocks.attribute("doubleJumpUnlocked").as_bool(false);
     }
 
     // Load World State and Position
@@ -124,7 +128,7 @@ bool GameManager::LoadGame(const std::string& filename) {
         tempState.collectedItems.insert(itemNode.attribute("id").as_string());
     }
 
-    // If everything is correct, we set the status to “loaded”
+    // If everything is correct, we set the status to “loaded?
     gameState = tempState;
     LOG("Partida XML cargada correctamente.");
     return true;

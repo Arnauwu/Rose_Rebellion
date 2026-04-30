@@ -119,6 +119,9 @@
     <Filter Include="Source Files\Engine\Cinematics">
       <UniqueIdentifier>{e2708243-23a8-4adf-91fb-988c5b306e1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Items\SkillObj">
+      <UniqueIdentifier>{0f3949bf-364d-49e2-9d25-758c3cd4671b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -273,6 +276,12 @@
     <ClCompile Include="src\GameManager.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\DashObj.cpp">
+      <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DoubleJumpObj.cpp">
+      <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -421,6 +430,12 @@
     </ClInclude>
     <ClInclude Include="src\SavePoint.h">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DashObj.h">
+      <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DoubleJumpObj.h">
+      <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

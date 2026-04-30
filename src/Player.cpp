@@ -15,6 +15,7 @@
 #include <iostream>
 #include <unordered_map>
 
+
 using namespace std;
 
 Player::Player() : Entity(EntityType::PLAYER)
@@ -449,7 +450,7 @@ void Player::Jump(float dt)
 			LOG("Jump");
 		}
 		// Double Jump
-		else if (doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
+		else if (GameManager::GetInstance().gameState.doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
@@ -621,7 +622,7 @@ void Player::Glide() // Gliding
 void Player::Dash()
 {
 	// Start Dash
-	if (dashUnlocked == true
+	if (GameManager::GetInstance().gameState.dashUnlocked == true
 		&& Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN
 		&& isDashing == false
 		&& dashCooldownTimer.ReadMSec() > dashCooldownMS)
@@ -835,62 +836,154 @@ void Player::Draw(float dt)
 	}
 }
 
+//void Player::CameraFollows()
+//{
+//	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
+//	int screenW = Engine::GetInstance().render->camera.w;
+//	int screenH = Engine::GetInstance().render->camera.h;
+//
+//	float dt = Engine::GetInstance().GetDt();
+//
+//	//Eje Y
+//	// Guarda la última posición Y del jugador cuando está tocando el suelo. 
+//	static float lastGroundY = position.getY();
+//	if (onGround) {
+//		lastGroundY = position.getY();
+//	}
+//
+//	// la cámara intenta seguir directamente al jugador.
+//	Vector2D targetCamPos = position;
+//
+//	// Verifica si el jugador está en el aire (saltando o cayendo).
+//	if (!onGround) {
+//		// Define el límite máximo que la cámara puede subir al saltar.
+//		float maxCameraUpward = 40.0f;
+//
+//		if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
+//			// Bloquea la posición Y de la cámara para asegurar que el suelo siga siendo visible
+//			targetCamPos.setY(lastGroundY - maxCameraUpward);
+//		}
+//	}
+//	// Envía la posición objetivo calculada al controlador de cámara original.
+//	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
+//	float camX, camY;
+//	cameraController.GetCameraPosition(camX, camY);
+//
+//	// Eje X
+//	// Calcula la posición para que el jugador se mantenga justo en el centro de la pantalla.
+//	float targetCamX = -position.getX() + (screenW / 2.0f);
+//
+//	// Limita la cámara en los bordes izquierdo y derecho para no ver fuera del mapa
+//	if (targetCamX > 0) targetCamX = 0;
+//	float minCamX = -(mapSize.getX() - screenW);
+//	if (targetCamX < minCamX) targetCamX = minCamX;
+//
+//
+//	float dtSeconds = dt / 1000.0f;
+//	float currentCamX_f = Engine::GetInstance().render->camera.x;
+//
+//	if (dtSeconds > 0.0f) {
+//		// Aplica una interpolación para que el movimiento horizontal sea suave y fluido.
+//		float lerpX = 8.0f * dtSeconds;
+//		if (lerpX > 1.0f) lerpX = 1.0f;
+//		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
+//	}
+//
+//	// Asigna las posiciones finales calculadas a la cámara del motor
+//	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
+//	Engine::GetInstance().render->camera.y = (int)camY;
+//}
+
 void Player::CameraFollows()
 {
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
-
 	float dt = Engine::GetInstance().GetDt();
+	float dtSeconds = dt / 1000.0f;
 
-	//Eje Y
-	// Guarda la última posición Y del jugador cuando está tocando el suelo. 
-	static float lastGroundY = position.getY();
-	if (onGround) {
-		lastGroundY = position.getY();
-	}
-
-	// la cámara intenta seguir directamente al jugador.
 	Vector2D targetCamPos = position;
 
-	// Verifica si el jugador está en el aire (saltando o cayendo).
-	if (!onGround) {
-		// Define el límite máximo que la cámara puede subir al saltar.
-		float maxCameraUpward = 40.0f;
+	// ==========================================
+	// BIFURCACIÓN DE LÓGICA DE CÁMARA
+	// ==========================================
+	if (currentCameraMode == CameraMode::DYNAMIC)
+	{
+		// --- NUEVO MÉTODO (Exploración) ---
+		float targetYOffset = 0.0f;
 
-		if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
-			// Bloquea la posición Y de la cámara para asegurar que el suelo siga siendo visible
-			targetCamPos.setY(lastGroundY - maxCameraUpward);
+		if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			lookDownTimer += dtSeconds;
+			if (lookDownTimer >= 0.3f) { targetYOffset = 200.0f; }
+		}
+		else {
+			lookDownTimer = 0.0f;
+		}
+
+		if (!onGround && velocity.y > 2.0f) {
+			targetYOffset = 100.0f + (velocity.y * 5.0f);
+			cameraController.SetSmoothSpeed(0.25f);
+		}
+		else if (onGround) {
+			cameraController.SetSmoothSpeed(0.15f);
+		}
+
+		float lerpY = 4.0f * dtSeconds;
+		if (lerpY > 1.0f) lerpY = 1.0f;
+		currentCameraYOffset += (targetYOffset - currentCameraYOffset) * lerpY;
+
+		targetCamPos.setY(targetCamPos.getY() + currentCameraYOffset);
+	}
+	else if (currentCameraMode == CameraMode::CLASSIC)
+	{
+		// --- MÉTODO ORIGINAL (Fortaleza) ---
+		static float lastGroundY = position.getY();
+		if (onGround) {
+			lastGroundY = position.getY();
+		}
+
+		if (!onGround) {
+			float maxCameraUpward = 40.0f;
+			if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
+				targetCamPos.setY(lastGroundY - maxCameraUpward);
+			}
 		}
 	}
-	// Envía la posición objetivo calculada al controlador de cámara original.
+	// ==========================================
+
+	// Manda la posición a CameraController
 	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
 	float camX, camY;
 	cameraController.GetCameraPosition(camX, camY);
 
-	// Eje X
-	// Calcula la posición para que el jugador se mantenga justo en el centro de la pantalla.
+	// Lógica del Eje X (Común para ambos modos)
 	float targetCamX = -position.getX() + (screenW / 2.0f);
-
-	// Limita la cámara en los bordes izquierdo y derecho para no ver fuera del mapa
 	if (targetCamX > 0) targetCamX = 0;
 	float minCamX = -(mapSize.getX() - screenW);
 	if (targetCamX < minCamX) targetCamX = minCamX;
 
-
-	float dtSeconds = dt / 1000.0f;
 	float currentCamX_f = Engine::GetInstance().render->camera.x;
-
 	if (dtSeconds > 0.0f) {
-		// Aplica una interpolación para que el movimiento horizontal sea suave y fluido.
 		float lerpX = 8.0f * dtSeconds;
 		if (lerpX > 1.0f) lerpX = 1.0f;
 		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
 	}
 
-	// Asigna las posiciones finales calculadas a la cámara del motor
 	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
 	Engine::GetInstance().render->camera.y = (int)camY;
+}
+
+void Player::SetCameraMode(CameraMode mode) {
+	currentCameraMode = mode;
+
+	if (currentCameraMode == CameraMode::CLASSIC) {
+		cameraController.SetYDivisor(1.25f); // Vuelve a la vista original
+		cameraController.SetSmoothSpeed(0.15f);
+		currentCameraYOffset = 0.0f; // Resetea cualquier offset dinámico
+	}
+	else {
+		cameraController.SetYDivisor(1.58f); // Vista de exploración
+	}
 }
 
 std::unordered_map<int, std::string> Player::GetAliases(string name)
@@ -953,6 +1046,18 @@ void Player::UnlockSickle()
 	GameManager::GetInstance().gameState.hasSickle = true;
 	AddItem(ItemID::WEAPON, 1);
 	LOG("Sickle Unlocked! You can attack now if you have the cape.");
+}
+void Player::UnlockDoubleJump() {
+	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
+	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
+	LOG("Double Jump Unlocked! You can do a double jump");
+
+}
+void Player::UnlockDash() {
+	GameManager::GetInstance().gameState.dashUnlocked = true;
+	AddItem(ItemID::DASH_OBJ, 1);
+	LOG("Dash Unlocked! You can dash");
+	LOG("Dash Unlocked! You can do a dash");
 }
 
 bool Player::CleanUp()

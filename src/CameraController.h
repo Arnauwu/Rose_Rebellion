@@ -14,12 +14,14 @@ public:
 
 	void SetSmoothSpeed(float speed) { smoothSpeed = speed; }
 	void SetVerticalOffset(float offset) { verticalOffset = offset; }
+	void SetYDivisor(float divisor) { yDivisor = divisor; }
 
 private:
 	float targetX, targetY;		  // Target position
 	float currentX, currentY;     // Actual position
 	float smoothSpeed;            // Smooth speed
 	float verticalOffset;         // Vertical Offset 
-	
+	float yDivisor = 1.75f;       // Camara mode
+
 	void ClampToMapBounds(float& x, float& y, int screenW, int screenH, float mapWidth, float mapHeight);
 };

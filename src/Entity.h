@@ -14,6 +14,8 @@ enum class EntityType
 	SICKLE,
 	HEALTH_ORB,
 	SKILL_POINT_ORB,
+	DASH_OBJ,
+	DOUBLEJUMP_OBJ,
 
 	ENEMY,
 	SPIDER,

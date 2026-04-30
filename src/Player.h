@@ -18,6 +18,13 @@ enum class ItemID {
 	GLIDE,
 	KEY,
 	STRENGTH_ORB,
+	DASH_OBJ,
+	DOUBLEJUMP_OBJ
+};
+
+enum class CameraMode {
+	CLASSIC,  // Para la fortaleza (M��todo original: 1.25f, bloqueo de salto Y)
+	DYNAMIC   // Para exploraci��n (Nuevo m��todo: 1.75f, Look down, anticipaci��n)
 };
 
 struct SDL_Texture;
@@ -49,6 +56,8 @@ public:
 	// Unlocks
 	void UnlockCape();
 	void UnlockSickle();
+	void UnlockDash();
+	void UnlockDoubleJump();
 
 	
 	//Inventary Variables
@@ -58,6 +67,10 @@ public:
 	void AddItem(ItemID id, int amount = 1);
 	bool HasItem(ItemID id);
 	int GetItemCount(ItemID id);
+
+	// Select camara follow mode
+	void SetCameraMode(CameraMode mode);
+	CameraMode GetCameraMode() const { return currentCameraMode; }
 private:
 
 	void GodModeMove(float dt);
@@ -78,6 +91,7 @@ private:
 	void Draw(float dt);
 
 	void CameraFollows();
+	CameraMode currentCameraMode = CameraMode::DYNAMIC;
 
 	//// Helpers
 	std::unordered_map<int, std::string> GetAliases(std::string name);
@@ -122,7 +136,6 @@ public:
 	const float maxJumpHoldTime = 0.25f; // Max Time to apply extra jump force (in seconds)
 
 	// Double Jump
-	static bool doubleJumpUnlocked;
 	bool secondJumpUsed = false;
 
 	//Walljump
@@ -135,7 +148,6 @@ public:
 	bool isGliding = false; // Flag
 
 	// Dash
-	static bool dashUnlocked;
 	bool isDashing = false; // Flag to check if the player has dashed
 	float dashForce = 30.0f;
 
@@ -202,6 +214,8 @@ private:
 	float stepTimer = 0.0f;
 	float timeBetweenSteps = 0.35f;
 
+	float lookDownTimer = 0.0f;
+	float currentCameraYOffset = 0.0f;
 
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
