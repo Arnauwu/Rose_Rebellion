@@ -841,6 +841,7 @@ void Player::CameraFollows()
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
+
 	float dt = Engine::GetInstance().GetDt();
 	float dtSeconds = dt / 1000.0f;
 
@@ -851,12 +852,13 @@ void Player::CameraFollows()
 	// ==========================================
 	if (currentCameraMode == CameraMode::DYNAMIC)
 	{
-		
 		float targetYOffset = 0.0f;
 
 		if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
 			lookDownTimer += dtSeconds;
-			if (lookDownTimer >= 0.3f) { targetYOffset = 200.0f; }
+			if (lookDownTimer >= 0.3f) {
+				targetYOffset = 200.0f;
+			}
 		}
 		else {
 			lookDownTimer = 0.0f;
@@ -878,18 +880,33 @@ void Player::CameraFollows()
 	}
 	else if (currentCameraMode == CameraMode::CLASSIC)
 	{
-		// --- MÉTODO ORIGINAL (Fortaleza) ---
-		static float lastGroundY = position.getY();
-		if (onGround) {
-			lastGroundY = position.getY();
-		}
 
-		if (!onGround) {
-			float maxCameraUpward = 40.0f;
-			if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
-				targetCamPos.setY(lastGroundY - maxCameraUpward);
+		float targetYOffset = 0.0f;
+
+		// 1. Anticipación de caída controlada (Si cae o baja escalones rápidamente)
+		if (!onGround && velocity.y > 1.0f) {
+			targetYOffset = 120.0f; // Límite estricto: Solo muestra un poco más abajo
+			cameraController.SetSmoothSpeed(0.20f);
+		}
+		// 2. Mirar hacia abajo manualmente
+		else if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			lookDownTimer += dtSeconds;
+			if (lookDownTimer >= 0.3f) {
+				targetYOffset = 150.0f; // Límite estricto de visión manual
 			}
 		}
+		else {
+			lookDownTimer = 0.0f;
+			cameraController.SetSmoothSpeed(0.15f); // Velocidad normal
+		}
+
+		// Interpolar suavemente para evitar tirones
+		float lerpY = 4.0f * dtSeconds;
+		if (lerpY > 1.0f) lerpY = 1.0f;
+		currentCameraYOffset += (targetYOffset - currentCameraYOffset) * lerpY;
+
+		// Aplicar el offset limitado
+		targetCamPos.setY(targetCamPos.getY() + currentCameraYOffset);
 	}
 	// ==========================================
 
