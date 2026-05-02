@@ -1,4 +1,4 @@
-#include "Cucafera.h"
+#include "Demon.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -12,21 +12,23 @@
 
 
 
-Cucafera::Cucafera() : Enemy(EntityType::CUCAFERA)
+Demon::Demon() : Enemy(EntityType::DEMON)
 {
-	name = "Cucafera";
+	name = "Demon";
 }
 
-Cucafera::~Cucafera() {
+Demon::~Demon() {
 
 }
 
-bool Cucafera::Awake() {
+bool Demon::Awake() {
 	return true;
 }
 
-bool Cucafera::Start()
+bool Demon::Start()
 {
+	//TO DO: CHANGE SOUNDS & TEXTURES
+
 	// Initialize Player parameters
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
@@ -35,15 +37,18 @@ bool Cucafera::Start()
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
 
 	//Load Audio
-	morirCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav");
-	rodarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
-	chocarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Chocar.wav");
-	caminarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
+	morirDimoni = Engine::GetInstance().audio->LoadFx("");
+	atacarDimoni = Engine::GetInstance().audio->LoadFx("");
+	chocarDimoni = Engine::GetInstance().audio->LoadFx("");
+	volarDimoni = Engine::GetInstance().audio->LoadFx("");
 
 	//Add physics to the enemy - initialize physics body
 	texW = 64;
 	texH = 64;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
+
+	//No Gravity
+	Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -51,8 +56,8 @@ bool Cucafera::Start()
 	//ssign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
-		// Initialize pathfinding
-	pathfinding = std::make_shared<Pathfinding>(true);
+	// Initialize pathfinding
+	pathfinding = std::make_shared<Pathfinding>(true); //Considered Floating, not capable to fly, so Ground NavLayer
 
 	//Reset pathfinding
 	pathfinding->ResetPath(GetTilePos());
@@ -60,12 +65,12 @@ bool Cucafera::Start()
 	pathFindingCooldown.Start();
 
 	//Stats
-	vision = 10;
-	speed = 2.0f;
-	knockbackForce = 5.0f;
+	vision = 20;
+	speed = 3.0f;
+	knockbackForce = 7.5f;
 
-	maxHealth = 30;
-	currentHealth = 30;
+	maxHealth = 60;
+	currentHealth = 60;
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -75,7 +80,7 @@ bool Cucafera::Start()
 	return true;
 }
 
-bool Cucafera::Update(float dt)
+bool Demon::Update(float dt)
 {
 
 	if (!active) return true;
@@ -93,14 +98,14 @@ bool Cucafera::Update(float dt)
 		Knockback();
 		ApplyPhysics();
 	}
-	
+
 	if (isdead)
 	{
 		if (anims.GetCurrentName() != "dead")
 		{
-			Engine::GetInstance().audio->PlayFx(morirCucafera);
+			Engine::GetInstance().audio->PlayFx(morirDimoni);
 
-			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 			anims.GetAnim("dead")->SetLoop(false);
 			anims.SetCurrent("dead");
 			pbody->ctype = ColliderType::UNKNOWN;
@@ -120,14 +125,14 @@ bool Cucafera::Update(float dt)
 	}
 
 
-	bool isWalking = (velocity.x != 0 && !isdead && !isRolling && !isKnockedback);
+	bool isWalking = (velocity.x != 0 && !isdead && !isAttacking && !isKnockedback);
 
 	if (isWalking && !wasWalking) {
-		Engine::GetInstance().audio->PlayFx(caminarCucafera, 99);
+		Engine::GetInstance().audio->PlayFx(volarDimoni, 99);
 	}
-	
+
 	else if (!isWalking && wasWalking) {
-		Engine::GetInstance().audio->StopFx(caminarCucafera);
+		Engine::GetInstance().audio->StopFx(volarDimoni);
 	}
 
 	wasWalking = isWalking;
@@ -137,7 +142,7 @@ bool Cucafera::Update(float dt)
 	return true;
 }
 
-void Cucafera::PerformPathfinding()
+void Demon::PerformPathfinding()
 {
 	//Reset path
 	pathfinding->ResetPath(GetTilePos());
@@ -160,26 +165,27 @@ void Cucafera::PerformPathfinding()
 	}
 }
 
-void Cucafera::GetPhysicsValues() {
+void Demon::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	velocity = { 0, velocity.y };
 }
 
-void Cucafera::Move() {
+void Demon::Move() {
+	//TO DO: FIX VERTICAL MOVEMENT & Correct Horitzonal movement
 
 	Vector2D tilePos = GetTilePos();
 
 	// Move if player has been found
-	if (pathfinding->pathTiles.empty() && isRolling == false && isKnockedback == false)
+	if (pathfinding->pathTiles.empty() && isAttacking == false && isKnockedback == false)
 	{
 		anims.SetCurrent("walk");
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 5 && isRolling == false && isKnockedback == false)
+	else if (playerTileDist >= 5 && isAttacking == false && isKnockedback == false)
 	{
-		anims.SetCurrent("walk"); 
+		anims.SetCurrent("walk");
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -219,13 +225,13 @@ void Cucafera::Move() {
 	return;
 }
 
-void Cucafera::Knockback()
+void Demon::Knockback()
 {
 	if (isdead) return;
 
 	if (isKnockedback)
 	{
-		isRolling = false;
+		isAttacking = false;
 		anims.SetCurrent("hurt"); // TO DO : Hurt effect
 		if (lookingRight)
 		{
@@ -247,14 +253,14 @@ void Cucafera::Knockback()
 	}
 }
 
-void Cucafera::ApplyPhysics() {
+void Demon::ApplyPhysics() {
 
 	// Apply velocity via helper
 	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
 }
 
-void Cucafera::Draw(float dt)
+void Demon::Draw(float dt)
 {
 	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
@@ -294,29 +300,47 @@ void Cucafera::Draw(float dt)
 	}
 	else
 	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 0, 0, 0);
+
 		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
+		
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
 	}
 }
 
-void Cucafera::RollAttack()
+void Demon::RollAttack()
 {
-	if (isRolling == false && isKnockedback == false)
+	if (isAttacking == false && isKnockedback == false)
 	{
-		Engine::GetInstance().audio->PlayFx(rodarCucafera);
-		isRolling = true;
+		Engine::GetInstance().audio->PlayFx(atacarDimoni);
+		isAttacking = true;
 		anims.SetCurrent("startSpin");
-		startAttack.Start();
+		anims.GetAnim("startSpin")->SetLoop(false);
+
+		if (lookingRight == false)
+		{
+			velocity.x = -speed * 4;
+		}
+		else
+		{
+			velocity.x = speed * 4;
+		}
+
+		pbody->ctype = ColliderType::ENEMY_ATTACK;
+		damage = 100;
 		return;
 	}
 
-	if (startAttack.ReadMSec() >= 250 && isKnockedback == false)
+	if (anims.GetAnim("startSpin")->HasFinishedOnce() && isKnockedback == false)
 	{
 		anims.SetCurrent("spin");
 		if (lookingRight == false)
 		{
 			velocity.x = speed * 2;
 		}
-		else 
+		else
 		{
 			velocity.x = -speed * 2;
 		}
@@ -326,31 +350,25 @@ void Cucafera::RollAttack()
 
 
 //Define OnCollision function for the enemy. 
-void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
+void Demon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
-	case ColliderType::MAP:
-	case ColliderType::PLAYER:
-	case ColliderType::ENEMY:
-		isRolling = false;
-		break;
-
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
 		break;
 
 	default:
+		isAttacking = false;
+		pbody->ctype = ColliderType::ENEMY;
 		break;
 	}
 }
 
-void Cucafera::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
+void Demon::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{
-	case ColliderType::MAP:
-		break;
 	default:
 		break;
 	}

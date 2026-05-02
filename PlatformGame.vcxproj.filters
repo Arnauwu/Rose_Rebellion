@@ -122,6 +122,12 @@
     <Filter Include="Source Files\Game\Entity\Items\SkillObj">
       <UniqueIdentifier>{0f3949bf-364d-49e2-9d25-758c3cd4671b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Cucafera Shiny">
+      <UniqueIdentifier>{f23ef15e-2355-4aa5-9a79-9e0d7d7db876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Demon">
+      <UniqueIdentifier>{98ae5e8f-301d-4a1d-9981-94c8b4fb3c15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -282,6 +288,12 @@
     <ClCompile Include="src\DoubleJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
+    <ClCompile Include="src\CucaferaShiny.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera Shiny</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Demon.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Demon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -436,6 +448,12 @@
     </ClInclude>
     <ClInclude Include="src\DoubleJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CucaferaShiny.h">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera Shiny</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Demon.h">
+      <Filter>Source Files\Game\Entity\Enemies\Demon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
