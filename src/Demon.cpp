@@ -10,8 +10,6 @@
 #include "EntityManager.h"
 #include "Map.h"
 
-
-
 Demon::Demon() : Enemy(EntityType::DEMON)
 {
 	name = "Demon";
@@ -77,6 +75,10 @@ bool Demon::Start()
 	position.setX((float)x);
 	position.setY((float)y);
 
+
+
+	hoverTimer.Start();
+	hoverCooldown.Start();
 	return true;
 }
 
@@ -172,10 +174,44 @@ void Demon::GetPhysicsValues() {
 }
 
 void Demon::Move() {
-	//TO DO: FIX VERTICAL MOVEMENT & Correct Horitzonal movement
-
 	Vector2D tilePos = GetTilePos();
 
+	//Vertical
+	if (hoverCooldown.ReadMSec() >= 250)
+	{
+		int posY = Engine::GetInstance().map->MapToWorld(tilePos.getX(), tilePos.getY()).getY();
+	
+		float baseY;
+
+		if (pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
+		{
+			// Get world Y of the tile BELOW the demon
+			baseY = posY + Engine::GetInstance().map->GetTileHeight(); // 1 tile down
+		}
+		else
+		{
+			// Get world Y of the tile OVER the demon
+			baseY = posY - Engine::GetInstance().map->GetTileHeight(); // 1 tile above
+		}
+	
+		// Floating offset
+		float offset = sin(hoverTimer.ReadSec() * hoverSpeed) * hoverAmplitude;
+
+		// Final target
+		float targetY = baseY + offset;
+
+
+		int x, y;
+		pbody->GetPosition(x, y);
+
+		// Smoothly move toward target 
+		velocity.y += (targetY - y) * 0.1f;
+		velocity.y = SDL_clamp(velocity.y, -3.0f, 3.0f);
+
+		hoverCooldown.Start();
+	}
+
+	//Horitzontal
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isAttacking == false && isKnockedback == false)
 	{
@@ -219,7 +255,7 @@ void Demon::Move() {
 	{
 		if (!isdead && isKnockedback == false)
 		{
-			RollAttack();
+			Attack();
 		}
 	}
 	return;
@@ -256,8 +292,7 @@ void Demon::Knockback()
 void Demon::ApplyPhysics() {
 
 	// Apply velocity via helper
-	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
 }
 
 void Demon::Draw(float dt)
@@ -310,7 +345,7 @@ void Demon::Draw(float dt)
 	}
 }
 
-void Demon::RollAttack()
+void Demon::Attack()
 {
 	if (isAttacking == false && isKnockedback == false)
 	{
@@ -318,6 +353,7 @@ void Demon::RollAttack()
 		isAttacking = true;
 		anims.SetCurrent("startSpin");
 		anims.GetAnim("startSpin")->SetLoop(false);
+		startAttack.Start();
 
 		if (lookingRight == false)
 		{
@@ -344,6 +380,11 @@ void Demon::RollAttack()
 		{
 			velocity.x = -speed * 2;
 		}
+	}
+
+	if (startAttack.ReadMSec() > 1000)
+	{
+		isAttacking = false;
 	}
 }
 
@@ -373,3 +414,5 @@ void Demon::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b
 		break;
 	}
 }
+
+

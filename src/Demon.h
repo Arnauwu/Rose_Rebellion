@@ -28,7 +28,7 @@ private:
 	void ApplyPhysics() override;
 	void Draw(float dt);
 
-	void RollAttack();
+	void Attack();
 
 	bool wasWalking = false;
 
@@ -36,7 +36,14 @@ public:
 
 	//Declare enemy parameters
 	bool isAttacking = false;
+	Timer startAttack;
 
+	Timer hoverTimer;
+	Timer hoverCooldown;
+	float hoverAmplitude = 4.0f;
+	float hoverSpeed = 0.5f;
+
+	//Sounds
 	int morirDimoni;
 	int atacarDimoni;
 	int chocarDimoni;
