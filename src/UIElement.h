@@ -86,6 +86,7 @@ public:
 	float relW = 0.1f;
 	float relH = 0.1f;
 
+
 	SDL_Texture* texture;
 	SDL_Rect section;
 	SDL_Texture* bgTexture = nullptr;

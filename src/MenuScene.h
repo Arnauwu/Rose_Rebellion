@@ -33,6 +33,7 @@ public:
 
     SDL_Texture* menuBackground = nullptr;
     SDL_Texture* menuBackground_S = nullptr;
+    SDL_Texture* frameTex = nullptr;
 
 private:
     void ShowSettings(bool show);

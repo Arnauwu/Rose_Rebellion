@@ -21,6 +21,9 @@ bool MenuScene::Start() {
 	if (menuBackground_S == nullptr) {
 		menuBackground_S = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu_S.png");
 	}
+	if (frameTex == nullptr) {
+		frameTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/frameTex.png");
+	}
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -40,7 +43,12 @@ bool MenuScene::Start() {
 	};
 
 	for (const auto& def : mainBtnDefs) {
-		mainButtons.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, currentY, wPerc, hPerc, sceneObserver));
+		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, currentY, wPerc, hPerc, sceneObserver);
+		
+		if (auto* b = dynamic_cast<UIButton*>(btn.get())) {
+			b->SetFrameTexture(frameTex);
+		}
+		mainButtons.push_back(btn);
 		currentY += spacing;
 	}
 
@@ -168,6 +176,11 @@ bool MenuScene::CleanUp() {
 		Engine::GetInstance().textures->UnLoad(menuBackground_S);
 		menuBackground_S = nullptr;
 	}
+	if (frameTex != nullptr) {
+		Engine::GetInstance().textures->UnLoad(frameTex);
+		frameTex = nullptr;
+	}
+
 	mainButtons.clear();
 	settingsButtons.clear();
 	return true;
