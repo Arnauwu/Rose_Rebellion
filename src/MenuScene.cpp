@@ -24,6 +24,18 @@ bool MenuScene::Start() {
 	if (frameTex == nullptr) {
 		frameTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/frameTex.png");
 	}
+	if (flashTex == nullptr) {
+		flashTex = Engine::GetInstance().textures->Load("Assets/1.png");
+	}
+	std::unordered_map<int, std::string> aliases = {
+		{0, "bullet"}
+	};
+	anims.LoadFromTSX("Assets/2.tsx", aliases);
+	anims.SetCurrent("bullet");
+
+
+	// Textura temporal para pruebas (testear)
+	texture = Engine::GetInstance().textures->Load("Assets/2.png");
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -47,6 +59,12 @@ bool MenuScene::Start() {
 		
 		if (auto* b = dynamic_cast<UIButton*>(btn.get())) {
 			b->SetFrameTexture(frameTex);
+			Animation* bulletAnim = anims.GetAnim("bullet");
+			//b->SetFlashTexture(flashTex);
+			if (bulletAnim != nullptr) {
+				b->SetFlashAnimation(texture, *bulletAnim);
+			}
+
 		}
 		mainButtons.push_back(btn);
 		currentY += spacing;
@@ -72,6 +90,10 @@ bool MenuScene::Start() {
 
 	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, (int)MenuUI_ID::BTN_BACK, "BACK", 0.5f, setY, wPerc, hPerc, sceneObserver);
 	settingsButtons.push_back(btnBack);
+	if (auto* b = dynamic_cast<UIButton*>(btnBack.get())) {
+		b->SetFlashTexture(flashTex); 
+		b->SetFrameTexture(frameTex); 
+	}
 
 	ShowSettings(false);
 	return true;

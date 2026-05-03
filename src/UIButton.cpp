@@ -2,6 +2,7 @@
 #include "Render.h"
 #include "Engine.h"
 #include "Audio.h"
+#include "ParticleManager.h"
 
 UIButton::UIButton(int id, float anchorX, float anchorY, float wPerc, float hPerc, const char* text)
 	: UIElement(UIElementType::BUTTON, id, anchorX, anchorY, wPerc, hPerc, text)
@@ -32,6 +33,37 @@ bool UIButton::Update(float dt)
 				state = UIElementState::PRESSED;
 				targetTextScale = 0.9f;
 				currentTextColor = { 50, 50, 50, 255 };
+				// PRUEBAS PARTICULAS
+				float tamañoDestello = 50.0f;
+				// CON ANIMACIÓN
+				if (useFlashAnim && flashTexture != nullptr) {
+					Engine::GetInstance().particleManager->Emit(
+						flashTexture, flashAnim,
+						mousePos.getX() - (tamañoDestello * 3 / 2),
+						mousePos.getY() - (tamañoDestello * 3 / 2),
+						0.0f, 0.0f,
+						250.0f, tamañoDestello *3, false, 0.0f
+					);
+				}
+				// TEXTURA
+				else if (flashTexture != nullptr) {
+					Engine::GetInstance().particleManager->Emit(
+						flashTexture,
+						mousePos.getX() - (tamañoDestello / 2),
+						mousePos.getY() - (tamañoDestello / 2),
+						0.0f, 0.0f,
+						250.0f, tamañoDestello, false, 0.0f
+					);
+				}
+				// SI NO LE PASO NADA
+				else {
+					Engine::GetInstance().particleManager->Emit(
+						mousePos.getX() - (tamañoDestello / 2),
+						mousePos.getY() - (tamañoDestello / 2),
+						0.0f, 0.0f,
+						200.0f, { 255, 255, 255, 200 }, tamañoDestello, false
+					);
+				}
 			}
 			else {
 				state = UIElementState::FOCUSED;
