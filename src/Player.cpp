@@ -6,6 +6,7 @@
 #include "Render.h"
 #include "SceneManager.h"
 #include "GameManager.h"
+#include "ParticleManager.h"
 
 #include "Log.h"
 #include "Physics.h"
@@ -294,6 +295,17 @@ void Player::Move() {
 		{
 			// OJO: Le pasamos 0 repeticiones para que sea súper ligero para la memoria
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
+
+			if (lookingRight) {
+				footX = position.getX() - (texW / 2);
+				footY = position.getY() + texH - 64.0f;
+			}
+			else {
+				footX = position.getX() + (texW / 2.2);
+				footY = position.getY() + texH - 64.0f;
+			}
+			Engine::GetInstance().particleManager->EmitDust(footX, footY);
+
 			stepTimer = 0.0f;
 		}
 	}

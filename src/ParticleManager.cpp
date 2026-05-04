@@ -117,7 +117,6 @@ void ParticleManager::Emit(float x, float y, float vx, float vy, float life, SDL
 
     pool[index].active = true;
 }
-
 // Sobrecarga 2: Particula con textura
 void ParticleManager::Emit(SDL_Texture* texture, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity) {
     int index = FindNextDeadParticle();
@@ -164,6 +163,32 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
     pool[index].isAnimated = true;
 
     pool[index].active = true;
+}
+
+void ParticleManager::EmitDust(float x, float y) {
+    // Generamos entre 3 y 5 partículas por cada pisada
+    int numParticles = 3 + (rand() % 3);
+
+    for (int i = 0; i < numParticles; i++) {
+        // Velocidad X: Esparcimiento aleatorio muy ligero hacia los lados
+        float vx = ((rand() % 100) - 50) * 0.4f;
+
+        // Velocidad Y: Siempre hacia arriba (negativo), imitando el polvo que se levanta
+        float vy = -((rand() % 100) + 50) * 0.8f;
+
+        // Vida corta: Se desvanece rápido (entre 200 y 400 milisegundos)
+        float life = 200.0f + (rand() % 200);
+
+        // Color: Gris clarito / Blanco sucio
+        SDL_Color color = { 200, 200, 200, 200 };
+
+        // Tamaño: Pequeño (entre 3 y 6 píxeles)
+        float size = 6.0f + (rand() % 4);
+
+        // Emitimos la partícula usando el preset 1 (Cuadrado de color base)
+        // Le pasamos 'true' en useCamera porque esto ocurre en el mundo del juego
+        Emit(x, y, vx, vy, life, color, size, true);
+    }
 }
 
 // Lógica del Object Pool (Buffer Circular)

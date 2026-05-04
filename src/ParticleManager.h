@@ -37,10 +37,10 @@ public:
     bool CleanUp() override;
 
     void Emit(float x, float y, float vx, float vy, float life, SDL_Color color, float size, bool useCamera = true);
-
     void Emit(SDL_Texture* texture, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f);
-
     void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f);
+    void EmitDust(float x, float y);
+    void EmitDust(SDL_Texture* texture, Animation anim, float x, float y);
 
 private:
     std::vector<Particle> pool;
