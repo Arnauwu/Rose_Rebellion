@@ -22,14 +22,10 @@
  <tileset firstgid="195" name="MapMetadata" tilewidth="128" tileheight="128" tilecount="2" columns="2">
   <image source="Pathfinding/MapMetadata.png" trans="ffffff" width="256" height="128"/>
  </tileset>
- <objectgroup id="18" name="Fondo" visible="0">
+ <objectgroup id="18" name="Fondo">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="136" gid="194" x="8960" y="12800" width="3840" height="2304"/>
-  <object id="137" gid="65" x="5120" y="12800" width="3840" height="2304"/>
-  <object id="138" gid="65" x="1280" y="12800" width="3840" height="2304"/>
-  <object id="139" gid="65" x="-2560" y="12800" width="3840" height="2304"/>
  </objectgroup>
  <layer id="1" name="Map" width="180" height="100">
   <properties>
@@ -36077,13 +36073,17 @@
   <object id="402" x="14080" y="3888" width="6144" height="80"/>
   <object id="403" x="8192" y="3888" width="3584" height="80"/>
  </objectgroup>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="404" x="-512" y="12032" width="128" height="512"/>
+  <object id="404" x="-512" y="12032" width="128" height="512">
+   <properties>
+    <property name="TeleportTo" type="file" value="Nexo.tmx"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup color="#000000" id="20" name="Map" visible="0">
   <properties>
@@ -36328,7 +36328,7 @@
   </properties>
   <object id="132" name="Player" type="Player" x="104.545" y="12494.7">
    <properties>
-    <property name="FromRoom" type="file" value="Forest_02.tmx"/>
+    <property name="FromRoom" type="file" value="Nexo.tmx"/>
    </properties>
    <point/>
   </object>
