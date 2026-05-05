@@ -6,6 +6,8 @@
 #include "EntityManager.h"
 #include "GameManager.h"
 #include "UIManager.h"
+#include "DialogueManager.h"
+
 #include "window.h"
 #include "Player.h"
 #include "Log.h"
@@ -142,7 +144,7 @@ bool GameScene::Start() {
 	CreatePauseMenuUI();
 
 	RefreshMenuUI();
-
+	
 	return true;
 }
 

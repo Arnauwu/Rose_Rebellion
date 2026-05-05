@@ -2,6 +2,7 @@
   "builtin-baseline": "7213cf8135c329c37c7e2778e40774489a0583a8",
   "dependencies": [
     "box2d",
+    "ffmpeg",
     "libjpeg-turbo",
     "libpng",
     "pugixml",
@@ -14,6 +15,6 @@
       ]
     },
     "sdl3-ttf",
-    "ffmpeg"
+    "nlohmann-json"
   ]
 }

@@ -102,7 +102,6 @@ private:
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
-	void RequestMapChange(std::string mapFile);
 
 	int uiClick;
 
@@ -116,6 +115,7 @@ private:
 	std::vector<std::shared_ptr<UIElement>> inventoryUI;
 	std::vector<std::shared_ptr<UIElement>> mapUI;
 	std::vector<std::shared_ptr<UIElement>> skillUI;
+	std::vector<std::shared_ptr<UIElement>> dialogueBox;
 	
 	// Descriptión Panel
 	std::shared_ptr<UIElement> descPanel = nullptr;

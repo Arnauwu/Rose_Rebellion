@@ -237,9 +237,6 @@
     <ClCompile Include="src\Map.cpp">
       <Filter>Source Files\Engine\Map</Filter>
     </ClCompile>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\CameraController.cpp">
       <Filter>Source Files\Utils\Camera</Filter>
     </ClCompile>
@@ -288,6 +285,10 @@
     <ClCompile Include="src\ParticleManager.cpp">
       <Filter>Source Files\Engine\Particles</Filter>
     </ClCompile>
+    <ClCompile Include="src\DialogueBox.cpp" />
+    <ClCompile Include="src\DialogueManager.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Npc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -446,6 +447,10 @@
     <ClInclude Include="src\ParticleManager.h">
       <Filter>Source Files\Engine\Particles</Filter>
     </ClInclude>
+    <ClInclude Include="src\DialogueData.h" />
+    <ClInclude Include="src\DialogueManager.h" />
+    <ClInclude Include="src\Npc.h" />
+    <ClInclude Include="src\DialogueBox.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">

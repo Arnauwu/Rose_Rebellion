@@ -7,6 +7,8 @@
 #include "SceneManager.h"
 #include "GameManager.h"
 #include "ParticleManager.h"
+#include "dialogueManager.h"
+#include "Npc.h"
 
 #include "Log.h"
 #include "Physics.h"
@@ -736,6 +738,21 @@ void Player::Interact()
 				}
 			}
 		}
+		else if (interactuableBody->ctype == ColliderType::NPC)
+		{
+			// Asegurarse que no estabas hablando
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN /*&& !Engine::GetInstance().dialogueManager->IsDialogueActive()*/)
+			{
+				Npc* npc = (Npc*)interactuableBody->listener;
+				// Si el npc no esta vacio comienza el dialogo
+				if (npc != nullptr) 
+				{
+					Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
+					LOG("INICIO DIALOGO");
+					Engine::GetInstance().input->ClearMouseInput(); 
+				}
+			}
+		}
 	}
 }
 
@@ -1203,7 +1220,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	}
-
+	case ColliderType::NPC:
+		canInteract = true;
+		interactuableBody = physB;
+		break;
 	case ColliderType::ENEMY:
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(10); // Contact Damage
@@ -1271,7 +1291,10 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;
-
+	case ColliderType::NPC:
+		canInteract = false;
+		interactuableBody = nullptr;
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
