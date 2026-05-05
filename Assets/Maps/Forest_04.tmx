@@ -5945,7 +5945,7 @@
    <tile gid="197"/>
   </data>
  </layer>
- <objectgroup color="#aa0000" id="20" name="Spikes">
+ <objectgroup color="#aa0000" id="20" name="Spikes" visible="0">
   <properties>
    <property name="Danger" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -5954,7 +5954,7 @@
   <object id="374" x="12160" y="1949.33" width="1152" height="98.6667"/>
   <object id="375" x="9472" y="2210" width="2176" height="94"/>
  </objectgroup>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -5971,14 +5971,14 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="14" name="Door">
+ <objectgroup id="14" name="Door" visible="0">
   <properties>
    <property name="Door" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground">
+ <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -6003,7 +6003,7 @@
   <object id="381" x="13312" y="1920" width="768" height="128"/>
   <object id="382" x="12544" y="1920" width="256" height="128"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -6051,14 +6051,14 @@
   <object id="379" x="13696" y="896" width="128" height="256"/>
   <object id="380" x="13824" y="896" width="384" height="128"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling">
+ <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
   <object id="384" x="512" y="-128" width="6016" height="128"/>
  </objectgroup>
- <objectgroup id="11" name="EntitiesSpawnPoints">
+ <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="302" name="Player" type="Player" x="8576" y="1456">
    <point/>
   </object>

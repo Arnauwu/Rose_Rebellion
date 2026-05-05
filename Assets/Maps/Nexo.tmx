@@ -5826,7 +5826,7 @@
   <object id="34" name="Sickle" type="Sickle" x="3876" y="1118">
    <point/>
   </object>
-  <object id="88" name="Player" type="Player" x="312" y="1172">
+  <object id="88" name="Player" type="Player" x="408" y="946">
    <properties>
     <property name="FromRoom" type="file" value="Forest_01.tmx"/>
    </properties>
@@ -5843,7 +5843,7 @@
    </properties>
    <point/>
   </object>
-  <object id="86" name="Player" x="260" y="1105.33">
+  <object id="86" name="Player" x="256" y="1141.33">
    <properties>
     <property name="FromRoom" type="file" value="Forest_01.tmx"/>
    </properties>
