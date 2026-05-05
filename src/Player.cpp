@@ -296,16 +296,23 @@ void Player::Move() {
 			// OJO: Le pasamos 0 repeticiones para que sea súper ligero para la memoria
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
 
+			//if (lookingRight) {
+			//	footX = position.getX() - (texW / 2);
+			//	footY = position.getY() + texH - 64.0f;
+			//}
+			//else {
+			//	footX = position.getX() + (texW / 2.2);
+			//	footY = position.getY() + texH - 64.0f;
+			//}
 			if (lookingRight) {
-				footX = position.getX() - (texW / 2);
-				footY = position.getY() + texH - 64.0f;
+				footX = position.getX() - 35.0f; // 紧贴脚后跟
+				footY = position.getY() + (texH / 2.0f) - 10.0f; // 踩在地上
 			}
 			else {
-				footX = position.getX() + (texW / 2.2);
-				footY = position.getY() + texH - 64.0f;
+				footX = position.getX() + 35.0f; // 紧贴脚后跟
+				footY = position.getY() + (texH / 2.0f) - 10.0f;
 			}
-			Engine::GetInstance().particleManager->EmitDust(footX, footY);
-			
+			Engine::GetInstance().particleManager->EmitDust(footX, footY, lookingRight);
 
 			stepTimer = 0.0f;
 		}

@@ -1,4 +1,4 @@
-#include "ParticleManager.h"
+ï»¿#include "ParticleManager.h"
 #include "Engine.h"
 #include "Render.h"
 
@@ -17,13 +17,13 @@ bool ParticleManager::Awake() {
 }
 
 bool ParticleManager::Start() {
-    // °ÑÂ·¾¶¸Ä³ÉÖ±½ÓÖ¸Ïò Assets ÎÄ¼ş¼Ğ
+    // æŠŠè·¯å¾„æ”¹æˆç›´æ¥æŒ‡å‘ Assets æ–‡ä»¶å¤¹
     texDust = Engine::GetInstance().textures->Load("Assets/dust.png");
 
     AnimationSet tempSet;
-    std::unordered_map<int, std::string> aliases = { {0, "dust_anim"} }; // ×¢Òâ£ºÕâÀï "dust_anim" ±ØĞëºÍÄãµÄ tsx ÎÄ¼şÀïµÄ¶¯»­Ãû×ÖÒ»ÖÂ£¡
+    std::unordered_map<int, std::string> aliases = { {0, "dust_anim"} }; // æ³¨æ„ï¼šè¿™é‡Œ "dust_anim" å¿…é¡»å’Œä½ çš„ tsx æ–‡ä»¶é‡Œçš„åŠ¨ç”»åå­—ä¸€è‡´ï¼
 
-    // Í¬ÑùĞŞ¸Ä .tsx ÎÄ¼şµÄÂ·¾¶
+    // åŒæ ·ä¿®æ”¹ .tsx æ–‡ä»¶çš„è·¯å¾„
     if (tempSet.LoadFromTSX("Assets/dust.tsx", aliases)) {
         if (tempSet.Has("dust_anim")) {
             animDust = *tempSet.GetAnim("dust_anim");
@@ -34,7 +34,7 @@ bool ParticleManager::Start() {
 }
 
 bool ParticleManager::Update(float dt) {
-    // Actualizamos SOLO las partículas encendidas
+    // Actualizamos SOLO las partéŸˆulas encendidas
     for (auto& particles : pool) {
         if (particles.active) {
             
@@ -73,6 +73,7 @@ bool ParticleManager::PostUpdate() {
                 float renderY = particle.useCamera ? particle.y + Engine::GetInstance().render->camera.y : particle.y;
 
                 SDL_FRect dstRect = { renderX, renderY, particle.size, particle.size };
+                //SDL_FRect dstRect = { renderX - (particle.size / 2.0f), renderY - (particle.size / 2.0f), particle.size, particle.size };
 
                 // Aplicar transparencia y color base a la textura temporalmente
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha);
@@ -83,11 +84,11 @@ bool ParticleManager::PostUpdate() {
                     SDL_Rect srcRect = particle.anim.GetCurrentFrame();
                     SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
 
-                    SDL_RenderTextureRotated(renderer, particle.texture, &srcFRect, &dstRect, particle.angle, nullptr, SDL_FLIP_NONE);
+                    SDL_RenderTextureRotated(renderer, particle.texture, &srcFRect, &dstRect, particle.angle, nullptr, particle.flipMode);
                 }
                 else {
                     // Renderizar la textura
-                    SDL_RenderTextureRotated(renderer, particle.texture, nullptr, &dstRect, particle.angle, nullptr, SDL_FLIP_NONE);
+                    SDL_RenderTextureRotated(renderer, particle.texture, nullptr, &dstRect, particle.angle, nullptr, particle.flipMode);
                 }
 
                 // Restaurar la textura a la normalidad
@@ -156,8 +157,8 @@ void ParticleManager::Emit(SDL_Texture* texture, float x, float y, float vx, flo
     pool[index].active = true;
 }
 
-// Sobrecarga 3: Particula con Animación
-void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity) {
+// Sobrecarga 3: Particula con Animacié«‡
+void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity,SDL_FlipMode flipMode) {
     int index = FindNextDeadParticle();
 
     pool[index].x = x;
@@ -174,16 +175,17 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
     pool[index].angle = 0.0f;
     pool[index].angularVelocity = angularVelocity;
 
-    // Inyectar y reiniciar la animación
+    // Inyectar y reiniciar la animacié«‡
     pool[index].anim = anim;
     pool[index].anim.Reset();
     pool[index].isAnimated = true;
+    pool[index].flipMode = flipMode;
 
     pool[index].active = true;
 }
 
 //void ParticleManager::EmitDust(float x, float y) {
-//    // Generamos entre 3 y 5 partículas por cada pisada
+//    // Generamos entre 3 y 5 partéŸˆulas por cada pisada
 //    int numParticles = 3 + (rand() % 3);
 //
 //    for (int i = 0; i < numParticles; i++) {
@@ -193,45 +195,49 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
 //        // Velocidad Y: Siempre hacia arriba (negativo), imitando el polvo que se levanta
 //        float vy = -((rand() % 100) + 50) * 0.8f;
 //
-//        // Vida corta: Se desvanece rápido (entre 200 y 400 milisegundos)
+//        // Vida corta: Se desvanece ré†¦ido (entre 200 y 400 milisegundos)
 //        float life = 200.0f + (rand() % 200);
 //
 //        // Color: Gris clarito / Blanco sucio
 //        SDL_Color color = { 200, 200, 200, 200 };
 //
-//        // Tamaño: Pequeño (entre 3 y 6 píxeles)
+//        // Tamaé§‰: Pequeé§‰ (entre 3 y 6 péŸeles)
 //        float size = 6.0f + (rand() % 4);
 //
-//        // Emitimos la partícula usando el preset 1 (Cuadrado de color base)
+//        // Emitimos la partéŸˆula usando el preset 1 (Cuadrado de color base)
 //        // Le pasamos 'true' en useCamera porque esto ocurre en el mundo del juego
 //        Emit(x, y, vx, vy, life, color, size, true);
 //    }
 //}
-void ParticleManager::EmitDust(float x, float y) {
-    // ¼ÈÈ»ÊÇÃÀÊõ»­ºÃµÄ¾«ÖÂ¶¯»­£¬·¢ 1 ¸öÍêÕûµÄ¶¯»­ĞòÁĞ¼´¿É
+
+// æ³¨æ„ï¼šæ‹¬å·é‡Œåªæœ‰ x, y å’Œ lookingRight è¿™ä¸‰ä¸ªå‚æ•°äº†ï¼
+void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
     int numParticles = 1;
 
     for (int i = 0; i < numParticles; i++) {
-        float vx = ((rand() % 100) - 50) * 0.2f; // ¸øÒ»µãµã·Ç³£Î¢ÈõµÄËæ»úºáÏòÆ«ÒÆ
-        float vy = -15.0f; // ÕûÌåÉÔÎ¢ÍùÉÏÆ®Ò»µãµã
-        float life = 400.0f; // ´æ»îÊ±¼ä£¬ºÍ¶¯»­²¥·Å×ÜÊ±³¤Ò»ÖÂ
-        float size = 1.0f; // 1.0f ´ú±í±£³ÖÃÀÊõ¸øµÄÔ­Ê¼´óĞ¡±ÈÀı
+        float vx = lookingRight ? -10.0f : 10.0f;
+        float vy = -5.0f;
+        float life = 400.0f;
+        float size = 48.0f;
 
-        if (texDust != nullptr) {
-            // Èç¹ûÃÀÊõ¸øÁËÍ¼£¬²¢ÇÒ¼ÓÔØ³É¹¦ÁË£¬×Ô¼ºÊ¹ÓÃ×Ô¼ºµÄ texDust ºÍ animDust
-            Emit(texDust, animDust, x, y, vx, vy, life, size, true, 0.0f);
+        SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+
+        // ã€å…³é”®ä¿®å¤ã€‘ï¼šæ—¢ç„¶åº•å±‚æ˜¯ä»å·¦ä¸Šè§’ç”»çš„ï¼Œæˆ‘ä»¬å°±åœ¨å‘å°„å‰ï¼ŒæŠŠåæ ‡å¾€å·¦ä¸Šæ–¹ç§»åŠ¨ä¸€åŠçš„å°ºå¯¸
+        float startX = x - (size / 2.0f);
+        float startY = y - (size / 2.0f);
+
+        if (texDust != nullptr && animDust.GetFrameCount() > 0) {
+            // ä¼ å…¥åç§»åçš„ startX å’Œ startY
+            Emit(texDust, animDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
         }
         else {
-            // ±£µ×·½°¸£ºÈç¹û»¹Ã»¼ÓÔØÍ¼£¬ÏÈ·¢¸öÆÕÍ¨µÄ»ÒÉ«Ğ¡·½¿éÕ¼Î»
             SDL_Color color = { 200, 200, 200, 200 };
-            Emit(x, y, vx, vy, life, color, 6.0f, true);
+            Emit(startX, startY, vx, vy, life, color, 8.0f, true);
         }
     }
 }
 
-
-
-// Lógica del Object Pool (Buffer Circular)
+// Léª»ica del Object Pool (Buffer Circular)
 int ParticleManager::FindNextDeadParticle() {
     for (int i = lastUsedParticle; i < poolSize; i++) {
         if (!pool[i].active) {
