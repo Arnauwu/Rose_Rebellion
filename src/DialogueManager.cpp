@@ -2,7 +2,7 @@
 #include "Engine.h"
 #include "Input.h"
 #include "Log.h"
-#include "DialogueBox.h"
+#include "UIDialogueBox.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -15,7 +15,7 @@ bool DialogueManager::Awake() {
     std::ifstream file("Assets/Dialogues/dialogues.json");
     if (!file.is_open()) {
         LOG("Error: No se pudo abrir dialogues.json");
-        return true; // Retornamos true para no crashear el motor entero
+        return true; 
     }
 
     json j;
@@ -68,7 +68,7 @@ void DialogueManager::StartDialogue(const std::string& dialogueID) {
 bool DialogueManager::Update(float dt) {
     if (!isActive) return true;
 
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
         NextLine();
         return true;
     }
@@ -82,8 +82,8 @@ bool DialogueManager::Update(float dt) {
 
         if (typeTimer >= timePerChar) {
             typeTimer = 0.0f;
-            displayedText += fullText[charIndex];
             charIndex++;
+            displayedText = fullText.substr(0, charIndex);
 
             if (uiBox) {
                 uiBox->SetDialogueText(displayedText);

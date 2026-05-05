@@ -2,7 +2,7 @@
 #include "UICheckBox.h" 
 #include "UISlider.h"
 #include "UIButton.h"
-#include "DialogueBox.h"
+#include "UIDialogueBox.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"

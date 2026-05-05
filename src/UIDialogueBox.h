@@ -8,7 +8,7 @@ public:
     ~UIDialogueBox();
 
     bool Update(float dt) override;
-    bool Draw();
+    void Draw() const override;
 
     void SetSpeakerName(const std::string& name);
     void SetDialogueText(const std::string& text);

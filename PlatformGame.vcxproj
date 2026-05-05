@@ -152,7 +152,7 @@
     <ClCompile Include="src\Cinematics.cpp" />
     <ClCompile Include="src\Cucafera.cpp" />
     <ClCompile Include="src\DashObj.cpp" />
-    <ClCompile Include="src\DialogueBox.cpp" />
+    <ClCompile Include="src\UIDialogueBox.cpp" />
     <ClCompile Include="src\DialogueManager.cpp" />
     <ClCompile Include="src\DoubleJumpObj.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
@@ -207,7 +207,7 @@
     <ClInclude Include="src\Cinematics.h" />
     <ClInclude Include="src\Cucafera.h" />
     <ClInclude Include="src\DashObj.h" />
-    <ClInclude Include="src\DialogueBox.h" />
+    <ClInclude Include="src\UIDialogueBox.h" />
     <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />
     <ClInclude Include="src\DoubleJumpObj.h" />

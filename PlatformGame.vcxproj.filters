@@ -285,7 +285,7 @@
     <ClCompile Include="src\ParticleManager.cpp">
       <Filter>Source Files\Engine\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="src\DialogueBox.cpp" />
+    <ClCompile Include="src\UIDialogueBox.cpp" />
     <ClCompile Include="src\DialogueManager.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Npc.cpp" />
@@ -450,7 +450,7 @@
     <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />
     <ClInclude Include="src\Npc.h" />
-    <ClInclude Include="src\DialogueBox.h" />
+    <ClInclude Include="src\UIDialogueBox.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">
