@@ -17,13 +17,13 @@ bool ParticleManager::Awake() {
 }
 
 bool ParticleManager::Start() {
-    // 把路径改成直接指向 Assets 文件夹
+    // Texture
     texDust = Engine::GetInstance().textures->Load("Assets/dust.png");
 
+    //Anims
     AnimationSet tempSet;
-    std::unordered_map<int, std::string> aliases = { {0, "dust_anim"} }; // 注意：这里 "dust_anim" 必须和你的 tsx 文件里的动画名字一致！
+    std::unordered_map<int, std::string> aliases = { {0, "dust_anim"} }; 
 
-    // 同样修改 .tsx 文件的路径
     if (tempSet.LoadFromTSX("Assets/dust.tsx", aliases)) {
         if (tempSet.Has("dust_anim")) {
             animDust = *tempSet.GetAnim("dust_anim");
@@ -210,7 +210,6 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
 //    }
 //}
 
-// 注意：括号里只有 x, y 和 lookingRight 这三个参数了！
 void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
     int numParticles = 1;
 
@@ -222,12 +221,12 @@ void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
 
         SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-        // 【关键修复】：既然底层是从左上角画的，我们就在发射前，把坐标往左上方移动一半的尺寸
+        // desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño antes de emitir.
         float startX = x - (size / 2.0f);
         float startY = y - (size / 2.0f);
 
         if (texDust != nullptr && animDust.GetFrameCount() > 0) {
-            // 传入偏移后的 startX 和 startY
+            // desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño antes de emitir.
             Emit(texDust, animDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
         }
         else {
