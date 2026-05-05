@@ -16,6 +16,7 @@
 #include "UIManager.h"
 #include "Hud.h"
 #include "Cinematics.h"
+#include "ParticleManager.h"
 
 // Constructor
 Engine::Engine() {
@@ -43,6 +44,7 @@ Engine::Engine() {
     entityManager = std::make_shared<EntityManager>();
 
     cinematics = std::make_shared<Cinematics>();
+    particleManager = std::make_shared<ParticleManager>();
     uiManager = std::make_shared<UIManager>();
     hud = std::make_shared<Hud>();
 
@@ -56,8 +58,10 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(physics));
     AddModule(std::static_pointer_cast<Module>(map));
     AddModule(std::static_pointer_cast<Module>(entityManager));
-    AddModule(std::static_pointer_cast<Module>(sceneManager));
+    // Particle Manager
+    AddModule(std::static_pointer_cast<Module>(particleManager));
 
+    AddModule(std::static_pointer_cast<Module>(sceneManager));
     // Cinematic Manager
     AddModule(std::static_pointer_cast<Module>(cinematics));
 

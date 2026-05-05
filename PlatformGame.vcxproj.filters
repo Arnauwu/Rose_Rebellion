@@ -122,6 +122,9 @@
     <Filter Include="Source Files\Game\Entity\Items\SkillObj">
       <UniqueIdentifier>{0f3949bf-364d-49e2-9d25-758c3cd4671b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Particles">
+      <UniqueIdentifier>{a12cb83a-ba8f-4279-a1c1-9b5d8ff16f60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -282,6 +285,9 @@
     <ClCompile Include="src\DoubleJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
+    <ClCompile Include="src\ParticleManager.cpp">
+      <Filter>Source Files\Engine\Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -436,6 +442,9 @@
     </ClInclude>
     <ClInclude Include="src\DoubleJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ParticleManager.h">
+      <Filter>Source Files\Engine\Particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -550,7 +550,7 @@ bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Colo
 		finalW = maxH * textRatio;
 	}
 
-	// 4. Centramos el texto exactamente en el medio del botón
+	// Centramos el texto exactamente en el medio del botón
 	float finalX = bounds.x + (bounds.w - finalW) / 2.0f;
 	float finalY = bounds.y + (bounds.h - finalH) / 2.0f;
 
@@ -563,6 +563,42 @@ bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Colo
 
 	return true;
 }
+
+SDL_Rect Render::GetTextRenderedBounds(const char* text, const SDL_Rect& bounds) const
+{
+	SDL_Rect rect = { 0, 0, 0, 0 };
+	if (!font || !text) return rect;
+
+	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, { 255, 255, 255, 255 });
+	if (!surface) return rect;
+
+	float padding = bounds.h * 0.2f;
+	float maxW = bounds.w - (padding * 2);
+	float maxH = bounds.h - (padding * 2);
+
+	float textRatio = (float)surface->w / (float)surface->h;
+	float boxRatio = maxW / maxH;
+
+	float finalW, finalH;
+
+	if (textRatio > boxRatio) {
+		finalW = maxW;
+		finalH = maxW / textRatio;
+	}
+	else {
+		finalH = maxH;
+		finalW = maxH * textRatio;
+	}
+
+	rect.x = (int)(bounds.x + (bounds.w - finalW) / 2.0f);
+	rect.y = (int)(bounds.y + (bounds.h - finalH) / 2.0f);
+	rect.w = (int)finalW;
+	rect.h = (int)finalH;
+
+	SDL_DestroySurface(surface);
+	return rect;
+}
+
 void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;

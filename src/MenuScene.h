@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneBase.h"
 #include "Textures.h"
+#include "Animation.h"
 #include "Audio.h"
 #include <vector>
 #include <memory>
@@ -33,6 +34,8 @@ public:
 
     SDL_Texture* menuBackground = nullptr;
     SDL_Texture* menuBackground_S = nullptr;
+    SDL_Texture* frameTex = nullptr;
+    SDL_Texture* flashTex = nullptr;
 
 private:
     void ShowSettings(bool show);
@@ -44,4 +47,6 @@ private:
     // UI Groups
     std::vector<std::shared_ptr<UIElement>> mainButtons;
     std::vector<std::shared_ptr<UIElement>> settingsButtons;
+    AnimationSet anims;
+    SDL_Texture* texture;
 };
