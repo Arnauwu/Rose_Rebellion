@@ -41,11 +41,18 @@ public:
     void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f);
     void EmitDust(float x, float y);
     void EmitDust(SDL_Texture* texture, Animation anim, float x, float y);
-
+    void EmitJumpDust(float x, float y);
+    void EmitHitSparks(float x, float y, bool isBlood = false);
+    void EmitItemPickup(float x, float y);
+    void EmitRain(float cameraX, float cameraY, int cameraW, int cameraH);
+    void EmitSwordSlash(float x, float y, bool lookingRight);
 private:
     std::vector<Particle> pool;
     int poolSize = 1000;
     int lastUsedParticle = 0;
-
     int FindNextDeadParticle();
+
+    SDL_Texture* texDust = nullptr;
+    Animation animDust;
+
 };

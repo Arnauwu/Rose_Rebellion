@@ -17,6 +17,19 @@ bool ParticleManager::Awake() {
 }
 
 bool ParticleManager::Start() {
+    // 把路径改成直接指向 Assets 文件夹
+    texDust = Engine::GetInstance().textures->Load("Assets/dust.png");
+
+    AnimationSet tempSet;
+    std::unordered_map<int, std::string> aliases = { {0, "dust_anim"} }; // 注意：这里 "dust_anim" 必须和你的 tsx 文件里的动画名字一致！
+
+    // 同样修改 .tsx 文件的路径
+    if (tempSet.LoadFromTSX("Assets/dust.tsx", aliases)) {
+        if (tempSet.Has("dust_anim")) {
+            animDust = *tempSet.GetAnim("dust_anim");
+        }
+    }
+
     return true;
 }
 
@@ -93,6 +106,10 @@ bool ParticleManager::PostUpdate() {
 
 bool ParticleManager::CleanUp() {
     pool.clear();
+    if (texDust != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texDust);
+        texDust = nullptr;
+    }
     return true;
 }
 
@@ -165,31 +182,54 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
     pool[index].active = true;
 }
 
+//void ParticleManager::EmitDust(float x, float y) {
+//    // Generamos entre 3 y 5 part韈ulas por cada pisada
+//    int numParticles = 3 + (rand() % 3);
+//
+//    for (int i = 0; i < numParticles; i++) {
+//        // Velocidad X: Esparcimiento aleatorio muy ligero hacia los lados
+//        float vx = ((rand() % 100) - 50) * 0.4f;
+//
+//        // Velocidad Y: Siempre hacia arriba (negativo), imitando el polvo que se levanta
+//        float vy = -((rand() % 100) + 50) * 0.8f;
+//
+//        // Vida corta: Se desvanece r醦ido (entre 200 y 400 milisegundos)
+//        float life = 200.0f + (rand() % 200);
+//
+//        // Color: Gris clarito / Blanco sucio
+//        SDL_Color color = { 200, 200, 200, 200 };
+//
+//        // Tama駉: Peque駉 (entre 3 y 6 p韝eles)
+//        float size = 6.0f + (rand() % 4);
+//
+//        // Emitimos la part韈ula usando el preset 1 (Cuadrado de color base)
+//        // Le pasamos 'true' en useCamera porque esto ocurre en el mundo del juego
+//        Emit(x, y, vx, vy, life, color, size, true);
+//    }
+//}
 void ParticleManager::EmitDust(float x, float y) {
-    // Generamos entre 3 y 5 part韈ulas por cada pisada
-    int numParticles = 3 + (rand() % 3);
+    // 既然是美术画好的精致动画，发 1 个完整的动画序列即可
+    int numParticles = 1;
 
     for (int i = 0; i < numParticles; i++) {
-        // Velocidad X: Esparcimiento aleatorio muy ligero hacia los lados
-        float vx = ((rand() % 100) - 50) * 0.4f;
+        float vx = ((rand() % 100) - 50) * 0.2f; // 给一点点非常微弱的随机横向偏移
+        float vy = -15.0f; // 整体稍微往上飘一点点
+        float life = 400.0f; // 存活时间，和动画播放总时长一致
+        float size = 1.0f; // 1.0f 代表保持美术给的原始大小比例
 
-        // Velocidad Y: Siempre hacia arriba (negativo), imitando el polvo que se levanta
-        float vy = -((rand() % 100) + 50) * 0.8f;
-
-        // Vida corta: Se desvanece r醦ido (entre 200 y 400 milisegundos)
-        float life = 200.0f + (rand() % 200);
-
-        // Color: Gris clarito / Blanco sucio
-        SDL_Color color = { 200, 200, 200, 200 };
-
-        // Tama駉: Peque駉 (entre 3 y 6 p韝eles)
-        float size = 6.0f + (rand() % 4);
-
-        // Emitimos la part韈ula usando el preset 1 (Cuadrado de color base)
-        // Le pasamos 'true' en useCamera porque esto ocurre en el mundo del juego
-        Emit(x, y, vx, vy, life, color, size, true);
+        if (texDust != nullptr) {
+            // 如果美术给了图，并且加载成功了，自己使用自己的 texDust 和 animDust
+            Emit(texDust, animDust, x, y, vx, vy, life, size, true, 0.0f);
+        }
+        else {
+            // 保底方案：如果还没加载图，先发个普通的灰色小方块占位
+            SDL_Color color = { 200, 200, 200, 200 };
+            Emit(x, y, vx, vy, life, color, 6.0f, true);
+        }
     }
 }
+
+
 
 // L骻ica del Object Pool (Buffer Circular)
 int ParticleManager::FindNextDeadParticle() {

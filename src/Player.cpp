@@ -305,6 +305,7 @@ void Player::Move() {
 				footY = position.getY() + texH - 64.0f;
 			}
 			Engine::GetInstance().particleManager->EmitDust(footX, footY);
+			
 
 			stepTimer = 0.0f;
 		}
