@@ -17,6 +17,8 @@ bool ParticleManager::Awake() {
 }
 
 bool ParticleManager::Start() {
+
+    //---------------------------------------------------------------------------------------//
     // Texture
     texDust = Engine::GetInstance().textures->Load("Assets/dust.png");
 
@@ -29,7 +31,30 @@ bool ParticleManager::Start() {
             animDust = *tempSet.GetAnim("dust_anim");
         }
     }
+    //--------------------------------------------------------------------------------------//
 
+    // 1. Carga la textura estática temporal para los impactos
+    texHitSpark = Engine::GetInstance().textures->Load("Assets/Hit.png");
+
+   
+    // TODO: Descomentar esto cuando Arte entregue el archivo .tsx con la animación
+   /* AnimationSet hitSet;
+    std::unordered_map<int, std::string> hitAliases = { {0, "hit_anim"} };
+    if (hitSet.LoadFromTSX("Assets/hit_spark.tsx", hitAliases)) {
+        if (hitSet.Has("hit_anim")) {
+            animHitSpark = *hitSet.GetAnim("hit_anim");
+        }
+    }*/
+
+    texPickup=Engine::GetInstance().textures->Load("Assets/1.png");
+
+    /* AnimationSet PickupSet;
+     std::unordered_map<int, std::string> PickupAliases = { {0, "pickup_anim"} };
+     if (PickupSet.LoadFromTSX("Assets/pickup.tsx", PickupAliases)) {
+     if (PickupSet.Has("hit_anim")) {
+         animHitSpark = *PickupSet.GetAnim("pickup_anim");
+     }
+    }*/
     return true;
 }
 
@@ -110,6 +135,14 @@ bool ParticleManager::CleanUp() {
     if (texDust != nullptr) {
         Engine::GetInstance().textures->UnLoad(texDust);
         texDust = nullptr;
+    }
+    if (texHitSpark != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texHitSpark);
+        texHitSpark = nullptr;
+    }
+    if (texPickup != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texPickup);
+        texPickup = nullptr;
     }
     return true;
 }
@@ -233,6 +266,63 @@ void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
             SDL_Color color = { 200, 200, 200, 200 };
             Emit(startX, startY, vx, vy, life, color, 8.0f, true);
         }
+    }
+}
+
+void ParticleManager::EmitHitSparks(float x, float y, bool isBlood) {
+    
+    int numParticles = 1;
+
+    for (int i = 0; i < numParticles; i++) {
+        float vx = 0.0f; // Se queda fijo en la posición del enemigo
+        float vy = 0.0f;
+        float life = 150.0f; // Desaparece rápido para dar mayor sensación de impacto
+        float size = 96.0f;  // Tamaño del efecto (ajusta este valor según el tamaño real de tu imagen)
+
+        // Desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño para centrar el impacto
+        float startX = x - (size / 2.0f);
+        float startY = y - (size / 2.0f);
+
+        if (texHitSpark != nullptr) {
+
+            // Cuando esta hecho la animacion cambiar a esa
+            // Emit(texHitSpark, animHitSpark, startX, startY, vx, vy, life, size, true, 0.0f, SDL_FLIP_NONE);
+
+            // Temporal
+            Emit(texHitSpark, startX, startY, vx, vy, life, size, true, 0.0f);
+
+        }
+        else {
+            // Fallback: Si no hay textura, emite cuadrados de colores (Rojo para sangre, Amarillo para chispas)
+            SDL_Color color = isBlood ? SDL_Color{ 255, 30, 30, 255 } : SDL_Color{ 255, 200, 50, 255 };
+            Emit(startX, startY, vx, vy, life, color, 16.0f, true);
+        }
+    }
+}
+
+void ParticleManager::EmitItemPickup(float x, float y) {
+    int numParticles = 25; // Emitir múltiples partículas para crear una explosión brillante
+
+    for (int i = 0; i < numParticles; i++) {
+        // Calcular dirección circular aleatoria
+        float angle = (rand() % 360) * 3.14159f / 180.0f;
+        float speed = 80.0f + (rand() % 80);
+        float vx = cos(angle) * speed;
+        float vy = sin(angle) * speed - 50.0f; // Ligera tendencia a subir
+
+        float life = 600.0f + (rand() % 400); // Duran entre 0.6 y 1 segundo
+        float size = 5.0f + (rand() % 5);
+
+        // Centrar la partícula
+        float startX = x - (size / 2.0f);
+        float startY = y - (size / 2.0f);
+
+        // Color dorado brillante
+        SDL_Color color = { 255, 215, 0, 255 };
+        Emit(startX, startY, vx, vy, life, color, size, true);
+
+        // ---> TODO: Cuando Arte entregue la textura de brillos (sparkles), usa esto: <---
+        // Emit(texSparkle, startX, startY, vx, vy, life, size, true, 0.0f);
     }
 }
 

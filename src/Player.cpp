@@ -1152,6 +1152,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		//efecto Particula
+		int itemX, itemY;
+		physB->GetPosition(itemX, itemY);
+		Engine::GetInstance().particleManager->EmitItemPickup(itemX, itemY);
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
@@ -1183,6 +1187,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			{
 				currentHealth = maxHealth;
 			}
+			int orbX, orbY;
+			physB->GetPosition(orbX, orbY);
+			Engine::GetInstance().particleManager->EmitItemPickup(orbX, orbY);
+
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
 			Engine::GetInstance().hud->ShowNotification("You have recovered your health.");
@@ -1191,6 +1199,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
+
+		int spOrbX, spOrbY;
+		physB->GetPosition(spOrbX, spOrbY);
+		Engine::GetInstance().particleManager->EmitItemPickup(spOrbX, spOrbY);
+
 		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy();
 		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power.");

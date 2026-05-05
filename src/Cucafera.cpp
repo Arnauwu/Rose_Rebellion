@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
+#include "ParticleManager.h"
 #include "Map.h"
 
 
@@ -332,6 +333,9 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
+
+		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), false);
+
 		break;
 
 	default:
