@@ -34,6 +34,6 @@ private:
     // Efecto Typewriter
     std::string displayedText;
     float typeTimer = 0.0f;
-    float timePerChar = 0.03f;
+    float timePerChar = 0.04f;
     size_t charIndex = 0;
 };

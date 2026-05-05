@@ -82,8 +82,8 @@ bool Render::Start() {
 	LOG("render start");
 
 	// Cargamos la misma fuente con diferentes tamaños
-	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 128);
-	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 64);
+	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 64);
+	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 40);
 	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 32); // Tamaño más adecuado para texto largo
 	fonts[FontType::SMALL] = TTF_OpenFont(fontPath, 18);
 
@@ -473,22 +473,18 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 
 	TTF_Font* selectedFont = nullptr;
 	auto it = fonts.find(fontType);
-	if (it != fonts.end()) {
-		selectedFont = it->second;
-	}
-	else {
-		LOG("Render::DrawText: FontType no encontrado, usando fallback.");
-		if (!fonts.empty()) selectedFont = fonts.begin()->second;
-	}
+	if (it != fonts.end()) selectedFont = it->second;
+	else if (!fonts.empty()) selectedFont = fonts.begin()->second;
 
 	if (!selectedFont || !renderer) {
 		LOG("Render::DrawText: No hay fuente o renderer disponible.");
 		return false;
 	}
 
-	SDL_Surface* surface = TTF_RenderText_Solid(selectedFont, text, 0, color);
+
+	SDL_Surface* surface = TTF_RenderText_Blended_Wrapped(selectedFont, text, 0, color, w > 0 ? w : 0);
 	if (!surface) {
-		LOG("DrawText: Error en TTF_RenderText_Solid: %s", SDL_GetError());
+		LOG("DrawText: Error en TTF_RenderText_Blended_Wrapped: %s", SDL_GetError());
 		return false;
 	}
 
@@ -501,13 +497,11 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 	float finalW = (float)surface->w;
 	float finalH = (float)surface->h;
 
-	if (w > 0 && surface->w > w) {
-		float scale = (float)w / (float)surface->w;
-		finalW = (float)w;
-		finalH = (float)surface->h * scale; 
-	}
-	else if (h > 0) {
+
+	if (h > 0 && surface->h > h) {
+		float scale = (float)h / (float)surface->h;
 		finalH = (float)h;
+		finalW = (float)surface->w * scale;
 	}
 
 	SDL_FRect dstRect = { (float)x, (float)y, finalW, finalH };
