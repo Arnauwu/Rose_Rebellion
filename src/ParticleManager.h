@@ -56,8 +56,14 @@ public:
     SDL_Texture* texHitSpark = nullptr;
     Animation animHitSpark;
 
+    SDL_Texture* texBloodHit = nullptr; 
+    Animation animBloodHit;
+
     SDL_Texture* texPickup = nullptr;
     Animation animPickup;
+
+    SDL_Texture* texJumpDust = nullptr;
+    Animation animJumpDust;
 private:
     std::vector<Particle> pool;
     int poolSize = 1000;

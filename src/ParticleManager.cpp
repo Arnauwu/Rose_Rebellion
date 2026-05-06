@@ -34,9 +34,10 @@ bool ParticleManager::Start() {
     //--------------------------------------------------------------------------------------//
 
     // 1. Carga la textura estática temporal para los impactos
-    texHitSpark = Engine::GetInstance().textures->Load("Assets/Hit.png");
+    texHitSpark = Engine::GetInstance().textures->Load("Assets/hit.png");
 
-   
+    texBloodHit = Engine::GetInstance().textures->Load("Assets/Hit princess.png");
+
     // TODO: Descomentar esto cuando Arte entregue el archivo .tsx con la animación
    /* AnimationSet hitSet;
     std::unordered_map<int, std::string> hitAliases = { {0, "hit_anim"} };
@@ -44,6 +45,14 @@ bool ParticleManager::Start() {
         if (hitSet.Has("hit_anim")) {
             animHitSpark = *hitSet.GetAnim("hit_anim");
         }
+    }*/
+
+    /* AnimationSet BloodhitSet;
+    std::unordered_map<int, std::string> BloodhitAliases = { {0, "Bloodhit_anim"} };
+    if (BloodhitSet.LoadFromTSX("Assets/BloodhitSet.tsx", BloodhitSetAliases)) {
+      if (BloodhitSet.Has("BloodhitSet_anim")) {
+          animBloodHit = *BloodhitSet.GetAnim("BloodhitSet_anim");
+      }
     }*/
 
     texPickup=Engine::GetInstance().textures->Load("Assets/1.png");
@@ -55,6 +64,15 @@ bool ParticleManager::Start() {
          animHitSpark = *PickupSet.GetAnim("pickup_anim");
      }
     }*/
+
+    texJumpDust = Engine::GetInstance().textures->Load("Assets/JUMPDUST.png");
+    /* AnimationSet JumpDustSet;
+    std::unordered_map<int, std::string> JumpDustAliases = { {0, "JumpDust_anim"} };
+     if (JumpDustSet.LoadFromTSX("Assets/JumpDust.tsx", JumpDustAliases)) {
+     if (JumpDustSet.Has("JumpDust_anim")) {
+       animJumpDust = *JumpDustSet.GetAnim("JumpDust_anim");
+     }
+     }*/
     return true;
 }
 
@@ -144,6 +162,14 @@ bool ParticleManager::CleanUp() {
         Engine::GetInstance().textures->UnLoad(texPickup);
         texPickup = nullptr;
     }
+    if (texBloodHit != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texBloodHit);
+        texBloodHit = nullptr;
+    }
+    if (texJumpDust != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texJumpDust);
+        texJumpDust = nullptr;
+    }
     return true;
 }
 
@@ -218,7 +244,7 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
 }
 
 //void ParticleManager::EmitDust(float x, float y) {
-//    // Generamos entre 3 y 5 part韈ulas por cada pisada
+//    // Generamos entre 3 y 5 partiulas por cada pisada
 //    int numParticles = 3 + (rand() % 3);
 //
 //    for (int i = 0; i < numParticles; i++) {
@@ -234,7 +260,7 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
 //        // Color: Gris clarito / Blanco sucio
 //        SDL_Color color = { 200, 200, 200, 200 };
 //
-//        // Tama駉: Peque駉 (entre 3 y 6 p韝eles)
+//        // Tamaño: Pequeño (entre 3 y 6 pixeles)
 //        float size = 6.0f + (rand() % 4);
 //
 //        // Emitimos la part韈ula usando el preset 1 (Cuadrado de color base)
@@ -283,13 +309,15 @@ void ParticleManager::EmitHitSparks(float x, float y, bool isBlood) {
         float startX = x - (size / 2.0f);
         float startY = y - (size / 2.0f);
 
-        if (texHitSpark != nullptr) {
+        SDL_Texture* currentTexture = isBlood ? texBloodHit : texHitSpark;
+
+        if (currentTexture != nullptr) {
 
             // Cuando esta hecho la animacion cambiar a esa
             // Emit(texHitSpark, animHitSpark, startX, startY, vx, vy, life, size, true, 0.0f, SDL_FLIP_NONE);
 
             // Temporal
-            Emit(texHitSpark, startX, startY, vx, vy, life, size, true, 0.0f);
+            Emit(currentTexture, startX, startY, vx, vy, life, size, true, 0.0f);
 
         }
         else {
@@ -321,12 +349,39 @@ void ParticleManager::EmitItemPickup(float x, float y) {
         SDL_Color color = { 255, 215, 0, 255 };
         Emit(startX, startY, vx, vy, life, color, size, true);
 
-        // ---> TODO: Cuando Arte entregue la textura de brillos (sparkles), usa esto: <---
+        // Cuando Arte entregue la textura de brillos (sparkles), usa esto: <---
         // Emit(texSparkle, startX, startY, vx, vy, life, size, true, 0.0f);
     }
 }
 
-// L骻ica del Object Pool (Buffer Circular)
+void ParticleManager::EmitJumpDust(float x, float y) {
+    int numParticles = 1;
+
+    for (int i = 0; i < numParticles; i++) {
+        float vx = 0.0f;   // Sin movimiento horizontal, la imagen ya tiene la forma de expansión
+        float vy = -10.0f; // Flota ligeramente hacia arriba
+        float life = 300.0f; // Desaparece en 0.3 segundos
+        float size = 128.0f; // Tamaño grande para abarcar los pies del jugador
+
+        // Desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño para centrarlo
+        float startX = x - (size / 2.0f);
+        float startY = y - (size / 2.0f);
+
+        if (texJumpDust != nullptr) {
+            // Emite la textura estática
+            Emit(texJumpDust, startX, startY, vx, vy, life, size, true, 0.0f);
+
+            // Cuando haya animación de polvo, usa esto:
+            // Emit(texJumpDust, animJumpDust, startX, startY, vx, vy, life, size, true, 0.0f, SDL_FLIP_NONE);
+        }
+        else {
+            SDL_Color color = { 200, 200, 200, 200 };
+            Emit(startX, startY, vx, vy, life, color, 16.0f, true);
+        }
+    }
+}
+
+// Loica del Object Pool (Buffer Circular)
 int ParticleManager::FindNextDeadParticle() {
     for (int i = lastUsedParticle; i < poolSize; i++) {
         if (!pool[i].active) {

@@ -444,6 +444,10 @@ void Player::Jump(float dt)
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
+			//Jump Dust
+			float footY = position.getY() + (texH / 2.0f) - 10.0f;
+			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+
 			if (lookingRight == true)
 			{
 				anims.SetCurrent("jump_right");
@@ -1096,6 +1100,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
 			LOG("Collision inf circle / GROUND");
+
+			// Efecto de polvo al aterrizar
+			if (!onGround) { // Solo si el jugador viene del aire 
+				float footY = position.getY() + (texH / 2.0f) - 10.0f;
+				Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+			}
+
 			// Reset the jump flag when touching the ground
 			isJumping = false;
 			secondJumpUsed = false;
@@ -1236,12 +1247,18 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::ENEMY:
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(10); // Contact Damage
+		//PARTICULA
+		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
+
 		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
 		LOG("Hit player");
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(physB->listener->damage);
+		//PARTICULA
+		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
+
 		isKnockedback = true;
 
 		int enemyX, enemyY;
