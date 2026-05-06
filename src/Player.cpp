@@ -50,20 +50,7 @@ bool Player::Start()
 	auto textures = engine->textures;
 	auto physics = engine->physics;
 
-	jumpFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/saltoPrincesa.wav");
-	attackFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
-	pickItemFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Llave_Item.wav");
-
-	morirPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Muerte.wav");
-	planearPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Planear.wav");
-	caminarPrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Caminar_Piedra.wav");
-	damagePrincesa = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/recibirDamage.wav");
-
-	healthOrb = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Curarse_OrbeVida_Item.wav");
-	orbFuerza = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_OrbeFuerza_Item.wav");
-	openDoor = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/openDoor.wav");
-	doorClosed = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/closedDoor.wav");
-	savePoint = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/savePoint.wav");
+	Engine::GetInstance().entityManager->SetPlayer(this);
 
 	jumpFx = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
 	attackFx = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
@@ -242,6 +229,7 @@ void Player::GetPhysicsValues()
 
 void Player::Move() {
 	bool isMovingThisFrame = false;
+
 	// Move Left
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false && !isWallJumping)
 	{
@@ -299,40 +287,41 @@ void Player::Move() {
 			currentAnimPriority = 0;
 		}
 	}
-
 	bool isWalkingConditions = (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead);
 
-	if (isWalkingConditions)
+	if (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead)
 	{
-		// Si AHORA camina, pero en el frame anterior NO caminaba 
-		// (porque estaba parada, saltando, etc.), forzamos el sonido inmediato.
-		if (!wasWalking) {
-			stepTimer = timeBetweenSteps;
-		}
-
-		// Sumamos el tiempo
 		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
 
-		// Si llegamos a los 14.9s (o lo hemos forzado arriba), suena
 		if (stepTimer >= timeBetweenSteps)
 		{
+			// OJO: Le pasamos 0 repeticiones para que sea súper ligero para la memoria
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
-			stepTimer = 0.0f; // Reiniciamos para los próximos 15 segundos
+			if (lookingRight) {
+				footX = position.getX() - 35.0f; // Pegado al talón
+				footY = position.getY() + (texH / 2.0f) - 10.0f; // A nivel del suelo
+			}
+			else {
+				footX = position.getX() + 35.0f; // Pegado al talón
+				footY = position.getY() + (texH / 2.0f) - 10.0f;
+			}
+			Engine::GetInstance().particleManager->EmitDust(footX, footY, lookingRight);
+
+			stepTimer = 0.0f;
 		}
 	}
 	else
 	{
-		// Si deja de cumplir las condiciones (se para, salta, etc.), CORTAMOS.
+		// Forzamos el contador para que al aterrizar el primer paso suene de inmediato
+		stepTimer = timeBetweenSteps;
 		if (wasWalking)
 		{
 			Engine::GetInstance().audio->StopFx(caminarPrincesa);
 		}
-	}
 
-	// Guardamos el estado para el siguiente frame
+	}
 	wasWalking = isWalkingConditions;
 }
-
 
 void Player::Knockback()
 {
@@ -626,7 +615,9 @@ void Player::Glide() // Gliding
 	{
 		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		{
-			Engine::GetInstance().audio->PlayFx(planearPrincesa,0);
+			if (!isGliding) {
+				Engine::GetInstance().audio->PlayFx(planearPrincesa);
+			}
 			isGliding = true;
 			if (lookingRight)
 			{
@@ -640,7 +631,6 @@ void Player::Glide() // Gliding
 		}
 		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
 		{
-			Engine::GetInstance().audio->StopFx(planearPrincesa);
 			isGliding = false;
 		}
 	}
@@ -737,14 +727,14 @@ void Player::Interact()
 					}
 					else
 					{
-						Engine::GetInstance().audio->PlayFx(doorClosed);
+						Engine::GetInstance().audio->PlayFx(closedDoor);
 						LOG("Necesitas una llave para abrir, busca una ");
 						Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 					}
 				}
 				else
 				{
-					
+
 					// Si no
 					LOG("Esta puerta no necesita llave ");
 					Engine::GetInstance().sceneManager->setNewMap = true;
@@ -1225,7 +1215,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			{
 				currentHealth = maxHealth;
 			}
-			Engine::GetInstance().audio->PlayFx(healthOrb);
+			int orbX, orbY;
+			physB->GetPosition(orbX, orbY);
+			Engine::GetInstance().particleManager->EmitItemPickup(orbX, orbY);
+
+			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
 			Engine::GetInstance().hud->ShowNotification("You have recovered your health.");
 		}
@@ -1233,14 +1227,20 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
-		Engine::GetInstance().audio->PlayFx(orbFuerza);
-		physB->listener->Destroy(); 
+
+		int spOrbX, spOrbY;
+		physB->GetPosition(spOrbX, spOrbY);
+		Engine::GetInstance().particleManager->EmitItemPickup(spOrbX, spOrbY);
+
+		Engine::GetInstance().audio->PlayFx(orbFx);
+		physB->listener->Destroy();
+		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power.");
 		break;
 	case ColliderType::SAVEPOINT:
 	{
 		LOG("Collision SavePoint");
 		SavePoint* sp = (SavePoint*)physB->listener;
-		Engine::GetInstance().audio->PlayFx(savePoint); //fx
+		Engine::GetInstance().audio->PlayFx(savePointFx); //fx
 		sp->Activate();
 
 		int spX, spY;
@@ -1265,7 +1265,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::ENEMY:
-		Engine::GetInstance().audio->PlayFx(damagePrincesa);
+		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(10); // Contact Damage
 		//PARTICULA
 		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
@@ -1273,7 +1273,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
-		Engine::GetInstance().audio->PlayFx(damagePrincesa);
+		LOG("Hit player");
+		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(physB->listener->damage);
 		//PARTICULA
 		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);

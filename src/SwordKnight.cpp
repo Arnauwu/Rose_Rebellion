@@ -40,9 +40,9 @@ bool SwordKnight::CleanUp()
 
 bool SwordKnight::Start()
 {
-	morirCaballero = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
-	atacarCaballero = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
-	caminarCaballero = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
+	//caminarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
+	morirEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	//atacarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
 
 	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
@@ -123,8 +123,7 @@ bool SwordKnight::Update(float dt)
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
 
-		Engine::GetInstance().audio->PlayFx(morirCaballero, 0);
-		Engine::GetInstance().audio->StopFx(caminarCaballero);
+		Engine::GetInstance().audio->PlayFx(morirEspada);
 		anims.SetCurrent("dead");
 		isKnockedback = false;
 		pbody->ctype = ColliderType::UNKNOWN;
@@ -237,29 +236,7 @@ void SwordKnight::Move() {
 	{
 		Attack();
 	}
-	bool isWalkingConditions = (velocity.x != 0 && !isKnockedback && !isdead);
-
-	if (isWalkingConditions)
-	{
-		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
-
-		if (stepTimer >= timeBetweenSteps)
-		{
-			Engine::GetInstance().audio->PlayFx(caminarCaballero, 0); // Paso met�lico
-			stepTimer = 0.0f;
-		}
-	}
-	else
-	{
-		stepTimer = timeBetweenSteps; // Forzar que suene de inmediato al volver a andar
-
-		if (wasWalking)
-		{
-			Engine::GetInstance().audio->StopFx(caminarCaballero);
-		}
-	}
-
-	wasWalking = isWalkingConditions;
+	return;
 }
 
 void SwordKnight::Knockback()
@@ -364,7 +341,7 @@ void SwordKnight::Attack()
 	}
 	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr && !isKnockedback)
 	{
-		Engine::GetInstance().audio->PlayFx(atacarCaballero, 0);
+		Engine::GetInstance().audio->PlayFx(atacarEspada);
 		anims.SetCurrent("sword_attack"); //Attack
 		
 		//CreateHitbox

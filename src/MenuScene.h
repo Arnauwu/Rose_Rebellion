@@ -38,8 +38,6 @@ public:
     SDL_Texture* flashTex = nullptr;
 
 private:
-    int uiClick;
-
     void ShowSettings(bool show);
     bool isSettingsOpen = false;
 
