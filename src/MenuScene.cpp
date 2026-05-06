@@ -3,6 +3,7 @@
 #include "UIManager.h"
 #include "SceneManager.h"
 #include "GameManager.h"
+#include "Input.h"
 
 #include "Window.h"
 #include "Log.h"
@@ -13,7 +14,8 @@ MenuScene::~MenuScene() {}
 bool MenuScene::Start() {
 
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
-	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
+	uiHover = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
 
 	if (menuBackground == nullptr) {
 		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
@@ -112,6 +114,29 @@ bool MenuScene::Update(float dt) {
 		Engine::GetInstance().render->DrawTextureScaled(currentBackground, fullScreenRect);
 	}
 
+	bool isAnyHovered = false;
+
+	// Juntamos todos los botones activos según en qué menú estemos
+	auto& activeButtons = isSettingsOpen ? settingsButtons : mainButtons;
+
+	for (auto& btn : activeButtons) {
+		// Tu UIElement llama "FOCUSED" al estado cuando el ratón está encima
+		if (btn->visible && btn->state == UIElementState::FOCUSED) {
+			isAnyHovered = true;
+
+			// Si el ratón acaba de entrar en este botón
+			if (lastHoveredId != btn->id) {
+				Engine::GetInstance().audio->PlayFx(uiHover); // ¡Suena!
+				lastHoveredId = btn->id; // Guardamos el ID
+			}
+		}
+	}
+
+	// Si el ratón no está encima de NINGÚN botón, reseteamos el ID
+	if (!isAnyHovered) {
+		lastHoveredId = -1;
+	}
+
 	return true;
 }
 
@@ -123,11 +148,14 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     {
     case (int)MenuUI_ID::BTN_PLAY:
 		GameManager::GetInstance().StartNewGame();
+		Engine::GetInstance().audio->StopMusic();
+		SDL_Delay(150);
         sceneManager->ChangeScene(SceneID::INTRO_CINEMATIC);
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
 		if (GameManager::GetInstance().LoadGame("savegame.xml")) {
 			LOG("Partida cargada con éxito. Entrando al juego...");
+			SDL_Delay(150);
 			sceneManager->ChangeScene(SceneID::GAME);
 		}
 		else {

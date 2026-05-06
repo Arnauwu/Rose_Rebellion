@@ -195,15 +195,15 @@ public:
 	
 private: 
 
-	int jumpFx = -1;
-	int attackFx = -1;
+	int jumpFx;
+	int attackFx;
 	int dashPrincesa;
 	int morirPrincesa;
 	int planearPrincesa;
 	int recibirDamage;
 	int caminarPrincesa;
 
-	int pickItemFx = -1;
+	int pickItemFx;
 	int savePointFx;
 	int openDoor;
 	int closedDoor;
@@ -212,7 +212,7 @@ private:
 
 	bool wasWalking = false;
 	float stepTimer = 0.0f;
-	float timeBetweenSteps = 0.35f;
+	float timeBetweenSteps = 14.9f;
 	float footX = 0.0f;
 	float footY = 0.0f;
 	float lookDownTimer = 0.0f;

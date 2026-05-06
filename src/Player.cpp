@@ -229,9 +229,8 @@ void Player::GetPhysicsValues()
 
 void Player::Move() {
 	bool isMovingThisFrame = false;
-
 	// Move Left
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false && !isWallJumping)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false)
 	{
 		velocity.x = -speed;
 		lookingRight = false;
@@ -251,7 +250,7 @@ void Player::Move() {
 		}
 	}
 	// Move Right
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false && !isWallJumping)
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
 	{
 		velocity.x = speed;
 		lookingRight = true;
@@ -270,7 +269,6 @@ void Player::Move() {
 			currentAnimPriority = 1;
 		}
 	}
-
 	else
 	{
 		if (!isAttacking && !isJumping && !isDashing)
@@ -287,39 +285,37 @@ void Player::Move() {
 			currentAnimPriority = 0;
 		}
 	}
+
 	bool isWalkingConditions = (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead);
 
-	if (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead)
+	if (isWalkingConditions)
 	{
+		// Si AHORA camina, pero en el frame anterior NO caminaba 
+		// (porque estaba parada, saltando, etc.), forzamos el sonido inmediato.
+		if (!wasWalking) {
+			stepTimer = timeBetweenSteps;
+		}
+
+		// Sumamos el tiempo
 		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
 
+		// Si llegamos a los 14.9s (o lo hemos forzado arriba), suena
 		if (stepTimer >= timeBetweenSteps)
 		{
-			// OJO: Le pasamos 0 repeticiones para que sea súper ligero para la memoria
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
-			if (lookingRight) {
-				footX = position.getX() - 35.0f; // Pegado al talón
-				footY = position.getY() + (texH / 2.0f) - 10.0f; // A nivel del suelo
-			}
-			else {
-				footX = position.getX() + 35.0f; // Pegado al talón
-				footY = position.getY() + (texH / 2.0f) - 10.0f;
-			}
-			Engine::GetInstance().particleManager->EmitDust(footX, footY, lookingRight);
-
-			stepTimer = 0.0f;
+			stepTimer = 0.0f; // Reiniciamos para los próximos 15 segundos
 		}
 	}
 	else
 	{
-		// Forzamos el contador para que al aterrizar el primer paso suene de inmediato
-		stepTimer = timeBetweenSteps;
+		// Si deja de cumplir las condiciones (se para, salta, etc.), CORTAMOS.
 		if (wasWalking)
 		{
 			Engine::GetInstance().audio->StopFx(caminarPrincesa);
 		}
-
 	}
+
+	// Guardamos el estado para el siguiente frame
 	wasWalking = isWalkingConditions;
 }
 
@@ -723,6 +719,7 @@ void Player::Interact()
 						if (!doorId.empty()) {
 							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 						}
+						SDL_Delay(150);
 						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else
