@@ -106,6 +106,7 @@ private:
 	int uiClick;
 
 private:
+	int uiClick;
 
 	// Current state of the game menu
 	GameMenuTab currentMenuTab = GameMenuTab::NONE;
@@ -117,7 +118,7 @@ private:
 	std::vector<std::shared_ptr<UIElement>> skillUI;
 	std::vector<std::shared_ptr<UIElement>> dialogueBox;
 
-	// Descriptión Panel
+	// Descriptiï¿½n Panel
 	std::shared_ptr<UIElement> descPanel = nullptr;
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;

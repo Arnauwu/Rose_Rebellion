@@ -218,6 +218,21 @@ private:
 	float lookDownTimer = 0.0f;
 	float currentCameraYOffset = 0.0f;
 
+	int caminarPrincesa;
+	int planearPrincesa;
+	int morirPrincesa;
+	int damagePrincesa;
+	
+	int openDoor;
+	int doorClosed;
+	int healthOrb;
+	int orbFuerza;
+	int savePoint;
+
+	float stepTimer = 0.0f;
+	float timeBetweenSteps = 14.9f;
+	bool wasWalking = false;
+
 	PhysBody* attackCollider = nullptr;
 	b2Vec2 velocity;
 

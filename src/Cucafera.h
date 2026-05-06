@@ -33,7 +33,14 @@ private:
 	bool wasWalking = false;
 
 public:
+	int morirCucafera;
+	int rodarCucafera;
+	int chocarCucafera;
+	int caminarCucafera;
 
+	float stepTimer = 0.0f;
+	float timeBetweenSteps = 5.0f; 
+	bool wasWalking = false;
 	//Declare enemy parameters
 	bool isRolling = false;
 	Timer startAttack;

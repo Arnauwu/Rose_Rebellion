@@ -11,9 +11,8 @@ MenuScene::MenuScene() : SceneBase() {}
 MenuScene::~MenuScene() {}
 
 bool MenuScene::Start() {
-
-	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
-	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/ClicMenu.wav");
+	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Prueba.wav");
 
 	if (menuBackground == nullptr) {
 		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
@@ -127,11 +126,11 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
 		if (GameManager::GetInstance().LoadGame("savegame.xml")) {
-			LOG("Partida cargada con éxito. Entrando al juego...");
+			LOG("Partida cargada con ï¿½xito. Entrando al juego...");
 			sceneManager->ChangeScene(SceneID::GAME);
 		}
 		else {
-			LOG("Error: No se ha encontrado partida o el archivo está corrupto.");
+			LOG("Error: No se ha encontrado partida o el archivo estï¿½ corrupto.");
 		}
         break;
     case (int)MenuUI_ID::BTN_SETTINGS:

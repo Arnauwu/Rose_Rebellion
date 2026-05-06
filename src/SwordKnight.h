@@ -34,6 +34,14 @@ private:
 
 public:
 
+	int caminarCaballero;
+	int morirCaballero;
+	int atacarCaballero;
+
+	float stepTimer = 0.0f;
+	float timeBetweenSteps = 59.0f; 
+	bool wasWalking = false;
+
 	//Declare enemy parameters
 	bool isAttacking = false;
 	bool hitFromRight = false;

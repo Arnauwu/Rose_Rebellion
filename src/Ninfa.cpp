@@ -1,4 +1,4 @@
-﻿#include "Ninfa.h"
+#include "Ninfa.h"
 #include "HomingProjectile.h"
 #include <cmath>
 #include <SDL3/SDL.h>
@@ -109,6 +109,7 @@ bool Ninfa::Update(float dt)
         if (anims.GetCurrentName() != "dead")
         {
             Engine::GetInstance().audio->PlayFx(morirNinfa);
+            Engine::GetInstance().audio->StopFx(volarNinfa);
             anims.SetCurrent("dead");
             anims.GetAnim("dead")->SetLoop(false);
 
@@ -292,6 +293,29 @@ void Ninfa::Move() {
         break;
     }
     }
+    bool isFlyingConditions = ((velocity.x != 0 || velocity.y != 0) && !isKnockedback && !isdead);
+
+    if (isFlyingConditions)
+    {
+        flapTimer += Engine::GetInstance().GetDt() / 1000.0f;
+
+        if (flapTimer >= timeBetweenFlaps)
+        {
+            Engine::GetInstance().audio->PlayFx(volarNinfa, 0); // Sonido de aleteo
+            flapTimer = 0.0f;
+        }
+    }
+    else
+    {
+        flapTimer = timeBetweenFlaps; // Forzar para que suene de inmediato al reanudar vuelo
+
+        if (wasFlying)
+        {
+            Engine::GetInstance().audio->StopFx(volarNinfa);
+        }
+    }
+
+    wasFlying = isFlyingConditions;
 }
 void Ninfa::ApplyPhysics() {
     Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
@@ -356,6 +380,7 @@ void Ninfa::Draw(float dt)
 }
 
 void Ninfa::ShootProjectile() {
+    Engine::GetInstance().audio->PlayFx(atacarNinfa, 0);
     Vector2D spawnPos = GetPosition();
     // Genera la bala un poco por delante del enemigo volador para que no colisione consigo mismo
     spawnPos.setX(lookingRight ? spawnPos.getX() + 20.0f : spawnPos.getX() - 20.0f);

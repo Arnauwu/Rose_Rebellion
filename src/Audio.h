@@ -18,6 +18,8 @@ public:
     // Destructor
     virtual ~Audio();
 
+    bool Update(float dt);
+
     // Called before render is available
     bool Awake();
 
