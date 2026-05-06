@@ -4,8 +4,16 @@
 #include "Vector2D.h"
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
+#include <map>
 
 enum class FadeDirection { FADE_IN, FADE_OUT };
+
+enum class FontType {
+	MENU,
+	SPEAKER,
+	DIALOGUE,
+	SMALL
+};
 
 class Render : public Module
 {
@@ -46,8 +54,9 @@ public:
 	bool DrawCircle(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
 	
 	// Method DrawText to render text on screen. Uses SDL3_ttf
-	bool DrawText(const char* text, int x, int y, int w, int h, SDL_Color color) const;
-	bool DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color) const;
+	bool DrawText(const char* text, int x, int y, int w, int h, SDL_Color color, FontType fontType = FontType::MENU) const;
+	bool DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color, FontType fontType) const;
+	SDL_Rect GetTextRenderedBounds(const char* text, const SDL_Rect& bounds, FontType fontType) const;
 
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
@@ -79,9 +88,10 @@ public:
 
 private:
 	bool vsync = false;
-	TTF_Font* font;
-	TTF_Font* dialogueFont = nullptr;
 	
+	std::map<FontType, TTF_Font*> fonts;
+	const char* fontPath = "Assets/Fonts/Dialogue/LibreBaskerville-VariableFont_wght.ttf";
+
 	//Fade variables
 	bool fadeActive_ = false;
 	FadeDirection fadeDir_ = FadeDirection::FADE_IN;

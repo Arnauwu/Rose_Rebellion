@@ -7,6 +7,7 @@
 enum class EntityType
 {
 	PLAYER,
+	NPC,
 
 	ITEM,
 	KEY,

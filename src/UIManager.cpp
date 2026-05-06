@@ -2,6 +2,7 @@
 #include "UICheckBox.h" 
 #include "UISlider.h"
 #include "UIButton.h"
+#include "UIDialogueBox.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -32,6 +33,9 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 		break;
 	case UIElementType::SLIDER:
 		uiElement = std::make_shared<UISlider>(id, anchorX, anchorY, wPerc, hPerc, text);
+		break;
+	case UIElementType::DIALOGUE_BOX:
+		uiElement = std::make_shared<UIDialogueBox>(id, anchorX, anchorY, wPerc, hPerc, text);
 		break;
 	}
 

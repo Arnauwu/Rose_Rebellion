@@ -8,7 +8,7 @@ IntroScene::IntroScene() : SceneBase() {}
 IntroScene::~IntroScene() {}
 
 bool IntroScene::Start() {
-	introTimer = 30000.0f; // 3 seconds of intro
+	introTimer = 30000.0f;
 	if (introTexture == nullptr) {
 		introTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Intro/Intro.jpg");
 	}

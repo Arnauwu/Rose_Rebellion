@@ -122,6 +122,8 @@
     <Filter Include="Source Files\Game\Entity\Items\SkillObj">
       <UniqueIdentifier>{0f3949bf-364d-49e2-9d25-758c3cd4671b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Particles">
+      <UniqueIdentifier>{a12cb83a-ba8f-4279-a1c1-9b5d8ff16f60}</UniqueIdentifier>
     <Filter Include="Source Files\Game\Entity\Enemies\Cucafera Shiny">
       <UniqueIdentifier>{f23ef15e-2355-4aa5-9a79-9e0d7d7db876}</UniqueIdentifier>
     </Filter>
@@ -240,9 +242,6 @@
     <ClCompile Include="src\Map.cpp">
       <Filter>Source Files\Engine\Map</Filter>
     </ClCompile>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\CameraController.cpp">
       <Filter>Source Files\Utils\Camera</Filter>
     </ClCompile>
@@ -288,6 +287,13 @@
     <ClCompile Include="src\DoubleJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
+    <ClCompile Include="src\ParticleManager.cpp">
+      <Filter>Source Files\Engine\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIDialogueBox.cpp" />
+    <ClCompile Include="src\DialogueManager.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Npc.cpp" />
     <ClCompile Include="src\CucaferaShiny.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Shiny</Filter>
     </ClCompile>
@@ -449,6 +455,13 @@
     <ClInclude Include="src\DoubleJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClInclude>
+    <ClInclude Include="src\ParticleManager.h">
+      <Filter>Source Files\Engine\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueData.h" />
+    <ClInclude Include="src\DialogueManager.h" />
+    <ClInclude Include="src\Npc.h" />
+    <ClInclude Include="src\UIDialogueBox.h" />
     <ClInclude Include="src\CucaferaShiny.h">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Shiny</Filter>
     </ClInclude>

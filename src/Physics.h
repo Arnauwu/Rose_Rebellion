@@ -35,6 +35,7 @@ enum ShapeType {
 enum class ColliderType {
     //Player
     PLAYER,
+    NPC,
     PLAYER_ATTACK,
 
     //Items

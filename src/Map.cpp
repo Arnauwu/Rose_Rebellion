@@ -5,6 +5,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Npc.h"
 
 #include <math.h>
 
@@ -724,7 +725,12 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		{
 			p->value2 = propertieNode.attribute("value").as_string();
 		}
-
+		else if (propertieNode.attribute("type").as_string() == std::string("file") ||
+			propertieNode.attribute("type").as_string() == std::string("string") ||
+			propertieNode.attribute("type").empty())
+		{
+			p->value2 = propertieNode.attribute("value").as_string();
+		}
 		properties.propertyList.push_back(p);
 	}
 
@@ -904,6 +910,29 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<DoubleJumpObj> doublejumpobj = std::dynamic_pointer_cast<DoubleJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DOUBLEJUMP_OBJ));
 					doublejumpobj->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("Npc"))
+				{
+					std::shared_ptr<Npc> npc = std::dynamic_pointer_cast<Npc>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NPC));
+					if (npc != nullptr)
+					{
+						npc->position = Vector2D(x, y);
+
+						// Leemos las Custom Properties de Tiled para este NPC en concreto
+						Properties npcProps;
+						LoadProperties(objectNode, npcProps);
+
+						if (npcProps.GetProperty("DialogueID") != nullptr)
+						{
+							std::string idLeido = npcProps.GetProperty("DialogueID")->value2;
+							LOG("Exito: Tiled leyo el DialogueID: '[%s]'", idLeido.c_str());
+							npc->SetDialogueID(idLeido);
+						}
+						else
+						{
+							LOG("Warning: NPC en la posicion (%.0f, %.0f) no tiene un DialogueID asignado en Tiled.", x, y);
+						}
+					}
 				}
 			}
 		}

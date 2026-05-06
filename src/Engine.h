@@ -20,6 +20,8 @@ class Physics;
 class Cinematics;
 class UIManager;
 class Hud;
+class ParticleManager;
+class DialogueManager;
 
 class Engine
 {
@@ -106,6 +108,9 @@ public:
 
 	// Cinematic Module
 	std::shared_ptr<Cinematics> cinematics;
+	// Particle Module
+	std::shared_ptr<ParticleManager> particleManager;
+	std::shared_ptr<DialogueManager> dialogueManager;
 
 	// UI module and Hud module
 	std::shared_ptr<UIManager> uiManager;

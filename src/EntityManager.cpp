@@ -1,5 +1,6 @@
 #include "EntityManager.h"
 #include "Player.h"
+#include "Npc.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "SceneManager.h"
@@ -103,7 +104,18 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::PLAYER:
 		entity = std::make_shared<Player>();
 		break;
-
+	case EntityType::NPC:
+		entity = std::make_shared<Npc>();
+		break;
+	case EntityType::ITEM:
+		entity = std::make_shared<Item>();
+		break;
+	case EntityType::HEALTH_ORB:
+		entity = std::make_shared<HealthOrb>();
+		break;
+	case EntityType::SKILL_POINT_ORB:
+		entity = std::make_shared<SkillPointOrb>();
+		break;
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
 		break;

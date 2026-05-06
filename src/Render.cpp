@@ -78,20 +78,20 @@ bool Render::Awake()
 }
 
 // Called before the first frame
-bool Render::Start()
-{
+bool Render::Start() {
 	LOG("render start");
 
-	font = TTF_OpenFont("Assets/Fonts/Dialogue/LibreBaskerville-VariableFont_wght.ttf", 24);
-	if (font == nullptr)
-	{
-		LOG("Failed to load font! SDL_ttf Error: %s\n", SDL_GetError());
-	}
+	// Cargamos la misma fuente con diferentes tamaños
+	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 64);
+	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 40);
+	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 32); // Tamaño más adecuado para texto largo
+	fonts[FontType::SMALL] = TTF_OpenFont(fontPath, 18);
 
-	// back background
-	if (!SDL_GetRenderViewport(renderer, &viewport))
-	{
-		LOG("SDL_GetRenderViewport failed: %s", SDL_GetError());
+	// Verificamos que se cargaron bien
+	for (auto it = fonts.begin(); it != fonts.end(); ++it) {
+		FontType type = it->first;
+		TTF_Font* f = it->second;
+		if (f == nullptr) LOG("Failed to load font type! SDL_ttf Error: %s", SDL_GetError());
 	}
 	return true;
 }
@@ -118,21 +118,15 @@ bool Render::PostUpdate()
 }
 
 // Called before quitting
-bool Render::CleanUp()
-{
-	LOG("Destroying SDL render");
-
-	//Liberamos la fuente
-	if (font != nullptr)
-	{
-		TTF_CloseFont(font);
-		font = nullptr;
+bool Render::CleanUp() {
+	for (auto it = fonts.begin(); it != fonts.end(); ++it) {
+		FontType type = it->first;
+		TTF_Font* f = it->second;
+		if (f != nullptr) TTF_CloseFont(f);
 	}
 
-	//Cerramos la librería
+	fonts.clear();
 	TTF_Quit();
-
-	SDL_DestroyRenderer(renderer);
 	return true;
 }
 
@@ -473,55 +467,72 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 	return ret;
 }
 
-bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color color) const
+bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color color, FontType fontType) const
 {
-	if (!font || !renderer || !text) {
-		LOG("DrawText: invalid font/renderer/text");
+	if (text == nullptr || text[0] == '\0') return false;
+
+	TTF_Font* selectedFont = nullptr;
+	auto it = fonts.find(fontType);
+	if (it != fonts.end()) selectedFont = it->second;
+	else if (!fonts.empty()) selectedFont = fonts.begin()->second;
+
+	if (!selectedFont || !renderer) {
+		LOG("Render::DrawText: No hay fuente o renderer disponible.");
 		return false;
 	}
 
-	// Render the text to a surface
-	// SDL3_ttf: length can be 0 for null-terminated strings
-	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+
+	SDL_Surface* surface = TTF_RenderText_Blended_Wrapped(selectedFont, text, 0, color, w > 0 ? w : 0);
 	if (!surface) {
-		LOG("DrawText: TTF_RenderText_Solid failed: %s", SDL_GetError());
+		LOG("DrawText: Error en TTF_RenderText_Blended_Wrapped: %s", SDL_GetError());
 		return false;
 	}
 
-	// Create a texture from the surface
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 	if (!texture) {
-		LOG("DrawText: SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
 		SDL_DestroySurface(surface);
 		return false;
 	}
 
-	// Optional but often needed when using alpha/text
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	float finalW = (float)surface->w;
+	float finalH = (float)surface->h;
 
-	// If w/h are 0, use the text’s natural size
-	float fw = (w > 0) ? (float)w : (float)surface->w;
-	float fh = (h > 0) ? (float)h : (float)surface->h;
 
-	SDL_FRect dstrect = { (float)x, (float)y, fw, fh };
-
-	// Render the texture to the current render target
-	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstrect)) {
-		LOG("DrawText: SDL_RenderTexture failed: %s", SDL_GetError());
+	if (h > 0 && surface->h > h) {
+		float scale = (float)h / (float)surface->h;
+		finalH = (float)h;
+		finalW = (float)surface->w * scale;
 	}
 
-	// Cleanup
+	SDL_FRect dstRect = { (float)x, (float)y, finalW, finalH };
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstRect)) {
+		LOG("DrawText: Error al renderizar textura: %s", SDL_GetError());
+	}
+
 	SDL_DestroyTexture(texture);
 	SDL_DestroySurface(surface);
 
 	return true;
 }
 
-bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color) const
+bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color, FontType fontType) const
 {
-	if (!font || !renderer || !text) return false;
+	if (!renderer || !text || text[0] == '\0') return false;
 
-	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	TTF_Font* selectedFont = nullptr;
+	auto it = fonts.find(fontType);
+	if (it != fonts.end()) {
+		selectedFont = it->second;
+	}
+	else if (!fonts.empty()) {
+		selectedFont = fonts.begin()->second;
+	}
+
+	if (!selectedFont) return false;
+
+	SDL_Surface* surface = TTF_RenderText_Solid(selectedFont, text, 0, color);
 	if (!surface) return false;
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -530,39 +541,83 @@ bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Colo
 		return false;
 	}
 
+	float padding = bounds.h * 0.1f;
+	float maxW = (float)bounds.w - (padding * 2);
+	float maxH = (float)bounds.h - (padding * 2);
+
+	float finalW = (float)surface->w;
+	float finalH = (float)surface->h;
+
+	float scaleX = maxW / finalW;
+	float scaleY = maxH / finalH;
+	float finalScale = (scaleX < scaleY) ? scaleX : scaleY;
+
+	if (finalScale < 1.0f) {
+		finalW *= finalScale;
+		finalH *= finalScale;
+	}
+
+	float finalX = (float)bounds.x + ((float)bounds.w - finalW) / 2.0f;
+	float finalY = (float)bounds.y + ((float)bounds.h - finalH) / 2.0f;
+
+	SDL_FRect dstRect = { finalX, finalY, finalW, finalH };
+
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-	float padding = bounds.h * 0.2f;
-	float maxW = bounds.w - (padding * 2);
-	float maxH = bounds.h - (padding * 2);
-
-	float textRatio = (float)surface->w / (float)surface->h;
-	float boxRatio = maxW / maxH;
-
-	float finalW, finalH;
-
-	if (textRatio > boxRatio) {
-		finalW = maxW;
-		finalH = maxW / textRatio;
-	}
-	else {
-		finalH = maxH;
-		finalW = maxH * textRatio;
-	}
-
-	// 4. Centramos el texto exactamente en el medio del botón
-	float finalX = bounds.x + (bounds.w - finalW) / 2.0f;
-	float finalY = bounds.y + (bounds.h - finalH) / 2.0f;
-
-	SDL_FRect dstrect = { finalX, finalY, finalW, finalH };
-
-	SDL_RenderTexture(renderer, texture, nullptr, &dstrect);
+	SDL_RenderTexture(renderer, texture, nullptr, &dstRect);
 
 	SDL_DestroyTexture(texture);
 	SDL_DestroySurface(surface);
 
 	return true;
 }
+
+SDL_Rect Render::GetTextRenderedBounds(const char* text, const SDL_Rect& bounds, FontType fontType) const
+{
+	SDL_Rect resultRect = { 0, 0, 0, 0 };
+
+	if (!text || text[0] == '\0') return resultRect;
+
+	TTF_Font* selectedFont = nullptr;
+	auto it = fonts.find(fontType);
+	if (it != fonts.end()) {
+		selectedFont = it->second;
+	}
+	else if (!fonts.empty()) {
+		selectedFont = fonts.begin()->second;
+	}
+
+	if (!selectedFont) return resultRect;
+
+	
+	SDL_Surface* surface = TTF_RenderText_Solid(selectedFont, text, 0, { 255, 255, 255, 255 });
+	if (!surface) return resultRect;
+
+	float padding = (float)bounds.h * 0.1f;
+	float maxW = (float)bounds.w - (padding * 2);
+	float maxH = (float)bounds.h - (padding * 2);
+
+	float textW = (float)surface->w;
+	float textH = (float)surface->h;
+
+	float scaleX = maxW / textW;
+	float scaleY = maxH / textH;
+	float finalScale = (scaleX < scaleY) ? scaleX : scaleY;
+
+	if (finalScale < 1.0f) {
+		textW *= finalScale;
+		textH *= finalScale;
+	}
+
+	resultRect.x = (int)((float)bounds.x + ((float)bounds.w - textW) / 2.0f);
+	resultRect.y = (int)((float)bounds.y + ((float)bounds.h - textH) / 2.0f);
+	resultRect.w = (int)textW;
+	resultRect.h = (int)textH;
+
+	SDL_DestroySurface(surface);
+
+	return resultRect;
+}
+
 void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;
