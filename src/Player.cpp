@@ -297,16 +297,15 @@ void Player::Move() {
 		{
 			// OJO: Le pasamos 0 repeticiones para que sea súper ligero para la memoria
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
-
 			if (lookingRight) {
-				footX = position.getX() - (texW / 2);
-				footY = position.getY() + texH - 64.0f;
+				footX = position.getX() - 35.0f; // Pegado al talón
+				footY = position.getY() + (texH / 2.0f) - 10.0f; // A nivel del suelo
 			}
 			else {
-				footX = position.getX() + (texW / 2.2);
-				footY = position.getY() + texH - 64.0f;
+				footX = position.getX() + 35.0f; // Pegado al talón
+				footY = position.getY() + (texH / 2.0f) - 10.0f;
 			}
-			Engine::GetInstance().particleManager->EmitDust(footX, footY);
+			Engine::GetInstance().particleManager->EmitDust(footX, footY, lookingRight);
 
 			stepTimer = 0.0f;
 		}
@@ -446,6 +445,10 @@ void Player::Jump(float dt)
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
+
+			//Jump Dust
+			float footY = position.getY() + (texH / 2.0f) - 10.0f;
+			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
 
 			if (lookingRight == true)
 			{
@@ -870,6 +873,7 @@ void Player::CameraFollows()
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
+
 	float dt = Engine::GetInstance().GetDt();
 	float dtSeconds = dt / 1000.0f;
 
@@ -880,12 +884,13 @@ void Player::CameraFollows()
 	// ==========================================
 	if (currentCameraMode == CameraMode::DYNAMIC)
 	{
-		
 		float targetYOffset = 0.0f;
 
 		if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
 			lookDownTimer += dtSeconds;
-			if (lookDownTimer >= 0.3f) { targetYOffset = 200.0f; }
+			if (lookDownTimer >= 0.3f) {
+				targetYOffset = 200.0f;
+			}
 		}
 		else {
 			lookDownTimer = 0.0f;
@@ -907,18 +912,33 @@ void Player::CameraFollows()
 	}
 	else if (currentCameraMode == CameraMode::CLASSIC)
 	{
-		// --- MÉTODO ORIGINAL (Fortaleza) ---
-		static float lastGroundY = position.getY();
-		if (onGround) {
-			lastGroundY = position.getY();
-		}
 
-		if (!onGround) {
-			float maxCameraUpward = 40.0f;
-			if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
-				targetCamPos.setY(lastGroundY - maxCameraUpward);
+		float targetYOffset = 0.0f;
+
+		// 1. Anticipación de caída controlada (Si cae o baja escalones rápidamente)
+		if (!onGround && velocity.y > 1.0f) {
+			targetYOffset = 120.0f; // Límite estricto: Solo muestra un poco más abajo
+			cameraController.SetSmoothSpeed(0.20f);
+		}
+		// 2. Mirar hacia abajo manualmente
+		else if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			lookDownTimer += dtSeconds;
+			if (lookDownTimer >= 0.3f) {
+				targetYOffset = 150.0f; // Límite estricto de visión manual
 			}
 		}
+		else {
+			lookDownTimer = 0.0f;
+			cameraController.SetSmoothSpeed(0.15f); // Velocidad normal
+		}
+
+		// Interpolar suavemente para evitar tirones
+		float lerpY = 4.0f * dtSeconds;
+		if (lerpY > 1.0f) lerpY = 1.0f;
+		currentCameraYOffset += (targetYOffset - currentCameraYOffset) * lerpY;
+
+		// Aplicar el offset limitado
+		targetCamPos.setY(targetCamPos.getY() + currentCameraYOffset);
 	}
 	// ==========================================
 
@@ -1097,6 +1117,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
 			LOG("Collision inf circle / GROUND");
+
+			// Efecto de polvo al aterrizar
+			if (!onGround) { // Solo si el jugador viene del aire 
+				float footY = position.getY() + (texH / 2.0f) - 10.0f;
+				Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+			}
+
 			// Reset the jump flag when touching the ground
 			isJumping = false;
 			secondJumpUsed = false;
@@ -1153,6 +1180,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		//efecto Particula
+		int itemX, itemY;
+		physB->GetPosition(itemX, itemY);
+		Engine::GetInstance().particleManager->EmitItemPickup(itemX, itemY);
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
@@ -1184,6 +1215,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			{
 				currentHealth = maxHealth;
 			}
+			int orbX, orbY;
+			physB->GetPosition(orbX, orbY);
+			Engine::GetInstance().particleManager->EmitItemPickup(orbX, orbY);
+
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
 			Engine::GetInstance().hud->ShowNotification("You have recovered your health.");
@@ -1192,6 +1227,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
+
+		int spOrbX, spOrbY;
+		physB->GetPosition(spOrbX, spOrbY);
+		Engine::GetInstance().particleManager->EmitItemPickup(spOrbX, spOrbY);
+
 		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy();
 		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power.");
@@ -1227,12 +1267,18 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::ENEMY:
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(10); // Contact Damage
+		//PARTICULA
+		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
+
 		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
 		LOG("Hit player");
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(physB->listener->damage);
+		//PARTICULA
+		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
+
 		isKnockedback = true;
 
 		int enemyX, enemyY;

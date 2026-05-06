@@ -295,7 +295,7 @@ void Audio::SetSFXVolume(float volume)
 void Audio::StopFx(int id) {
     if (!active || id <= 0) return;
 
-    // Buscamos en todos los canales de audio si este sonido se está reproduciendo
+    // Buscamos en todos los canales de audio si este sonido se est?reproduciendo
     for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
         // Si el stream existe y el ID coincide con el que queremos parar
         if (sfx_pool_[i] != nullptr && sfx_playing_[i] == id) {

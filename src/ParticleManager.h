@@ -23,6 +23,9 @@ struct Particle {
     // Animaciones
     Animation anim;
     bool isAnimated = false;
+    SDL_FlipMode flipMode = SDL_FLIP_NONE;
+
+
 };
 
 class ParticleManager : public Module {
@@ -38,14 +41,34 @@ public:
 
     void Emit(float x, float y, float vx, float vy, float life, SDL_Color color, float size, bool useCamera = true);
     void Emit(SDL_Texture* texture, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f);
-    void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f);
-    void EmitDust(float x, float y);
-    void EmitDust(SDL_Texture* texture, Animation anim, float x, float y);
+    void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f, SDL_FlipMode flipMode = SDL_FLIP_NONE);  
+    void EmitDust(float x, float y, bool lookingRight); 
+    void EmitJumpDust(float x, float y);
+    void EmitHitSparks(float x, float y, bool isBlood = false);
+    void EmitItemPickup(float x, float y);
+    void EmitRain(float cameraX, float cameraY, int cameraW, int cameraH);
+    void EmitSwordSlash(float x, float y, bool lookingRight);
+public:
+    SDL_Texture* texDust = nullptr;
+    Animation animDust;
 
+    // Textura y animaci¨®n para los impactos (Hit Sparks)
+    SDL_Texture* texHitSpark = nullptr;
+    Animation animHitSpark;
+
+    SDL_Texture* texBloodHit = nullptr; 
+    Animation animBloodHit;
+
+    SDL_Texture* texPickup = nullptr;
+    Animation animPickup;
+
+    SDL_Texture* texJumpDust = nullptr;
+    Animation animJumpDust;
 private:
     std::vector<Particle> pool;
     int poolSize = 1000;
     int lastUsedParticle = 0;
-
     int FindNextDeadParticle();
+
+
 };
