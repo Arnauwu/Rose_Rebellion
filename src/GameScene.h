@@ -92,6 +92,12 @@ public:
 	SDL_Texture* texItemGlide = nullptr;
 	SDL_Texture* texItemWeapon = nullptr;
 
+	//Dialogue Textures
+	SDL_Texture* UIDialogueBoxPrincess = nullptr;
+	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
+	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
+	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
+
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);

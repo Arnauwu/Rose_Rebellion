@@ -24,23 +24,22 @@ bool IntroCinematicScene::Start() {
 
     Engine::GetInstance().audio->PlayMusic(nullptr);
 
-    if (!Engine::GetInstance().cinematics->PlayVideo("Assets/Cinematica/intro.mp4")) {
+    if (!Engine::GetInstance().cinematics->PlayVideo("Assets/Cinematics/intro.mp4")) {
         LOG("Failed to play intro cinematic. Skipping to Game.");
         Engine::GetInstance().sceneManager->ChangeScene(SceneID::GAME);
     }
     return true;
 }
 
-bool IntroCinematicScene::Update(float dt) {
-    if (isFadingOut) return true;
+bool IntroCinematicScene::Update(float dt)
+{
+    auto input = Engine::GetInstance().input;
+    if (input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
+        Engine::GetInstance().cinematics->RequestSkip();
+    }
 
-    bool skipRequested = Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN ||
-        Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
-
-    if (skipRequested || !Engine::GetInstance().cinematics->IsPlaying()) {
+    if (!Engine::GetInstance().cinematics->IsPlaying() && !isFadingOut) {
         isFadingOut = true;
-
-        Engine::GetInstance().cinematics->StopVideo();
         Engine::GetInstance().sceneManager->ChangeScene(SceneID::GAME);
     }
 

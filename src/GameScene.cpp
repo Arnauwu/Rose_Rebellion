@@ -118,8 +118,8 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-	LoadTextureIfNull(orbFrameUI, "Assets/Textures/UI/Buttons/orbFrameUI.png");
-	LoadTextureIfNull(keyFrameUI, "Assets/Textures/UI/Buttons/keyFrameUI.png");
+	//LoadTextureIfNull(orbFrameUI, "Assets/Textures/UI/Buttons/orbFrameUI.png");
+	//LoadTextureIfNull(keyFrameUI, "Assets/Textures/UI/Buttons/keyFrameUI.png");
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
 
 
@@ -136,6 +136,13 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texItemGlide, "Assets/Textures/UI/Items/glideUI.png");
 	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
 
+	//Load Dialogue UI
+	LoadTextureIfNull(UIDialogueBoxPrincess, "Assets/Textures/UI/Dialogues/UIDialogueBoxPrincess.png");
+	LoadTextureIfNull(UIDialogueBoxNpc1, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc1.png");
+	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc2.png");
+	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc3.png");
+
+	
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
@@ -148,6 +155,7 @@ bool GameScene::Start() {
 
 	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
 	if (dBox != nullptr) {
+		dBox->SetBackgroundTextures(UIDialogueBoxPrincess, UIDialogueBoxNpc1);
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
 	}
 	RefreshMenuUI();
@@ -288,6 +296,13 @@ bool GameScene::CleanUp() {
 	UnloadTexture(texItemKeyForest);
 	UnloadTexture(texItemOrb);
 	UnloadTexture(texItemWeapon);
+
+	//UnloadTexture Dialogues
+	UnloadTexture(UIDialogueBoxPrincess);
+	UnloadTexture(UIDialogueBoxNpc1);
+	//UnloadTexture(UIDialogueBoxNpc2);
+	//UnloadTexture(UIDialogueBoxNpc3);
+
 
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {

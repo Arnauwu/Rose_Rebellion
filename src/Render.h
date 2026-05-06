@@ -12,7 +12,7 @@ enum class FontType {
 	MENU,
 	SPEAKER,
 	DIALOGUE,
-	SMALL
+	CUERPO
 };
 
 class Render : public Module

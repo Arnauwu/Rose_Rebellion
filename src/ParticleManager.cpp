@@ -20,13 +20,13 @@ bool ParticleManager::Start() {
 
     //---------------------------------------------------------------------------------------//
     // Texture
-    texDust = Engine::GetInstance().textures->Load("Assets/dust.png");
+    dustP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/dustP.png");
 
     //Anims
     AnimationSet tempSet;
     std::unordered_map<int, std::string> aliases = { {0, "dust_anim"} }; 
 
-    if (tempSet.LoadFromTSX("Assets/dust.tsx", aliases)) {
+    if (tempSet.LoadFromTSX("Assets/Textures/Particles/dustP.tsx", aliases)) {
         if (tempSet.Has("dust_anim")) {
             animDust = *tempSet.GetAnim("dust_anim");
         }
@@ -34,41 +34,40 @@ bool ParticleManager::Start() {
     //--------------------------------------------------------------------------------------//
 
     // 1. Carga la textura estática temporal para los impactos
-    texHitSpark = Engine::GetInstance().textures->Load("Assets/hit.png");
-
-    texBloodHit = Engine::GetInstance().textures->Load("Assets/Hit princess.png");
-
+    hitP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/hitP.png");
     // TODO: Descomentar esto cuando Arte entregue el archivo .tsx con la animación
-   /* AnimationSet hitSet;
-    std::unordered_map<int, std::string> hitAliases = { {0, "hit_anim"} };
-    if (hitSet.LoadFromTSX("Assets/hit_spark.tsx", hitAliases)) {
-        if (hitSet.Has("hit_anim")) {
-            animHitSpark = *hitSet.GetAnim("hit_anim");
-        }
-    }*/
+/* AnimationSet hitSet;
+ std::unordered_map<int, std::string> hitAliases = { {0, "hit_anim"} };
+ if (hitSet.LoadFromTSX("Assets/Textures/Particles/hitP.tsx", hitAliases)) {
+     if (hitSet.Has("hit_anim")) {
+         animHitSpark = *hitSet.GetAnim("hit_anim");
+     }
+ }*/
+
+    bloodP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/bloodP.png");
 
     /* AnimationSet BloodhitSet;
     std::unordered_map<int, std::string> BloodhitAliases = { {0, "Bloodhit_anim"} };
-    if (BloodhitSet.LoadFromTSX("Assets/BloodhitSet.tsx", BloodhitSetAliases)) {
+    if (BloodhitSet.LoadFromTSX("Assets/Textures/Particles/bloodP.tsx", BloodhitSetAliases)) {
       if (BloodhitSet.Has("BloodhitSet_anim")) {
           animBloodHit = *BloodhitSet.GetAnim("BloodhitSet_anim");
       }
     }*/
 
-    texPickup=Engine::GetInstance().textures->Load("Assets/1.png");
+    pickP=Engine::GetInstance().textures->Load("Assets/Textures/Particles/pickP.png");
 
     /* AnimationSet PickupSet;
      std::unordered_map<int, std::string> PickupAliases = { {0, "pickup_anim"} };
-     if (PickupSet.LoadFromTSX("Assets/pickup.tsx", PickupAliases)) {
+     if (PickupSet.LoadFromTSX("Assets/Textures/Particles/pickP.tsx", PickupAliases)) {
      if (PickupSet.Has("hit_anim")) {
          animHitSpark = *PickupSet.GetAnim("pickup_anim");
      }
     }*/
 
-    texJumpDust = Engine::GetInstance().textures->Load("Assets/JUMPDUST.png");
+    jumpDustP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/jumpDustP.png");
     /* AnimationSet JumpDustSet;
     std::unordered_map<int, std::string> JumpDustAliases = { {0, "JumpDust_anim"} };
-     if (JumpDustSet.LoadFromTSX("Assets/JumpDust.tsx", JumpDustAliases)) {
+     if (JumpDustSet.LoadFromTSX("Assets/Textures/Particles/jumpDustP.tsx, JumpDustAliases)) {
      if (JumpDustSet.Has("JumpDust_anim")) {
        animJumpDust = *JumpDustSet.GetAnim("JumpDust_anim");
      }
@@ -77,7 +76,7 @@ bool ParticleManager::Start() {
 }
 
 bool ParticleManager::Update(float dt) {
-    // Actualizamos SOLO las part韈ulas encendidas
+    // Actualizamos SOLO las articulas encendidas
     for (auto& particles : pool) {
         if (particles.active) {
             
@@ -150,25 +149,25 @@ bool ParticleManager::PostUpdate() {
 
 bool ParticleManager::CleanUp() {
     pool.clear();
-    if (texDust != nullptr) {
-        Engine::GetInstance().textures->UnLoad(texDust);
-        texDust = nullptr;
+    if (dustP != nullptr) {
+        Engine::GetInstance().textures->UnLoad(dustP);
+        dustP = nullptr;
     }
-    if (texHitSpark != nullptr) {
-        Engine::GetInstance().textures->UnLoad(texHitSpark);
-        texHitSpark = nullptr;
+    if (hitP != nullptr) {
+        Engine::GetInstance().textures->UnLoad(hitP);
+        hitP = nullptr;
     }
-    if (texPickup != nullptr) {
-        Engine::GetInstance().textures->UnLoad(texPickup);
-        texPickup = nullptr;
+    if (pickP != nullptr) {
+        Engine::GetInstance().textures->UnLoad(pickP);
+        pickP = nullptr;
     }
-    if (texBloodHit != nullptr) {
-        Engine::GetInstance().textures->UnLoad(texBloodHit);
-        texBloodHit = nullptr;
+    if (bloodP != nullptr) {
+        Engine::GetInstance().textures->UnLoad(bloodP);
+        bloodP = nullptr;
     }
-    if (texJumpDust != nullptr) {
-        Engine::GetInstance().textures->UnLoad(texJumpDust);
-        texJumpDust = nullptr;
+    if (jumpDustP != nullptr) {
+        Engine::GetInstance().textures->UnLoad(jumpDustP);
+        jumpDustP = nullptr;
     }
     return true;
 }
@@ -243,32 +242,6 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
     pool[index].active = true;
 }
 
-//void ParticleManager::EmitDust(float x, float y) {
-//    // Generamos entre 3 y 5 partiulas por cada pisada
-//    int numParticles = 3 + (rand() % 3);
-//
-//    for (int i = 0; i < numParticles; i++) {
-//        // Velocidad X: Esparcimiento aleatorio muy ligero hacia los lados
-//        float vx = ((rand() % 100) - 50) * 0.4f;
-//
-//        // Velocidad Y: Siempre hacia arriba (negativo), imitando el polvo que se levanta
-//        float vy = -((rand() % 100) + 50) * 0.8f;
-//
-//        // Vida corta: Se desvanece r醦ido (entre 200 y 400 milisegundos)
-//        float life = 200.0f + (rand() % 200);
-//
-//        // Color: Gris clarito / Blanco sucio
-//        SDL_Color color = { 200, 200, 200, 200 };
-//
-//        // Tamaño: Pequeño (entre 3 y 6 pixeles)
-//        float size = 6.0f + (rand() % 4);
-//
-//        // Emitimos la part韈ula usando el preset 1 (Cuadrado de color base)
-//        // Le pasamos 'true' en useCamera porque esto ocurre en el mundo del juego
-//        Emit(x, y, vx, vy, life, color, size, true);
-//    }
-//}
-
 void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
     int numParticles = 1;
 
@@ -284,9 +257,9 @@ void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
         float startX = x - (size / 2.0f);
         float startY = y - (size / 2.0f);
 
-        if (texDust != nullptr && animDust.GetFrameCount() > 0) {
+        if (dustP != nullptr && animDust.GetFrameCount() > 0) {
             // desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño antes de emitir.
-            Emit(texDust, animDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
+            Emit(dustP, animDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
         }
         else {
             SDL_Color color = { 200, 200, 200, 200 };
@@ -309,7 +282,7 @@ void ParticleManager::EmitHitSparks(float x, float y, bool isBlood) {
         float startX = x - (size / 2.0f);
         float startY = y - (size / 2.0f);
 
-        SDL_Texture* currentTexture = isBlood ? texBloodHit : texHitSpark;
+        SDL_Texture* currentTexture = isBlood ? bloodP : hitP;
 
         if (currentTexture != nullptr) {
 
@@ -367,9 +340,9 @@ void ParticleManager::EmitJumpDust(float x, float y) {
         float startX = x - (size / 2.0f);
         float startY = y - (size / 2.0f);
 
-        if (texJumpDust != nullptr) {
+        if (jumpDustP != nullptr) {
             // Emite la textura estática
-            Emit(texJumpDust, startX, startY, vx, vy, life, size, true, 0.0f);
+            Emit(jumpDustP, startX, startY, vx, vy, life, size, true, 0.0f);
 
             // Cuando haya animación de polvo, usa esto:
             // Emit(texJumpDust, animJumpDust, startX, startY, vx, vy, life, size, true, 0.0f, SDL_FLIP_NONE);

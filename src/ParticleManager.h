@@ -49,20 +49,20 @@ public:
     void EmitRain(float cameraX, float cameraY, int cameraW, int cameraH);
     void EmitSwordSlash(float x, float y, bool lookingRight);
 public:
-    SDL_Texture* texDust = nullptr;
+    SDL_Texture* dustP = nullptr;
     Animation animDust;
 
     // Textura y animaci¨®n para los impactos (Hit Sparks)
-    SDL_Texture* texHitSpark = nullptr;
+    SDL_Texture* hitP = nullptr;
     Animation animHitSpark;
 
-    SDL_Texture* texBloodHit = nullptr; 
+    SDL_Texture* bloodP = nullptr;
     Animation animBloodHit;
 
-    SDL_Texture* texPickup = nullptr;
+    SDL_Texture* pickP = nullptr;
     Animation animPickup;
 
-    SDL_Texture* texJumpDust = nullptr;
+    SDL_Texture* jumpDustP = nullptr;
     Animation animJumpDust;
 private:
     std::vector<Particle> pool;

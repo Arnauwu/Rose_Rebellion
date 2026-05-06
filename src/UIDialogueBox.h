@@ -12,13 +12,14 @@ public:
 
     void SetSpeakerName(const std::string& name);
     void SetDialogueText(const std::string& text);
-    void SetBackgroundTexture(SDL_Texture* tex);
+    void SetBackgroundTextures(SDL_Texture* princessTex, SDL_Texture* npcTex);
 
 private:
     std::string currentSpeaker;
     std::string currentText;
 
-    SDL_Texture* backgroundTex = nullptr;
+    SDL_Texture* texPrincess = nullptr;
+    SDL_Texture* texNPC = nullptr;
 
     SDL_Color textColor = { 255, 255, 255, 255 };    
     SDL_Color speakerColor = { 255, 204, 0, 255 };     

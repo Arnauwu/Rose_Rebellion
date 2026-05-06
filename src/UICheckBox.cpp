@@ -41,7 +41,7 @@ void UICheckBox::Draw() const {
     }
 
     int textX = bounds.x + bounds.w + (int)(bounds.w * 0.5f);
-    Engine::GetInstance().render->DrawText(text.c_str(), textX, bounds.y, 0, bounds.h, { 255,255,255,255 });
+    Engine::GetInstance().render->DrawText(text.c_str(), textX, bounds.y, 0, bounds.h, { 255,255,255,255 }, FontType::MENU);
 }
 
 bool UICheckBox::CleanUp() {

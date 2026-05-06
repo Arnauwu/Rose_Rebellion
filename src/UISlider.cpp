@@ -1,4 +1,4 @@
-#include "UISlider.h"
+ #include "UISlider.h"
 #include "Engine.h"
 #include "Render.h"
 
@@ -71,7 +71,7 @@ void UISlider::Draw() const {
 
     Engine::GetInstance().render->DrawRectangle(sliderBar, 200, 200, 200, 255, true, false);
     Engine::GetInstance().render->DrawRectangle(thumb, 255, 0, 0, 255, true, false);
-    Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y - 20, 0, 0, { 255,255,255,255 });
+    Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y - 49, 0, 0, { 255,255,255,255 }, FontType::SPEAKER);
 }
 
 bool UISlider::CleanUp() {

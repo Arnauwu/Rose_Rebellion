@@ -4,7 +4,7 @@
     "box2d",
     {
       "name": "ffmpeg",
-      "features": [ "swscale", "swresample", "avformat", "avcodec" ]
+      "features": [ "swresample", "avformat", "avcodec" ]
     },
     "libjpeg-turbo",
     "libpng",

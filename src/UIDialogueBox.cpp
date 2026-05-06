@@ -9,6 +9,10 @@ UIDialogueBox::UIDialogueBox(int id, float anchorX, float anchorY, float wPercen
 }
 
 UIDialogueBox::~UIDialogueBox() {}
+void UIDialogueBox::SetBackgroundTextures(SDL_Texture* princessTex, SDL_Texture* npcTex) {
+	texPrincess = princessTex;
+	texNPC = npcTex;
+}
 
 bool UIDialogueBox::Update(float dt) {
 	if (!visible) return true;
@@ -18,8 +22,18 @@ bool UIDialogueBox::Update(float dt) {
 void UIDialogueBox::Draw() const {
 	if (!visible) return;
 
-	if (backgroundTex != nullptr) {
-		Engine::GetInstance().render->DrawTextureScaled(backgroundTex, bounds);
+	SDL_Texture* currentBg = nullptr;
+
+	if (currentSpeaker == "Princesa") {
+		currentBg = texPrincess;
+	}
+	else {
+		currentBg = texNPC;
+	}
+
+
+	if (currentBg != nullptr) {
+		Engine::GetInstance().render->DrawTextureScaled(currentBg, bounds);
 	}
 	else {
 		Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 0, 200, true, false);
@@ -29,7 +43,7 @@ void UIDialogueBox::Draw() const {
 		int nameX;
 		int nameY = bounds.y + 20;
 
-		if (currentSpeaker == "Princesa" || currentSpeaker == "Princess") {
+		if (currentSpeaker == "Princesa") {
 			nameX = bounds.x + 30;
 		}
 		else {
@@ -53,4 +67,3 @@ void UIDialogueBox::Draw() const {
 
 void UIDialogueBox::SetSpeakerName(const std::string& name) { currentSpeaker = name; }
 void UIDialogueBox::SetDialogueText(const std::string& text) { currentText = text; }
-void UIDialogueBox::SetBackgroundTexture(SDL_Texture* tex) { backgroundTex = tex; }
