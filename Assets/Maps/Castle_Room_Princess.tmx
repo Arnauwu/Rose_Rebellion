@@ -2039,10 +2039,7 @@
   <object id="6" name="Player" type="Player" x="2147" y="912">
    <point/>
   </object>
-  <object id="17" name="SavePoint" type="SavePoint" x="1224" y="908">
-   <point/>
-  </object>
-  <object id="19" name="SavePoint" type="SavePoint" x="1492" y="940">
+  <object id="19" name="SavePoint" type="SavePoint" x="1152" y="896">
    <point/>
   </object>
   <object id="20" name="Npc" type="Npc" x="932" y="912">

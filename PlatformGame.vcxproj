@@ -151,9 +151,11 @@
     <ClCompile Include="src\CameraController.cpp" />
     <ClCompile Include="src\Cinematics.cpp" />
     <ClCompile Include="src\Cucafera.cpp" />
+    <ClCompile Include="src\CucaferaShiny.cpp" />
     <ClCompile Include="src\DashObj.cpp" />
     <ClCompile Include="src\UIDialogueBox.cpp" />
     <ClCompile Include="src\DialogueManager.cpp" />
+    <ClCompile Include="src\Demon.cpp" />
     <ClCompile Include="src\DoubleJumpObj.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
@@ -206,10 +208,12 @@
     <ClInclude Include="src\CameraController.h" />
     <ClInclude Include="src\Cinematics.h" />
     <ClInclude Include="src\Cucafera.h" />
+    <ClInclude Include="src\CucaferaShiny.h" />
     <ClInclude Include="src\DashObj.h" />
     <ClInclude Include="src\UIDialogueBox.h" />
     <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />
+    <ClInclude Include="src\Demon.h" />
     <ClInclude Include="src\DoubleJumpObj.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\Engine.h" />

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="20" nextobjectid="87">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="20" nextobjectid="88">
  <tileset firstgid="1" name="Atlas_Exterior_Castillo" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Exterior/Atlas_Exterior_Castillo.png" width="1024" height="1024"/>
  </tileset>
@@ -33,7 +33,7 @@
  <tileset firstgid="263" name="MapMetadata" tilewidth="128" tileheight="128" tilecount="2" columns="2">
   <image source="Pathfinding/MapMetadata.png" trans="ffffff" width="256" height="128"/>
  </tileset>
- <objectgroup id="13" name="BG">
+ <objectgroup id="13" name="BG" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -48,7 +48,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="16" name="BG2">
+ <objectgroup id="16" name="BG2" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -57,7 +57,7 @@
   <object id="32" gid="20" x="5632" y="1152" width="128" height="128"/>
   <object id="33" gid="20" x="5632" y="1280" width="128" height="128"/>
  </objectgroup>
- <layer id="1" name="Suelo" width="72" height="13">
+ <layer id="1" name="Suelo" width="72" height="13" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -1000,7 +1000,7 @@
    <tile gid="42"/>
   </data>
  </layer>
- <layer id="6" name="Castillo" width="72" height="13">
+ <layer id="6" name="Castillo" width="72" height="13" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -1943,7 +1943,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="7" name="Murallas" width="72" height="13">
+ <layer id="7" name="Murallas" width="72" height="13" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -2886,7 +2886,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="10" name="Puerta" width="72" height="13">
+ <layer id="10" name="Puerta" width="72" height="13" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -3829,7 +3829,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="17" name="Obstaculos" width="72" height="13">
+ <layer id="17" name="Obstaculos" width="72" height="13" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -5738,7 +5738,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="9" name="Ground" visible="0">
+ <objectgroup id="9" name="Ground">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -5770,11 +5770,11 @@
   </object>
   <object id="43" x="9344" y="896" width="128" height="384">
    <properties>
-    <property name="TeleportTo" type="file" value="Castle_Balcony.tmx"/>
+    <property name="TeleportTo" type="file" value="Mountain_01.tmx"/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="11" name="Ceiling" visible="0">
+ <objectgroup id="11" name="Ceiling">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -5783,14 +5783,13 @@
   <object id="42" x="9216" y="768" width="128" height="128"/>
   <object id="73" x="4040" y="888" width="62.6667" height="8"/>
  </objectgroup>
- <objectgroup id="12" name="Wall" visible="0">
+ <objectgroup id="12" name="Wall">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
   </properties>
   <object id="36" x="0" y="0" width="256" height="896"/>
   <object id="37" x="8960" y="0" width="256" height="896"/>
-  <object id="44" x="8960" y="896" width="128" height="384"/>
   <object id="61" x="3456" y="1035" width="11" height="117"/>
   <object id="62" x="3573" y="1035" width="11" height="117"/>
   <object id="63" x="3635" y="1162" width="12" height="114"/>
@@ -5827,7 +5826,7 @@
   <object id="34" name="Sickle" type="Sickle" x="3876" y="1118">
    <point/>
   </object>
-  <object id="88" name="Player" type="Player" x="312" y="1172">
+  <object id="88" name="Player" type="Player" x="408" y="946">
    <properties>
     <property name="FromRoom" type="file" value="Forest_01.tmx"/>
    </properties>
@@ -5844,9 +5843,15 @@
    </properties>
    <point/>
   </object>
-  <object id="86" name="Player" x="260" y="1105.33">
+  <object id="86" name="Player" x="256" y="1141.33">
    <properties>
     <property name="FromRoom" type="file" value="Forest_01.tmx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="87" name="Player" x="9087.88" y="1257.58">
+   <properties>
+    <property name="FromRoom" type="file" value="Mountain_01.tmx"/>
    </properties>
    <point/>
   </object>
