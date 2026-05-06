@@ -112,7 +112,7 @@ void UIButton::Draw() const
 
 	if (state == UIElementState::FOCUSED && frameTexture != nullptr && !text.empty()) {
 
-		SDL_Rect exactTextBounds = Engine::GetInstance().render->GetTextRenderedBounds(text.c_str(), textBounds);
+		SDL_Rect exactTextBounds = Engine::GetInstance().render->GetTextRenderedBounds(text.c_str(), textBounds, FontType::MENU);
 
 		int paddingHorizontal = 135; 
 		int paddingVertical = 20; 
@@ -126,7 +126,7 @@ void UIButton::Draw() const
 		Engine::GetInstance().render->DrawTextureScaled(frameTexture, exactTextBounds);
 	}
 	if (!text.empty()) {
-		Engine::GetInstance().render->DrawTextCentered(text.c_str(), textBounds, currentTextColor);
+		Engine::GetInstance().render->DrawTextCentered(text.c_str(), textBounds, currentTextColor, FontType::MENU);
 	}
 }
 

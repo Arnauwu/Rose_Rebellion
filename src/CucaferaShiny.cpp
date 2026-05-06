@@ -1,4 +1,4 @@
-#include "Cucafera.h"
+#include "CucaferaShiny.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -8,26 +8,27 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
-#include "ParticleManager.h"
 #include "Map.h"
 
 
 
-Cucafera::Cucafera() : Enemy(EntityType::CUCAFERA)
+CucaferaShiny::CucaferaShiny() : Enemy(EntityType::CUCAFERA_SHINY)
 {
-	name = "Cucafera";
+	name = "Cucafera Shiny";
 }
 
-Cucafera::~Cucafera() {
+CucaferaShiny::~CucaferaShiny() {
 
 }
 
-bool Cucafera::Awake() {
+bool CucaferaShiny::Awake() {
 	return true;
 }
 
-bool Cucafera::Start()
+bool CucaferaShiny::Start()
 {
+	//TO DO CHANGE SOUNDS & TEXTURES
+
 	// Initialize Player parameters
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
@@ -36,10 +37,10 @@ bool Cucafera::Start()
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
 
 	//Load Audio
-	morirCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav");
-	rodarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
-	chocarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Chocar.wav");
-	caminarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
+	morirCucaferaShiny = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav");
+	rodarCucaferaShiny = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
+	chocarCucaferaShiny = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Chocar.wav");
+	caminarCucaferaShiny = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
 
 	//Add physics to the enemy - initialize physics body
 	texW = 64;
@@ -52,7 +53,7 @@ bool Cucafera::Start()
 	//ssign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
-		// Initialize pathfinding
+	// Initialize pathfinding
 	pathfinding = std::make_shared<Pathfinding>(true);
 
 	//Reset pathfinding
@@ -61,12 +62,12 @@ bool Cucafera::Start()
 	pathFindingCooldown.Start();
 
 	//Stats
-	vision = 10;
-	speed = 2.0f;
-	knockbackForce = 5.0f;
+	vision = 12;
+	speed = 4.0f;
+	knockbackForce = 7.5f;
 
-	maxHealth = 30;
-	currentHealth = 30;
+	maxHealth = 120;
+	currentHealth = maxHealth;
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -76,7 +77,7 @@ bool Cucafera::Start()
 	return true;
 }
 
-bool Cucafera::Update(float dt)
+bool CucaferaShiny::Update(float dt)
 {
 
 	if (!active) return true;
@@ -94,20 +95,20 @@ bool Cucafera::Update(float dt)
 		Knockback();
 		ApplyPhysics();
 	}
-	
+
 	if (isdead)
 	{
 		if (anims.GetCurrentName() != "dead")
 		{
-			Engine::GetInstance().audio->PlayFx(morirCucafera);
+			Engine::GetInstance().audio->PlayFx(morirCucaferaShiny);
 
-			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 			anims.GetAnim("dead")->SetLoop(false);
 			anims.SetCurrent("dead");
 			pbody->ctype = ColliderType::UNKNOWN;
 			isKnockedback = false;
 
-			//Create Health Orb //To do: Change to 20%
+			//Create Health Orb //To do: Change to 50%
 			std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
 			healthOrb->position.setX(this->position.getX());
 			healthOrb->position.setY(this->position.getY() - 100);
@@ -120,15 +121,14 @@ bool Cucafera::Update(float dt)
 		}
 	}
 
-
 	bool isWalking = (velocity.x != 0 && !isdead && !isRolling && !isKnockedback);
 
 	if (isWalking && !wasWalking) {
-		Engine::GetInstance().audio->PlayFx(caminarCucafera, 99);
+		Engine::GetInstance().audio->PlayFx(caminarCucaferaShiny, 99);
 	}
-	
+
 	else if (!isWalking && wasWalking) {
-		Engine::GetInstance().audio->StopFx(caminarCucafera);
+		Engine::GetInstance().audio->StopFx(caminarCucaferaShiny);
 	}
 
 	wasWalking = isWalking;
@@ -138,7 +138,7 @@ bool Cucafera::Update(float dt)
 	return true;
 }
 
-void Cucafera::PerformPathfinding()
+void CucaferaShiny::PerformPathfinding()
 {
 	//Reset path
 	pathfinding->ResetPath(GetTilePos());
@@ -161,13 +161,13 @@ void Cucafera::PerformPathfinding()
 	}
 }
 
-void Cucafera::GetPhysicsValues() {
+void CucaferaShiny::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	velocity = { 0, velocity.y };
 }
 
-void Cucafera::Move() {
+void CucaferaShiny::Move() {
 
 	Vector2D tilePos = GetTilePos();
 
@@ -180,7 +180,7 @@ void Cucafera::Move() {
 	}
 	else if (playerTileDist >= 5 && isRolling == false && isKnockedback == false)
 	{
-		anims.SetCurrent("walk"); 
+		anims.SetCurrent("walk");
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -220,7 +220,7 @@ void Cucafera::Move() {
 	return;
 }
 
-void Cucafera::Knockback()
+void CucaferaShiny::Knockback()
 {
 	if (isdead) return;
 
@@ -248,14 +248,14 @@ void Cucafera::Knockback()
 	}
 }
 
-void Cucafera::ApplyPhysics() {
+void CucaferaShiny::ApplyPhysics() {
 
 	// Apply velocity via helper
 	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
 }
 
-void Cucafera::Draw(float dt)
+void CucaferaShiny::Draw(float dt)
 {
 	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
@@ -295,39 +295,53 @@ void Cucafera::Draw(float dt)
 	}
 	else
 	{
+		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 196, 134, 0);
+
 		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
+		
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+		delete r; delete g; delete b;
 	}
 }
 
-void Cucafera::RollAttack()
+void CucaferaShiny::RollAttack()
 {
 	if (isRolling == false && isKnockedback == false)
 	{
-		Engine::GetInstance().audio->PlayFx(rodarCucafera);
+		Engine::GetInstance().audio->PlayFx(rodarCucaferaShiny);
 		isRolling = true;
 		anims.SetCurrent("startSpin");
+		anims.GetAnim("startSpin")->SetLoop(false);
+
 		startAttack.Start();
 		return;
 	}
 
-	if (startAttack.ReadMSec() >= 250 && isKnockedback == false)
+	if (anims.GetAnim("startSpin")->HasFinishedOnce() && isKnockedback == false)
 	{
 		anims.SetCurrent("spin");
 		if (lookingRight == false)
 		{
 			velocity.x = speed * 2;
 		}
-		else 
+		else
 		{
 			velocity.x = -speed * 2;
 		}
 	}
+
+	if (startAttack.ReadMSec() > 2500)
+	{
+		isRolling = false;
+	}
+
 }
 
 
 
 //Define OnCollision function for the enemy. 
-void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
+void CucaferaShiny::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
 	case ColliderType::MAP:
@@ -339,9 +353,6 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
-
-		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), false);
-
 		break;
 
 	default:
@@ -349,12 +360,10 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b
 	}
 }
 
-void Cucafera::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
+void CucaferaShiny::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{
-	case ColliderType::MAP:
-		break;
 	default:
 		break;
 	}

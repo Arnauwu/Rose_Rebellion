@@ -17,6 +17,7 @@
 #include "Hud.h"
 #include "Cinematics.h"
 #include "ParticleManager.h"
+#include "DialogueManager.h"
 
 // Constructor
 Engine::Engine() {
@@ -45,6 +46,8 @@ Engine::Engine() {
 
     cinematics = std::make_shared<Cinematics>();
     particleManager = std::make_shared<ParticleManager>();
+    dialogueManager = std::make_shared<DialogueManager>();
+
     uiManager = std::make_shared<UIManager>();
     hud = std::make_shared<Hud>();
 
@@ -65,6 +68,8 @@ Engine::Engine() {
     // Cinematic Manager
     AddModule(std::static_pointer_cast<Module>(cinematics));
 
+    // Dialogue Manager
+    AddModule(std::static_pointer_cast<Module>(dialogueManager));
     // Hud Manager 
     AddModule(std::static_pointer_cast<Module>(hud));
 

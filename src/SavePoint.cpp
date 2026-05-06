@@ -23,8 +23,8 @@ bool SavePoint::Start() {
 	// Savepoint sensor: Activates when the player passes through it. The physics engine sends an OnCollision / OnTrigger notification	
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SavePoint.png");
 
-	texH = 32; texW = 32;
-	pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH, bodyType::STATIC);
+	texH = 64; texW = 64;
+	pbody = Engine::GetInstance().physics->CreateRectangleSensor((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW/2,texH, bodyType::STATIC);
 
 	Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 	// Savepoint type
@@ -39,7 +39,7 @@ bool SavePoint::Update(float dt) {
 	int x, y;
 	pbody->GetPosition(x, y);
 	// Move the pivot from the center to the top-left.
-	Engine::GetInstance().render->DrawTexture(texture, x - 16, y - 16, NULL);
+	Engine::GetInstance().render->DrawTexture(texture, x - texW, y - texH/2, NULL);
 
 	return true;
 }

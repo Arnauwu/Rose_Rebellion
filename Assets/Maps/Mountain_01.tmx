@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="100" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="406">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="100" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="411">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -8769,10 +8769,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -9129,10 +9129,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
    <tile/>
    <tile/>
    <tile/>
@@ -18035,19 +18035,19 @@
   </data>
  </layer>
  <objectgroup id="19" name="Temp">
-  <object id="164" name="Force Orb" x="21584" y="10832">
-   <point/>
-  </object>
-  <object id="165" name="Force Orb" x="4288" y="9552">
-   <point/>
-  </object>
   <object id="166" name="Plataforma Movil" x="18624" y="8328">
    <point/>
   </object>
-  <object id="167" name="Wall Jump" x="19456" y="6256">
+  <object id="167" name="Wall Jump" x="19408" y="6288">
    <point/>
   </object>
-  <object id="168" name="Force Orb" x="18608" y="4944">
+  <object id="406" name="Plataforma Movil" x="16752" y="2288">
+   <point/>
+  </object>
+  <object id="407" name="Plataforma Movil" x="13728" y="2240">
+   <point/>
+  </object>
+  <object id="408" name="Dragon" x="18000" y="1184">
    <point/>
   </object>
  </objectgroup>
@@ -36308,17 +36308,17 @@
   <object id="390" x="3456" y="9856" width="1024" height="128"/>
   <object id="391" x="3456" y="9984" width="768" height="128"/>
  </objectgroup>
- <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
-  <object id="52" name="Player" type="Player" x="11814.3" y="12146.3">
+ <objectgroup id="11" name="EntitiesSpawnPoints">
+  <object id="52" name="Player" type="Player" x="390.3" y="11842.3">
    <point/>
   </object>
-  <object id="159" name="SkillPointOrb" type="SkillPointOrb" x="7872.73" y="12141.5">
+  <object id="159" name="SkillPointOrb" type="SkillPointOrb" x="4320.73" y="9597.5">
    <point/>
   </object>
-  <object id="162" name="Cucafera" type="Cucafera" x="4206.93" y="12211.4">
+  <object id="409" name="SkillPointOrb" type="SkillPointOrb" x="21536" y="10832">
    <point/>
   </object>
-  <object id="163" name="Cucafera" type="Cucafera" x="9344" y="12288">
+  <object id="410" name="SkillPointOrb" type="SkillPointOrb" x="18608" y="4960">
    <point/>
   </object>
  </objectgroup>

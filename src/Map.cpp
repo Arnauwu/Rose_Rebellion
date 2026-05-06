@@ -5,17 +5,25 @@
 #include "Log.h"
 #include "Physics.h"
 #include "Player.h"
+#include "Npc.h"
 
 #include <math.h>
 
 #include "SceneManager.h"
 
 #include "EntityManager.h"
-#include "SpiderEnemy.h"
+
+
 #include "Cucafera.h"
+#include "CucaferaShiny.h"
+#include "SpiderEnemy.h"
+
+
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
+
 #include "Ninfa.h"
+#include "Demon.h"
 
 #include "KnightBoss.h"
 
@@ -717,7 +725,12 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		{
 			p->value2 = propertieNode.attribute("value").as_string();
 		}
-
+		else if (propertieNode.attribute("type").as_string() == std::string("file") ||
+			propertieNode.attribute("type").as_string() == std::string("string") ||
+			propertieNode.attribute("type").empty())
+		{
+			p->value2 = propertieNode.attribute("value").as_string();
+		}
 		properties.propertyList.push_back(p);
 	}
 
@@ -811,22 +824,23 @@ void Map::SpawnEntities()
 					}
 				}
 
-				//Enemies
-				else if (entityType == std::string("Spider"))
-				{
-					std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
-					spider->position = Vector2D(x, y);
-				}
+				//Enemiess
 				else if (entityType == std::string("Cucafera"))
 				{
 					std::shared_ptr<Cucafera> cucafera = std::dynamic_pointer_cast<Cucafera>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA));
 					cucafera->position = Vector2D(x, y);
 				}
-				else if (entityType == std::string("Ninfa"))
+				else if (entityType == std::string("CucaferaShiny"))
 				{
-					std::shared_ptr<Ninfa> ninfa = std::dynamic_pointer_cast<Ninfa>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA));
-					ninfa->position = Vector2D(x, y);
+					std::shared_ptr<CucaferaShiny> cucaferaShiny = std::dynamic_pointer_cast<CucaferaShiny>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_SHINY));
+					cucaferaShiny->position = Vector2D(x, y);
 				}
+				else if (entityType == std::string("Spider"))
+				{
+					std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
+					spider->position = Vector2D(x, y);
+				}
+
 				else if (entityType == std::string("SwordKnight"))
 				{
 					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
@@ -836,6 +850,18 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
 					shieldKnight->position = Vector2D(x, y);
+				}
+
+
+				else if (entityType == std::string("Ninfa"))
+				{
+					std::shared_ptr<Ninfa> ninfa = std::dynamic_pointer_cast<Ninfa>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA));
+					ninfa->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("Demon"))
+				{
+					std::shared_ptr<Demon> demon = std::dynamic_pointer_cast<Demon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DEMON));
+					demon->position = Vector2D(x, y);
 				}
 
 				//Bosses
@@ -884,6 +910,29 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<DoubleJumpObj> doublejumpobj = std::dynamic_pointer_cast<DoubleJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DOUBLEJUMP_OBJ));
 					doublejumpobj->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("Npc"))
+				{
+					std::shared_ptr<Npc> npc = std::dynamic_pointer_cast<Npc>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NPC));
+					if (npc != nullptr)
+					{
+						npc->position = Vector2D(x, y);
+
+						// Leemos las Custom Properties de Tiled para este NPC en concreto
+						Properties npcProps;
+						LoadProperties(objectNode, npcProps);
+
+						if (npcProps.GetProperty("DialogueID") != nullptr)
+						{
+							std::string idLeido = npcProps.GetProperty("DialogueID")->value2;
+							LOG("Exito: Tiled leyo el DialogueID: '[%s]'", idLeido.c_str());
+							npc->SetDialogueID(idLeido);
+						}
+						else
+						{
+							LOG("Warning: NPC en la posicion (%.0f, %.0f) no tiene un DialogueID asignado en Tiled.", x, y);
+						}
+					}
 				}
 			}
 		}

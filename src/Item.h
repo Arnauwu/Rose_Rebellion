@@ -33,7 +33,6 @@ public:
 private:
 
 	SDL_Texture* texture;
-	const char* texturePath;
 	int texW, texH;
 
 	// Add a physics to an item

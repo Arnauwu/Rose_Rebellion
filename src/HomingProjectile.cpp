@@ -13,7 +13,7 @@
 //PI
 constexpr double PI = 3.14159265358979323846;
 
-HomingProjectile::HomingProjectile(Vector2D startPos) : Entity(EntityType::ENEMY_PROJECTILE)
+HomingProjectile::HomingProjectile(Vector2D startPos) : Entity(EntityType::NINFA_PROJECTILE)
 {
     position = startPos;
     name = "HomingProjectile";

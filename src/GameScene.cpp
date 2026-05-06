@@ -6,6 +6,9 @@
 #include "EntityManager.h"
 #include "GameManager.h"
 #include "UIManager.h"
+#include "DialogueManager.h"
+#include "UIDialogueBox.h"
+
 #include "window.h"
 #include "Player.h"
 #include "Log.h"
@@ -141,8 +144,15 @@ bool GameScene::Start() {
 	// Pause Menu
 	CreatePauseMenuUI();
 
+	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(UIElementType::DIALOGUE_BOX, 99, "",0.5f, 0.8f, 0.7f, 0.3f,sceneObserver);
+
+	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
+	if (dBox != nullptr) {
+		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
+	}
 	RefreshMenuUI();
 
+	Engine::GetInstance().dialogueManager->StartDialogue("Prueba1");
 	return true;
 }
 

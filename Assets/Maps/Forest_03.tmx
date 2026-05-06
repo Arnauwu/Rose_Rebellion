@@ -5457,7 +5457,7 @@
    <tile gid="196"/>
   </data>
  </layer>
- <objectgroup color="#aa0000" id="20" name="Spikes">
+ <objectgroup color="#aa0000" id="20" name="Spikes" visible="0">
   <properties>
    <property name="Danger" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -5465,7 +5465,7 @@
   <object id="301" x="7598" y="0" width="82" height="512"/>
   <object id="302" x="2944" y="2111.64" width="3840" height="64.3636"/>
  </objectgroup>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -5489,7 +5489,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground">
+ <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -5522,7 +5522,7 @@
   <object id="245" x="8832" y="1152" width="1152" height="26"/>
   <object id="246" x="8576" y="768" width="256" height="26"/>
  </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall">
+ <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
   <properties>
    <property name="Square" type="bool" value="true"/>
    <property name="Wall" type="bool" value="true"/>
@@ -5565,14 +5565,14 @@
   <object id="281" x="8832" y="1184" width="1150.75" height="224"/>
   <object id="282" x="10240" y="924" width="128" height="100"/>
  </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling">
+ <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
   <properties>
    <property name="Ceiling" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
   <object id="304" x="640" y="-128" width="12032" height="128"/>
  </objectgroup>
- <objectgroup id="11" name="EntitiesSpawnPoints">
+ <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="52" name="Player" type="Player" x="7570.3" y="1466.3">
    <point/>
   </object>
