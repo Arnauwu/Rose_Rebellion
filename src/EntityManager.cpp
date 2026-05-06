@@ -107,21 +107,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::NPC:
 		entity = std::make_shared<Npc>();
 		break;
-	case EntityType::ITEM:
-		entity = std::make_shared<Item>();
-		break;
-	case EntityType::HEALTH_ORB:
-		entity = std::make_shared<HealthOrb>();
-		break;
-	case EntityType::SKILL_POINT_ORB:
-		entity = std::make_shared<SkillPointOrb>();
-		break;
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
 		break;
-
-
-
 
 		//Enemies
 
@@ -134,7 +122,6 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SPIDER:
 		entity = std::make_shared<SpiderEnemy>();
 		break;
-
 
 	case EntityType::SWORD_KNIGHT:
 		entity = std::make_shared<SwordKnight>();
@@ -150,14 +137,10 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<Demon>();
 		break;
 
-
-
 		//Bosses & MiniBosses
 	case EntityType::KNIGHT_BOSS:
 		entity = std::make_shared<KnightBoss>();
 		break;
-
-
 
 		// Items
 	case EntityType::ITEM:

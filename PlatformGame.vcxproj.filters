@@ -122,13 +122,20 @@
     <Filter Include="Source Files\Game\Entity\Items\SkillObj">
       <UniqueIdentifier>{0f3949bf-364d-49e2-9d25-758c3cd4671b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Particles">
-      <UniqueIdentifier>{a12cb83a-ba8f-4279-a1c1-9b5d8ff16f60}</UniqueIdentifier>
     <Filter Include="Source Files\Game\Entity\Enemies\Cucafera Shiny">
       <UniqueIdentifier>{f23ef15e-2355-4aa5-9a79-9e0d7d7db876}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\Demon">
       <UniqueIdentifier>{98ae5e8f-301d-4a1d-9981-94c8b4fb3c15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Npcs">
+      <UniqueIdentifier>{e8212688-a038-4c05-b256-19b23fd79c94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Particles">
+      <UniqueIdentifier>{e874c51c-b937-496e-88b1-84bcae0e7540}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Dialogue">
+      <UniqueIdentifier>{26f8d5b8-ae8a-44b7-b1db-be7b715e18f6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +249,9 @@
     <ClCompile Include="src\Map.cpp">
       <Filter>Source Files\Engine\Map</Filter>
     </ClCompile>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\CameraController.cpp">
       <Filter>Source Files\Utils\Camera</Filter>
     </ClCompile>
@@ -278,27 +288,32 @@
     <ClCompile Include="src\IntroCinematicScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameManager.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\DashObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
     <ClCompile Include="src\DoubleJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
-    <ClCompile Include="src\ParticleManager.cpp">
-      <Filter>Source Files\Engine\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UIDialogueBox.cpp" />
-    <ClCompile Include="src\DialogueManager.cpp" />
-    <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\Npc.cpp" />
     <ClCompile Include="src\CucaferaShiny.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Shiny</Filter>
     </ClCompile>
     <ClCompile Include="src\Demon.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Demon</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Npc.cpp">
+      <Filter>Source Files\Game\Entity\Npcs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIDialogueBox.cpp">
+      <Filter>Source Files\Utils\UI Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticleManager.cpp">
+      <Filter>Source Files\Engine\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DialogueManager.cpp">
+      <Filter>Source Files\Engine\Dialogue</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameManager.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -443,9 +458,6 @@
     <ClInclude Include="src\IntroCinematicScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameManager.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\SavePoint.h">
       <Filter>Source Files\Game\Entity\Items\SavePoint</Filter>
     </ClInclude>
@@ -455,18 +467,29 @@
     <ClInclude Include="src\DoubleJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClInclude>
-    <ClInclude Include="src\ParticleManager.h">
-      <Filter>Source Files\Engine\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DialogueData.h" />
-    <ClInclude Include="src\DialogueManager.h" />
-    <ClInclude Include="src\Npc.h" />
-    <ClInclude Include="src\UIDialogueBox.h" />
     <ClInclude Include="src\CucaferaShiny.h">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Shiny</Filter>
     </ClInclude>
     <ClInclude Include="src\Demon.h">
       <Filter>Source Files\Game\Entity\Enemies\Demon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Npc.h">
+      <Filter>Source Files\Game\Entity\Npcs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UIDialogueBox.h">
+      <Filter>Source Files\Utils\UI Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueData.h">
+      <Filter>Source Files\Engine\Dialogue</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueManager.h">
+      <Filter>Source Files\Engine\Dialogue</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ParticleManager.h">
+      <Filter>Source Files\Engine\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameManager.h">
+      <Filter>Source Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,10 @@
   "builtin-baseline": "7213cf8135c329c37c7e2778e40774489a0583a8",
   "dependencies": [
     "box2d",
-    "ffmpeg",
+    {
+      "name": "ffmpeg",
+      "features": [ "swscale", "swresample", "avformat", "avcodec" ]
+    },
     "libjpeg-turbo",
     "libpng",
     "pugixml",
