@@ -1303,7 +1303,7 @@ void Player::DevTools(float dt)
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f,0.0f });
 	}
 
-	// GodMode (To Do: Make it work)
+	// GodMode
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
 		if (!godMode) {
 			LOG("GodMode - Active");
@@ -1385,6 +1385,8 @@ void Player::DevTools(float dt)
 	{
 		UnlockCape();
 		GameManager::GetInstance().gameState.hasSickle = true;
+		GameManager::GetInstance().gameState.dashUnlocked= true;
+		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	}
 }
 

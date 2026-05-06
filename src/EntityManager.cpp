@@ -16,11 +16,16 @@
 
 #include "SavePoint.h"
 
-#include "SpiderEnemy.h"
 #include "Cucafera.h"
+#include "CucaferaShiny.h"
+#include "SpiderEnemy.h"
+
+
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
+
 #include "Ninfa.h"
+#include "Demon.h"
 
 #include "KnightBoss.h"
 
@@ -98,6 +103,51 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::PLAYER:
 		entity = std::make_shared<Player>();
 		break;
+
+	case EntityType::SAVEPOINT:
+		entity = std::make_shared<SavePoint>();
+		break;
+
+
+
+
+		//Enemies
+
+	case EntityType::CUCAFERA:
+		entity = std::make_shared<Cucafera>();
+		break;
+	case EntityType::CUCAFERA_SHINY:
+		entity = std::make_shared<CucaferaShiny>();
+		break;
+	case EntityType::SPIDER:
+		entity = std::make_shared<SpiderEnemy>();
+		break;
+
+
+	case EntityType::SWORD_KNIGHT:
+		entity = std::make_shared<SwordKnight>();
+		break;
+	case EntityType::SHIELD_KNIGHT:
+		entity = std::make_shared<ShieldKnight>();
+		break;
+
+	case EntityType::NINFA:
+		entity = std::make_shared<Ninfa>();
+		break;
+	case EntityType::DEMON:
+		entity = std::make_shared<Demon>();
+		break;
+
+
+
+		//Bosses & MiniBosses
+	case EntityType::KNIGHT_BOSS:
+		entity = std::make_shared<KnightBoss>();
+		break;
+
+
+
+		// Items
 	case EntityType::ITEM:
 		entity = std::make_shared<Item>();
 		break;
@@ -106,27 +156,6 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::SKILL_POINT_ORB:
 		entity = std::make_shared<SkillPointOrb>();
-		break;
-	case EntityType::SAVEPOINT:
-		entity = std::make_shared<SavePoint>();
-		break;
-	case EntityType::SPIDER:
-		entity = std::make_shared<SpiderEnemy>();
-		break;
-	case EntityType::CUCAFERA:
-		entity = std::make_shared<Cucafera>();
-		break;
-	case EntityType::NINFA:
-		entity = std::make_shared<Ninfa>();
-		break;
-	case EntityType::SWORD_KNIGHT:
-		entity = std::make_shared<SwordKnight>();
-		break;
-	case EntityType::SHIELD_KNIGHT:
-		entity = std::make_shared<ShieldKnight>();
-		break;
-	case EntityType::KNIGHT_BOSS:
-		entity = std::make_shared<KnightBoss>();
 		break;
 	case EntityType::KEY:
 		entity = std::make_shared<Keys>();
