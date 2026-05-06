@@ -184,6 +184,16 @@ bool Audio::CleanUp() {
 
 bool Audio::PlayMusic(const char* path, float fadeTime) {
     if (!active) return false;
+
+    if (path == nullptr) {
+        LOG("Audio: PlayMusic fue llamado con un path nulo (nullptr)");
+        return false;
+    }
+
+    if (currentMusicPath == std::string(path)) {
+        return true;
+    }
+
     if (!EnsureStreams()) return false;
 
     // Stop any existing music: clear stream + free buffer
@@ -209,6 +219,8 @@ bool Audio::PlayMusic(const char* path, float fadeTime) {
         LOG("Audio: SDL_PutAudioStreamData(music) failed: %s", SDL_GetError());
         return false;
     }
+
+    currentMusicPath = path;
 
     LOG("Audio: playing music %s", path);
     return true;
@@ -261,6 +273,10 @@ bool Audio::PlayFx(int id, int repeat) {
         }
     }
 
+    // ¡ESTA ES LA LÍNEA CLAVE QUE TE FALTA!
+    // Fuerza a que el stream se vacíe por completo para que vuelva a 0 bytes.
+    SDL_FlushAudioStream(streamToUse);
+
     return true;
 }
 
@@ -303,4 +319,20 @@ void Audio::StopFx(int id) {
             sfx_playing_[i] = -1;               // Olvidamos el registro
         }
     }
+}
+
+void Audio::StopMusic() {
+    if (!active) return;
+
+    // clean stream for stop music
+    if (music_stream_) {
+        SDL_ClearAudioStream(music_stream_);
+    }
+
+    // clean music
+    FreeSound(music_data_);
+
+    currentMusicPath = "";
+
+    LOG("Audio: Musica detenida.");
 }

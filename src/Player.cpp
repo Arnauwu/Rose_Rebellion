@@ -229,9 +229,8 @@ void Player::GetPhysicsValues()
 
 void Player::Move() {
 	bool isMovingThisFrame = false;
-
 	// Move Left
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false && !isWallJumping)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false)
 	{
 		velocity.x = -speed;
 		lookingRight = false;
@@ -251,7 +250,7 @@ void Player::Move() {
 		}
 	}
 	// Move Right
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false && !isWallJumping)
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
 	{
 		velocity.x = speed;
 		lookingRight = true;
@@ -270,7 +269,6 @@ void Player::Move() {
 			currentAnimPriority = 1;
 		}
 	}
-
 	else
 	{
 		if (!isAttacking && !isJumping && !isDashing)
@@ -287,39 +285,37 @@ void Player::Move() {
 			currentAnimPriority = 0;
 		}
 	}
+
 	bool isWalkingConditions = (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead);
 
-	if (isMovingThisFrame && onGround && !isDashing && !isAttacking && !isdead)
+	if (isWalkingConditions)
 	{
+		// Si AHORA camina, pero en el frame anterior NO caminaba 
+		// (porque estaba parada, saltando, etc.), forzamos el sonido inmediato.
+		if (!wasWalking) {
+			stepTimer = timeBetweenSteps;
+		}
+
+		// Sumamos el tiempo
 		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
 
+		// Si llegamos a los 14.9s (o lo hemos forzado arriba), suena
 		if (stepTimer >= timeBetweenSteps)
 		{
-			// OJO: Le pasamos 0 repeticiones para que sea súper ligero para la memoria
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
-			if (lookingRight) {
-				footX = position.getX() - 35.0f; // Pegado al talón
-				footY = position.getY() + (texH / 2.0f) - 10.0f; // A nivel del suelo
-			}
-			else {
-				footX = position.getX() + 35.0f; // Pegado al talón
-				footY = position.getY() + (texH / 2.0f) - 10.0f;
-			}
-			Engine::GetInstance().particleManager->EmitDust(footX, footY, lookingRight);
-
-			stepTimer = 0.0f;
+			stepTimer = 0.0f; // Reiniciamos para los próximos 15 segundos
 		}
 	}
 	else
 	{
-		// Forzamos el contador para que al aterrizar el primer paso suene de inmediato
-		stepTimer = timeBetweenSteps;
+		// Si deja de cumplir las condiciones (se para, salta, etc.), CORTAMOS.
 		if (wasWalking)
 		{
 			Engine::GetInstance().audio->StopFx(caminarPrincesa);
 		}
-
 	}
+
+	// Guardamos el estado para el siguiente frame
 	wasWalking = isWalkingConditions;
 }
 
@@ -505,106 +501,141 @@ void Player::Jump(float dt)
 
 void Player::Attack(float dt)
 {
-	// 1. Start the attack 
+	// 1. Iniciar el ataque 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
 	{
-		if (GameManager::GetInstance().gameState.hasSickle && GameManager::GetInstance().gameState.glideUnlocked)
+		if (HasItem(ItemID::WEAPON))
 		{
 			Engine::GetInstance().audio->PlayFx(attackFx);
 			isAttacking = true;
-			if (lookingRight)
-			{
-				anims.SetCurrent("attack_right");
-				anims.GetAnim("attack_right")->SetLoop(false);
-			}
-			else
-			{
-				anims.SetCurrent("attack_left");
-				anims.GetAnim("attack_left")->SetLoop(false);
-			}
 
-			currentAnimPriority = 4;
+			// Detectar dirección vertical mediante teclado
+			bool lookUp = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT);
+			bool lookDown = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && !onGround);
 
 			currentAttackTime = 0.0f;
 			timeSinceLastAttack = 0.0f;
 
+			// Configurar dimensiones según el combo
 			if (comboStep == 0)
 			{
-				// first attack
-				damage = 10;
 				currentAttackWidth = 60;
 				currentAttackHeight = 64;
-				currentAttackOffsetX = texW / 2 + currentAttackWidth / 2;
-				LOG("Attack 1 started (Normal)");
 			}
 			else
 			{
-				// second attack
-				damage = 15;
 				currentAttackWidth = 120;
 				currentAttackHeight = 90;
-				currentAttackOffsetX = texW / 2 + currentAttackWidth / 2;
-				LOG("Attack 2 started (Heavy)");
 			}
 
-			// combo
+			// Variables locales para calcular la posición inicial
+			int offsetX = 0;
+			int offsetY = 0;
+
+			if (lookUp)
+			{
+				// Intercambio de dimensiones para ataque vertical
+				int temp = currentAttackWidth;
+				currentAttackWidth = currentAttackHeight;
+				currentAttackHeight = temp;
+
+				// Offset negativo = ARRIBA
+				offsetY = -(texH * 0.8f);
+				currentAttackOffsetX = 0; // Usamos 0 para identificar que no es lateral
+
+				if (lookingRight) anims.SetCurrent("attack_right");
+				else anims.SetCurrent("attack_left");
+			}
+			else if (lookDown)
+			{
+				int temp = currentAttackWidth;
+				currentAttackWidth = currentAttackHeight;
+				currentAttackHeight = temp;
+
+				currentAttackOffsetX = 0;
+				offsetX = 0;
+				// Offset POSITIVO = ABAJO
+				offsetY = (texH * 0.8f);
+
+				if (lookingRight) anims.SetCurrent("attack_right");
+				else anims.SetCurrent("attack_left");
+			}
+			else
+			{
+				// Ataque lateral estándar
+				currentAttackOffsetX = lookingRight ? (texW / 2 + currentAttackWidth / 2) : -(texW / 2 + currentAttackWidth / 2);
+				offsetX = currentAttackOffsetX;
+				offsetY = 0;
+
+				if (lookingRight)
+				{
+					anims.SetCurrent("attack_right");
+					anims.GetAnim("attack_right")->SetLoop(false);
+				}
+				else
+				{
+					anims.SetCurrent("attack_left");
+					anims.GetAnim("attack_left")->SetLoop(false);
+				}
+			}
+
+
+			currentAnimPriority = 4;
 			comboStep = (comboStep + 1) % 2;
 
-			// calculate current attack
-			int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
-			int attackX = position.getX() + offsetX;
-			int attackY = position.getY();
+			// Creación del sensor de ataque
+			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(
+				position.getX() + offsetX,
+				position.getY() + offsetY,
+				currentAttackWidth,
+				currentAttackHeight,
+				bodyType::KINEMATIC);
 
-			// create collider attack
-			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
 			attackCollider->ctype = ColliderType::PLAYER_ATTACK;
 			attackCollider->listener = this;
 		}
-		else
-		{
-			// Prompt text
-			if (!GameManager::GetInstance().gameState.hasSickle && !GameManager::GetInstance().gameState.glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape.");
-			}
-			else if (!GameManager::GetInstance().gameState.hasSickle) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle.");
-			}
-			else if (!GameManager::GetInstance().gameState.glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Cape.");
-			}
-		}
 	}
 
-	// 2. Control the duration of the attack
+	// 2. Control del ataque activo
 	if (isAttacking)
 	{
 		currentAttackTime += dt / 1000.0f;
 
-		// Update the collider's position so that it follows the player whilst attacking
 		if (attackCollider != nullptr) {
-			int attackOffsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
-			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
+			int tempOffsetY = 0;
+
+			// Si el ataque no es lateral (X=0), determinamos si es arriba o abajo
+			// comparando la posición actual del collider respecto al jugador
+			if (currentAttackOffsetX == 0) {
+				int cX, cY;
+				attackCollider->GetPosition(cX, cY);
+
+				// Usamos exactamente los mismos valores que en la creación
+				if (cY < position.getY()) {
+					tempOffsetY = -(texH * 0.8f); // Mantener ARRIBA
+				}
+				else {
+					tempOffsetY = (texH * 0.8f);  // Mantener ABAJO
+				}
+			}
+
+			attackCollider->SetPosition(position.getX() + currentAttackOffsetX, position.getY() + tempOffsetY);
 		}
 
-		// End the attack when the time runs out
+		// Finalizar ataque
 		if (currentAttackTime >= attackDuration &&
-			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() || anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
+			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() ||
+				anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
 		{
 			isAttacking = false;
-
-
 			anims.SetCurrent("idle");
 			currentAnimPriority = 0;
 
-
-			// Destroy the collider
 			if (attackCollider != nullptr)
 			{
 				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 				attackCollider = nullptr;
 			}
-
-			LOG("Attack ended");
 		}
 	}
 }
@@ -723,6 +754,7 @@ void Player::Interact()
 						if (!doorId.empty()) {
 							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 						}
+						SDL_Delay(150);
 						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else
@@ -1465,6 +1497,7 @@ void Player::DevTools(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_9) == KEY_DOWN)
 	{
 		UnlockCape();
+		UnlockSickle();
 		GameManager::GetInstance().gameState.hasSickle = true;
 		GameManager::GetInstance().gameState.dashUnlocked= true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
