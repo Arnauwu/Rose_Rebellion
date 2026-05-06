@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="24" nextobjectid="229">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="25" nextobjectid="287">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -5008,51 +5008,52 @@
   <object id="217" x="5120" y="3968" width="640" height="128"/>
   <object id="218" x="2176" y="3968" width="640" height="128"/>
  </objectgroup>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
+  <object id="257" x="-256" y="4096" width="128" height="512">
+   <properties>
+    <property name="TeleportTo" type="file" value="Catacombs_02_F.tmx"/>
+   </properties>
+  </object>
+  <object id="259" x="8064" y="4096" width="128" height="512">
+   <properties>
+    <property name="TeleportTo" type="file" value="Catacombs_02_M.tmx"/>
+   </properties>
+  </object>
  </objectgroup>
- <objectgroup color="#00aa00" id="6" name="Ground" visible="0">
+ <objectgroup color="#000000" id="24" name="Map">
   <properties>
-   <property name="Ground" type="bool" value="true"/>
+   <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="117" x="23680" y="9856" width="4992" height="128"/>
-  <object id="119" x="20992" y="9856" width="2048" height="128"/>
-  <object id="120" x="18432" y="9728" width="2560" height="128"/>
-  <object id="121" x="17664" y="9472" width="375.333" height="9"/>
-  <object id="122" x="16896" y="9216.67" width="384" height="12"/>
-  <object id="123" x="16256" y="8962" width="384" height="13.3333"/>
-  <object id="124" x="15104" y="8704" width="896" height="13.3333"/>
-  <object id="125" x="25984" y="9473" width="384" height="10"/>
-  <object id="128" x="23552" y="9728" width="128" height="5.66667"/>
-  <object id="130" x="23040" y="9728.33" width="128" height="9.6667"/>
-  <object id="154" x="16000" y="10112" width="2432" height="128"/>
-  <object id="155" x="23168" y="9984" width="384" height="128"/>
- </objectgroup>
- <objectgroup color="#aa5500" id="7" name="Wall" visible="0">
-  <properties>
-   <property name="Square" type="bool" value="true"/>
-   <property name="Wall" type="bool" value="true"/>
-  </properties>
-  <object id="140" x="28032" y="7936" width="256" height="1536"/>
-  <object id="145" x="25984" y="9486.67" width="384" height="113.333"/>
-  <object id="146" x="17663.3" y="9486" width="384" height="113.333"/>
-  <object id="147" x="16896" y="9230" width="384" height="113.333"/>
-  <object id="148" x="16256.7" y="8974" width="384" height="113.333"/>
-  <object id="149" x="15872" y="8720" width="128" height="1392"/>
-  <object id="150" x="18432" y="9856" width="128" height="256"/>
-  <object id="152" x="23040" y="9739" width="128" height="245"/>
-  <object id="153" x="23552" y="9739" width="128" height="245"/>
- </objectgroup>
- <objectgroup color="#00aaff" id="8" name="Ceiling" visible="0">
-  <properties>
-   <property name="Ceiling" type="bool" value="true"/>
-   <property name="Square" type="bool" value="true"/>
-  </properties>
+  <object id="260" x="-128" y="4608" width="1536" height="512"/>
+  <object id="261" x="-128" y="3072" width="896" height="1024"/>
+  <object id="262" x="768" y="2688" width="128" height="384"/>
+  <object id="263" x="896" y="2432" width="128" height="256"/>
+  <object id="264" x="1024" y="2304" width="128" height="128"/>
+  <object id="266" x="1152" y="2176" width="256" height="128"/>
+  <object id="267" x="1408" y="1024" width="128" height="1152"/>
+  <object id="268" x="1536" y="896" width="128" height="128"/>
+  <object id="269" x="1664" y="768" width="256" height="128"/>
+  <object id="270" x="1920" y="640" width="512" height="128"/>
+  <object id="271" x="2432" y="512" width="640" height="128"/>
+  <object id="272" x="3072" y="384" width="1792" height="128"/>
+  <object id="273" x="4864" y="512" width="640" height="128"/>
+  <object id="274" x="5504" y="640" width="512" height="128"/>
+  <object id="275" x="6016" y="768" width="256" height="128"/>
+  <object id="276" x="6272" y="896" width="128" height="128"/>
+  <object id="277" x="6400" y="1024" width="128" height="1152"/>
+  <object id="278" x="6528" y="2176" width="256" height="128"/>
+  <object id="279" x="6784" y="2304" width="128" height="128"/>
+  <object id="280" x="6912" y="2432" width="128" height="256"/>
+  <object id="281" x="7040" y="2688" width="128" height="384"/>
+  <object id="283" x="7168" y="3072" width="896" height="1024"/>
+  <object id="284" x="6528" y="4608" width="1536" height="512"/>
+  <object id="285" x="2048" y="4608" width="3840" height="512"/>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="52" name="Player" type="Player" x="27302.3" y="9586.3">
@@ -5068,7 +5069,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns" visible="0">
+ <objectgroup id="15" name="PlayerSpawns">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
@@ -5078,15 +5079,21 @@
    </properties>
    <point/>
   </object>
-  <object id="132" name="Player" type="Player" x="338" y="6346">
+  <object id="132" name="Player" type="Player" x="128" y="4480">
    <properties>
-    <property name="FromRoom" type="file" value="Forest_02.tmx"/>
+    <property name="FromRoom" type="file" value="Catacombs_02_F.tmx"/>
    </properties>
    <point/>
   </object>
   <object id="216" name="Player" type="Player" x="30592" y="11008">
    <properties>
     <property name="FromRoom" type="file" value="Catacombs_01_M.tmx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="286" name="Player" type="Player" x="7808" y="4480">
+   <properties>
+    <property name="FromRoom" type="file" value="Catacombs_02_M.tmx"/>
    </properties>
    <point/>
   </object>
