@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneBase.h"
 #include "Textures.h"
+#include "Animation.h"
 #include "Audio.h"
 #include <vector>
 #include <memory>
@@ -70,7 +71,7 @@ public:
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
-	
+
 	//Buttons textures
 	SDL_Texture* buttonUI = nullptr;
 	SDL_Texture* textBgUI = nullptr;
@@ -83,7 +84,7 @@ public:
 	SDL_Texture* texInventoryUI = nullptr;
 	SDL_Texture* texSkilltreeUI = nullptr;
 	SDL_Texture* texPauseUI = nullptr;
-	
+
 	//Items textures
 	SDL_Texture* texItemKeyCastle = nullptr;
 	SDL_Texture* texItemKeyForest = nullptr;
@@ -95,8 +96,15 @@ public:
 	//Dialogue Textures
 	SDL_Texture* UIDialogueBoxPrincess = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
+
+	// ==========================================
+	// ???????????????????
+	// ==========================================
+	SDL_Texture* doorTexture = nullptr;
+	Animation doorOpenAnim;
+	bool isDoorOpening = false;
+	int doorDrawX = 0;
+	int doorDrawY = 0;
 
 private:
 	// Helper functions for the Game Menu
@@ -104,7 +112,7 @@ private:
 	void CreateTopBarUI();
 	void CreateInventoryUI();
 	void CreatePauseMenuUI();
-	void CreatePauseSettingUI() ;
+	void CreatePauseSettingUI();
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);

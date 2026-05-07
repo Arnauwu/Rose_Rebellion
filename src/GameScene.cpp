@@ -1,4 +1,4 @@
-#include "GameScene.h"
+﻿#include "GameScene.h"
 #include "Engine.h"
 #include "Input.h"
 #include "Map.h"
@@ -39,13 +39,13 @@ void GameScene::LoadMap(std::string mapFile)
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M�sica Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M�sica Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M�sica Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
@@ -60,7 +60,7 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().map->SpawnEntities();
 
 	// Camara mode
-	
+
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr)
 	{
@@ -68,7 +68,7 @@ void GameScene::LoadMap(std::string mapFile)
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
-		// ASIGNAR EL MODO DE C�MARA AQU�
+		// ASIGNAR EL MODO DE CÁMARA AQUÍ
 		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
@@ -87,15 +87,19 @@ void GameScene::LoadMap(std::string mapFile)
 		if (previousMap == "")
 		{
 			spawnPos = GameManager::GetInstance().gameState.playerPosition;
-			LOG("Carga inicial: Usando posici�n del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
+			LOG("Carga inicial: Usando posición del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
 		else
 		{
 			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-			LOG("Transici�n: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+			LOG("Transición: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
 
 		newPlayer->SetPosition(spawnPos);
+
+		// 【修改】换地图后解除冻结和重置门状态
+		newPlayer->isFrozen = false;
+		newPlayer->isOpeningDoor = false;
 
 		if (newPlayer->pbody != nullptr) {
 			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
@@ -118,10 +122,7 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-	//LoadTextureIfNull(orbFrameUI, "Assets/Textures/UI/Buttons/orbFrameUI.png");
-	//LoadTextureIfNull(keyFrameUI, "Assets/Textures/UI/Buttons/keyFrameUI.png");
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
-
 
 	// Texture Load
 	LoadTextureIfNull(texMapUI, "Assets/Textures/UI/GameMenu/t_MapUI.png");
@@ -139,10 +140,18 @@ bool GameScene::Start() {
 	//Load Dialogue UI
 	LoadTextureIfNull(UIDialogueBoxPrincess, "Assets/Textures/UI/Dialogues/UIDialogueBoxPrincess.png");
 	LoadTextureIfNull(UIDialogueBoxNpc1, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc1.png");
-	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc2.png");
-	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc3.png");
 
-	
+	// ==========================================
+	// 【已修复】使用你本地引擎正确的 Animation 写法
+	// ==========================================
+	LoadTextureIfNull(doorTexture, "Assets/SS_puerta_abriendo_pruevas.png");
+	for (int i = 0; i < 6; i++) {
+		// AddFrame 参数1: 裁剪框， 参数2: 每帧持续的时间(毫秒) 比如100ms
+		doorOpenAnim.AddFrame({ i * 256, 0, 256, 256 }, 100);
+	}
+	doorOpenAnim.SetLoop(false); // 禁止循环
+	isDoorOpening = false;
+
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
@@ -151,7 +160,7 @@ bool GameScene::Start() {
 	// Pause Menu
 	CreatePauseMenuUI();
 
-	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(UIElementType::DIALOGUE_BOX, 99, "",0.5f, 0.8f, 0.7f, 0.3f,sceneObserver);
+	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(UIElementType::DIALOGUE_BOX, 99, "", 0.5f, 0.8f, 0.7f, 0.3f, sceneObserver);
 
 	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
 	if (dBox != nullptr) {
@@ -186,6 +195,33 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
+	// ==========================================
+	// 【新增】拦截门动画逻辑，当玩家开门时渲染动画
+	// ==========================================
+	Player* p = Engine::GetInstance().entityManager->GetPlayer();
+	if (p != nullptr && p->isOpeningDoor) {
+		if (!isDoorOpening) {
+			isDoorOpening = true;
+			doorOpenAnim.Reset();
+			// 从门的 Box2D Collider 获取门中心点坐标
+			p->doorToOpen->GetPosition(doorDrawX, doorDrawY);
+		}
+
+		doorOpenAnim.Update(dt);
+
+		// Box2D 给的是中心点坐标，256的图我们要减去128将其居中画出来
+		SDL_Rect frame = doorOpenAnim.GetCurrentFrame();
+		Engine::GetInstance().render->DrawTexture(doorTexture, doorDrawX - 128, doorDrawY - 128, &frame);
+
+		// 动画播完后触发切图
+		if (doorOpenAnim.HasFinishedOnce()) {
+			p->isOpeningDoor = false;
+			isDoorOpening = false;
+			Engine::GetInstance().sceneManager->setNewMap = true; // 正式触发切换房间
+		}
+	}
+	// ==========================================
+
 	if (input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
 		if (currentMenuTab != GameMenuTab::NONE) {
 			ToggleGameMenu(GameMenuTab::NONE);
@@ -199,7 +235,7 @@ bool GameScene::Update(float dt) {
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
 	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
 	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
-	
+
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
@@ -255,7 +291,7 @@ bool GameScene::PostUpdate() {
 
 	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
 
-		sceneManager->setNewMap = false; 
+		sceneManager->setNewMap = false;
 		Player* p = Engine::GetInstance().entityManager->GetPlayer();
 		if (p != nullptr && p->interactuableBody != nullptr) {
 			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
@@ -300,16 +336,16 @@ bool GameScene::CleanUp() {
 	//UnloadTexture Dialogues
 	UnloadTexture(UIDialogueBoxPrincess);
 	UnloadTexture(UIDialogueBoxNpc1);
-	//UnloadTexture(UIDialogueBoxNpc2);
-	//UnloadTexture(UIDialogueBoxNpc3);
 
+	// 【新增】清理门贴图
+	UnloadTexture(doorTexture);
 
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {
-			if (elem) elem->CleanUp(); 
+			if (elem) elem->CleanUp();
 		}
 		group.clear();
-	};
+		};
 
 	deleteGroup(topBarElements);
 	deleteGroup(inventoryUI);
@@ -337,7 +373,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 		RefreshMenuUI();
 		break;
 	case (int)GameUI_ID::BTN_PAUSE_MAINMENU:
-		ToggleGameMenu(GameMenuTab::NONE); 
+		ToggleGameMenu(GameMenuTab::NONE);
 		Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU); break;
 	case (int)GameUI_ID::BTN_OPTIONS_BACK:
 		currentMenuTab = GameMenuTab::PAUSE_MENU;
@@ -347,7 +383,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
 
-		// Gesti�n texto de los objetos del inventario
+		// Gestión texto de los objetos del inventario
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
 		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
@@ -427,7 +463,7 @@ void GameScene::CreateInventoryUI() {
 
 		// AMULETOS (Vertices)
 		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si a�n no tienes textura
+		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si aún no tienes textura
 		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 
@@ -441,7 +477,7 @@ void GameScene::CreateInventoryUI() {
 
 		btn->SetBgTexture(skillFrameUI);
 
-		// Si le hemos asignado una textura, se la ponemos al bot�n
+		// Si le hemos asignado una textura, se la ponemos al botón
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}
