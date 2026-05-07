@@ -10,8 +10,7 @@ UIDialogueBox::UIDialogueBox(int id, float anchorX, float anchorY, float wPercen
 
 UIDialogueBox::~UIDialogueBox() {}
 void UIDialogueBox::SetBackgroundTextures(SDL_Texture* princessTex, SDL_Texture* npcTex) {
-	texPrincess = princessTex;
-	texNPC = npcTex;
+    backgroundTex = princessTex;
 }
 
 bool UIDialogueBox::Update(float dt) {
@@ -20,49 +19,65 @@ bool UIDialogueBox::Update(float dt) {
 }
 
 void UIDialogueBox::Draw() const {
-	if (!visible) return;
+    if (!visible) return;
 
-	SDL_Texture* currentBg = nullptr;
+  
+    if (backgroundTex == nullptr) return;
 
-	if (currentSpeaker == "Princesa") {
-		currentBg = texPrincess;
-	}
-	else {
-		currentBg = texNPC;
-	}
+    int screenW = Engine::GetInstance().render->camera.w;
+    int screenH = Engine::GetInstance().render->camera.h;
 
+    // CAJA PRINCIPAL (Texto de diálogo)
+    SDL_Rect mainBox;
+    mainBox.w = 1400;
+    mainBox.h = 240;
+    mainBox.x = (screenW - mainBox.w) / 2;
+    mainBox.y = screenH - mainBox.h - 40;
 
-	if (currentBg != nullptr) {
-		Engine::GetInstance().render->DrawTextureScaled(currentBg, bounds);
-	}
-	else {
-		Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 0, 200, true, false);
-	}
+    // Dibujamos el fondo principal
+    Engine::GetInstance().render->DrawTexture9Slice(backgroundTex, mainBox, 64, 64, 64, 64);
 
-	if (!currentSpeaker.empty()) {
-		int nameX;
-		int nameY = bounds.y + 20;
+    // CAJA SPEAKER (Texto de diálogo)
+    if (!currentSpeaker.empty()) {
+        SDL_Rect nameTextRect = Engine::GetInstance().render->GetTextRenderedBounds(currentSpeaker.c_str(), mainBox, FontType::SPEAKER);
 
-		if (currentSpeaker == "Princesa") {
-			nameX = bounds.x + 30;
-		}
-		else {
-			SDL_Rect nameRect = Engine::GetInstance().render->GetTextRenderedBounds(currentSpeaker.c_str(), bounds, FontType::SPEAKER);
-			nameX = (bounds.x + bounds.w) - nameRect.w - 30;
-		}
+        SDL_Rect nameBox;
+        nameBox.w = nameTextRect.w;
+        nameBox.h = 80;
+        nameBox.y = mainBox.y - nameBox.h;
 
-		Engine::GetInstance().render->DrawText(currentSpeaker.c_str(), nameX, nameY, 0, 0, speakerColor, FontType::SPEAKER);
-	}
+        // LÓGICA DE POSICIÓN:
+        if (currentSpeaker == "Princesa" ) {
+            nameBox.x = mainBox.x + 50;
+        }
+        else {
+            nameBox.x = (mainBox.x + mainBox.w) - nameBox.w - 50;
+        }
 
-	if (!currentText.empty()) {
-		int textX = bounds.x + 30;
-		int textY = bounds.y + 80;
+        Engine::GetInstance().render->DrawTexture9Slice(backgroundTex, nameBox, 0, 0, 0, 0);
 
-		int maxW = bounds.w - 60;
-		int maxH = bounds.h - 100;
+        int nameTextX = nameBox.x + (nameBox.w - nameTextRect.w) / 2;
+        int nameTextY = nameBox.y + (nameBox.h - nameTextRect.h) / 2;
 
-		Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::DIALOGUE);
-	}
+        Engine::GetInstance().render->DrawText(
+            currentSpeaker.c_str(), nameTextX, nameTextY, 0, 0, speakerColor, FontType::SPEAKER);
+    }
+
+    if (!currentText.empty()) {
+        int textX = mainBox.x + 70;
+        int textY = mainBox.y + 50;
+
+        int maxW = mainBox.w - 140;
+        int maxH = mainBox.h - 100;
+
+        Engine::GetInstance().render->DrawText(
+            currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::DIALOGUE);
+    }
+}
+
+bool UIDialogueBox::CleanUp() {
+    pendingToDelete = true;
+    return true;
 }
 
 void UIDialogueBox::SetSpeakerName(const std::string& name) { currentSpeaker = name; }

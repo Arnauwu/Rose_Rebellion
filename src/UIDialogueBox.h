@@ -9,6 +9,7 @@ public:
 
     bool Update(float dt) override;
     void Draw() const override;
+    bool CleanUp() override;
 
     void SetSpeakerName(const std::string& name);
     void SetDialogueText(const std::string& text);
@@ -18,8 +19,7 @@ private:
     std::string currentSpeaker;
     std::string currentText;
 
-    SDL_Texture* texPrincess = nullptr;
-    SDL_Texture* texNPC = nullptr;
+    SDL_Texture* backgroundTex = nullptr;
 
     SDL_Color textColor = { 255, 255, 255, 255 };    
     SDL_Color speakerColor = { 255, 204, 0, 255 };     

@@ -93,7 +93,7 @@ public:
 	SDL_Texture* texItemWeapon = nullptr;
 
 	//Dialogue Textures
-	SDL_Texture* UIDialogueBoxPrincess = nullptr;
+	SDL_Texture* UIDialogueBoxTex = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
 	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
 	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;

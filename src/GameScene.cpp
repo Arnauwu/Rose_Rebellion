@@ -137,7 +137,7 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
 
 	//Load Dialogue UI
-	LoadTextureIfNull(UIDialogueBoxPrincess, "Assets/Textures/UI/Dialogues/UIDialogueBoxPrincess.png");
+	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
 	LoadTextureIfNull(UIDialogueBoxNpc1, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc1.png");
 	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc2.png");
 	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc3.png");
@@ -155,12 +155,12 @@ bool GameScene::Start() {
 
 	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
 	if (dBox != nullptr) {
-		dBox->SetBackgroundTextures(UIDialogueBoxPrincess, UIDialogueBoxNpc1);
+		dBox->SetBackgroundTextures(UIDialogueBoxTex, UIDialogueBoxTex);
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
+
 	}
 	RefreshMenuUI();
 
-	Engine::GetInstance().dialogueManager->StartDialogue("Prueba1");
 	return true;
 }
 
@@ -298,7 +298,7 @@ bool GameScene::CleanUp() {
 	UnloadTexture(texItemWeapon);
 
 	//UnloadTexture Dialogues
-	UnloadTexture(UIDialogueBoxPrincess);
+	UnloadTexture(UIDialogueBoxTex);
 	UnloadTexture(UIDialogueBoxNpc1);
 	//UnloadTexture(UIDialogueBoxNpc2);
 	//UnloadTexture(UIDialogueBoxNpc3);
