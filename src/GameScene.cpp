@@ -57,7 +57,7 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().map->CleanUp();
 
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
-	Engine::GetInstance().map->SpawnEntities();
+	Engine::GetInstance().map->SpawnEntities(SpecialFloors);
 
 	// Camara mode
 	

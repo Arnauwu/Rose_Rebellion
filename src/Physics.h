@@ -61,6 +61,8 @@ enum class ColliderType {
     PATH,
     DOOR,
     
+    //Special Floors
+    SPECIALFLOOR,
     
     UNKNOWN
 

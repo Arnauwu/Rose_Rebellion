@@ -2,6 +2,7 @@
 #include "SceneBase.h"
 #include "Textures.h"
 #include "Audio.h"
+#include "SpecialFloors.h"
 #include <vector>
 #include <memory>
 
@@ -97,6 +98,9 @@ public:
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
 	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
 	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
+
+	//Special Floors
+	std::vector<std::shared_ptr<SpecialFloor>> SpecialFloors;
 
 private:
 	// Helper functions for the Game Menu

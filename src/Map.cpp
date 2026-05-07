@@ -28,6 +28,8 @@
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
 
+#include "SpecialFloors.h"
+
 #include "GameManager.h"
 #include "SavePoint.h"
 #include "Item.h"
@@ -786,8 +788,12 @@ Vector2D Map::GetMapSizeInTiles()
 	return Vector2D((float)mapData.width, (float)mapData.height);
 }
 
-void Map::SpawnEntities()
+void Map::SpawnEntities(std::vector<std::shared_ptr<SpecialFloor>>& floors)
 {
+	int brokenFloorIndex = 0;
+	int verticalFloorIndex = 0;
+	int horizontalFloorIndex = 0;
+
 	for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
 	{
 		if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
@@ -876,6 +882,7 @@ void Map::SpawnEntities()
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					ninfaBoss->position = Vector2D(x, y);
 				}
+
 				//Items
 				else if (entityType == std::string("Key"))
 				{
@@ -939,6 +946,30 @@ void Map::SpawnEntities()
 						}
 					}
 				}
+
+				//Special Platforms
+				else if (entityType == std::string("BrokenFloor")) 
+				{
+					if (brokenFloorIndex < floors.size()) {
+						//Si el enemigo no existe lo creamos
+						if (floors[brokenFloorIndex] == nullptr) {
+							floors[brokenFloorIndex] = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+							floors[brokenFloorIndex]->Start();
+							floors[brokenFloorIndex]->position = Vector2D(x, y);
+						}
+						brokenFloorIndex++;
+					}
+				}
+				else if (entityType == std::string("VerticalFloor")) 
+				{
+					std::shared_ptr<SpecialFloor> verticalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					verticalFloor->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("HorizontalFloor"))
+				{
+					std::shared_ptr<SpecialFloor> horizontalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					horizontalFloor->position = Vector2D(x, y);
+				}
 			}
 		}
 
@@ -970,6 +1001,7 @@ void Map::SpawnEntities()
 
 	Engine::GetInstance().entityManager->AwakeEntities();
 }
+
 
 std::string Map::DoorInfo(PhysBody* door)
 {

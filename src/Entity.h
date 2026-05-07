@@ -35,6 +35,9 @@ enum class EntityType
 	NINFA_MARE,
 
 	SAVEPOINT,
+
+	SPECIALFLOOR,
+
 	UNKNOWN
 };
 
