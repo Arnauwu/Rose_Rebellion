@@ -26,6 +26,7 @@
 #include "Demon.h"
 
 #include "KnightBoss.h"
+#include "NinfaBoss.h"
 
 #include "GameManager.h"
 #include "SavePoint.h"
@@ -870,7 +871,11 @@ void Map::SpawnEntities()
 					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
 					knightBoss->position = Vector2D(x, y);
 				}
-
+				else if (entityType == std::string("NinfaBoss"))
+				{
+					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
+					ninfaBoss->position = Vector2D(x, y);
+				}
 				//Items
 				else if (entityType == std::string("Key"))
 				{

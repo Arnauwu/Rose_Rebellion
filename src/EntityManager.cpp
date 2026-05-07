@@ -29,6 +29,7 @@
 #include "Demon.h"
 
 #include "KnightBoss.h"
+#include "NinfaBoss.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -141,6 +142,10 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::KNIGHT_BOSS:
 		entity = std::make_shared<KnightBoss>();
 		break;
+	case EntityType::NINFA_MARE:
+		entity = std::make_shared<NinfaMare>();
+		break;
+
 
 		// Items
 	case EntityType::ITEM:

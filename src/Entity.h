@@ -32,6 +32,7 @@ enum class EntityType
 	DEMON,
 
 	KNIGHT_BOSS,
+	NINFA_MARE,
 
 	SAVEPOINT,
 	UNKNOWN
