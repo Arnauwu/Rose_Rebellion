@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneBase.h"
+#include "UIDialogueBox.h"
 #include "Textures.h"
 #include "Audio.h"
 #include <vector>
@@ -105,6 +106,8 @@ private:
 	void CreateInventoryUI();
 	void CreatePauseMenuUI();
 	void CreatePauseSettingUI() ;
+	void CreateDialogueUI();
+
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
@@ -129,6 +132,8 @@ private:
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
 
+	// Dialogue UI
+	std::vector<std::shared_ptr<UIElement>> dialogueUI;
 	//MapChanging Variables
 	// Fade point
 	enum class MapTransitionState {

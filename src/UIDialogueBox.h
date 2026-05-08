@@ -1,6 +1,7 @@
 #pragma once
 #include "UIElement.h"
 #include <string>
+#include <unordered_map>
 
 class UIDialogueBox : public UIElement {
 public:
@@ -11,6 +12,7 @@ public:
     void Draw() const override;
     bool CleanUp() override;
 
+    void AddPortrait(const std::string& speakerName, SDL_Texture* portraitTex);
     void SetSpeakerName(const std::string& name);
     void SetDialogueText(const std::string& text);
     void SetBackgroundTextures(SDL_Texture* princessTex, SDL_Texture* npcTex);
@@ -19,8 +21,11 @@ private:
     std::string currentSpeaker;
     std::string currentText;
 
+    std::unordered_map<std::string, SDL_Texture*> portraits;
+    SDL_Texture* currentPortrait = nullptr;
     SDL_Texture* backgroundTex = nullptr;
 
+    SDL_Rect cachedNameTextRect = { 0, 0, 0, 0 };
     SDL_Color textColor = { 255, 255, 255, 255 };    
     SDL_Color speakerColor = { 255, 204, 0, 255 };     
 };

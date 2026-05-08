@@ -60,7 +60,7 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().map->SpawnEntities();
 
 	// Camara mode
-	
+
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr)
 	{
@@ -138,11 +138,7 @@ bool GameScene::Start() {
 
 	//Load Dialogue UI
 	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
-	LoadTextureIfNull(UIDialogueBoxNpc1, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc1.png");
-	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc2.png");
-	//LoadTextureIfNull(, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc3.png");
 
-	
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
@@ -151,14 +147,8 @@ bool GameScene::Start() {
 	// Pause Menu
 	CreatePauseMenuUI();
 
-	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(UIElementType::DIALOGUE_BOX, 99, "",0.5f, 0.8f, 0.7f, 0.3f,sceneObserver);
+	CreateDialogueUI();
 
-	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
-	if (dBox != nullptr) {
-		dBox->SetBackgroundTextures(UIDialogueBoxTex, UIDialogueBoxTex);
-		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
-
-	}
 	RefreshMenuUI();
 
 	return true;
@@ -168,6 +158,13 @@ bool GameScene::Start() {
 bool GameScene::Update(float dt) {
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
+	auto dialogueMgr = Engine::GetInstance().dialogueManager;
+
+	// --- SUB-MENU INPUT HANDLING ---
+	// Toggle menus based on keyboard shortcuts
+	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
+	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
+	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
 
 	if (mapState == MapTransitionState::FADING_OUT) {
 
@@ -194,12 +191,7 @@ bool GameScene::Update(float dt) {
 			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
 		}
 	}
-	// --- SUB-MENU INPUT HANDLING ---
-	// Toggle menus based on keyboard shortcuts
-	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
-	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
-	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
-	
+
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
@@ -245,6 +237,10 @@ bool GameScene::Update(float dt) {
 			return true;
 		}
 	}
+	if (dialogueMgr->IsDialogueActive()) {
+		return true;
+	}
+
 	return true;
 
 }
@@ -255,7 +251,7 @@ bool GameScene::PostUpdate() {
 
 	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
 
-		sceneManager->setNewMap = false; 
+		sceneManager->setNewMap = false;
 		Player* p = Engine::GetInstance().entityManager->GetPlayer();
 		if (p != nullptr && p->interactuableBody != nullptr) {
 			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
@@ -306,10 +302,10 @@ bool GameScene::CleanUp() {
 
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {
-			if (elem) elem->CleanUp(); 
+			if (elem) elem->CleanUp();
 		}
 		group.clear();
-	};
+		};
 
 	deleteGroup(topBarElements);
 	deleteGroup(inventoryUI);
@@ -317,7 +313,11 @@ bool GameScene::CleanUp() {
 	deleteGroup(skillUI);
 	deleteGroup(pauseMainUI);
 	deleteGroup(pauseOptionsUI);
+	deleteGroup(dialogueBox);
+	deleteGroup(dialogueUI);
 
+	dialogueUI.clear();
+	Engine::GetInstance().dialogueManager->SetDialogueUI(nullptr);
 	return true;
 }
 
@@ -337,7 +337,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 		RefreshMenuUI();
 		break;
 	case (int)GameUI_ID::BTN_PAUSE_MAINMENU:
-		ToggleGameMenu(GameMenuTab::NONE); 
+		ToggleGameMenu(GameMenuTab::NONE);
 		Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU); break;
 	case (int)GameUI_ID::BTN_OPTIONS_BACK:
 		currentMenuTab = GameMenuTab::PAUSE_MENU;
@@ -503,6 +503,32 @@ void GameScene::CreatePauseSettingUI() {
 	pauseOptionsUI.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_OPTIONS_BACK, "BACK", 0.5f, pY, pW, pH, sceneObserver));
 }
 
+void GameScene::CreateDialogueUI() {
+	auto uiManager = Engine::GetInstance().uiManager;
+	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
+
+	// Usamos el mismo patrón que tus otros elementos
+	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(
+		UIElementType::DIALOGUE_BOX, 99, "", 0.5f, 0.8f, 0.7f, 0.3f, sceneObserver);
+
+	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
+	if (dBox != nullptr) {
+		dBox->SetBackgroundTextures(UIDialogueBoxTex, UIDialogueBoxTex);
+
+		// Cargar retratos (siguiendo tu lógica de carga de texturas)
+		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Portraits/Princess.png");
+		SDL_Texture* texNpc = Engine::GetInstance().textures->Load("Assets/Textures/UI/Portraits/GenericNPC.png");
+
+		dBox->AddPortrait("Princesa", texPrincesa);
+		dBox->AddPortrait("Aldeano", texNpc);
+
+		// Vincular con el Manager
+		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
+
+		// Añadir al grupo de control
+		dialogueUI.push_back(rawDialogueBox);
+	}
+}
 // ==========================================
 // SUB-MENU LOGIC
 // ==========================================
@@ -554,6 +580,7 @@ void GameScene::UpdateInventoryVisuals() {
 		}
 	}
 }
+
 void GameScene::RefreshMenuUI() {
 	if (descPanel != nullptr) descPanel->text = "Select an item...";
 	bool showTopBar = (currentMenuTab == GameMenuTab::INVENTORY ||
@@ -581,6 +608,8 @@ void GameScene::SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group
 		elem->state = visible ? UIElementState::NORMAL : UIElementState::DISABLED;
 	}
 }
+
+
 
 // ==========================================
 // Auxiliar Textures funcions

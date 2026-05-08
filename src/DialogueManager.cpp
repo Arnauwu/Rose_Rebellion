@@ -3,6 +3,7 @@
 #include "Input.h"
 #include "Log.h"
 #include "UIDialogueBox.h"
+#include "SceneManager.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -45,20 +46,24 @@ bool DialogueManager::Awake() {
 void DialogueManager::StartDialogue(const std::string& dialogueID) {
     LOG("Intentando cargar el dialogo con ID: '[%s]'", dialogueID.c_str());
     if (dialogueDB.find(dialogueID) != dialogueDB.end()) {
-        currentConversation = dialogueDB[dialogueID];
+        currentConversation = &dialogueDB[dialogueID];
         currentLineIndex = 0;
         isActive = true;
 
-        displayedText = "";
         charIndex = 0;
         typeTimer = 0.0f;
 
-        // Mostramos la caja UI y enviamos el nombre inicial
+        displayedText.clear();
+
+        const std::string& fullText = (*currentConversation)[0].text;
+        displayedText.reserve(fullText.length());
+
         if (uiBox) {
             uiBox->visible = true;
-            uiBox->SetSpeakerName(currentConversation[0].speaker);
+            uiBox->SetSpeakerName((*currentConversation)[0].speaker);
             uiBox->SetDialogueText("");
         }
+        Engine::GetInstance().sceneManager->isGamePaused = true;
     }
     else {
         LOG("Warning: Dialogo %s no encontrado.", dialogueID.c_str());
@@ -73,30 +78,29 @@ bool DialogueManager::Update(float dt) {
         return true;
     }
 
-    const std::string& fullText = currentConversation[currentLineIndex].text;
+    const std::string& fullText = (*currentConversation)[currentLineIndex].text;
 
-    // Typewriter effect
     if (charIndex < fullText.length()) {
 
         typeTimer += dt / 1000.0f;
 
         if (typeTimer >= timePerChar) {
             typeTimer = 0.0f;
+
+            displayedText += fullText[charIndex];
+
             charIndex++;
-            displayedText = fullText.substr(0, charIndex);
 
             if (uiBox) {
                 uiBox->SetDialogueText(displayedText);
             }
         }
     }
-
     return true;
 }
 
 void DialogueManager::NextLine() {
-    const std::string& fullText = currentConversation[currentLineIndex].text;
-
+    const std::string& fullText = (*currentConversation)[currentLineIndex].text;
     if (charIndex < fullText.length()) {
         charIndex = fullText.length();
         displayedText = fullText;
@@ -105,22 +109,40 @@ void DialogueManager::NextLine() {
     else {
         currentLineIndex++;
 
-        if (currentLineIndex < currentConversation.size()) {
-            displayedText = "";
+        if (currentLineIndex < currentConversation->size()) {
             charIndex = 0;
             typeTimer = 0.0f;
+
+            displayedText.clear();
+            const std::string& newFullText = (*currentConversation)[currentLineIndex].text;
+            displayedText.reserve(newFullText.length());
+
             if (uiBox) {
-                uiBox->SetSpeakerName(currentConversation[currentLineIndex].speaker);
+                uiBox->SetSpeakerName((*currentConversation)[currentLineIndex].speaker);
                 uiBox->SetDialogueText("");
             }
         }
         else {
             isActive = false;
             if (uiBox) uiBox->visible = false;
+            Engine::GetInstance().sceneManager->isGamePaused = false;
         }
     }
 }
 
+void DialogueManager::EndDialogue() {
+    isActive = false;
+    currentLineIndex = 0;
+    charIndex = 0;
+    displayedText = "";
+
+    if (uiBox) {
+        uiBox->visible = false;
+        uiBox->SetDialogueText("");
+        uiBox->SetSpeakerName("");
+    }
+    Engine::GetInstance().sceneManager->isGamePaused = false;
+}
 bool DialogueManager::CleanUp() {
     dialogueDB.clear();
     uiBox = nullptr;
