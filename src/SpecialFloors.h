@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Entity.h"
+#include "Timer.h"
 #include <SDL3/SDL.h>
 #include <string>
 
 enum class TypeFloor {
+	NORMALFLOOR,
 	BROKENFLOOR,
 	VERTICALFLOOR,
-	HORIZONTALFLOOR
+	HORIZONTALFLOOR,
+	CIRCULARFLOOR
 };
 
 struct SDL_Texture;
@@ -20,45 +23,35 @@ public:
 	virtual ~SpecialFloor();
 
 	bool Awake();
-
 	bool Start();
-
 	bool Update(float dt);
-	bool PostUpdate();
-
 	bool CleanUp();
 
 	// OnCollision function for the player. 
 	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
-	void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
 
 	bool Destroy();
 
-private:
-
-	void GetPhysicsValues();
-	void Move();
-
-	void ApplyPhysics();
-	void Draw(float dt);
-
 public:
+	TypeFloor floorType = TypeFloor::NORMALFLOOR;
 
-	float speed1 = 5.0f;
-	float speed2 = 10.0f;
-	float lifeBrokenFloor;
+	// Movement Floor Variables
+	Vector2D startPosition;
+	int distance = 0;
+	int moveSpeed = 0;
+	bool movingForward = true;
 
-	bool limitFloorH;
-	bool limitFloorV;
+	// Breakable Floor Variables
+	float breakTimeMax = 1000.0f; // Milliseconds
+	float currentBreakTime = 0.0f;
+	bool isSteppedOn = false;
 	
 private:
 
-	SDL_Texture* texture;
+	SDL_Texture* texture = nullptr;
 	int texW, texH;
-
-	// Add a physics to an item
-	PhysBody* pbody;
+	PhysBody* pbody = nullptr;
 };

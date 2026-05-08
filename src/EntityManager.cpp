@@ -31,6 +31,8 @@
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
 
+#include "SpecialFloors.h"
+
 EntityManager::EntityManager() : Module()
 {
 	name = "entitymanager";
@@ -144,6 +146,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::NINFA_MARE:
 		entity = std::make_shared<NinfaMare>();
+		break;
+	case EntityType::SPECIALFLOOR:
+		entity = std::make_shared<SpecialFloor>();
 		break;
 
 

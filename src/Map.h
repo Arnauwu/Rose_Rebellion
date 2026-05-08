@@ -206,7 +206,7 @@ public:
 
     // Entities
 
-    void SpawnEntities(std::vector<std::shared_ptr<SpecialFloor>>& floors);
+    void SpawnEntities();
     Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door
     std::string DoorInfo(PhysBody* door);

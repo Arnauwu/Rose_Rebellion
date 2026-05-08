@@ -99,9 +99,6 @@ public:
 	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
 	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
 
-	//Special Floors
-	std::vector<std::shared_ptr<SpecialFloor>> SpecialFloors;
-
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);

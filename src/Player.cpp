@@ -1145,6 +1145,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		break;
 
 	case ColliderType::MAP:
+	case ColliderType::SPECIALFLOOR:
 
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
@@ -1346,6 +1347,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	switch (physB->ctype)
 	{
 	case ColliderType::MAP:
+	case ColliderType::SPECIALFLOOR:
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
 			onGround = false;
