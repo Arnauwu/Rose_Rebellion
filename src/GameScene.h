@@ -3,6 +3,7 @@
 #include "UIDialogueBox.h"
 #include "Textures.h"
 #include "Audio.h"
+#include "SpecialFloors.h"
 #include <vector>
 #include <memory>
 

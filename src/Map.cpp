@@ -28,6 +28,8 @@
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
 
+#include "SpecialFloors.h"
+
 #include "GameManager.h"
 #include "SavePoint.h"
 #include "Item.h"
@@ -788,6 +790,10 @@ Vector2D Map::GetMapSizeInTiles()
 
 void Map::SpawnEntities()
 {
+	int brokenFloorIndex = 0;
+	int verticalFloorIndex = 0;
+	int horizontalFloorIndex = 0;
+
 	for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
 	{
 		if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
@@ -876,6 +882,7 @@ void Map::SpawnEntities()
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					ninfaBoss->position = Vector2D(x, y);
 				}
+
 				//Items
 				else if (entityType == std::string("Key"))
 				{
@@ -939,6 +946,56 @@ void Map::SpawnEntities()
 						}
 					}
 				}
+
+				//Special Platforms
+				else if (entityType == std::string("HorizontalFloor"))
+				{
+					std::shared_ptr<SpecialFloor> horizontalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					horizontalFloor->position = Vector2D(x, y);
+					horizontalFloor->floorType = TypeFloor::HORIZONTALFLOOR;
+
+					// Custom Properties
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("Distance") != nullptr) {
+						horizontalFloor->distance = floorProps.GetProperty("Distance")->value;
+					}
+					if (floorProps.GetProperty("Speed") != nullptr) {
+						horizontalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					}
+				}
+				else if (entityType == std::string("VerticalFloor"))
+				{
+					std::shared_ptr<SpecialFloor> verticalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					verticalFloor->position = Vector2D(x, y);
+					verticalFloor->floorType = TypeFloor::VERTICALFLOOR;
+
+					// Custom Properties
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("Distance") != nullptr) {
+						verticalFloor->distance = floorProps.GetProperty("Distance")->value;
+					}
+					if (floorProps.GetProperty("Speed") != nullptr) {
+						verticalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					}
+					}
+				else if (entityType == std::string("BrokenFloor"))
+				{
+					std::shared_ptr<SpecialFloor> brokenFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					brokenFloor->position = Vector2D(x, y);
+					brokenFloor->floorType = TypeFloor::BROKENFLOOR;
+
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("BreakTime") != nullptr) {
+						brokenFloor->breakTimeMax = (float)floorProps.GetProperty("BreakTime")->value;
+						brokenFloor->currentBreakTime = brokenFloor->breakTimeMax;
+					}
+				}
 			}
 		}
 
@@ -970,6 +1027,7 @@ void Map::SpawnEntities()
 
 	Engine::GetInstance().entityManager->AwakeEntities();
 }
+
 
 std::string Map::DoorInfo(PhysBody* door)
 {

@@ -205,6 +205,7 @@ public:
     int GetTileHeight() { return mapData.tileHeight; }
 
     // Entities
+
     void SpawnEntities();
     Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door
