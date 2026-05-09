@@ -10,6 +10,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include  "Map.h"
+#include <algorithm>
 
 SpecialFloor::SpecialFloor() : Entity(EntityType::SPECIALFLOOR)
 {
@@ -22,8 +23,8 @@ bool SpecialFloor::Awake() { return true; }
 
 bool SpecialFloor::Start() {
 
-	texW = 300;
-	texH = 100;
+	texW = width;
+	texH = height;
 
 	//Initilize textures
 	//texture = Engine::GetInstance().textures->Load("Assets/Textures/plataforma.png"); //TO DO: Cambiar textura
@@ -37,7 +38,33 @@ bool SpecialFloor::Start() {
 	pbody->ctype = ColliderType::SPECIALFLOOR;
 	pbody->listener = this; 
 
-	startPosition = position; // Save the initial position of the floor
+	int centerX, centerY;
+	pbody->GetPosition(centerX, centerY);
+	startPosition = Vector2D((float)centerX, (float)centerY); // Save the initial position of the floor
+
+	// Calculate movement limits and initial velocity based on floor type
+	if (floorType == TypeFloor::HORIZONTALFLOOR) {
+		float limitX = startPosition.getX() + (moveDirection * distance);
+		minMoveLimit = std::min(startPosition.getX(), limitX);
+		maxMoveLimit = std::max(startPosition.getX(), limitX);
+		currentVel.x = (float)(moveDirection * moveSpeed);
+	}
+	else if (floorType == TypeFloor::VERTICALFLOOR) {
+		float limitY = startPosition.getY() + (moveDirection * distance);
+		minMoveLimit = std::min(startPosition.getY(), limitY);
+		maxMoveLimit = std::max(startPosition.getY(), limitY);
+		currentVel.y = (float)(moveDirection * moveSpeed);
+	}
+
+	currentBreakTime = breakTimeMax;
+
+	// If the floor requires touch to activate, start deactivated
+	if (activationOnTouch) {
+		isActivated = false;
+	}
+	else {
+		isActivated = true;
+	}
 
 	return true;
 }
@@ -51,36 +78,100 @@ bool SpecialFloor::Update(float dt)
 	position.setX((float)x);
 	position.setY((float)y);
 
-	// Movement Management
-	b2Vec2 velocity = { 0.0f, 0.0f };
-
-	if (floorType == TypeFloor::HORIZONTALFLOOR) {
-		float traveled = abs(position.getX() - startPosition.getX());
-
-		if (traveled >= distance) {
-			movingForward = !movingForward; // Invert direction when reaching the limit
-		}
-
-		velocity.x = movingForward ? (float)moveSpeed : (float)-moveSpeed;
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+	if (!isActivated) {
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 	}
-	else if (floorType == TypeFloor::VERTICALFLOOR) {
-		float traveled = abs(position.getY() - startPosition.getY());
-
-		if (traveled >= distance) {
-			movingForward = !movingForward;
+	else {
+		if (isWaiting) {
+			// 1. Si está esperando, restamos el tiempo
+			currentWaitTime -= dt;
+			if (currentWaitTime <= 0) {
+				isWaiting = false; // El tiempo se ha acabado, vuelve a moverse
+			}
+			else {
+				// Mantiene la plataforma totalmente quieta mientras espera
+				Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
+			}
 		}
+		else {
+			if (floorType == TypeFloor::HORIZONTALFLOOR) {
+				// Right limit
+				if (position.getX() >= maxMoveLimit && currentVel.x > 0) {
+					currentVel.x = -(float)abs(moveSpeed);
+					pbody->SetPosition((int)maxMoveLimit, (int)position.getY());
+					isWaiting = true;
+					currentWaitTime = waitTimeMax;
+				}
+				// Left limit
+				else if (position.getX() <= minMoveLimit && currentVel.x < 0) {
+					currentVel.x = (float)abs(moveSpeed);
+					pbody->SetPosition((int)minMoveLimit, (int)position.getY());
+					isWaiting = true;
+					currentWaitTime = waitTimeMax;
+				}
 
-		velocity.y = movingForward ? (float)moveSpeed : (float)-moveSpeed;
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+				// Apply velocity
+				if (!isWaiting) {
+					Engine::GetInstance().physics->SetLinearVelocity(pbody, { currentVel.x, 0.0f });
+				}
+				else {
+					Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
+				}
+			}
+			else if (floorType == TypeFloor::VERTICALFLOOR) {
+
+				// Down limit
+				if (position.getY() >= maxMoveLimit && currentVel.y > 0) {
+					currentVel.y = -(float)abs(moveSpeed);
+					pbody->SetPosition((int)position.getX(), (int)maxMoveLimit);
+					isWaiting = true;
+					currentWaitTime = waitTimeMax;
+				}
+				// Up limit
+				else if (position.getY() <= minMoveLimit && currentVel.y < 0) {
+					currentVel.y = (float)abs(moveSpeed);
+					pbody->SetPosition((int)position.getX(), (int)minMoveLimit);
+					isWaiting = true;
+					currentWaitTime = waitTimeMax;
+				}
+
+				// Apply velocity
+				if (!isWaiting) {
+					Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, currentVel.y });
+				}
+				else {
+					Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
+				}
+			}
+		}
 	}
+
 	// TO DO: Falta para la plataforma que da la vuelta completa
 
 	// Breakage Management
 	if (floorType == TypeFloor::BROKENFLOOR && isSteppedOn) {
-		currentBreakTime -= dt;
-		if (currentBreakTime <= 0) {
-			Destroy();
+		if (isBroken) {
+			// Si está rota, contar tiempo para reaparecer
+			currentRespawnTime -= dt;
+			if (currentRespawnTime <= 0) {
+				isBroken = false;
+				isSteppedOn = false;
+				currentBreakTime = breakTimeMax;
+
+				// Volver a activar colisiones
+				if (pbody != nullptr) pbody->SetCollisionsActive(true);
+			}
+		}
+		else if (isSteppedOn) {
+			// Si la han pisado y no está rota, contar tiempo para romperse
+			currentBreakTime -= dt;
+			if (currentBreakTime <= 0) {
+				isBroken = true;
+				currentRespawnTime = respawnTimeMax;
+
+				// Desactivar colisiones sin borrar el cuerpo (el jugador caerá a través)
+				if (pbody != nullptr) pbody->SetCollisionsActive(false);
+			}
 		}
 	}
 
@@ -94,7 +185,7 @@ bool SpecialFloor::Update(float dt)
 
 bool SpecialFloor::CleanUp()
 {
-	if (texture != nullptr) {
+	if (!isBroken && texture != nullptr) {
 		Engine::GetInstance().textures->UnLoad(texture);
 		texture = nullptr;
 	}
@@ -119,18 +210,24 @@ void SpecialFloor::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shape
 {
 	if (physB->ctype == ColliderType::PLAYER)
 	{
+		// Activate the platform if it requires touch to activate
+		if (activationOnTouch && !isActivated) {
+			isActivated = true;
+			LOG("Plataforma móvil ACTIVADA");
+		}
+
 		if (floorType == TypeFloor::BROKENFLOOR)
 		{
 			isSteppedOn = true;
-			LOG("¡El jugador ha pisado un suelo ROMPIBLE! Tiempo para romperse: %f", currentBreakTime);
+			LOG("Suelo ROMPIBLE");
 		}
 		else if (floorType == TypeFloor::HORIZONTALFLOOR)
 		{
-			LOG("El jugador está tocando un suelo HORIZONTAL.");
+			LOG("Suelo HORIZONTAL.");
 		}
 		else if (floorType == TypeFloor::VERTICALFLOOR)
 		{
-			LOG("El jugador está tocando un suelo VERTICAL.");
+			LOG("Suelo VERTICAL.");
 		}
 	}
 }

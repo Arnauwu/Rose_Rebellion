@@ -803,6 +803,8 @@ void Map::SpawnEntities()
 				std::string entityType = objectNode.attribute("type").as_string();
 				float x = objectNode.attribute("x").as_float();
 				float y = objectNode.attribute("y").as_float();
+				float w = objectNode.attribute("width").as_float();
+				float h = objectNode.attribute("height").as_float();
 
 				//Player
 				if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
@@ -953,6 +955,8 @@ void Map::SpawnEntities()
 					std::shared_ptr<SpecialFloor> horizontalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
 					horizontalFloor->position = Vector2D(x, y);
 					horizontalFloor->floorType = TypeFloor::HORIZONTALFLOOR;
+					horizontalFloor->width = (int)w;
+					horizontalFloor->height = (int)h;
 
 					// Custom Properties
 					Properties floorProps;
@@ -964,12 +968,23 @@ void Map::SpawnEntities()
 					if (floorProps.GetProperty("Speed") != nullptr) {
 						horizontalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
 					}
+					if (floorProps.GetProperty("Direction") != nullptr) {
+						horizontalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					}
+					if (floorProps.GetProperty("WaitTime") != nullptr) {
+						horizontalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					}
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
+						horizontalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+					}
 				}
 				else if (entityType == std::string("VerticalFloor"))
 				{
 					std::shared_ptr<SpecialFloor> verticalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
 					verticalFloor->position = Vector2D(x, y);
 					verticalFloor->floorType = TypeFloor::VERTICALFLOOR;
+					verticalFloor->width = (int)w;
+					verticalFloor->height = (int)h;
 
 					// Custom Properties
 					Properties floorProps;
@@ -981,12 +996,23 @@ void Map::SpawnEntities()
 					if (floorProps.GetProperty("Speed") != nullptr) {
 						verticalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
 					}
+					if (floorProps.GetProperty("Direction") != nullptr) {
+						verticalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
 					}
+					if (floorProps.GetProperty("WaitTime") != nullptr) {
+						verticalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					}
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
+						verticalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+					}
+				}
 				else if (entityType == std::string("BrokenFloor"))
 				{
 					std::shared_ptr<SpecialFloor> brokenFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
 					brokenFloor->position = Vector2D(x, y);
 					brokenFloor->floorType = TypeFloor::BROKENFLOOR;
+					brokenFloor->width = (int)w;
+					brokenFloor->height = (int)h;
 
 					Properties floorProps;
 					LoadProperties(objectNode, floorProps);
@@ -994,6 +1020,9 @@ void Map::SpawnEntities()
 					if (floorProps.GetProperty("BreakTime") != nullptr) {
 						brokenFloor->breakTimeMax = (float)floorProps.GetProperty("BreakTime")->value;
 						brokenFloor->currentBreakTime = brokenFloor->breakTimeMax;
+					}
+					if (floorProps.GetProperty("RespawnTime") != nullptr) {
+						brokenFloor->respawnTimeMax = (float)floorProps.GetProperty("RespawnTime")->value;
 					}
 				}
 			}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="26" nextobjectid="344">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="26" nextobjectid="353">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3093,7 +3093,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile gid="37"/>
    <tile gid="37"/>
@@ -4626,6 +4626,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4656,8 +4657,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4684,6 +4684,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4722,8 +4723,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -11202,11 +11202,11 @@
  <objectgroup color="#aa00ff" id="22" name="PlataformasRefVertical">
   <object id="219" x="6400" y="10624" width="512" height="128"/>
   <object id="220" x="6400" y="9600" width="512" height="128"/>
-  <object id="221" x="5504" y="9600" width="512" height="128"/>
+  <object id="221" x="5504" y="9472" width="512" height="128"/>
   <object id="223" x="5504" y="8448" width="512" height="128"/>
   <object id="224" x="1024" y="10624" width="512" height="128"/>
   <object id="225" x="1024" y="9600" width="512" height="128"/>
-  <object id="226" x="1920" y="9600" width="512" height="128"/>
+  <object id="226" x="1920" y="9472" width="512" height="128"/>
   <object id="227" x="1920" y="8448" width="512" height="128"/>
   <object id="230" x="3712" y="9728" width="512" height="128"/>
   <object id="231" x="3712" y="6272" width="512" height="128"/>
@@ -11338,6 +11338,59 @@
  <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="343" name="Player" type="Player" x="3968" y="9600">
    <point/>
+  </object>
+  <object id="345" type="VerticalFloor" x="1920" y="8448" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="346" type="VerticalFloor" x="5504" y="8448" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="347" type="VerticalFloor" x="1024" y="10624" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="348" type="VerticalFloor" x="6400" y="10624" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="349" type="VerticalFloor" x="3712" y="9728" width="512" height="128">
+   <properties>
+    <property name="ActivationOnTouch" type="bool" value="true"/>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="3456"/>
+    <property name="Speed" type="int" value="5"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="351" type="BrokenFloor" x="2176" y="10368" width="640" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="352" type="BrokenFloor" x="5120" y="10368" width="640" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
   </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns">

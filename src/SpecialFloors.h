@@ -38,16 +38,38 @@ public:
 public:
 	TypeFloor floorType = TypeFloor::NORMALFLOOR;
 
+	int width = 32;
+	int height = 32;
+
 	// Movement Floor Variables
 	Vector2D startPosition;
 	int distance = 0;
 	int moveSpeed = 0;
-	bool movingForward = true;
+	int moveDirection = 1; // 1 = Right/Down, -1 = Left/Up
+	b2Vec2 currentVel = { 0.0f, 0.0f };
+
+	// Activation Variables
+	bool activationOnTouch = false;
+	bool isActivated = true;
+
+	// Movement Limits
+	float minMoveLimit = 0.0f;
+	float maxMoveLimit = 0.0f;
+
+	// Wait Time Variables for Movement Floors
+	float waitTimeMax = 2000.0f;
+	float currentWaitTime = 0.0f;
+	bool isWaiting = false;
 
 	// Breakable Floor Variables
-	float breakTimeMax = 1000.0f; // Milliseconds
+	float breakTimeMax = 1000.0f; // Milliseconds = 1 second
 	float currentBreakTime = 0.0f;
 	bool isSteppedOn = false;
+
+	// Respawn Variables
+	bool isBroken = false;
+	float respawnTimeMax = 3000.0f;
+	float currentRespawnTime = 0.0f;
 	
 private:
 

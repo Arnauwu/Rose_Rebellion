@@ -1526,6 +1526,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1556,8 +1557,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1584,6 +1584,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1622,8 +1623,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4997,7 +4997,7 @@
  <objectgroup color="#aa00ff" id="22" name="PlataformasRefVertical">
   <object id="219" type="VerticalFloor" x="6400" y="4224" width="512" height="128"/>
   <object id="220" x="6400" y="3200" width="512" height="128"/>
-  <object id="221" x="5504" y="3200" width="512" height="128"/>
+  <object id="221" x="5504" y="3072" width="512" height="128"/>
   <object id="223" type="VerticalFloor" x="5504" y="2048" width="512" height="128">
    <properties>
     <property name="Distance" type="int" value="150"/>
@@ -5006,7 +5006,7 @@
   </object>
   <object id="224" type="VerticalFloor" x="1024" y="4224" width="512" height="128"/>
   <object id="225" x="1024" y="3200" width="512" height="128"/>
-  <object id="226" x="1920" y="3200" width="512" height="128"/>
+  <object id="226" x="1920" y="3072" width="512" height="128"/>
   <object id="227" type="VerticalFloor" x="1920" y="2048" width="512" height="128"/>
  </objectgroup>
  <objectgroup color="#ffff7f" id="23" name="SueloRompibleRef">
@@ -5082,36 +5082,46 @@
   </object>
   <object id="288" type="VerticalFloor" x="5504" y="2048" width="512" height="128">
    <properties>
-    <property name="Distance" type="int" value="150"/>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="1024"/>
     <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
    </properties>
   </object>
   <object id="289" type="VerticalFloor" x="6400" y="4224" width="512" height="128">
    <properties>
-    <property name="Distance" type="int" value="150"/>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="1024"/>
     <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
    </properties>
   </object>
   <object id="290" type="VerticalFloor" x="1920" y="2048" width="512" height="128">
    <properties>
-    <property name="Distance" type="int" value="400"/>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="1024"/>
     <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
    </properties>
   </object>
-  <object id="291" type="VerticalFloor" x="1024" y="3712" width="512" height="128">
+  <object id="291" type="VerticalFloor" x="1024" y="4224" width="512" height="128">
    <properties>
-    <property name="Distance" type="int" value="400"/>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="1024"/>
     <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
    </properties>
   </object>
   <object id="292" type="BrokenFloor" x="5120" y="3968" width="640" height="128">
    <properties>
     <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
    </properties>
   </object>
   <object id="293" type="BrokenFloor" x="2176" y="3968" width="640" height="128">
    <properties>
     <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
    </properties>
   </object>
  </objectgroup>

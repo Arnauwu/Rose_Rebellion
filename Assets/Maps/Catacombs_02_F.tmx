@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="490">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="514">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -19490,7 +19490,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -22003,7 +22003,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -25789,7 +25789,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -31897,7 +31897,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -70070,6 +70070,7 @@
   <object id="236" x="18432" y="9984" width="512" height="128"/>
   <object id="265" x="7680" y="14080" width="384" height="128"/>
   <object id="266" x="512" y="12672" width="384" height="128"/>
+  <object id="491" x="512" y="11776" width="384" height="128"/>
  </objectgroup>
  <objectgroup color="#ffff7f" id="23" name="SueloRompibleRef">
   <object id="246" x="24960" y="6400" width="384" height="128"/>
@@ -70289,6 +70290,150 @@
  <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="489" name="Player" type="Player" x="35584" y="6400">
    <point/>
+  </object>
+  <object id="490" type="HorizontalFloor" x="10240" y="14464" width="640" height="128">
+   <properties>
+    <property name="ActivationOnTouch" type="bool" value="true"/>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="19200"/>
+    <property name="Speed" type="int" value="5"/>
+    <property name="WaitTime" type="int" value="3000"/>
+   </properties>
+  </object>
+  <object id="492" type="HorizontalFloor" x="10240" y="9984" width="512" height="128">
+   <properties>
+    <property name="ActivationOnTouch" type="bool" value="true"/>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="7296"/>
+    <property name="Speed" type="int" value="5"/>
+    <property name="WaitTime" type="int" value="5000"/>
+   </properties>
+  </object>
+  <object id="494" type="VerticalFloor" x="18432" y="9984" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="1152"/>
+    <property name="Speed" type="int" value="4"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="495" type="BrokenFloor" x="24960" y="6400" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="496" type="BrokenFloor" x="25728" y="6784" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="497" type="BrokenFloor" x="24832" y="7168" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="498" type="BrokenFloor" x="30592" y="9856" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="499" type="BrokenFloor" x="31360" y="9600" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="500" type="BrokenFloor" x="30592" y="7808" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="501" type="BrokenFloor" x="32128" y="9344" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="502" type="BrokenFloor" x="32896" y="8960" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="503" type="BrokenFloor" x="32000" y="8576" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="504" type="BrokenFloor" x="31232" y="8192" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="505" type="BrokenFloor" x="29824" y="7424" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="506" type="BrokenFloor" x="30720" y="7040" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="507" type="BrokenFloor" x="31744" y="7040" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="508" type="BrokenFloor" x="32640" y="6656" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="509" type="BrokenFloor" x="31104" y="13696" width="512" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="510" type="BrokenFloor" x="32000" y="13440" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="511" type="BrokenFloor" x="30336" y="14080" width="384" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="512" type="VerticalFloor" x="7680" y="14080" width="384" height="128">
+   <properties>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="4224"/>
+    <property name="Speed" type="int" value="4"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="513" type="VerticalFloor" x="512" y="12672" width="384" height="128">
+   <properties>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="896"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
   </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns">
