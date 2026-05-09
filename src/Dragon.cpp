@@ -51,7 +51,7 @@ bool Dragon::Start() {
 	speed = 1.5f;
 	knockbackForce = 0.0f; //Immune to knockback
 
-	maxHealth = INT_MAX;
+	maxHealth = 100;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -130,15 +130,22 @@ void Dragon::Move()
 	{
 		velocity = b2Vec2_zero; // Stays Put
 		
-		if (anims.GetCurrentName() != "changingPhase")
+		if (anims.GetCurrentName() != "assault") //TO DO CHANGE TO PHASE CHANGE
 		{
-			anims.SetCurrent("changingPhase");
-			anims.GetAnim("changingPhase")->SetLoop(false);
+			anims.SetCurrent("assault");
+			anims.GetAnim("assault")->SetLoop(false);
 			switch (currentPhase) //TO DO CHANGE MUSIC TOO
 			{
 			case GROUND:
 				currentPhase = AIR;
+				pathfinding = std::make_shared<Pathfinding>(false); // Air Pathfinding
+				pathfinding->ResetPath(GetTilePos());
+				pathFindingCooldown.Start();
 
+				Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
+
+				hoverTimer.Start();
+				hoverCooldown.Start();
 				break;
 			case AIR:
 				currentPhase = GROUND;
@@ -146,87 +153,162 @@ void Dragon::Move()
 			}
 		}
 		
-		if (anims.GetAnim("changingPhase")->HasFinishedOnce()) {
+		if (anims.GetAnim("assault")->HasFinishedOnce()) {
 			isInvincible = false; 
 		}
+
 		return;
 	}
 
+	//Movement
 	if (pathfinding->pathTiles.empty() || playerTileDist > vision) {
 		anims.SetCurrent("idle");
 		velocity.x = 0;
+		velocity.y = 0;
 		return;
 	}
-	else if (playerTileDist >= 2 && isAttacking == false)
+
+	switch (currentPhase)
 	{
-		anims.SetCurrent("run");
-
-		if (pathfinding->pathTiles.back() == tilePos)
+	case GROUND:
+		if (playerTileDist >= 2 && isAttacking == false) // TO DO ADJUST AFTER SIZE
 		{
-			pathfinding->pathTiles.pop_back();
-			if (pathfinding->pathTiles.empty()) { return; }
-		}
+			anims.SetCurrent("run");
 
-		Vector2D nextTile = pathfinding->pathTiles.back();
+			if (pathfinding->pathTiles.back() == tilePos)
+			{
+				pathfinding->pathTiles.pop_back();
+				if (pathfinding->pathTiles.empty()) { return; }
+			}
 
-		if (nextTile.getX() > tilePos.getX())
-		{
-			velocity.x = speed;
-			lookingRight = true;
-		}
-		else if (nextTile.getX() < tilePos.getX())
-		{
-			velocity.x = -speed;
-			lookingRight = false;
+			Vector2D nextTile = pathfinding->pathTiles.back();
+
+			if (nextTile.getX() > tilePos.getX())
+			{
+				velocity.x = speed;
+				lookingRight = true;
+			}
+			else if (nextTile.getX() < tilePos.getX())
+			{
+				velocity.x = -speed;
+				lookingRight = false;
+			}
+			else
+			{
+				velocity.x = 0;
+			}
+
+			if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
+			{
+				velocity.x *= 5;
+			}
 		}
 		else
 		{
-			velocity.x = 0;
+			Attack();
 		}
-
-		if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
+		break;
+	case AIR:
+		//Vertical
+		if (hoverCooldown.ReadMSec() >= 250)
 		{
-			velocity.x *= 5;
-		}
-	}
-	else
-	{
-		Attack();
-	}
+			int posY = Engine::GetInstance().map->MapToWorld(tilePos.getX(), tilePos.getY()).getY();
 
-	// 4. Movimiento de persecución normal (si estás lejos)
-	if (pathfinding->pathTiles.empty() && isKnockedback == false)
-	{
-		anims.SetCurrent("idle");
-		velocity.x = 0;
-		return;
-	}
-	else if (playerTileDist >= 3 && playerTileDist < vision && isKnockedback == false)
-	{
-		anims.SetCurrent("walk");
+			float baseY;
 
-		if (pathfinding->pathTiles.back() == tilePos) {
-			pathfinding->pathTiles.pop_back();
-			if (pathfinding->pathTiles.empty()) { return; }
-		}
+			if (pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 4))
+			{
+				// Get world Y of the tile BELOW the demon
+				baseY = posY + Engine::GetInstance().map->GetTileHeight() * 4; // tiles down
+			}
+			else
+			{
+				// Get world Y of the tile OVER the demon
+				baseY = posY - Engine::GetInstance().map->GetTileHeight() * 4; // tiles above
+			}
 
-		Vector2D nextTile = pathfinding->pathTiles.back();
+			// Floating offset
+			float offset = sin(hoverTimer.ReadSec() * hoverSpeed) * hoverAmplitude;
 
-		if (nextTile.getX() > tilePos.getX()) {
-			velocity.x = speed;
-			lookingRight = true;
-		}
-		else if (nextTile.getX() < tilePos.getX()) {
-			velocity.x = -speed;
-			lookingRight = false;
-		}
-		else {
-			velocity.x = 0;
+			// Final target
+			float targetY = baseY + offset;
+
+
+			int x, y;
+			pbody->GetPosition(x, y);
+
+			// Smoothly move toward target 
+			velocity.y += (targetY - y) * 0.1f;
+			velocity.y = SDL_clamp(velocity.y, -3.0f, 3.0f);
+
+			hoverCooldown.Start();
 		}
 
-		if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1)) {
-			velocity.x *= 5;
+
+
+		//Horitzontal
+		if (playerTileDist <= 3 && isAttacking == false) // TO DO ADJUST AFTER SIZE
+		{
+			anims.SetCurrent("run");
+
+			if (pathfinding->pathTiles.back() == tilePos)
+			{
+				pathfinding->pathTiles.pop_back();
+				if (pathfinding->pathTiles.empty()) { return; }
+			}
+
+			Vector2D nextTile = pathfinding->pathTiles.back();
+
+			if (nextTile.getX() > tilePos.getX())
+			{
+				velocity.x = -speed;
+				lookingRight = true;
+			}
+			else if (nextTile.getX() < tilePos.getX())
+			{
+				velocity.x = speed;
+				lookingRight = false;
+			}
+			else
+			{
+				velocity.x = 0;
+			}
 		}
+		else if (playerTileDist >= 5 && isAttacking == false)
+		{
+			anims.SetCurrent("walk");
+
+			if (pathfinding->pathTiles.back() == tilePos)
+			{
+				pathfinding->pathTiles.pop_back();
+				if (pathfinding->pathTiles.empty()) { return; }
+			}
+
+			Vector2D nextTile = pathfinding->pathTiles.back();
+
+			if (nextTile.getX() > tilePos.getX())
+			{
+				velocity.x = speed;
+				lookingRight = true;
+			}
+			else if (nextTile.getX() < tilePos.getX())
+			{
+				velocity.x = -speed;
+				lookingRight = false;
+			}
+			else
+			{
+				velocity.x = 0;
+			}
+		}
+		else
+		{
+			Attack();
+		}
+
+		break;
+	case MIXED:
+		break;
 	}
 }
 
@@ -260,8 +342,19 @@ void Dragon::Knockback()
 }
 
 void Dragon::ApplyPhysics() {
-	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
+	switch (currentPhase)
+	{
+	case GROUND:
+		b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
+		break;
+	case AIR:
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+		break;
+	case MIXED:
+		break;
+	}
+
 }
 
 void Dragon::Draw(float dt)

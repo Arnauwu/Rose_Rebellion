@@ -10245,9 +10245,6 @@
   <object id="52" name="SavePoint" type="SavePoint" x="1948" y="1004">
    <point/>
   </object>
-  <object id="53" name="Dragon" type="Dragon" x="2912.85" y="2295.45">
-   <point/>
-  </object>
  </objectgroup>
  <objectgroup id="16" name="PlayerSpawns">
   <properties>

@@ -46,6 +46,29 @@ public:
 	bool isInvincible = false; //Changing Phase
 	DragonPhase currentPhase = DragonPhase::GROUND; // First Phase
 
+	//Air
+	Timer hoverTimer;
+	Timer hoverCooldown;
+	float hoverAmplitude = 4.0f;
+	float hoverSpeed = 1.5f;
+
+
 	// Sounds
 	int deathSoundId;
 };
+
+
+/*
+FASE 1: Tierra
+Ataque + Pinchos/espinas que salen del suelo
+Zarpazo
+Coletazo: da un giro y te da con la cola
+
+FASE 2: Aire
+Proyectiles hacia el suelo (Volando te tira proyectiles a 90º hacia el suelo (se pueden devolver con ataque hacia arriba))
+Salta hacia arriba y se tira hacia a ti de morro planeando (estilo ataque los zorros de nieve)
+
+FASE 3: Tierra-Aire
+Morir dramáticamente con una rosa de su sangre
+*/
+
