@@ -631,6 +631,33 @@ bool Map::Load(std::string path, std::string fileName)
 					colliderList.push_back(collider);
 				}
 			}
+			else if (objectsGroups->properties.GetProperty("Polygon") != NULL && objectsGroups->properties.GetProperty("Polygon")->value) // NUEVO: POLYGON
+			{
+				for (const auto& obj : objectsGroups->objects)
+				{
+					int* pointsArray = new int[obj->points.size() * 2];
+
+					for (size_t i = 0; i < obj->points.size(); i++)
+					{
+						pointsArray[i * 2] = obj->points[i].x - obj->x;
+						pointsArray[i * 2 + 1] = obj->points[i].y - obj->y;
+					}
+
+					PhysBody* collider = Engine::GetInstance().physics.get()->CreatePolygon(obj->x, obj->y, pointsArray, obj->points.size() * 2, STATIC);
+
+					if (objectsGroups->properties.GetProperty("Danger") != NULL && objectsGroups->properties.GetProperty("Danger")->value)
+					{
+						collider->ctype = ColliderType::DANGER;
+					}
+					else
+					{
+						collider->ctype = ColliderType::MAP;
+					}
+
+					colliderList.push_back(collider);
+					delete[] pointsArray;
+				}
+			}
 		}
 
 
@@ -1025,6 +1052,33 @@ void Map::SpawnEntities()
 						brokenFloor->respawnTimeMax = (float)floorProps.GetProperty("RespawnTime")->value;
 					}
 				}
+				else if (entityType == std::string("CircularFloor"))
+				{
+					std::shared_ptr<SpecialFloor> circularFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					circularFloor->position = Vector2D(x, y);
+					circularFloor->floorType = TypeFloor::CIRCULARFLOOR;
+					circularFloor->width = (int)w;
+					circularFloor->height = (int)h;
+
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("Distance") != nullptr) {
+						circularFloor->distance = floorProps.GetProperty("Distance")->value;
+					}
+					if (floorProps.GetProperty("Speed") != nullptr) {
+						circularFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					}
+					if (floorProps.GetProperty("Direction") != nullptr) {
+						circularFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					}
+					if (floorProps.GetProperty("WaitTime") != nullptr) {
+						circularFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					}
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
+						circularFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+					}
+					}
 			}
 		}
 

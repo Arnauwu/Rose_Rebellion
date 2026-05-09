@@ -110,6 +110,7 @@ public:
     PhysBody* CreateRectangleSensor(int x, int y, int width, int height, bodyType type);
     PhysBody* CreateCircleSensor(int x, int y, int radious, bodyType type);
     PhysBody* CreateChain(int x, int y, int* points, int size, bodyType type);
+    PhysBody* CreatePolygon(int x, int y, int* points, int size, bodyType type);
 
     
     PhysBody* CreateCapsule(int x, int y, int radious, int width, int height, bodyType type);

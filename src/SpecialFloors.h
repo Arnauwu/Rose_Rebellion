@@ -56,6 +56,13 @@ public:
 	float minMoveLimit = 0.0f;
 	float maxMoveLimit = 0.0f;
 
+	// For circular movement, we can define limits for each direction
+	float limitLeft = 0.0f;
+	float limitRight = 0.0f;
+	float limitUp = 0.0f;
+	float limitDown = 0.0f;
+	int pathStep = 0; // 0, 1, 2, 3 (the four directions in order)
+
 	// Wait Time Variables for Movement Floors
 	float waitTimeMax = 2000.0f;
 	float currentWaitTime = 0.0f;

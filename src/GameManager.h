@@ -17,7 +17,7 @@ struct GameState {
     int maxHealth = 100;
 
     // World
-    std::string currentMap = "Catacombs_Boss_Alive.tmx";
+    std::string currentMap = "Catacombs_02_F.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     std::vector<std::string> openedDoors;
