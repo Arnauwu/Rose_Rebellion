@@ -519,11 +519,13 @@ void Player::Attack(float dt)
 			// Configurar dimensiones según el combo
 			if (comboStep == 0)
 			{
+				damage = 10;
 				currentAttackWidth = 60;
 				currentAttackHeight = 64;
 			}
 			else
 			{
+				damage = 20;
 				currentAttackWidth = 120;
 				currentAttackHeight = 90;
 			}

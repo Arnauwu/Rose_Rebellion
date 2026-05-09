@@ -30,6 +30,7 @@
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include "Dragon.h"
 
 #include "SpecialFloors.h"
 
@@ -113,6 +114,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
 		break;
+	case EntityType::SPECIALFLOOR:
+		entity = std::make_shared<SpecialFloor>();
+		break;
 
 		//Enemies
 
@@ -147,8 +151,8 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::NINFA_MARE:
 		entity = std::make_shared<NinfaMare>();
 		break;
-	case EntityType::SPECIALFLOOR:
-		entity = std::make_shared<SpecialFloor>();
+	case EntityType::DRAGON:
+		entity = std::make_shared<Dragon>();
 		break;
 
 

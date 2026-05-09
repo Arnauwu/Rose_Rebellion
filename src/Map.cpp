@@ -27,6 +27,8 @@
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include"Dragon.h"
+
 
 #include "SpecialFloors.h"
 
@@ -883,6 +885,11 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					ninfaBoss->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("Dragon"))
+				{
+					std::shared_ptr<Dragon> dragon = std::dynamic_pointer_cast<Dragon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DRAGON));
+					dragon->position = Vector2D(x, y);
 				}
 
 				//Items

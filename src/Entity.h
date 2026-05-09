@@ -33,6 +33,7 @@ enum class EntityType
 
 	KNIGHT_BOSS,
 	NINFA_MARE,
+	DRAGON,
 
 	SAVEPOINT,
 
