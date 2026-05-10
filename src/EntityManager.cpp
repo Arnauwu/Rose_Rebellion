@@ -31,6 +31,7 @@
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
 #include "Dragon.h"
+#include "DragonProjectile.h"
 
 #include "SpecialFloors.h"
 
@@ -154,7 +155,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::DRAGON:
 		entity = std::make_shared<Dragon>();
 		break;
-
+	case EntityType::DRAGON_PROJECTILE:
+		entity = std::make_shared<DragonProjectile>();
+		break;
 
 		// Items
 	case EntityType::ITEM:

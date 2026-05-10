@@ -14,6 +14,8 @@
 
 #include <random>
 
+#include "DragonProjectile.h"
+
 Dragon::Dragon() : Enemy(EntityType::DRAGON)
 {
 	name = "Dragon";
@@ -276,34 +278,7 @@ void Dragon::Move()
 
 
 		//Horitzontal
-		if (playerTileDist <= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && startedAttacking == false) // TO DO REVISAR
-		{
-			anims.SetCurrent("walk");
-
-			if (pathfinding->pathTiles.back() == tilePos)
-			{
-				pathfinding->pathTiles.pop_back();
-				if (pathfinding->pathTiles.empty()) { return; }
-			}
-
-			Vector2D nextTile = pathfinding->pathTiles.back();
-
-			if (nextTile.getX() > tilePos.getX())
-			{
-				velocity.x = -speed;
-				lookingRight = true;
-			}
-			else if (nextTile.getX() < tilePos.getX())
-			{
-				velocity.x = speed;
-				lookingRight = false;
-			}
-			else
-			{
-				velocity.x = 0;
-			}
-		}
-		else if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && isAttacking == false)
+		if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && startedAttacking == false)
 		{
 			anims.SetCurrent("walk");
 
@@ -476,9 +451,15 @@ void Dragon::Attack()
 			}
 
 			// CreateAttack
-			if (attackHitbox == nullptr && attackWindUp.ReadMSec() >= attackWindupTime) 
+			if (attackWindUp.ReadMSec() >= attackWindupTime) 
 			{
 				isAttacking = true;
+
+				// Delete Hitbox (In case it didn't correctly delete)
+				if (attackHitbox != nullptr) {
+					b2DestroyBody(attackHitbox->body);
+					attackHitbox = nullptr;
+				}
 
 				// AttackSize
 				int attW = 0, attH = 0, hX = 0, hY = 0;
@@ -555,14 +536,22 @@ void Dragon::Attack()
 			}
 
 			// CreateAttack
-			if (attackHitbox == nullptr && attackWindUp.ReadMSec() >= attackWindupTime)
+			if (attackWindUp.ReadMSec() >= attackWindupTime)
 			{
 				isAttacking = true;
 
 				if (currentAttack == 1)
 				{
-					// Create attack
-					//TO DO Bullet Creation
+					// Create Projectiles
+					for (int i = 0; i < 3; i++)
+					{
+						std::shared_ptr<DragonProjectile> projectile = std::dynamic_pointer_cast<DragonProjectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DRAGON_PROJECTILE));
+						Vector2D pos; pos.setX(lookingRight ? position.getX() + texW / 2 - 64 * (1 - i) : position.getX() - texW / 2 + 64 * (1 - i));
+						pos.setY(position.getY() + 64 * (1 - i));
+						projectile->position = pos;
+						projectile->Start();
+					}
+
 				}
 				else if (currentAttack == 2)
 				{
@@ -635,14 +624,14 @@ void Dragon::SelectAttack()
 		break;
 
 	case DragonPhase::AIR:
-		currentAttack = GenerateRandomNumber(1, 2);
+		currentAttack = GenerateRandomNumber(1, 1);
 		switch (currentAttack)			// TO DO Adjust COOLDOWN / WINDUP / DAMAGE
 		{
 		case 1: // Shoot
 			damage = 0;
-			attackCooldownTime = 500.0f;
-			attackWindupTime = 500.0f;
-			attackDuration = 1000.0f;
+			attackCooldownTime = 0;
+			attackWindupTime = 0.0f;
+			attackDuration = 0.0f;
 			attackTileRange = 5;
 			break;
 		case 2: //Dive

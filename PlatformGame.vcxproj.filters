@@ -333,6 +333,9 @@
     <ClCompile Include="src\Dragon.cpp">
       <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
     </ClCompile>
+    <ClCompile Include="src\DragonProjectile.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -516,6 +519,9 @@
       <Filter>Source Files\Game\Entity\Special Floors</Filter>
     </ClInclude>
     <ClInclude Include="src\Dragon.h">
+      <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DragonProjectile.h">
       <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
     </ClInclude>
   </ItemGroup>
