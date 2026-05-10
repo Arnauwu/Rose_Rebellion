@@ -33,12 +33,14 @@ private:
 
 	void Attack();
 
+	void SelectAttack();
 	int GenerateRandomNumber(int minNumber, int maxNumber);
 public:
 
 	PhysBody* attackHitbox = nullptr;
 
 	// Boss parameters
+	bool nextAttackSelected = false;
 	bool startedAttacking = false;
 	bool isAttacking = false;
 
@@ -51,9 +53,8 @@ public:
 	//TO DO ADJUST VALUES DEPENDING ON ATTACK
 	float attackWindupTime = 500.0f;
 	float attackCooldownTime = 2000.0f;
-
 	float attackDuration = 1000.0f;
-
+	int attackTileRange = 0;
 
 	//Dragon
 	bool isInvincible = false; //Changing Phase
@@ -72,11 +73,6 @@ public:
 
 
 /*
-FASE 1: Tierra
-Ataque + Pinchos/espinas que salen del suelo
-Zarpazo
-Coletazo: da un giro y te da con la cola
-
 FASE 2: Aire
 Proyectiles hacia el suelo (Volando te tira proyectiles a 90º hacia el suelo (se pueden devolver con ataque hacia arriba))
 Salta hacia arriba y se tira hacia a ti de morro planeando (estilo ataque los zorros de nieve)

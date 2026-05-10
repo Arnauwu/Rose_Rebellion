@@ -53,7 +53,7 @@ bool Dragon::Start() {
 	speed = 1.5f;
 	knockbackForce = 0.0f; //Immune to knockback
 
-	maxHealth = 100;
+	maxHealth = 1200;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -78,7 +78,7 @@ bool Dragon::Update(float dt)
 			PerformPathfinding();
 			pathFindingCooldown.Start();
 		}
-
+		SelectAttack();
 		GetPhysicsValues();
 		Move();
 		Knockback();
@@ -147,6 +147,12 @@ void Dragon::Move()
 				pathfinding->ResetPath(GetTilePos());
 				pathFindingCooldown.Start();
 
+				// Delete Hitbox
+				if (attackHitbox != nullptr) {
+					b2DestroyBody(attackHitbox->body);
+					attackHitbox = nullptr;
+				}
+
 				Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 
 				hoverTimer.Start();
@@ -154,6 +160,8 @@ void Dragon::Move()
 				break;
 			case AIR:
 				currentPhase = GROUND;
+				Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f);
+				pbody->ctype = ColliderType::ENEMY;
 				break;
 			}
 		}
@@ -176,7 +184,7 @@ void Dragon::Move()
 	switch (currentPhase)
 	{
 	case GROUND:
-		if (playerTileDist >= (2 + (texW / (Engine::GetInstance().map->GetTileWidth() * 2) )) && startedAttacking == false) // TO DO ADJUST AFTER SIZE
+		if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2) )) && startedAttacking == false)
 		{
 			anims.SetCurrent("walk");
 
@@ -268,7 +276,7 @@ void Dragon::Move()
 
 
 		//Horitzontal
-		if (playerTileDist <= 3 && startedAttacking == false) // TO DO ADJUST AFTER SIZE
+		if (playerTileDist <= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && startedAttacking == false) // TO DO REVISAR
 		{
 			anims.SetCurrent("walk");
 
@@ -295,7 +303,7 @@ void Dragon::Move()
 				velocity.x = 0;
 			}
 		}
-		else if (playerTileDist >= 5 && isAttacking == false)
+		else if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && isAttacking == false)
 		{
 			anims.SetCurrent("walk");
 
@@ -450,21 +458,16 @@ void Dragon::Attack()
 		{
 			if (startedAttacking == false)
 			{
-				currentAttack = GenerateRandomNumber(1, 2); //TO DO: CHANGE TO 1,3
-
 				switch (currentAttack)			// TO DO ATTACK SPECIFIC COOLDOWN / WINDUP / DAMAGE
 				{
 				case 1: // Claw
 					anims.SetCurrent("attack");
-					damage = 20;
 					break;
 				case 2: //Tail
 					anims.SetCurrent("attack");
-					damage = 10;
 					break;
 				case 3: //Ground Spikes
 					anims.SetCurrent("attack");
-					damage = 30;
 					break;
 				}
 
@@ -478,7 +481,7 @@ void Dragon::Attack()
 				isAttacking = true;
 
 				// AttackSize
-				int attW, attH, hX, hY;
+				int attW = 0, attH = 0, hX = 0, hY = 0;
 				if (currentAttack == 1)
 				{
 					attW = 150; attH = texH;
@@ -491,9 +494,18 @@ void Dragon::Attack()
 					hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
 					hY = position.getY() + texH/2 - attH/2;
 				}
+				else if (currentAttack == 3)
+				{
+					Player* player = Engine::GetInstance().entityManager->GetPlayer();
+					Vector2D playerPos = player->GetPosition();
+
+					attW = 300; attH = 100;
+					hX = playerPos.getX();
+					hY = position.getY() + texH / 2 - attH / 2;
+				}
 
 
-				// Create attackHitboz
+				// Create attackHitbox
 				attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
 				attackHitbox->listener = this;
 				attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
@@ -517,18 +529,136 @@ void Dragon::Attack()
 
 				attackCooldown.Start();
 				startedAttacking = false;
+				nextAttackSelected = false;
 			}
 		}
 
 		
 		break;
 	case DragonPhase::AIR:
+		if (isAttacking == false)
+		{
+			if (startedAttacking == false)
+			{
+				switch (currentAttack)			// TO DO ATTACK SPECIFIC COOLDOWN / WINDUP / DAMAGE
+				{
+				case 1: // Shoot
+					anims.SetCurrent("attack");
+					break;
+				case 2: //Dive
+					anims.SetCurrent("attack");
+					break;
+				}
 
+				attackWindUp.Start();
+				startedAttacking = true;
+			}
+
+			// CreateAttack
+			if (attackHitbox == nullptr && attackWindUp.ReadMSec() >= attackWindupTime)
+			{
+				isAttacking = true;
+
+				if (currentAttack == 1)
+				{
+					// Create attack
+					//TO DO Bullet Creation
+				}
+				else if (currentAttack == 2)
+				{
+					pbody->ctype = ColliderType::ENEMY_ATTACK;
+					//TO DO Make it Dive
+				}
+
+				startAttack.Start();
+			}
+		}
+		else
+		{
+			// Attack End
+			if (startAttack.ReadMSec() >= attackDuration)
+			{
+				isAttacking = false;
+				anims.SetCurrent("idle");
+
+				if (currentAttack == 2)
+				{
+					pbody->ctype = ColliderType::ENEMY;
+				}
+
+				attackCooldown.Start();
+				startedAttacking = false;
+				nextAttackSelected = false;
+			}
+		}
 		break;
 	case DragonPhase::MIXED:
 
 		break;
 	}
+}
+
+void Dragon::SelectAttack()
+{
+	if (nextAttackSelected)
+	{
+		return;
+	}
+	switch (currentPhase)
+	{
+	case DragonPhase::GROUND:
+		currentAttack = GenerateRandomNumber(1, 3);
+		switch (currentAttack)			// TO DO Adjust COOLDOWN / WINDUP / DAMAGE
+		{
+		case 1: // Claw
+			damage = 20;
+			attackCooldownTime = 500.0f;
+			attackWindupTime = 500.0f;
+			attackDuration = 1000.0f;
+			attackTileRange = 1;
+			break;
+		case 2: //Tail
+			damage = 10;
+			attackCooldownTime = 1000.0f;
+			attackWindupTime = 500.0f;
+			attackDuration = 500.0f;
+			attackTileRange = 3;
+			break;
+		case 3: //Ground Spikes
+			damage = 30;
+			attackCooldownTime = 2000.0f;
+			attackWindupTime = 1000.0f;
+			attackDuration = 2000.0f;
+			attackTileRange = 5;
+			break;
+		}
+		break;
+
+	case DragonPhase::AIR:
+		currentAttack = GenerateRandomNumber(1, 2);
+		switch (currentAttack)			// TO DO Adjust COOLDOWN / WINDUP / DAMAGE
+		{
+		case 1: // Shoot
+			damage = 0;
+			attackCooldownTime = 500.0f;
+			attackWindupTime = 500.0f;
+			attackDuration = 1000.0f;
+			attackTileRange = 5;
+			break;
+		case 2: //Dive
+			damage = 50;
+			attackCooldownTime = 1000.0f;
+			attackWindupTime = 500.0f;
+			attackDuration = 500.0f;
+			attackTileRange = 5;
+			break;
+		}
+		break;
+	case DragonPhase::MIXED:
+
+		break;
+	}
+	nextAttackSelected = true;
 }
 
 int Dragon::GenerateRandomNumber(int minNumber, int maxNumber)

@@ -530,9 +530,6 @@ void Player::Attack(float dt)
 				currentAttackHeight = 90;
 			}
 
-			// Variables locales para calcular la posición inicial
-			int offsetX = 0;
-			int offsetY = 0;
 
 			if (lookUp)
 			{
@@ -542,7 +539,7 @@ void Player::Attack(float dt)
 				currentAttackHeight = temp;
 
 				// Offset negativo = ARRIBA
-				offsetY = -(texH * 0.8f);
+				currentAttackOffsetY = -(texH * 0.8f) - currentAttackHeight;
 				currentAttackOffsetX = 0; // Usamos 0 para identificar que no es lateral
 
 				if (lookingRight) anims.SetCurrent("attack_right");
@@ -554,10 +551,9 @@ void Player::Attack(float dt)
 				currentAttackWidth = currentAttackHeight;
 				currentAttackHeight = temp;
 
-				currentAttackOffsetX = 0;
-				offsetX = 0;
 				// Offset POSITIVO = ABAJO
-				offsetY = (texH * 0.8f);
+				currentAttackOffsetY = (texH * 0.8f);
+				currentAttackOffsetX = 0;
 
 				if (lookingRight) anims.SetCurrent("attack_right");
 				else anims.SetCurrent("attack_left");
@@ -566,8 +562,7 @@ void Player::Attack(float dt)
 			{
 				// Ataque lateral estándar
 				currentAttackOffsetX = lookingRight ? (texW / 2 + currentAttackWidth / 2) : -(texW / 2 + currentAttackWidth / 2);
-				offsetX = currentAttackOffsetX;
-				offsetY = 0;
+				currentAttackOffsetY = 0;
 
 				if (lookingRight)
 				{
@@ -587,8 +582,8 @@ void Player::Attack(float dt)
 
 			// Creación del sensor de ataque
 			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(
-				position.getX() + offsetX,
-				position.getY() + offsetY,
+				position.getX() + currentAttackOffsetX,
+				position.getY() + currentAttackOffsetY,
 				currentAttackWidth,
 				currentAttackHeight,
 				bodyType::KINEMATIC);
@@ -604,24 +599,7 @@ void Player::Attack(float dt)
 		currentAttackTime += dt / 1000.0f;
 
 		if (attackCollider != nullptr) {
-			int tempOffsetY = 0;
-
-			// Si el ataque no es lateral (X=0), determinamos si es arriba o abajo
-			// comparando la posición actual del collider respecto al jugador
-			if (currentAttackOffsetX == 0) {
-				int cX, cY;
-				attackCollider->GetPosition(cX, cY);
-
-				// Usamos exactamente los mismos valores que en la creación
-				if (cY < position.getY()) {
-					tempOffsetY = -(texH * 0.8f); // Mantener ARRIBA
-				}
-				else {
-					tempOffsetY = (texH * 0.8f);  // Mantener ABAJO
-				}
-			}
-
-			attackCollider->SetPosition(position.getX() + currentAttackOffsetX, position.getY() + tempOffsetY);
+			attackCollider->SetPosition(position.getX() + currentAttackOffsetX, position.getY() + currentAttackOffsetY);
 		}
 
 		// Finalizar ataque

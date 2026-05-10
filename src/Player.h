@@ -182,6 +182,7 @@ public:
 	int currentAttackWidth = 0;
 	int currentAttackHeight = 0;
 	int currentAttackOffsetX = 0;
+	int currentAttackOffsetY = 0;
 
 	//Audio fx
 	//int pickCoinFxId;
