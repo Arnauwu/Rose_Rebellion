@@ -604,7 +604,7 @@ bool Map::Load(std::string path, std::string fileName)
 					colliderList.push_back(collider);
 				}
 			}
-			else if (objectsGroups->properties.GetProperty("Chain") != NULL and objectsGroups->properties.GetProperty("Triangle")->value) // Triangle / Chain
+			else if (objectsGroups->properties.GetProperty("Triangle") != NULL and objectsGroups->properties.GetProperty("Triangle")->value) // Triangle / Chain
 			{
 				for (const auto& obj : objectsGroups->objects)
 				{

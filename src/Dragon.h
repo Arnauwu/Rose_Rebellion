@@ -33,14 +33,27 @@ private:
 
 	void Attack();
 
+	int GenerateRandomNumber(int minNumber, int maxNumber);
 public:
 
 	PhysBody* attackHitbox = nullptr;
 
 	// Boss parameters
+	bool startedAttacking = false;
 	bool isAttacking = false;
+
+	int currentAttack = 0;
+
 	Timer startAttack;
-	float attackCooldown = 1000.0f; // Time between attack
+	Timer attackCooldown;
+	Timer attackWindUp;
+	
+	//TO DO ADJUST VALUES DEPENDING ON ATTACK
+	float attackWindupTime = 500.0f;
+	float attackCooldownTime = 2000.0f;
+
+	float attackDuration = 1000.0f;
+
 
 	//Dragon
 	bool isInvincible = false; //Changing Phase

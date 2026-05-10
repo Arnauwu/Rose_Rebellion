@@ -12,6 +12,8 @@
 #include "Timer.h"
 #include "Physics.h"
 
+#include <random>
+
 Dragon::Dragon() : Enemy(EntityType::DRAGON)
 {
 	name = "Dragon";
@@ -34,9 +36,9 @@ bool Dragon::Start() {
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
 	// Create Body
-	texW = 256;
-	texH = 256;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 4, bodyType::DYNAMIC); // TO DO: Adjust Size & Geometric Shape
+	texW = 768;
+	texH = 768*2/3;
+	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW, texH, bodyType::DYNAMIC); // TO DO: Adjust Size & Geometric Shape
 
 	pbody->listener = this;
 	pbody->ctype = ColliderType::ENEMY;
@@ -59,6 +61,9 @@ bool Dragon::Start() {
 	position.setX((float)x);
 	position.setY((float)y);
 
+	//Start Timers
+	attackCooldown.Start();
+	
 	return true;
 }
 
@@ -171,9 +176,9 @@ void Dragon::Move()
 	switch (currentPhase)
 	{
 	case GROUND:
-		if (playerTileDist >= 2 && isAttacking == false) // TO DO ADJUST AFTER SIZE
+		if (playerTileDist >= (2 + (texW / (Engine::GetInstance().map->GetTileWidth() * 2) )) && startedAttacking == false) // TO DO ADJUST AFTER SIZE
 		{
-			anims.SetCurrent("run");
+			anims.SetCurrent("walk");
 
 			if (pathfinding->pathTiles.back() == tilePos)
 			{
@@ -197,15 +202,31 @@ void Dragon::Move()
 			{
 				velocity.x = 0;
 			}
-
-			if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
-			{
-				velocity.x *= 5;
-			}
 		}
 		else
 		{
-			Attack();
+			if (attackCooldown.ReadMSec() >= attackCooldownTime)
+			{
+				//Look towards player
+				if (pathfinding->pathTiles.back() == tilePos)
+				{
+					pathfinding->pathTiles.pop_back();
+					if (pathfinding->pathTiles.empty()) { return; }
+				}
+
+				Vector2D nextTile = pathfinding->pathTiles.back();
+
+				if (nextTile.getX() > tilePos.getX())
+				{
+					lookingRight = true;
+				}
+				else if (nextTile.getX() < tilePos.getX())
+				{
+					lookingRight = false;
+				}
+
+				Attack();
+			}
 		}
 		break;
 	case AIR:
@@ -247,9 +268,9 @@ void Dragon::Move()
 
 
 		//Horitzontal
-		if (playerTileDist <= 3 && isAttacking == false) // TO DO ADJUST AFTER SIZE
+		if (playerTileDist <= 3 && startedAttacking == false) // TO DO ADJUST AFTER SIZE
 		{
-			anims.SetCurrent("run");
+			anims.SetCurrent("walk");
 
 			if (pathfinding->pathTiles.back() == tilePos)
 			{
@@ -303,7 +324,28 @@ void Dragon::Move()
 		}
 		else
 		{
-			Attack();
+			if (attackCooldown.ReadMSec() >= attackCooldownTime)
+			{
+				//Look towards player
+				if (pathfinding->pathTiles.back() == tilePos)
+				{
+					pathfinding->pathTiles.pop_back();
+					if (pathfinding->pathTiles.empty()) { return; }
+				}
+
+				Vector2D nextTile = pathfinding->pathTiles.back();
+
+				if (nextTile.getX() > tilePos.getX())
+				{
+					lookingRight = true;
+				}
+				else if (nextTile.getX() < tilePos.getX())
+				{
+					lookingRight = false;
+				}
+
+				Attack();
+			}
 		}
 
 		break;
@@ -404,41 +446,81 @@ void Dragon::Attack()
 	switch (currentPhase)
 	{
 	case DragonPhase::GROUND:
-		if (isAttacking) {
-			anims.SetCurrent("attack");
-			velocity.x = 0;
-			damage = 20;
+		if (isAttacking == false) 
+		{
+			if (startedAttacking == false)
+			{
+				currentAttack = GenerateRandomNumber(1, 2); //TO DO: CHANGE TO 1,3
 
-			// 1. CREAR HITBOX: En el momento del impacto visual (ej: a los 500ms)
-			if (startAttack.ReadMSec() > 500 && attackHitbox == nullptr) {
+				switch (currentAttack)			// TO DO ATTACK SPECIFIC COOLDOWN / WINDUP / DAMAGE
+				{
+				case 1: // Claw
+					anims.SetCurrent("attack");
+					damage = 20;
+					break;
+				case 2: //Tail
+					anims.SetCurrent("attack");
+					damage = 10;
+					break;
+				case 3: //Ground Spikes
+					anims.SetCurrent("attack");
+					damage = 30;
+					break;
+				}
 
-				// Calculamos dónde aparece la espada dependiendo de a dónde mire
-				int attW = 120, attH = 160;
-				int hX = lookingRight ? position.getX() + texW / 2 : position.getX() - texW / 2;
-				int hY = position.getY();
-
-				// Creamos un rectángulo físico
-				attackHitbox = Engine::GetInstance().physics->CreateRectangle(hX, hY, attW, attH, bodyType::KINEMATIC);
-				attackHitbox->listener = this;
-				attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
-
-				// (Línea de SetSensor eliminada por incompatibilidad con Box2D v3)
+				attackWindUp.Start();
+				startedAttacking = true;
 			}
 
-			// 2. DESTRUIR HITBOX: Al terminar el ataque
-			if (startAttack.ReadMSec() >= attackCooldown)
+			// CreateAttack
+			if (attackHitbox == nullptr && attackWindUp.ReadMSec() >= attackWindupTime) 
+			{
+				isAttacking = true;
+
+				// AttackSize
+				int attW, attH, hX, hY;
+				if (currentAttack == 1)
+				{
+					attW = 150; attH = texH;
+					hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
+					hY = position.getY();
+				}
+				else if (currentAttack == 2)
+				{
+					attW = 300; attH = 100;
+					hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
+					hY = position.getY() + texH/2 - attH/2;
+				}
+
+
+				// Create attackHitboz
+				attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
+				attackHitbox->listener = this;
+				attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
+				
+				startAttack.Start();
+			}
+		}
+		else
+		{
+			// Attack End
+			if (startAttack.ReadMSec() >= attackDuration)
 			{
 				isAttacking = false;
 				anims.SetCurrent("idle");
 
-				// Si la espada existe, la borramos del mundo de físicas
+				// Delete Hitbox
 				if (attackHitbox != nullptr) {
-					// SOLUCIÓN BOX2D V3:
 					b2DestroyBody(attackHitbox->body);
-					attackHitbox = nullptr; // Lo volvemos a poner a null para el próximo ataque
+					attackHitbox = nullptr;
 				}
+
+				attackCooldown.Start();
+				startedAttacking = false;
 			}
 		}
+
+		
 		break;
 	case DragonPhase::AIR:
 
@@ -447,6 +529,16 @@ void Dragon::Attack()
 
 		break;
 	}
+}
+
+int Dragon::GenerateRandomNumber(int minNumber, int maxNumber)
+{
+	//Randomness (From a StackOverflow forum)
+	std::random_device rd;
+	std::mt19937 gen(rd()); // Mersenne Twister engine
+	std::uniform_int_distribution<> dist(minNumber, maxNumber);
+	int randomNumber = dist(gen);
+	return randomNumber;
 }
 
 void Dragon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
