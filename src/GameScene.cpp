@@ -209,10 +209,43 @@ bool GameScene::Update(float dt) {
 
 		doorOpenAnim.Update(dt);
 
-		// Box2D 给的是中心点坐标，256的图我们要减去128将其居中画出来
+		//// Box2D 给的是中心点坐标，256的图我们要减去128将其居中画出来
+		//SDL_Rect frame = doorOpenAnim.GetCurrentFrame();
+		//Engine::GetInstance().render->DrawTexture(doorTexture, doorDrawX - 128, doorDrawY - 128, &frame);
 		SDL_Rect frame = doorOpenAnim.GetCurrentFrame();
-		Engine::GetInstance().render->DrawTexture(doorTexture, doorDrawX - 128, doorDrawY - 128, &frame);
 
+		// 获取当前所在的地图名字
+		std::string currentMap = Engine::GetInstance().map->mapFileName;
+
+		float doorScale = 2.3f; // 默认缩放
+		int finalDrawY = doorDrawY; // 默认Y轴
+
+		// ==========================================
+		// 【根据不同地图，配置专门的门大小和偏移】
+		// ==========================================
+		if (currentMap == "Castle_Inside.tmx" || currentMap == "Castle_Room_Princess.tmx") {
+			// 城堡内部地图：用你刚才调好的数值
+			doorScale = 2.3f;
+			finalDrawY = doorDrawY - 95;
+		}
+		else if (currentMap == "Nexo.tmx") {
+			// 假设 Nexo.tmx 里的门比较小，或者画得偏上
+			doorScale = 2.0f;
+			finalDrawY = doorDrawY - 50;
+		}
+		else if (currentMap.find("Forest_01.tmx") != std::string::npos) {
+			// 假设森林系列地图里的门很大
+			doorScale = 4.0f;
+			finalDrawY = doorDrawY - 150;
+		}
+		else {
+			// 兜底方案 (未知地图)
+			doorScale = 2.3f;
+			finalDrawY = doorDrawY - 85;
+		}
+		// ==========================================
+
+		Engine::GetInstance().render->DrawRotatedTexture(doorTexture, doorDrawX, finalDrawY, &frame, SDL_FLIP_NONE, doorScale);
 		// 动画播完后触发切图
 		if (doorOpenAnim.HasFinishedOnce()) {
 			p->isOpeningDoor = false;
