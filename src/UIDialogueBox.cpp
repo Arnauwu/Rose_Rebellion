@@ -11,9 +11,8 @@ UIDialogueBox::UIDialogueBox(int id, float anchorX, float anchorY, float wPercen
 }
 
 UIDialogueBox::~UIDialogueBox() {}
-void UIDialogueBox::SetBackgroundTextures(SDL_Texture* princessTex, SDL_Texture* npcTex) {
-	backgroundTex = princessTex;
-}
+void UIDialogueBox::SetBackgroundTexture(SDL_Texture* bgTex) {
+backgroundTex = bgTex;}
 
 bool UIDialogueBox::Update(float dt) {
 	if (!visible) return true;
@@ -26,19 +25,22 @@ void UIDialogueBox::AddPortrait(const std::string& speakerName, SDL_Texture* por
 
 void UIDialogueBox::SetSpeakerName(const std::string& name) {
 	currentSpeaker = name;
+	auto it = portraits.find(name);
+	if (it != portraits.end()) {
+		currentPortrait = it->second;
+	}
+	else {
+		currentPortrait = nullptr;
+	}
 
 	if (!currentSpeaker.empty()) {
 		SDL_Rect mainBoxPlaceholder = { 0, 0, 1400, 240 };
 		cachedNameTextRect = Engine::GetInstance().render->GetTextRenderedBounds(currentSpeaker.c_str(), mainBoxPlaceholder, FontType::SPEAKER);
 	}
-	else {
-		cachedNameTextRect = { 0, 0, 0, 0 };
-	}
 }
 
 void UIDialogueBox::Draw() const {
-	if (!visible) return;
-	if (backgroundTex == nullptr) return;
+	if (!visible || backgroundTex == nullptr) return;
 
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
@@ -92,19 +94,24 @@ void UIDialogueBox::Draw() const {
 
 	// TEXTURA PORTRAIT
 	if (currentPortrait != nullptr) {
-		int portraitSize = 256; 
+		int portraitSize = 512;
+		int space = 80;
+		int spaceY = 160;
 
-		int portraitY = mainBox.y + mainBox.h - portraitSize;
+		int portraitY = (mainBox.y + mainBox.h) - portraitSize + space;
 		int portraitX = 0;
 
 		if (currentSpeaker == "Princesa") {
-			portraitX = mainBox.x - portraitSize + 60;
+			portraitX = mainBox.x - (portraitSize / 2);
 		}
 		else {
-			portraitX = (mainBox.x + mainBox.w) - 60;
+			portraitX = (mainBox.x + mainBox.w) - spaceY;
+
 		}
 
-		Engine::GetInstance().render->DrawTexture(currentPortrait, portraitX, portraitY, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
+		SDL_Rect destRect = { portraitX, portraitY, portraitSize, portraitSize };
+
+		Engine::GetInstance().render->DrawTextureScaled(currentPortrait, destRect);
 	}
 }
 
@@ -117,6 +124,7 @@ bool UIDialogueBox::CleanUp() {
 		}
 	}
 	portraits.clear();
+	currentPortrait = nullptr;
 	return true;
 }
 

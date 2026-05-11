@@ -150,7 +150,7 @@ bool GameScene::Start() {
 	CreateDialogueUI();
 
 	RefreshMenuUI();
-
+	CreateDialogueUI();
 	return true;
 }
 
@@ -160,6 +160,9 @@ bool GameScene::Update(float dt) {
 	auto input = Engine::GetInstance().input;
 	auto dialogueMgr = Engine::GetInstance().dialogueManager;
 
+	if (dialogueMgr->IsDialogueActive()) {
+		return true;
+	}
 	// --- SUB-MENU INPUT HANDLING ---
 	// Toggle menus based on keyboard shortcuts
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
@@ -513,14 +516,13 @@ void GameScene::CreateDialogueUI() {
 
 	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
 	if (dBox != nullptr) {
-		dBox->SetBackgroundTextures(UIDialogueBoxTex, UIDialogueBoxTex);
+		dBox->SetBackgroundTexture(UIDialogueBoxTex);
 
-		// Cargar retratos (siguiendo tu lógica de carga de texturas)
-		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Portraits/Princess.png");
-		SDL_Texture* texNpc = Engine::GetInstance().textures->Load("Assets/Textures/UI/Portraits/GenericNPC.png");
+		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/princess_portrait.png");
+		SDL_Texture* texAldeano = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/npc_portrait.png");
 
 		dBox->AddPortrait("Princesa", texPrincesa);
-		dBox->AddPortrait("Aldeano", texNpc);
+		dBox->AddPortrait("Jan", texAldeano);
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
@@ -528,6 +530,7 @@ void GameScene::CreateDialogueUI() {
 		// Añadir al grupo de control
 		dialogueUI.push_back(rawDialogueBox);
 	}
+	Engine::GetInstance().dialogueManager->StartDialogue("Prueba1");
 }
 // ==========================================
 // SUB-MENU LOGIC
