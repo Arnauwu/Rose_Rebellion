@@ -47,10 +47,10 @@ void UIDialogueBox::Draw() const {
 
 	// CAJA PRINCIPAL (Texto de diálogo)
 	SDL_Rect mainBox;
-	mainBox.w = 1400;
+	mainBox.w = 1300;
 	mainBox.h = 240;
 	mainBox.x = (screenW - mainBox.w) / 2;
-	mainBox.y = screenH - mainBox.h - 40;
+	mainBox.y = screenH - mainBox.h - 60;
 
 	// Dibujamos el fondo principal
 	Engine::GetInstance().render->DrawTexture9Slice(backgroundTex, mainBox, 64, 64, 64, 64);
@@ -59,7 +59,7 @@ void UIDialogueBox::Draw() const {
 	if (!currentSpeaker.empty()) {
 
 		SDL_Rect nameBox;
-		nameBox.w = cachedNameTextRect.w + 40;
+		nameBox.w = 400;
 		nameBox.h = 80;
 		nameBox.y = mainBox.y - nameBox.h;
 
@@ -77,26 +77,39 @@ void UIDialogueBox::Draw() const {
 		int nameTextX = nameBox.x + (nameBox.w - cachedNameTextRect.w) / 2;
 		int nameTextY = nameBox.y + (nameBox.h - cachedNameTextRect.h) / 2;
 
-		Engine::GetInstance().render->DrawText(
-			currentSpeaker.c_str(), nameTextX, nameTextY, 0, 0, speakerColor, FontType::SPEAKER);
+		Engine::GetInstance().render->DrawText(currentSpeaker.c_str(), nameTextX, nameTextY, 0, 0, speakerColor, FontType::SPEAKER);
 	}
 
 	// CAJA DEL DIÁLOGO
 	if (!currentText.empty()) {
-		int textX = mainBox.x + 70;
-		int textY = mainBox.y + 50;
+		int textX = 0;
+		int textY = 0;
+		int maxW = 0;
+		int maxH = 0;
 
-		int maxW = mainBox.w - 140;
-		int maxH = mainBox.h - 100;
+		if (currentSpeaker == "Princesa") {
+			textX = mainBox.x + 200;
+			textY = mainBox.y + 50;
 
-		Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::DIALOGUE);
+			maxW = mainBox.w - 240;
+			maxH = mainBox.h - 100;
+
+			Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::DIALOGUE);
+		}
+		else{
+			textX = mainBox.x + 70;
+			textY = mainBox.y + 50;
+
+			maxW = mainBox.w - 250;
+			maxH = mainBox.h - 100;
+			Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::DIALOGUE);
+		}
 	}
 
 	// TEXTURA PORTRAIT
 	if (currentPortrait != nullptr) {
 		int portraitSize = 512;
 		int space = 80;
-		int spaceY = 160;
 
 		int portraitY = (mainBox.y + mainBox.h) - portraitSize + space;
 		int portraitX = 0;
@@ -105,7 +118,7 @@ void UIDialogueBox::Draw() const {
 			portraitX = mainBox.x - (portraitSize / 2);
 		}
 		else {
-			portraitX = (mainBox.x + mainBox.w) - spaceY;
+			portraitX = (mainBox.x + mainBox.w) - portraitSize / 2;
 
 		}
 
