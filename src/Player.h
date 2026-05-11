@@ -188,10 +188,6 @@ public:
 	// Item & states
 	bool isFrozen = false;
 
-	// 【新增】与门动画通信
-	bool isOpeningDoor = false;
-	PhysBody* doorToOpen = nullptr;
-
 private:
 
 	int jumpFx;

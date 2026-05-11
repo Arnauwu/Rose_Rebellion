@@ -97,15 +97,6 @@ public:
 	SDL_Texture* UIDialogueBoxPrincess = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
 
-	// ==========================================
-	// ???????????????????
-	// ==========================================
-	SDL_Texture* doorTexture = nullptr;
-	Animation doorOpenAnim;
-	bool isDoorOpening = false;
-	int doorDrawX = 0;
-	int doorDrawY = 0;
-
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);

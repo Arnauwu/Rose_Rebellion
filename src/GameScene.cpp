@@ -96,10 +96,7 @@ void GameScene::LoadMap(std::string mapFile)
 		}
 
 		newPlayer->SetPosition(spawnPos);
-
-		// 【修改】换地图后解除冻结和重置门状态
 		newPlayer->isFrozen = false;
-		newPlayer->isOpeningDoor = false;
 
 		if (newPlayer->pbody != nullptr) {
 			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
@@ -141,22 +138,10 @@ bool GameScene::Start() {
 	LoadTextureIfNull(UIDialogueBoxPrincess, "Assets/Textures/UI/Dialogues/UIDialogueBoxPrincess.png");
 	LoadTextureIfNull(UIDialogueBoxNpc1, "Assets/Textures/UI/Dialogues/UIDialogueBoxNpc1.png");
 
-	// ==========================================
-	// 【已修复】使用你本地引擎正确的 Animation 写法
-	// ==========================================
-	LoadTextureIfNull(doorTexture, "Assets/SS_puerta_abriendo_pruevas.png");
-	for (int i = 0; i < 6; i++) {
-		// AddFrame 参数1: 裁剪框， 参数2: 每帧持续的时间(毫秒) 比如100ms
-		doorOpenAnim.AddFrame({ i * 256, 0, 256, 256 }, 100);
-	}
-	doorOpenAnim.SetLoop(false); // 禁止循环
-	isDoorOpening = false;
-
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
 	CreateInventoryUI();
-
 	// Pause Menu
 	CreatePauseMenuUI();
 
@@ -194,66 +179,6 @@ bool GameScene::Update(float dt) {
 			mapState = MapTransitionState::NONE;
 		}
 	}
-
-	// ==========================================
-	// 【新增】拦截门动画逻辑，当玩家开门时渲染动画
-	// ==========================================
-	Player* p = Engine::GetInstance().entityManager->GetPlayer();
-	if (p != nullptr && p->isOpeningDoor) {
-		if (!isDoorOpening) {
-			isDoorOpening = true;
-			doorOpenAnim.Reset();
-			// 从门的 Box2D Collider 获取门中心点坐标
-			p->doorToOpen->GetPosition(doorDrawX, doorDrawY);
-		}
-
-		doorOpenAnim.Update(dt);
-
-		//// Box2D 给的是中心点坐标，256的图我们要减去128将其居中画出来
-		//SDL_Rect frame = doorOpenAnim.GetCurrentFrame();
-		//Engine::GetInstance().render->DrawTexture(doorTexture, doorDrawX - 128, doorDrawY - 128, &frame);
-		SDL_Rect frame = doorOpenAnim.GetCurrentFrame();
-
-		// 获取当前所在的地图名字
-		std::string currentMap = Engine::GetInstance().map->mapFileName;
-
-		float doorScale = 2.3f; // 默认缩放
-		int finalDrawY = doorDrawY; // 默认Y轴
-
-		// ==========================================
-		// 【根据不同地图，配置专门的门大小和偏移】
-		// ==========================================
-		if (currentMap == "Castle_Inside.tmx" || currentMap == "Castle_Room_Princess.tmx") {
-			// 城堡内部地图：用你刚才调好的数值
-			doorScale = 2.3f;
-			finalDrawY = doorDrawY - 95;
-		}
-		else if (currentMap == "Nexo.tmx") {
-			// 假设 Nexo.tmx 里的门比较小，或者画得偏上
-			doorScale = 2.0f;
-			finalDrawY = doorDrawY - 50;
-		}
-		else if (currentMap.find("Forest_01.tmx") != std::string::npos) {
-			// 假设森林系列地图里的门很大
-			doorScale = 4.0f;
-			finalDrawY = doorDrawY - 150;
-		}
-		else {
-			// 兜底方案 (未知地图)
-			doorScale = 2.3f;
-			finalDrawY = doorDrawY - 85;
-		}
-		// ==========================================
-
-		Engine::GetInstance().render->DrawRotatedTexture(doorTexture, doorDrawX, finalDrawY, &frame, SDL_FLIP_NONE, doorScale);
-		// 动画播完后触发切图
-		if (doorOpenAnim.HasFinishedOnce()) {
-			p->isOpeningDoor = false;
-			isDoorOpening = false;
-			Engine::GetInstance().sceneManager->setNewMap = true; // 正式触发切换房间
-		}
-	}
-	// ==========================================
 
 	if (input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
 		if (currentMenuTab != GameMenuTab::NONE) {
@@ -369,9 +294,6 @@ bool GameScene::CleanUp() {
 	//UnloadTexture Dialogues
 	UnloadTexture(UIDialogueBoxPrincess);
 	UnloadTexture(UIDialogueBoxNpc1);
-
-	// 【新增】清理门贴图
-	UnloadTexture(doorTexture);
 
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {

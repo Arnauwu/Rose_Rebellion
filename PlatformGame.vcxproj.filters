@@ -140,6 +140,9 @@
     <Filter Include="Source Files\Game\Entity\Bosses\NinfaBoss">
       <UniqueIdentifier>{18598de3-a106-41ad-b753-9b491fdfe53f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Door">
+      <UniqueIdentifier>{5a13a2ff-a350-48c1-bc70-3bddf738ce82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -321,6 +324,9 @@
     <ClCompile Include="src\NinfaBoss.cpp">
       <Filter>Source Files\Game\Entity\Bosses\NinfaBoss</Filter>
     </ClCompile>
+    <ClCompile Include="src\Door.cpp">
+      <Filter>Source Files\Game\Entity\Door</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -499,6 +505,9 @@
     </ClInclude>
     <ClInclude Include="src\NinfaBoss.h">
       <Filter>Source Files\Game\Entity\Bosses\NinfaBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Door.h">
+      <Filter>Source Files\Game\Entity\Door</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
