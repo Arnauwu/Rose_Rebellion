@@ -74,7 +74,8 @@ bool Map::Update(float dt)
 		// Loop to draw all images
 		for (const auto& objectGroup : mapData.objectGroups)
 		{
-			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true)
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
+				&& objectGroup->properties.GetProperty("BG") != NULL && objectGroup->properties.GetProperty("BG")->value == true)
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
@@ -265,6 +266,90 @@ bool Map::Update(float dt)
 		}
 	}
 
+	return ret;
+}
+
+bool Map::PostUpdate()
+{
+	bool ret = true;
+
+	if (mapLoaded)
+	{
+		// Loop to draw all images
+		for (const auto& objectGroup : mapData.objectGroups)
+		{
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
+				&& objectGroup->properties.GetProperty("Front") != NULL && objectGroup->properties.GetProperty("Front")->value == true)
+			{
+				for (const auto& obj : objectGroup->objects)
+				{
+					//Get the gid from tile
+					unsigned int gid = obj->gid;
+
+					//Check if the gid is different from 0 - some tiles are empty
+					if (gid != 0)
+					{
+						// Decode flip flags from GID
+						const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+						const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
+						const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+						const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
+
+						//Get Flip Variables and Correct Tile GID
+						bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
+						bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
+						bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
+						uint32_t tileId = gid & TILE_ID_MASK;
+
+						// Determine rotation and final horizontal flip
+						float rotation = 0.0f;
+						SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+
+						if (!flipD)
+						{
+							if (flipH && flipV) { rotation = 180.0f; }
+							else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
+						}
+						else // Diagonal Flip  == True
+						{
+							if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipH && !flipV) { rotation = 90.0f; }
+							else if (!flipH && flipV) { rotation = 270.0f; }
+							else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+						}
+
+						// Obtain the tile set using GetTilesetFromTileId
+						TileSet* tileSet = GetTilesetFromTileId(tileId);
+
+						if (tileSet != nullptr)
+						{
+							//Get the Rect from the tileSetTexture;
+							SDL_Rect tileRect;
+
+							tileRect.x = obj->x;
+							tileRect.y = obj->y;
+							tileRect.w = obj->width;
+							tileRect.h = obj->height;
+
+							SDL_Rect dstRect;
+
+							dstRect.x = tileSet->GetRect(tileId).x;
+							dstRect.y = tileSet->GetRect(tileId).y;
+							dstRect.w = tileSet->GetRect(tileId).w;
+							dstRect.h = tileSet->GetRect(tileId).h;
+
+							// Center point for rotation
+							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+							//Draw the texture
+							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
+						}
+					}
+				}
+			}
+		}
+	}
 	return ret;
 }
 

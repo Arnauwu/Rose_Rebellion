@@ -175,6 +175,7 @@ public:
 
     // Called each loop iteration
     bool Update(float dt);
+    bool PostUpdate() override;
 
     // Called before quitting
     bool CleanUp();
