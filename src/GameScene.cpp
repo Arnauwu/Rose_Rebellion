@@ -176,6 +176,19 @@ bool GameScene::Update(float dt) {
 			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
 		}
 	}
+	// Agregado para mando (botón START):
+	if (Engine::GetInstance().input->IsGamepadConnected())
+	{
+		if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_START) == KEY_DOWN) {
+			if (currentMenuTab != GameMenuTab::NONE) {
+				ToggleGameMenu(GameMenuTab::NONE);
+			}
+			else {
+				ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+			}
+		}
+	}
+
 	// --- SUB-MENU INPUT HANDLING ---
 	// Toggle menus based on keyboard shortcuts
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);

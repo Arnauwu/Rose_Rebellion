@@ -23,8 +23,8 @@ enum class ItemID {
 };
 
 enum class CameraMode {
-	CLASSIC,  // Para la fortaleza (M��todo original: 1.25f, bloqueo de salto Y)
-	DYNAMIC   // Para exploraci��n (Nuevo m��todo: 1.75f, Look down, anticipaci��n)
+	CLASSIC,  
+	DYNAMIC   
 };
 
 struct SDL_Texture;
