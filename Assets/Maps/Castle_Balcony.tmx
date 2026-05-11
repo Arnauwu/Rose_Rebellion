@@ -23,6 +23,7 @@
  </tileset>
  <objectgroup id="6" name="BG">
   <properties>
+   <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <object id="24" gid="249" x="0" y="1716" width="3584" height="1716"/>
