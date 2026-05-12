@@ -317,6 +317,59 @@ bool Render::DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) c
 	return true;
 }
 
+bool Render::DrawTexture9Slice(SDL_Texture* texture, const SDL_Rect& destRect, int left, int right, int top, int bottom) const
+{
+	if (!texture || !renderer) return false;
+
+	float texW = 0.0f, texH = 0.0f;
+	SDL_GetTextureSize(texture, &texW, &texH);
+
+	SDL_FRect srcTL = { 0, 0, (float)left, (float)top };
+	SDL_FRect srcTR = { texW - right, 0, (float)right, (float)top };
+	SDL_FRect srcBL = { 0, texH - bottom, (float)left, (float)bottom };
+	SDL_FRect srcBR = { texW - right, texH - bottom, (float)right, (float)bottom };
+
+	SDL_FRect srcTop = { (float)left, 0, texW - left - right, (float)top };
+	SDL_FRect srcBot = { (float)left, texH - bottom, texW - left - right, (float)bottom };
+	SDL_FRect srcLeft = { 0, (float)top, (float)left, texH - top - bottom };
+	SDL_FRect srcRight = { texW - right, (float)top, (float)right, texH - top - bottom };
+
+	SDL_FRect srcCenter = { (float)left, (float)top, texW - left - right, texH - top - bottom };
+
+	float dx = (float)destRect.x;
+	float dy = (float)destRect.y;
+	float dw = (float)destRect.w;
+	float dh = (float)destRect.h;
+
+	SDL_FRect dstTL = { dx, dy, (float)left, (float)top };
+	SDL_FRect dstTR = { dx + dw - right, dy, (float)right, (float)top };
+	SDL_FRect dstBL = { dx, dy + dh - bottom, (float)left, (float)bottom };
+	SDL_FRect dstBR = { dx + dw - right, dy + dh - bottom, (float)right, (float)bottom };
+
+	SDL_FRect dstTop = { dx + left, dy, dw - left - right, (float)top };
+	SDL_FRect dstBot = { dx + left, dy + dh - bottom, dw - left - right, (float)bottom };
+	SDL_FRect dstLeft = { dx, dy + top, (float)left, dh - top - bottom };
+	SDL_FRect dstRight = { dx + dw - right, dy + top, (float)right, dh - top - bottom };
+
+	SDL_FRect dstCenter = { dx + left, dy + top, dw - left - right, dh - top - bottom };
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	SDL_RenderTexture(renderer, texture, &srcTL, &dstTL);
+	SDL_RenderTexture(renderer, texture, &srcTR, &dstTR);
+	SDL_RenderTexture(renderer, texture, &srcBL, &dstBL);
+	SDL_RenderTexture(renderer, texture, &srcBR, &dstBR);
+
+	SDL_RenderTexture(renderer, texture, &srcTop, &dstTop);
+	SDL_RenderTexture(renderer, texture, &srcBot, &dstBot);
+	SDL_RenderTexture(renderer, texture, &srcLeft, &dstLeft);
+	SDL_RenderTexture(renderer, texture, &srcRight, &dstRight);
+
+	SDL_RenderTexture(renderer, texture, &srcCenter, &dstCenter);
+
+	return true;
+}
+
 bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const SDL_Rect* section, SDL_FlipMode flip, float adjustableScale, double angle, int pivotX, int pivotY) const
 {
 	bool ret = true;

@@ -28,6 +28,8 @@
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
 
+#include "SpecialFloors.h"
+
 #include "GameManager.h"
 #include "SavePoint.h"
 #include "Door.h"
@@ -73,7 +75,8 @@ bool Map::Update(float dt)
 		// Loop to draw all images
 		for (const auto& objectGroup : mapData.objectGroups)
 		{
-			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true)
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
+				&& objectGroup->properties.GetProperty("BG") != NULL && objectGroup->properties.GetProperty("BG")->value == true)
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
@@ -264,6 +267,90 @@ bool Map::Update(float dt)
 		}
 	}
 
+	return ret;
+}
+
+bool Map::PostUpdate()
+{
+	bool ret = true;
+
+	if (mapLoaded)
+	{
+		// Loop to draw all images
+		for (const auto& objectGroup : mapData.objectGroups)
+		{
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
+				&& objectGroup->properties.GetProperty("Front") != NULL && objectGroup->properties.GetProperty("Front")->value == true)
+			{
+				for (const auto& obj : objectGroup->objects)
+				{
+					//Get the gid from tile
+					unsigned int gid = obj->gid;
+
+					//Check if the gid is different from 0 - some tiles are empty
+					if (gid != 0)
+					{
+						// Decode flip flags from GID
+						const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+						const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
+						const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+						const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
+
+						//Get Flip Variables and Correct Tile GID
+						bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
+						bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
+						bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
+						uint32_t tileId = gid & TILE_ID_MASK;
+
+						// Determine rotation and final horizontal flip
+						float rotation = 0.0f;
+						SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+
+						if (!flipD)
+						{
+							if (flipH && flipV) { rotation = 180.0f; }
+							else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
+						}
+						else // Diagonal Flip  == True
+						{
+							if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipH && !flipV) { rotation = 90.0f; }
+							else if (!flipH && flipV) { rotation = 270.0f; }
+							else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+						}
+
+						// Obtain the tile set using GetTilesetFromTileId
+						TileSet* tileSet = GetTilesetFromTileId(tileId);
+
+						if (tileSet != nullptr)
+						{
+							//Get the Rect from the tileSetTexture;
+							SDL_Rect tileRect;
+
+							tileRect.x = obj->x;
+							tileRect.y = obj->y;
+							tileRect.w = obj->width;
+							tileRect.h = obj->height;
+
+							SDL_Rect dstRect;
+
+							dstRect.x = tileSet->GetRect(tileId).x;
+							dstRect.y = tileSet->GetRect(tileId).y;
+							dstRect.w = tileSet->GetRect(tileId).w;
+							dstRect.h = tileSet->GetRect(tileId).h;
+
+							// Center point for rotation
+							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+							//Draw the texture
+							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
+						}
+					}
+				}
+			}
+		}
+	}
 	return ret;
 }
 
@@ -632,6 +719,33 @@ bool Map::Load(std::string path, std::string fileName)
 					colliderList.push_back(collider);
 				}
 			}
+			else if (objectsGroups->properties.GetProperty("Polygon") != NULL && objectsGroups->properties.GetProperty("Polygon")->value) // NUEVO: POLYGON
+			{
+				for (const auto& obj : objectsGroups->objects)
+				{
+					int* pointsArray = new int[obj->points.size() * 2];
+
+					for (size_t i = 0; i < obj->points.size(); i++)
+					{
+						pointsArray[i * 2] = obj->points[i].x - obj->x;
+						pointsArray[i * 2 + 1] = obj->points[i].y - obj->y;
+					}
+
+					PhysBody* collider = Engine::GetInstance().physics.get()->CreatePolygon(obj->x, obj->y, pointsArray, obj->points.size() * 2, STATIC);
+
+					if (objectsGroups->properties.GetProperty("Danger") != NULL && objectsGroups->properties.GetProperty("Danger")->value)
+					{
+						collider->ctype = ColliderType::DANGER;
+					}
+					else
+					{
+						collider->ctype = ColliderType::MAP;
+					}
+
+					colliderList.push_back(collider);
+					delete[] pointsArray;
+				}
+			}
 		}
 
 
@@ -791,6 +905,10 @@ Vector2D Map::GetMapSizeInTiles()
 
 void Map::SpawnEntities()
 {
+	int brokenFloorIndex = 0;
+	int verticalFloorIndex = 0;
+	int horizontalFloorIndex = 0;
+
 	for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
 	{
 		if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
@@ -800,6 +918,8 @@ void Map::SpawnEntities()
 				std::string entityType = objectNode.attribute("type").as_string();
 				float x = objectNode.attribute("x").as_float();
 				float y = objectNode.attribute("y").as_float();
+				float w = objectNode.attribute("width").as_float();
+				float h = objectNode.attribute("height").as_float();
 
 				//Player
 				if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
@@ -879,6 +999,7 @@ void Map::SpawnEntities()
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					ninfaBoss->position = Vector2D(x, y);
 				}
+
 				//Items
 				else if (entityType == std::string("Key"))
 				{
@@ -942,6 +1063,110 @@ void Map::SpawnEntities()
 						}
 					}
 				}
+
+				//Special Platforms
+				else if (entityType == std::string("HorizontalFloor"))
+				{
+					std::shared_ptr<SpecialFloor> horizontalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					horizontalFloor->position = Vector2D(x, y);
+					horizontalFloor->floorType = TypeFloor::HORIZONTALFLOOR;
+					horizontalFloor->width = (int)w;
+					horizontalFloor->height = (int)h;
+
+					// Custom Properties
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("Distance") != nullptr) {
+						horizontalFloor->distance = floorProps.GetProperty("Distance")->value;
+					}
+					if (floorProps.GetProperty("Speed") != nullptr) {
+						horizontalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					}
+					if (floorProps.GetProperty("Direction") != nullptr) {
+						horizontalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					}
+					if (floorProps.GetProperty("WaitTime") != nullptr) {
+						horizontalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					}
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
+						horizontalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+					}
+				}
+				else if (entityType == std::string("VerticalFloor"))
+				{
+					std::shared_ptr<SpecialFloor> verticalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					verticalFloor->position = Vector2D(x, y);
+					verticalFloor->floorType = TypeFloor::VERTICALFLOOR;
+					verticalFloor->width = (int)w;
+					verticalFloor->height = (int)h;
+
+					// Custom Properties
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("Distance") != nullptr) {
+						verticalFloor->distance = floorProps.GetProperty("Distance")->value;
+					}
+					if (floorProps.GetProperty("Speed") != nullptr) {
+						verticalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					}
+					if (floorProps.GetProperty("Direction") != nullptr) {
+						verticalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					}
+					if (floorProps.GetProperty("WaitTime") != nullptr) {
+						verticalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					}
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
+						verticalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+					}
+				}
+				else if (entityType == std::string("BrokenFloor"))
+				{
+					std::shared_ptr<SpecialFloor> brokenFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					brokenFloor->position = Vector2D(x, y);
+					brokenFloor->floorType = TypeFloor::BROKENFLOOR;
+					brokenFloor->width = (int)w;
+					brokenFloor->height = (int)h;
+
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("BreakTime") != nullptr) {
+						brokenFloor->breakTimeMax = (float)floorProps.GetProperty("BreakTime")->value;
+						brokenFloor->currentBreakTime = brokenFloor->breakTimeMax;
+					}
+					if (floorProps.GetProperty("RespawnTime") != nullptr) {
+						brokenFloor->respawnTimeMax = (float)floorProps.GetProperty("RespawnTime")->value;
+					}
+				}
+				else if (entityType == std::string("CircularFloor"))
+				{
+					std::shared_ptr<SpecialFloor> circularFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					circularFloor->position = Vector2D(x, y);
+					circularFloor->floorType = TypeFloor::CIRCULARFLOOR;
+					circularFloor->width = (int)w;
+					circularFloor->height = (int)h;
+
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("Distance") != nullptr) {
+						circularFloor->distance = floorProps.GetProperty("Distance")->value;
+					}
+					if (floorProps.GetProperty("Speed") != nullptr) {
+						circularFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					}
+					if (floorProps.GetProperty("Direction") != nullptr) {
+						circularFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					}
+					if (floorProps.GetProperty("WaitTime") != nullptr) {
+						circularFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					}
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
+						circularFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+					}
+					}
 			}
 		}
 
@@ -973,6 +1198,7 @@ void Map::SpawnEntities()
 
 	Engine::GetInstance().entityManager->AwakeEntities();
 }
+
 
 std::string Map::DoorInfo(PhysBody* door)
 {

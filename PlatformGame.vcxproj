@@ -155,6 +155,7 @@
     <ClCompile Include="src\DashObj.cpp" />
     <ClCompile Include="src\Door.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
+    <ClCompile Include="src\SpecialFloors.cpp" />
     <ClCompile Include="src\UIDialogueBox.cpp" />
     <ClCompile Include="src\DialogueManager.cpp" />
     <ClCompile Include="src\Demon.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="src\DashObj.h" />
     <ClInclude Include="src\Door.h" />
     <ClInclude Include="src\NinfaBoss.h" />
+    <ClInclude Include="src\SpecialFloors.h" />
     <ClInclude Include="src\UIDialogueBox.h" />
     <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />

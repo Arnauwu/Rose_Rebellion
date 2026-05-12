@@ -120,6 +120,24 @@ bool Player::Update(float dt)
 	if (pbody == nullptr) return true;
 	Engine::GetInstance().entityManager->SetPlayer(this);
 
+	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
+
+	if (isDialogueActive) {
+		if (!Engine::GetInstance().sceneManager->isGamePaused) {
+			velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+			velocity.x = 0.0f; 
+			ApplyPhysics();   
+			Draw(dt);        
+		}
+		else {
+			// DORMIR
+			if (lookingRight) anims.SetCurrent("idle_right");
+			else anims.SetCurrent("idle_left");
+			Draw(dt);
+		}
+		return true;
+	}
+
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
@@ -887,12 +905,13 @@ void Player::ApplyPhysics() {
 
 void Player::Draw(float dt)
 {
-	if (Engine::GetInstance().sceneManager->isGamePaused == false)
+	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
+
+	if (Engine::GetInstance().sceneManager->isGamePaused == false || isDialogueActive)
 	{
 		anims.Update(dt);
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-
 
 	// Update render position using your PhysBody helper
 	int x, y;
@@ -1187,6 +1206,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		break;
 
 	case ColliderType::MAP:
+	case ColliderType::SPECIALFLOOR:
 
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
@@ -1388,6 +1408,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	switch (physB->ctype)
 	{
 	case ColliderType::MAP:
+	case ColliderType::SPECIALFLOOR:
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
 			onGround = false;

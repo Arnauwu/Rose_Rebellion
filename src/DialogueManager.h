@@ -19,7 +19,7 @@ public:
     void StartDialogue(const std::string& dialogueID);
     void NextLine();
     bool IsDialogueActive() const { return isActive; }
-
+    void EndDialogue();
     // Conectamos la UI al Manager
     void SetDialogueUI(UIDialogueBox* uiBox) { this->uiBox = uiBox; }
 
@@ -27,9 +27,10 @@ private:
     std::unordered_map<std::string, std::vector<DialogueLine>> dialogueDB;
     UIDialogueBox* uiBox = nullptr;
 
-    std::vector<DialogueLine> currentConversation;
+    const std::vector<DialogueLine>* currentConversation = nullptr;
     int currentLineIndex = 0;
     bool isActive = false;
+    bool isWaitingForLanding = false;
 
     // Efecto Typewriter
     std::string displayedText;

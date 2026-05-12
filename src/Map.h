@@ -178,6 +178,7 @@ public:
 
     // Called each loop iteration
     bool Update(float dt);
+    bool PostUpdate() override;
 
     // Called before quitting
     bool CleanUp();
@@ -208,6 +209,7 @@ public:
     int GetTileHeight() { return mapData.tileHeight; }
 
     // Entities
+
     void SpawnEntities();
     Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door

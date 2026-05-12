@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="26" nextobjectid="342">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="26" nextobjectid="353">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -3093,7 +3093,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile gid="37"/>
    <tile gid="37"/>
@@ -4626,6 +4626,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4656,8 +4657,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4684,6 +4684,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4722,8 +4723,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="29"/>
    <tile/>
    <tile/>
    <tile/>
@@ -5605,7 +5605,7 @@
    <tile gid="37"/>
   </data>
  </layer>
- <layer id="10" name="GroundNavLayer" width="62" height="90" visible="0">
+ <layer id="10" name="GroundNavLayer" width="62" height="90">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -11202,11 +11202,11 @@
  <objectgroup color="#aa00ff" id="22" name="PlataformasRefVertical">
   <object id="219" x="6400" y="10624" width="512" height="128"/>
   <object id="220" x="6400" y="9600" width="512" height="128"/>
-  <object id="221" x="5504" y="9600" width="512" height="128"/>
-  <object id="223" x="5504" y="8448" width="528" height="144"/>
+  <object id="221" x="5504" y="9472" width="512" height="128"/>
+  <object id="223" x="5504" y="8448" width="512" height="128"/>
   <object id="224" x="1024" y="10624" width="512" height="128"/>
   <object id="225" x="1024" y="9600" width="512" height="128"/>
-  <object id="226" x="1920" y="9600" width="512" height="128"/>
+  <object id="226" x="1920" y="9472" width="512" height="128"/>
   <object id="227" x="1920" y="8448" width="512" height="128"/>
   <object id="230" x="3712" y="9728" width="512" height="128"/>
   <object id="231" x="3712" y="6272" width="512" height="128"/>
@@ -11237,10 +11237,10 @@
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="233" x="6528" y="11008" width="1536" height="512"/>
+  <object id="233" x="6528" y="11008" width="1920" height="512"/>
   <object id="234" x="2048" y="11008" width="3840" height="512"/>
-  <object id="235" x="-128" y="11008" width="1536" height="512"/>
-  <object id="236" x="7168" y="9472" width="896" height="1024"/>
+  <object id="235" x="-512" y="11008" width="1920" height="512"/>
+  <object id="236" x="7168" y="9472" width="1280" height="1024"/>
   <object id="237" x="7040" y="9088" width="128" height="384"/>
   <object id="238" x="6912" y="8832" width="128" height="256"/>
   <object id="239" x="6784" y="8704" width="128" height="128"/>
@@ -11266,7 +11266,6 @@
   <object id="260" x="4480" y="4736" width="128" height="128"/>
   <object id="261" x="4352" y="4480" width="128" height="256"/>
   <object id="262" x="3072" y="5120" width="512" height="1792"/>
-  <object id="263" x="3072" y="5120"/>
   <object id="264" x="2432" y="6912" width="640" height="128"/>
   <object id="265" x="2944" y="4992" width="256" height="128"/>
   <object id="266" x="2048" y="4864" width="896" height="128"/>
@@ -11318,8 +11317,8 @@
   <object id="315" x="4480" y="1152" width="384" height="128"/>
   <object id="316" x="3712" y="640" width="384" height="128"/>
   <object id="317" x="3328" y="1792" width="128" height="384"/>
-  <object id="318" x="3456" y="0" width="128" height="1792"/>
-  <object id="319" x="4224" y="0" width="128" height="256"/>
+  <object id="318" x="3456" y="-256" width="128" height="2048"/>
+  <object id="319" x="4224" y="-256" width="128" height="512"/>
   <object id="320" x="1920" y="7040" width="512" height="128"/>
   <object id="321" x="1664" y="7168" width="256" height="128"/>
   <object id="322" x="1536" y="7296" width="128" height="128"/>
@@ -11328,7 +11327,7 @@
   <object id="325" x="1024" y="8704" width="128" height="128"/>
   <object id="326" x="896" y="8832" width="128" height="256"/>
   <object id="327" x="768" y="9088" width="128" height="384"/>
-  <object id="328" x="-128" y="9472" width="896" height="1024"/>
+  <object id="328" x="-512" y="9472" width="1280" height="1024"/>
   <object id="330" x="2944" y="10880" width="2048" height="128"/>
   <object id="331" x="3072" y="10752" width="1792" height="128"/>
   <object id="333" x="3200" y="10496" width="1536" height="256"/>
@@ -11337,38 +11336,70 @@
   <object id="336" x="3584" y="10112" width="768" height="128"/>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
-  <object id="52" name="Player" type="Player" x="27302.3" y="15986.3">
+  <object id="343" name="Player" type="Player" x="3968" y="9600">
    <point/>
   </object>
-  <object id="159" name="SkillPointOrb" type="SkillPointOrb" x="23360.7" y="15981.5">
-   <point/>
+  <object id="345" type="VerticalFloor" x="1920" y="8448" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
   </object>
-  <object id="162" name="Cucafera" type="Cucafera" x="19694.9" y="16051.4">
-   <point/>
+  <object id="346" type="VerticalFloor" x="5504" y="8448" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
   </object>
-  <object id="163" name="Cucafera" type="Cucafera" x="24832" y="16128">
-   <point/>
+  <object id="347" type="VerticalFloor" x="1024" y="10624" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="348" type="VerticalFloor" x="6400" y="10624" width="512" height="128">
+   <properties>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="1024"/>
+    <property name="Speed" type="int" value="3"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="349" type="VerticalFloor" x="3712" y="9728" width="512" height="128">
+   <properties>
+    <property name="ActivationOnTouch" type="bool" value="true"/>
+    <property name="Direction" type="int" value="-1"/>
+    <property name="Distance" type="int" value="3456"/>
+    <property name="Speed" type="int" value="5"/>
+    <property name="WaitTime" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="351" type="BrokenFloor" x="2176" y="10368" width="640" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
+  </object>
+  <object id="352" type="BrokenFloor" x="5120" y="10368" width="640" height="128">
+   <properties>
+    <property name="BreakTime" type="int" value="2000"/>
+    <property name="RespawnTime" type="int" value="4000"/>
+   </properties>
   </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="50" name="Player" type="Player" x="30592" y="9728">
-   <properties>
-    <property name="FromRoom" type="file" value="Catacombs_01_M.tmx"/>
-   </properties>
-   <point/>
-  </object>
   <object id="132" name="Player" type="Player" x="7808" y="10880">
    <properties>
     <property name="FromRoom" type="file" value="Catacombs_02_M.tmx"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="216" name="Player" type="Player" x="30592" y="17408">
-   <properties>
-    <property name="FromRoom" type="file" value="Catacombs_01_M.tmx"/>
    </properties>
    <point/>
   </object>

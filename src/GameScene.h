@@ -1,8 +1,9 @@
 #pragma once
 #include "SceneBase.h"
+#include "UIDialogueBox.h"
 #include "Textures.h"
-#include "Animation.h"
 #include "Audio.h"
+#include "SpecialFloors.h"
 #include <vector>
 #include <memory>
 
@@ -71,7 +72,7 @@ public:
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
-
+	
 	//Buttons textures
 	SDL_Texture* buttonUI = nullptr;
 	SDL_Texture* textBgUI = nullptr;
@@ -84,7 +85,7 @@ public:
 	SDL_Texture* texInventoryUI = nullptr;
 	SDL_Texture* texSkilltreeUI = nullptr;
 	SDL_Texture* texPauseUI = nullptr;
-
+	
 	//Items textures
 	SDL_Texture* texItemKeyCastle = nullptr;
 	SDL_Texture* texItemKeyForest = nullptr;
@@ -94,8 +95,10 @@ public:
 	SDL_Texture* texItemWeapon = nullptr;
 
 	//Dialogue Textures
-	SDL_Texture* UIDialogueBoxPrincess = nullptr;
+	SDL_Texture* UIDialogueBoxTex = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
+	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
+	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
 
 private:
 	// Helper functions for the Game Menu
@@ -103,7 +106,9 @@ private:
 	void CreateTopBarUI();
 	void CreateInventoryUI();
 	void CreatePauseMenuUI();
-	void CreatePauseSettingUI();
+	void CreatePauseSettingUI() ;
+	void CreateDialogueUI();
+
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
@@ -128,6 +133,8 @@ private:
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
 
+	// Dialogue UI
+	std::vector<std::shared_ptr<UIElement>> dialogueUI;
 	//MapChanging Variables
 	// Fade point
 	enum class MapTransitionState {
