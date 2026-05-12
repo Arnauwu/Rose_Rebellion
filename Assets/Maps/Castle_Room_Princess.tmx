@@ -1733,7 +1733,7 @@
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="9" x="136" y="401.273" width="424.243" height="622.727">
+  <object id="9" x="136" y="405.273" width="428.243" height="618.727">
    <properties>
     <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
    </properties>
