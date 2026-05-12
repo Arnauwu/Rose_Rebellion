@@ -55,6 +55,7 @@ struct Door
     std::string uniqueId;
     bool underMaintenance;
     bool DoorClose;
+    bool requiresGlide;
 };
 
 struct Path
@@ -212,6 +213,7 @@ public:
     //Door
     std::string DoorInfo(PhysBody* door);
     std::string GetDoorUniqueId(PhysBody* door);
+    bool DoorRequiresGlide(PhysBody* door);
     bool DoorNeedsKey(PhysBody* door);
     bool DoorUnderMaintenance(PhysBody* door);
     bool DoorClosed(PhysBody* door);

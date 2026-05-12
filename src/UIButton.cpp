@@ -31,43 +31,12 @@ bool UIButton::Update(float dt)
 	
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;
-				targetTextScale = 0.9f;
-				currentTextColor = { 50, 50, 50, 255 };
-				// PRUEBAS PARTICULAS
-				float tamañoDestello = 50.0f;
-				// CON ANIMACIÓN
-				if (useFlashAnim && flashTexture != nullptr) {
-					Engine::GetInstance().particleManager->Emit(
-						flashTexture, flashAnim,
-						mousePos.getX() - (tamañoDestello * 3 / 2),
-						mousePos.getY() - (tamañoDestello * 3 / 2),
-						0.0f, 0.0f,
-						250.0f, tamañoDestello *3, false, 0.0f
-					);
-				}
-				// TEXTURA
-				else if (flashTexture != nullptr) {
-					Engine::GetInstance().particleManager->Emit(
-						flashTexture,
-						mousePos.getX() - (tamañoDestello / 2),
-						mousePos.getY() - (tamañoDestello / 2),
-						0.0f, 0.0f,
-						250.0f, tamañoDestello, false, 0.0f
-					);
-				}
-				// SI NO LE PASO NADA
-				else {
-					Engine::GetInstance().particleManager->Emit(
-						mousePos.getX() - (tamañoDestello / 2),
-						mousePos.getY() - (tamañoDestello / 2),
-						0.0f, 0.0f,
-						200.0f, { 255, 255, 255, 200 }, tamañoDestello, false
-					);
-				}
+				targetTextScale = 0.8f;
+				currentTextColor = { 50, 50, 50, 255 };				
 			}
 			else {
 				state = UIElementState::FOCUSED;
-				targetTextScale = 1.15f;
+				targetTextScale = 1.0f;
 				currentTextColor = { 255, 255, 255, 255 };
 			}
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
@@ -76,7 +45,7 @@ bool UIButton::Update(float dt)
 		}
 		else {
 			state = UIElementState::NORMAL;
-			targetTextScale = 1.0f;
+			targetTextScale = 0.7f;
 			currentTextColor = { 255, 255, 255, 255 };
 		}
 	}
