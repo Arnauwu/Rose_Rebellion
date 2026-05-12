@@ -30,12 +30,12 @@ bool Dragon::Awake() {
 }
 
 bool Dragon::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"walk"},{32,"attack"},{48,"idle"},{56,"assault"} }; // TO DO CHANGE TExtures & anims
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"idle"},{15,"walk"},{45,"takeOff"},{60,"air"},{90,"stomp"},{105,"claw"},{135,"shoot"} };
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dragon/Dragon.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dragon/Dragon.png");
 
 	// Create Body
 	texW = 768;
@@ -87,19 +87,19 @@ bool Dragon::Update(float dt)
 		ApplyPhysics();
 	}
 
-	if (isdead && anims.GetCurrentName() != "dead")
-	{
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-		anims.GetAnim("dead")->SetLoop(false);
-		anims.SetCurrent("dead");
-		pbody->ctype = ColliderType::UNKNOWN;
-	}
+	//if (isdead && anims.GetCurrentName() != "dead") //TO DO UNCOMENT
+	//{
+	//	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+	//	anims.GetAnim("dead")->SetLoop(false); 
+	//	anims.SetCurrent("dead");
+	//	pbody->ctype = ColliderType::UNKNOWN;
+	//}
 
-	if (anims.GetAnim("dead")->HasFinishedOnce())
-	{
-		pendingToDelete = true;
-		// TO DO: END SCREEN / ANIM ???
-	}
+	//if (anims.GetAnim("dead")->HasFinishedOnce()) //TO DO UNCOMENT
+	//{
+	//	pendingToDelete = true;
+	//	// TO DO: END SCREEN / ANIM ???
+	//}
 
 	Draw(dt);
 
@@ -137,10 +137,10 @@ void Dragon::Move()
 	{
 		velocity = b2Vec2_zero; // Stays Put
 		
-		if (anims.GetCurrentName() != "assault") //TO DO CHANGE TO PHASE CHANGE
+		if (anims.GetCurrentName() != "takeOff") //TO DO CHANGE TO PHASE CHANGE
 		{
-			anims.SetCurrent("assault");
-			anims.GetAnim("assault")->SetLoop(false);
+			anims.SetCurrent("takeOff");
+			anims.GetAnim("takeOff")->SetLoop(false);
 			switch (currentPhase) //TO DO CHANGE MUSIC TOO
 			{
 			case GROUND:
@@ -168,7 +168,7 @@ void Dragon::Move()
 			}
 		}
 		
-		if (anims.GetAnim("assault")->HasFinishedOnce()) {
+		if (anims.GetAnim("takeOff")->HasFinishedOnce()) {
 			isInvincible = false; 
 		}
 
@@ -177,7 +177,14 @@ void Dragon::Move()
 
 	//Movement
 	if (pathfinding->pathTiles.empty() || playerTileDist > vision) {
-		anims.SetCurrent("idle");
+		if (currentPhase == GROUND)
+		{
+			anims.SetCurrent("idle");
+		}
+		else
+		{
+			anims.SetCurrent("air");
+		}
 		velocity.x = 0;
 		velocity.y = 0;
 		return;
@@ -280,7 +287,7 @@ void Dragon::Move()
 		//Horitzontal
 		if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && startedAttacking == false)
 		{
-			anims.SetCurrent("walk");
+			anims.SetCurrent("air");
 
 			if (pathfinding->pathTiles.back() == tilePos)
 			{
@@ -344,7 +351,7 @@ void Dragon::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt");
+		//anims.SetCurrent("hurt"); //TO DO UNCOMENT
 		if (lookingRight)
 		{
 			velocity.x = knockbackForce;
@@ -392,7 +399,7 @@ void Dragon::Draw(float dt)
 
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
-	if (!lookingRight)
+	if (lookingRight) // Invertido
 	{
 		sdlFlip = SDL_FLIP_HORIZONTAL;
 	}
@@ -413,14 +420,14 @@ void Dragon::Draw(float dt)
 		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
 		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 2);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 4, &animFrame, sdlFlip, 1);
 
 		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
 		delete r; delete g; delete b;
 	}
 	else
 	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 2);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 4, &animFrame, sdlFlip, 1);
 	}
 }
 
@@ -433,19 +440,8 @@ void Dragon::Attack()
 		{
 			if (startedAttacking == false)
 			{
-				switch (currentAttack)			// TO DO ATTACK SPECIFIC COOLDOWN / WINDUP / DAMAGE
-				{
-				case 1: // Claw
-					anims.SetCurrent("attack");
-					break;
-				case 2: //Tail
-					anims.SetCurrent("attack");
-					break;
-				case 3: //Ground Spikes
-					anims.SetCurrent("attack");
-					break;
-				}
-
+				anims.GetAnim(currentAttackAnim)->SetLoop(false);
+				anims.SetCurrent(currentAttackAnim);
 				attackWindUp.Start();
 				startedAttacking = true;
 			}
@@ -490,14 +486,12 @@ void Dragon::Attack()
 				attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
 				attackHitbox->listener = this;
 				attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
-				
-				startAttack.Start();
-			}
+				}
 		}
 		else
 		{
 			// Attack End
-			if (startAttack.ReadMSec() >= attackDuration)
+			if (anims.GetAnim(currentAttackAnim)->HasFinishedOnce())
 			{
 				isAttacking = false;
 				anims.SetCurrent("idle");
@@ -521,16 +515,8 @@ void Dragon::Attack()
 		{
 			if (startedAttacking == false)
 			{
-				switch (currentAttack)			// TO DO ATTACK SPECIFIC COOLDOWN / WINDUP / DAMAGE
-				{
-				case 1: // Shoot
-					anims.SetCurrent("attack");
-					break;
-				case 2: //Dive
-					anims.SetCurrent("attack");
-					break;
-				}
-
+				anims.GetAnim(currentAttackAnim)->SetLoop(false);
+				anims.SetCurrent(currentAttackAnim);
 				attackWindUp.Start();
 				startedAttacking = true;
 			}
@@ -558,17 +544,15 @@ void Dragon::Attack()
 					pbody->ctype = ColliderType::ENEMY_ATTACK;
 					//TO DO Make it Dive
 				}
-
-				startAttack.Start();
 			}
 		}
 		else
 		{
 			// Attack End
-			if (startAttack.ReadMSec() >= attackDuration)
+			if (anims.GetAnim(currentAttackAnim)->HasFinishedOnce())
 			{
 				isAttacking = false;
-				anims.SetCurrent("idle");
+				anims.SetCurrent("air");
 
 				if (currentAttack == 2)
 				{
@@ -602,44 +586,44 @@ void Dragon::SelectAttack()
 		case 1: // Claw
 			damage = 20;
 			attackCooldownTime = 500.0f;
-			attackWindupTime = 500.0f;
-			attackDuration = 1000.0f;
+			attackWindupTime = 750.0f;
 			attackTileRange = 1;
+			currentAttackAnim = "claw";
 			break;
 		case 2: //Tail
 			damage = 10;
 			attackCooldownTime = 1000.0f;
-			attackWindupTime = 500.0f;
-			attackDuration = 500.0f;
+			attackWindupTime = 750.0f;
 			attackTileRange = 3;
+			currentAttackAnim = "claw"; //TO DO CHANGE
 			break;
 		case 3: //Ground Spikes
 			damage = 30;
 			attackCooldownTime = 2000.0f;
-			attackWindupTime = 1000.0f;
-			attackDuration = 2000.0f;
+			attackWindupTime = 1800.0f;
 			attackTileRange = 5;
+			currentAttackAnim = "stomp";
 			break;
 		}
 		break;
 
 	case DragonPhase::AIR:
-		currentAttack = GenerateRandomNumber(1, 1);
+		currentAttack = GenerateRandomNumber(1, 1); // TODO RESTORE
 		switch (currentAttack)			// TO DO Adjust COOLDOWN / WINDUP / DAMAGE
 		{
 		case 1: // Shoot
 			damage = 0;
-			attackCooldownTime = 0;
-			attackWindupTime = 0.0f;
-			attackDuration = 0.0f;
+			attackCooldownTime = 250.0f;
+			attackWindupTime = 100.0f;
 			attackTileRange = 5;
+			currentAttackAnim = "shoot";
 			break;
 		case 2: //Dive
 			damage = 50;
 			attackCooldownTime = 1000.0f;
 			attackWindupTime = 500.0f;
-			attackDuration = 500.0f;
 			attackTileRange = 5;
+			currentAttackAnim = "claw"; // TOOD CHANGE
 			break;
 		}
 		break;

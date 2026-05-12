@@ -46,14 +46,13 @@ public:
 
 	int currentAttack = 0;
 
-	Timer startAttack;
 	Timer attackCooldown;
 	Timer attackWindUp;
 	
 	//TO DO ADJUST VALUES DEPENDING ON ATTACK
 	float attackWindupTime = 500.0f;
 	float attackCooldownTime = 2000.0f;
-	float attackDuration = 1000.0f;
+	std::string currentAttackAnim = "";
 	int attackTileRange = 0;
 
 	//Dragon
