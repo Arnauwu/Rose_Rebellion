@@ -55,6 +55,9 @@ struct Door
     std::string uniqueId;
     bool underMaintenance;
     bool DoorClose;
+
+    int width;
+    int height;
 };
 
 struct Path
@@ -214,7 +217,7 @@ public:
     bool DoorUnderMaintenance(PhysBody* door);
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
-
+    void GetDoorDimensions(PhysBody* door, int& w, int& h);
 public: 
     std::string mapFileName;
     std::string mapPath;

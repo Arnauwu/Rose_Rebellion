@@ -15,6 +15,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "SavePoint.h"
+#include "Door.h"
 #include <iostream>
 #include <unordered_map>
 
@@ -763,11 +764,23 @@ void Player::Interact()
 						if (!doorId.empty()) {
 							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 						}
-
-						// 【修改】开门成功，冻结玩家，触发门动画
 						isFrozen = true;
-						isOpeningDoor = true;
-						doorToOpen = interactuableBody;
+						int cx, cy;
+						interactuableBody->GetPosition(cx, cy);
+
+						// 【新增】去问 Map 拿这个门的真实宽高
+						int doorW, doorH;
+						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+						if (doorAnim != nullptr) {
+							doorAnim->zOrder = -1; // 保持在玩家身后的图层
+
+							// 【重点】把尺寸传给门！
+							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						}
 					}
 					else
 					{
@@ -782,10 +795,23 @@ void Player::Interact()
 					LOG("Esta puerta no necesita llave ");
 					Engine::GetInstance().audio->PlayFx(openDoor);
 
-					// 【修改】开门成功，冻结玩家，触发门动画
 					isFrozen = true;
-					isOpeningDoor = true;
-					doorToOpen = interactuableBody;
+					int cx, cy;
+					interactuableBody->GetPosition(cx, cy);
+
+					// 【新增】去问 Map 拿这个门的真实宽高
+					int doorW, doorH;
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1; // 保持在玩家身后的图层
+
+						// 【重点】把尺寸传给门！
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
 				}
 			}
 		}

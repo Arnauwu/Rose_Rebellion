@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="53">
+<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="45" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="58">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -10197,26 +10197,25 @@
     <property name="TeleportTo" type="file" value="Castle.tmx"/>
    </properties>
   </object>
-  <object id="23" x="1674" y="2029" width="364" height="635.333">
-   <properties>
-    <property name="TeleportTo" type="file" value="Castle_Room_Kitchen.tmx"/>
-   </properties>
-  </object>
-  <object id="24" x="3464.67" y="492" width="364" height="631">
-   <properties>
-    <property name="NeedsKey" type="bool" value="true"/>
-    <property name="TeleportTo" type="file" value="Castle_Room_Storage.tmx"/>
-   </properties>
-  </object>
-  <object id="25" x="264.667" y="489.333" width="364" height="635">
+  <object id="53" x="258.667" y="476.422" width="378.667" height="559.156">
    <properties>
     <property name="TeleportTo" type="file" value="Castle_Room_Princess.tmx"/>
    </properties>
   </object>
-  <object id="45" x="3834" y="2018.33" width="364" height="635.333">
+  <object id="54" x="3461.33" y="476.422" width="378.667" height="559.156">
    <properties>
-    <property name="TeleportTo" type="file" value=""/>
+    <property name="TeleportTo" type="file" value="Castle_Room_Kitchen.tmx"/>
+   </properties>
+  </object>
+  <object id="55" x="3844" y="2012.42" width="378.667" height="559.156">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
     <property name="UnderMaintenance" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="56" x="1668" y="2011.09" width="378.667" height="559.156">
+   <properties>
+    <property name="TeleportTo" type="file" value="Castle_Room_Storage.tmx"/>
    </properties>
   </object>
  </objectgroup>
