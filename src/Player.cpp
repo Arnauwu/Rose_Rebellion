@@ -108,11 +108,20 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
-	// 【修改】被冻结时，截断输入，但保持物理和渲染更新
+	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 // mmmm entiendo perfectamente
 	if (isFrozen) {
 		GetPhysicsValues();
 		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
 		ApplyPhysics();
+		// Asigno el idle
+		if (lookingRight)
+		{
+			anims.SetCurrent("idle_right");
+		}
+		else
+		{
+			anims.SetCurrent("idle_left");
+		}
 		Draw(dt);
 		return true;
 	}
