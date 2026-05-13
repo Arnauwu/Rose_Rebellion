@@ -24,6 +24,7 @@
 
 #include "Ninfa.h"
 #include "Demon.h"
+#include "Dip.h"
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
@@ -985,6 +986,11 @@ void Map::SpawnEntities()
 					shieldKnight->position = Vector2D(x, y);
 				}
 
+				else if (entityType == std::string("Dip"))
+				{
+					std::shared_ptr<Dip> dip = std::dynamic_pointer_cast<Dip>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DIP));
+					dip->position = Vector2D(x, y);
+				}
 
 				else if (entityType == std::string("Ninfa"))
 				{

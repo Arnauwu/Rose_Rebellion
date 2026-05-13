@@ -146,6 +146,9 @@
     <Filter Include="Source Files\Game\Entity\Door">
       <UniqueIdentifier>{b5345a9d-0db3-46b9-b931-68ea536ab439}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Dip">
+      <UniqueIdentifier>{b26a257d-a760-4453-8c8d-f2a23d9f3c6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -333,6 +336,9 @@
     <ClCompile Include="src\Door.cpp">
       <Filter>Source Files\Game\Entity\Door</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dip.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -517,6 +523,9 @@
     </ClInclude>
     <ClInclude Include="src\Door.h">
       <Filter>Source Files\Game\Entity\Door</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dip.h">
+      <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

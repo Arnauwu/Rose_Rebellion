@@ -28,6 +28,7 @@
 
 #include "Ninfa.h"
 #include "Demon.h"
+#include "Dip.h"
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
@@ -141,6 +142,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::DEMON:
 		entity = std::make_shared<Demon>();
+		break;
+	case EntityType::DIP:
+		entity = std::make_shared<Dip>();
 		break;
 
 		//Bosses & MiniBosses

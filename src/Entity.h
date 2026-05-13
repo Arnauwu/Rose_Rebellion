@@ -30,6 +30,7 @@ enum class EntityType
 	NINFA,
 	NINFA_PROJECTILE,
 	DEMON,
+	DIP,
 
 	KNIGHT_BOSS,
 	NINFA_MARE,
