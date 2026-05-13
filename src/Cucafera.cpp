@@ -28,7 +28,7 @@ bool Cucafera::Awake() {
 
 bool Cucafera::Start()
 {
-	// Initialize Player parameters
+	// Initialize enemy parameters
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
 	anims.SetCurrent("idle");

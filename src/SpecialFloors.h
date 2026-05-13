@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "Animation.h"
 #include "Timer.h"
 #include <SDL3/SDL.h>
 #include <string>
@@ -34,6 +35,9 @@ public:
 	void SetPosition(Vector2D pos);
 
 	bool Destroy();
+private:
+
+	void Draw(float dt);
 
 public:
 	TypeFloor floorType = TypeFloor::NORMALFLOOR;
@@ -81,6 +85,7 @@ public:
 private:
 
 	SDL_Texture* texture = nullptr;
+	AnimationSet anims;
 	int texW, texH;
 	PhysBody* pbody = nullptr;
 };
