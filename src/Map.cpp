@@ -32,6 +32,7 @@
 
 #include "GameManager.h"
 #include "SavePoint.h"
+#include "Door.h"
 #include "Item.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
@@ -612,6 +613,8 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 
 						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+						newDoor.width = (int)obj->width;
+						newDoor.height = (int)obj->height;
 
 						//Mira si necesita una llave para abrirlo o no
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
@@ -1301,4 +1304,19 @@ bool Map::DoorClosed(PhysBody* door) {
 		}
 	}
 	return false;
+}
+
+// 【新增在文件最后面】
+void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door)
+		{
+			w = ndoor.width;
+			h = ndoor.height;
+			return;
+		}
+	}
+	w = 256; h = 256; // 默认防错值
 }

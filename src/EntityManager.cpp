@@ -16,6 +16,7 @@
 #include "DoubleJumpObj.h"
 
 #include "SavePoint.h"
+#include "Door.h"
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
@@ -113,7 +114,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
 		break;
-
+	case EntityType::DOOR:
+		entity = std::make_shared<DoorEntity>(); 
+		break;
 		//Enemies
 
 	case EntityType::CUCAFERA:

@@ -55,6 +55,8 @@ struct Door
     std::string uniqueId;
     bool underMaintenance;
     bool DoorClose;
+    int width;
+    int height;
     bool requiresGlide;
 };
 
@@ -134,7 +136,7 @@ struct TileSet
     // Mthod that receives the gid and returns a Rect
     SDL_Rect GetRect(unsigned int gid) {
         SDL_Rect rect = { 0 };
-        if (columns <= 0) return rect; // Retornar rect vacío si columns es inválido
+        if (columns <= 0) return rect; // Retornar rect vacÃ­o si columns es invÃ¡lido
         int relativeIndex = gid - firstGid;
         rect.w = tileWidth;
         rect.h = tileHeight;
@@ -218,7 +220,7 @@ public:
     bool DoorUnderMaintenance(PhysBody* door);
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
-
+    void GetDoorDimensions(PhysBody* door, int& w, int& h);
 public: 
     std::string mapFileName;
     std::string mapPath;

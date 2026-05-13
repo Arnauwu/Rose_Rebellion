@@ -15,6 +15,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "SavePoint.h"
+#include "Door.h"
 #include <iostream>
 #include <unordered_map>
 
@@ -36,7 +37,7 @@ Player::~Player()
 bool Player::Awake()
 {
 	Engine::GetInstance().entityManager->SetPlayer(this);
-	
+
 	currentHealth = GameManager::GetInstance().gameState.currentHealth;
 	LOG("Player Awake: Posición final establecida en %f, %f", position.getX(), position.getY());
 	return true;
@@ -86,7 +87,7 @@ bool Player::Start()
 	// Configuración de Físicas
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19/24 , texH * 3/2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19 / 24, texH * 3 / 2, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -107,6 +108,24 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
+	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 // mmmm entiendo perfectamente
+	if (isFrozen) {
+		GetPhysicsValues();
+		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
+		ApplyPhysics();
+		// Asigno el idle
+		if (lookingRight)
+		{
+			anims.SetCurrent("idle_right");
+		}
+		else
+		{
+			anims.SetCurrent("idle_left");
+		}
+		Draw(dt);
+		return true;
+	}
+
 	if (pbody == nullptr) return true;
 	Engine::GetInstance().entityManager->SetPlayer(this);
 
@@ -165,9 +184,9 @@ bool Player::Update(float dt)
 		{
 			if (safePositionTimer.ReadMSec() >= safePositionInterval)
 			{
-		
+
 				Vector2D start = position;
-				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 };
 
 				if (Engine::GetInstance().physics->Raycast(start, end))
 				{
@@ -222,13 +241,13 @@ bool Player::Update(float dt)
 
 	DevTools(dt);
 
-
 	return true;
 }
 
 bool Player::PostUpdate()
 {
-	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
+	// 【修改】确保没被冻结才能交互
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead && !isFrozen)
 	{
 		Interact();
 	}
@@ -389,8 +408,8 @@ void Player::Respawn()
 	}
 }
 
-void Player::RespawnFromVoid() 
-{ 
+void Player::RespawnFromVoid()
+{
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 
 	if (isAttacking && attackCollider != nullptr) {
@@ -422,10 +441,10 @@ void Player::Jump(float dt)
 
 			isWallJumping = true;
 			wallJumpTimer = 0.30f;
-	
+
 
 			// Fuerza del rebote
-			float wJumpForceY = jumpForce/2;
+			float wJumpForceY = jumpForce / 2;
 			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
 			float wJumpForceX = speed * 1.0f;
 
@@ -772,8 +791,23 @@ void Player::Interact()
 						if (!doorId.empty()) {
 							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 						}
-						SDL_Delay(150);
-						Engine::GetInstance().sceneManager->setNewMap = true;
+						isFrozen = true;
+						int cx, cy;
+						interactuableBody->GetPosition(cx, cy);
+
+						// 【新增】去问 Map 拿这个门的真实宽高
+						int doorW, doorH;
+						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+						if (doorAnim != nullptr) {
+							doorAnim->zOrder = -1; // 保持在玩家身后的图层
+
+							// 【重点】把尺寸传给门！
+							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						}
 					}
 					else
 					{
@@ -784,10 +818,27 @@ void Player::Interact()
 				}
 				else
 				{
-
 					// Si no
 					LOG("Esta puerta no necesita llave ");
-					Engine::GetInstance().sceneManager->setNewMap = true;
+					Engine::GetInstance().audio->PlayFx(openDoor);
+
+					isFrozen = true;
+					int cx, cy;
+					interactuableBody->GetPosition(cx, cy);
+
+					// 【新增】去问 Map 拿这个门的真实宽高
+					int doorW, doorH;
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1; // 保持在玩家身后的图层
+
+						// 【重点】把尺寸传给门！
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
 				}
 			}
 		}
@@ -798,11 +849,11 @@ void Player::Interact()
 			{
 				Npc* npc = (Npc*)interactuableBody->listener;
 				// Si el npc no esta vacio comienza el dialogo
-				if (npc != nullptr) 
+				if (npc != nullptr)
 				{
 					Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
 					LOG("INICIO DIALOGO");
-					Engine::GetInstance().input->ClearMouseInput(); 
+					Engine::GetInstance().input->ClearMouseInput();
 				}
 			}
 		}
@@ -1135,10 +1186,10 @@ int Player::GetItemCount(ItemID id) {
 }
 
 // Define OnCollision function for the player. 
-void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) 
+void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physA == attackCollider) { return; }
-	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER)	{return;}
+	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER) { return; }
 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
 	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
@@ -1153,7 +1204,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	{
 	case ColliderType::DANGER:
 		LOG("Collision with DANGER zone!");
-		if (!godMode && !isdead) 
+		if (!godMode && !isdead)
 		{
 			TakeDamage(10); // Environmental Damage
 			if (!isdead)
@@ -1206,7 +1257,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 			anims.SetCurrent("wall"); //TODO: On wall anim
 			onWall = true;
-			
+
 			onAir = false;
 
 			if (lookingRight) {
@@ -1403,7 +1454,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		}
 		else if (typeA == ShapeType::SHAPE_MIDDLE)
 		{
-			LOG("Off WALL");		
+			LOG("Off WALL");
 			onAir = true;
 			onWall = false;
 
@@ -1548,7 +1599,7 @@ void Player::DevTools(float dt)
 		UnlockCape();
 		UnlockSickle();
 		GameManager::GetInstance().gameState.hasSickle = true;
-		GameManager::GetInstance().gameState.dashUnlocked= true;
+		GameManager::GetInstance().gameState.dashUnlocked = true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	}
 }
