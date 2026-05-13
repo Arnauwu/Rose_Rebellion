@@ -420,14 +420,14 @@ void Dragon::Draw(float dt)
 		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
 		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 4, &animFrame, sdlFlip, 1);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 2, &animFrame, sdlFlip, 2);
 
 		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
 		delete r; delete g; delete b;
 	}
 	else
 	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 4, &animFrame, sdlFlip, 1);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 2, &animFrame, sdlFlip, 2);
 	}
 }
 
