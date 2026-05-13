@@ -11,6 +11,8 @@ extern "C" {
 #include <libswresample/swresample.h>
 }
 
+#include "tracy/Tracy.hpp"
+
 Cinematics::Cinematics() : Module()
 {
 	name = "cinematics";
@@ -34,6 +36,8 @@ bool Cinematics::Start()
 
 bool Cinematics::Update(float dt)
 {
+	ZoneScoped;
+
 	if (!playing) return true;
 
 	// Permitir al jugador saltar la cinemática
@@ -59,6 +63,8 @@ bool Cinematics::Update(float dt)
 
 bool Cinematics::PostUpdate()
 {
+	ZoneScoped;
+
 	if (!playing) return true;
 
 	RenderFrame();

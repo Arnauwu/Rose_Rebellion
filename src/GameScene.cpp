@@ -14,6 +14,8 @@
 #include "Log.h"
 #include "Textures.h"
 
+#include "tracy/Tracy.hpp"
+
 GameScene::GameScene() : SceneBase() {
 }
 
@@ -157,6 +159,8 @@ bool GameScene::Start() {
 
 
 bool GameScene::Update(float dt) {
+	ZoneScoped;
+
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
 	auto dialogueMgr = Engine::GetInstance().dialogueManager;
@@ -203,6 +207,7 @@ bool GameScene::Update(float dt) {
 }
 
 bool GameScene::PostUpdate() {
+	ZoneScoped;
 
 	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {

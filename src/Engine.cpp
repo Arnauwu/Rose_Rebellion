@@ -19,6 +19,8 @@
 #include "ParticleManager.h"
 #include "DialogueManager.h"
 
+#include "tracy/Tracy.hpp"
+
 // Constructor
 Engine::Engine() {
 
@@ -153,6 +155,7 @@ bool Engine::Start() {
 
 // Called each loop iteration
 bool Engine::Update() {
+    ZoneScoped;
 
     bool ret = true;
     PrepareUpdate();
@@ -205,6 +208,8 @@ void Engine::PrepareUpdate()
 // ---------------------------------------------
 void Engine::FinishUpdate()
 {
+    ZoneScoped;
+
     //  Cap the framerate of the gameloop
     double currentDt = frameTime.ReadMs();
 	float maxFrameDuration = 1000.0f / targetFrameRate;
@@ -257,6 +262,8 @@ void Engine::FinishUpdate()
 // Call modules before each loop iteration
 bool Engine::PreUpdate()
 {
+    ZoneScoped;
+
     //Iterates the module list and calls PreUpdate on each module
     bool result = true;
     for (const auto& module : moduleList) {
@@ -272,6 +279,8 @@ bool Engine::PreUpdate()
 // Call modules on each loop iteration
 bool Engine::DoUpdate()
 {
+    ZoneScoped;
+
     //Iterates the module list and calls Update on each module
     bool result = true;
     for (const auto& module : moduleList) {
@@ -287,6 +296,8 @@ bool Engine::DoUpdate()
 // Call modules after each loop iteration
 bool Engine::PostUpdate()
 {
+    ZoneScoped;
+
     //Iterates the module list and calls PostUpdate on each module
     bool result = true;
     for (const auto& module : moduleList) {

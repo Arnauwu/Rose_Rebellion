@@ -11,6 +11,8 @@
 #include <vector>
 #include <box2d/box2d.h>
 
+#include "tracy/Tracy.hpp"
+
 Physics::Physics() : Module()
 {
     world = b2_nullWorldId;
@@ -39,6 +41,8 @@ bool Physics::Start()
 // 
 bool Physics::PreUpdate()
 {
+    ZoneScoped;
+
     bool ret = true;
 
     if (Engine::GetInstance().sceneManager->IsGamePaused())
@@ -331,6 +335,8 @@ void* Physics::GetShapeUserData(b2ShapeId shape)
 // 
 bool Physics::PostUpdate()
 {
+    ZoneScoped;
+
     bool ret = true;
 
     // Activate or deactivate debug mode

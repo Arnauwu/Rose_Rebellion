@@ -7,6 +7,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#include "tracy/Tracy.hpp"
+
 Render::Render() : Module()
 {
 	name = "render";
@@ -99,18 +101,24 @@ bool Render::Start() {
 // Called each loop iteration
 bool Render::PreUpdate()
 {
+	ZoneScoped;
+
 	SDL_RenderClear(renderer);
 	return true;
 }
 
 bool Render::Update(float dt)
 {
+	ZoneScoped;
+
 	UpdateFade(dt);
 	return true;
 }
 
 bool Render::PostUpdate()
 {
+	ZoneScoped;
+
 	DrawFade();
 	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.g, background.a);
 	SDL_RenderPresent(renderer);
@@ -708,6 +716,8 @@ void Render::UpdateFade(float dt)
 
 void Render::DrawFade()
 {
+	ZoneScoped;
+
 	if (fadeAlpha_ == 0) return;
 
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

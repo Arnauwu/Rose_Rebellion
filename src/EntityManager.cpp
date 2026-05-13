@@ -34,6 +34,8 @@
 
 #include "SpecialFloors.h"
 
+#include "tracy/Tracy.hpp"
+
 EntityManager::EntityManager() : Module()
 {
 	name = "entitymanager";
@@ -221,6 +223,8 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 
 bool EntityManager::Update(float dt)
 {
+	ZoneScoped;
+
 	bool ret = true;
 	/*if (Engine::GetInstance().sceneManager->IsGamePaused()) {
 		return true;
@@ -261,6 +265,8 @@ bool EntityManager::Update(float dt)
 
 bool EntityManager::PostUpdate()
 {
+	ZoneScoped;
+
 	bool ret = true;
 	for (const auto entity : entities)
 	{
