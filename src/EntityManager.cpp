@@ -1,6 +1,5 @@
 #include "EntityManager.h"
 #include "Player.h"
-#include "Npc.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "SceneManager.h"
@@ -16,7 +15,6 @@
 #include "DoubleJumpObj.h"
 
 #include "SavePoint.h"
-#include "Door.h"
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
@@ -30,9 +28,6 @@
 #include "Demon.h"
 
 #include "KnightBoss.h"
-#include "NinfaBoss.h"
-
-#include "SpecialFloors.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -108,15 +103,14 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::PLAYER:
 		entity = std::make_shared<Player>();
 		break;
-	case EntityType::NPC:
-		entity = std::make_shared<Npc>();
-		break;
+
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
 		break;
-	case EntityType::DOOR:
-		entity = std::make_shared<DoorEntity>(); 
-		break;
+
+
+
+
 		//Enemies
 
 	case EntityType::CUCAFERA:
@@ -128,6 +122,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SPIDER:
 		entity = std::make_shared<SpiderEnemy>();
 		break;
+
 
 	case EntityType::SWORD_KNIGHT:
 		entity = std::make_shared<SwordKnight>();
@@ -143,16 +138,13 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<Demon>();
 		break;
 
+
+
 		//Bosses & MiniBosses
 	case EntityType::KNIGHT_BOSS:
 		entity = std::make_shared<KnightBoss>();
 		break;
-	case EntityType::NINFA_MARE:
-		entity = std::make_shared<NinfaMare>();
-		break;
-	case EntityType::SPECIALFLOOR:
-		entity = std::make_shared<SpecialFloor>();
-		break;
+
 
 
 		// Items

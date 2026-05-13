@@ -55,9 +55,6 @@ struct Door
     std::string uniqueId;
     bool underMaintenance;
     bool DoorClose;
-    int width;
-    int height;
-    bool requiresGlide;
 };
 
 struct Path
@@ -136,7 +133,7 @@ struct TileSet
     // Mthod that receives the gid and returns a Rect
     SDL_Rect GetRect(unsigned int gid) {
         SDL_Rect rect = { 0 };
-        if (columns <= 0) return rect; // Retornar rect vacÃ­o si columns es invÃ¡lido
+        if (columns <= 0) return rect; // Retornar rect vacío si columns es inválido
         int relativeIndex = gid - firstGid;
         rect.w = tileWidth;
         rect.h = tileHeight;
@@ -178,7 +175,6 @@ public:
 
     // Called each loop iteration
     bool Update(float dt);
-    bool PostUpdate() override;
 
     // Called before quitting
     bool CleanUp();
@@ -209,18 +205,16 @@ public:
     int GetTileHeight() { return mapData.tileHeight; }
 
     // Entities
-
     void SpawnEntities();
     Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
     //Door
     std::string DoorInfo(PhysBody* door);
     std::string GetDoorUniqueId(PhysBody* door);
-    bool DoorRequiresGlide(PhysBody* door);
     bool DoorNeedsKey(PhysBody* door);
     bool DoorUnderMaintenance(PhysBody* door);
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
-    void GetDoorDimensions(PhysBody* door, int& w, int& h);
+
 public: 
     std::string mapFileName;
     std::string mapPath;

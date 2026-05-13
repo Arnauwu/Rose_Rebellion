@@ -11,10 +11,7 @@
 
 enum class UIElementType
 {
-	BUTTON,
-	CHECKBOX,
-	SLIDER,
-	DIALOGUE_BOX
+	BUTTON, TOGGLE, CHECKBOX, SLIDER, SLIDERBAR, COMBOBOX, DROPDOWNBOX, INPUTBOX, VALUEBOX, SPINNER
 };
 
 enum class UIElementState
@@ -88,7 +85,6 @@ public:
 
 	float relW = 0.1f;
 	float relH = 0.1f;
-
 
 	SDL_Texture* texture;
 	SDL_Rect section;

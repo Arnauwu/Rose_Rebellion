@@ -7,7 +7,6 @@
 enum class EntityType
 {
 	PLAYER,
-	NPC,
 
 	ITEM,
 	KEY,
@@ -32,13 +31,8 @@ enum class EntityType
 	DEMON,
 
 	KNIGHT_BOSS,
-	NINFA_MARE,
 
 	SAVEPOINT,
-	DOOR,
-
-	SPECIALFLOOR,
-
 	UNKNOWN
 };
 

@@ -11,15 +11,11 @@ public:
 	void SetValue(float value);
 	float GetValue() const;
 
-	void SetThumbTexture(SDL_Texture* tex) { thumbTex = tex; }
-
-private:
 private:
 	SDL_Rect sliderBar;
 	SDL_Rect thumb;
 	float value = 0.5f;
-	SDL_Texture* thumbTex = nullptr;
-	int thumbSize = 64;
+
 	void UpdateBarAndThumb();
 
 	bool isDragging = false;

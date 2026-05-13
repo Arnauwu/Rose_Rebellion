@@ -1,9 +1,7 @@
 #pragma once
 #include "SceneBase.h"
-#include "UIDialogueBox.h"
 #include "Textures.h"
 #include "Audio.h"
-#include "SpecialFloors.h"
 #include <vector>
 #include <memory>
 
@@ -94,12 +92,6 @@ public:
 	SDL_Texture* texItemGlide = nullptr;
 	SDL_Texture* texItemWeapon = nullptr;
 
-	//Dialogue Textures
-	SDL_Texture* UIDialogueBoxTex = nullptr;
-	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
-
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);
@@ -107,11 +99,10 @@ private:
 	void CreateInventoryUI();
 	void CreatePauseMenuUI();
 	void CreatePauseSettingUI() ;
-	void CreateDialogueUI();
-
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
+	void RequestMapChange(std::string mapFile);
 
 	int uiClick;
 
@@ -125,16 +116,13 @@ private:
 	std::vector<std::shared_ptr<UIElement>> inventoryUI;
 	std::vector<std::shared_ptr<UIElement>> mapUI;
 	std::vector<std::shared_ptr<UIElement>> skillUI;
-	std::vector<std::shared_ptr<UIElement>> dialogueBox;
-
+	
 	// Descriptión Panel
 	std::shared_ptr<UIElement> descPanel = nullptr;
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
 
-	// Dialogue UI
-	std::vector<std::shared_ptr<UIElement>> dialogueUI;
 	//MapChanging Variables
 	// Fade point
 	enum class MapTransitionState {

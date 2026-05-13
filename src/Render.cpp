@@ -78,20 +78,20 @@ bool Render::Awake()
 }
 
 // Called before the first frame
-bool Render::Start() {
+bool Render::Start()
+{
 	LOG("render start");
 
-	// Cargamos la misma fuente con diferentes tamaños
-	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 49);
-	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 39);
-	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 31); // Tamaño más adecuado para texto largo
-	fonts[FontType::CUERPO] = TTF_OpenFont(fontPath, 25);
+	font = TTF_OpenFont("Assets/Fonts/Dialogue/LibreBaskerville-VariableFont_wght.ttf", 24);
+	if (font == nullptr)
+	{
+		LOG("Failed to load font! SDL_ttf Error: %s\n", SDL_GetError());
+	}
 
-	// Verificamos que se cargaron bien
-	for (auto it = fonts.begin(); it != fonts.end(); ++it) {
-		FontType type = it->first;
-		TTF_Font* f = it->second;
-		if (f == nullptr) LOG("Failed to load font type! SDL_ttf Error: %s", SDL_GetError());
+	// back background
+	if (!SDL_GetRenderViewport(renderer, &viewport))
+	{
+		LOG("SDL_GetRenderViewport failed: %s", SDL_GetError());
 	}
 	return true;
 }
@@ -118,15 +118,21 @@ bool Render::PostUpdate()
 }
 
 // Called before quitting
-bool Render::CleanUp() {
-	for (auto it = fonts.begin(); it != fonts.end(); ++it) {
-		FontType type = it->first;
-		TTF_Font* f = it->second;
-		if (f != nullptr) TTF_CloseFont(f);
+bool Render::CleanUp()
+{
+	LOG("Destroying SDL render");
+
+	//Liberamos la fuente
+	if (font != nullptr)
+	{
+		TTF_CloseFont(font);
+		font = nullptr;
 	}
 
-	fonts.clear();
+	//Cerramos la librería
 	TTF_Quit();
+
+	SDL_DestroyRenderer(renderer);
 	return true;
 }
 
@@ -317,59 +323,6 @@ bool Render::DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) c
 	return true;
 }
 
-bool Render::DrawTexture9Slice(SDL_Texture* texture, const SDL_Rect& destRect, int left, int right, int top, int bottom) const
-{
-	if (!texture || !renderer) return false;
-
-	float texW = 0.0f, texH = 0.0f;
-	SDL_GetTextureSize(texture, &texW, &texH);
-
-	SDL_FRect srcTL = { 0, 0, (float)left, (float)top };
-	SDL_FRect srcTR = { texW - right, 0, (float)right, (float)top };
-	SDL_FRect srcBL = { 0, texH - bottom, (float)left, (float)bottom };
-	SDL_FRect srcBR = { texW - right, texH - bottom, (float)right, (float)bottom };
-
-	SDL_FRect srcTop = { (float)left, 0, texW - left - right, (float)top };
-	SDL_FRect srcBot = { (float)left, texH - bottom, texW - left - right, (float)bottom };
-	SDL_FRect srcLeft = { 0, (float)top, (float)left, texH - top - bottom };
-	SDL_FRect srcRight = { texW - right, (float)top, (float)right, texH - top - bottom };
-
-	SDL_FRect srcCenter = { (float)left, (float)top, texW - left - right, texH - top - bottom };
-
-	float dx = (float)destRect.x;
-	float dy = (float)destRect.y;
-	float dw = (float)destRect.w;
-	float dh = (float)destRect.h;
-
-	SDL_FRect dstTL = { dx, dy, (float)left, (float)top };
-	SDL_FRect dstTR = { dx + dw - right, dy, (float)right, (float)top };
-	SDL_FRect dstBL = { dx, dy + dh - bottom, (float)left, (float)bottom };
-	SDL_FRect dstBR = { dx + dw - right, dy + dh - bottom, (float)right, (float)bottom };
-
-	SDL_FRect dstTop = { dx + left, dy, dw - left - right, (float)top };
-	SDL_FRect dstBot = { dx + left, dy + dh - bottom, dw - left - right, (float)bottom };
-	SDL_FRect dstLeft = { dx, dy + top, (float)left, dh - top - bottom };
-	SDL_FRect dstRight = { dx + dw - right, dy + top, (float)right, dh - top - bottom };
-
-	SDL_FRect dstCenter = { dx + left, dy + top, dw - left - right, dh - top - bottom };
-
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-	SDL_RenderTexture(renderer, texture, &srcTL, &dstTL);
-	SDL_RenderTexture(renderer, texture, &srcTR, &dstTR);
-	SDL_RenderTexture(renderer, texture, &srcBL, &dstBL);
-	SDL_RenderTexture(renderer, texture, &srcBR, &dstBR);
-
-	SDL_RenderTexture(renderer, texture, &srcTop, &dstTop);
-	SDL_RenderTexture(renderer, texture, &srcBot, &dstBot);
-	SDL_RenderTexture(renderer, texture, &srcLeft, &dstLeft);
-	SDL_RenderTexture(renderer, texture, &srcRight, &dstRight);
-
-	SDL_RenderTexture(renderer, texture, &srcCenter, &dstCenter);
-
-	return true;
-}
-
 bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const SDL_Rect* section, SDL_FlipMode flip, float adjustableScale, double angle, int pivotX, int pivotY) const
 {
 	bool ret = true;
@@ -520,72 +473,55 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 	return ret;
 }
 
-bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color color, FontType fontType) const
+bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color color) const
 {
-	if (text == nullptr || text[0] == '\0') return false;
-
-	TTF_Font* selectedFont = nullptr;
-	auto it = fonts.find(fontType);
-	if (it != fonts.end()) selectedFont = it->second;
-	else if (!fonts.empty()) selectedFont = fonts.begin()->second;
-
-	if (!selectedFont || !renderer) {
-		LOG("Render::DrawText: No hay fuente o renderer disponible.");
+	if (!font || !renderer || !text) {
+		LOG("DrawText: invalid font/renderer/text");
 		return false;
 	}
 
-
-	SDL_Surface* surface = TTF_RenderText_Blended_Wrapped(selectedFont, text, 0, color, w > 0 ? w : 0);
+	// Render the text to a surface
+	// SDL3_ttf: length can be 0 for null-terminated strings
+	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
 	if (!surface) {
-		LOG("DrawText: Error en TTF_RenderText_Blended_Wrapped: %s", SDL_GetError());
+		LOG("DrawText: TTF_RenderText_Solid failed: %s", SDL_GetError());
 		return false;
 	}
 
+	// Create a texture from the surface
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 	if (!texture) {
+		LOG("DrawText: SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
 		SDL_DestroySurface(surface);
 		return false;
 	}
 
-	float finalW = (float)surface->w;
-	float finalH = (float)surface->h;
-
-
-	if (h > 0 && surface->h > h) {
-		float scale = (float)h / (float)surface->h;
-		finalH = (float)h;
-		finalW = (float)surface->w * scale;
-	}
-
-	SDL_FRect dstRect = { (float)x, (float)y, finalW, finalH };
-
+	// Optional but often needed when using alpha/text
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstRect)) {
-		LOG("DrawText: Error al renderizar textura: %s", SDL_GetError());
+
+	// If w/h are 0, use the text’s natural size
+	float fw = (w > 0) ? (float)w : (float)surface->w;
+	float fh = (h > 0) ? (float)h : (float)surface->h;
+
+	SDL_FRect dstrect = { (float)x, (float)y, fw, fh };
+
+	// Render the texture to the current render target
+	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstrect)) {
+		LOG("DrawText: SDL_RenderTexture failed: %s", SDL_GetError());
 	}
 
+	// Cleanup
 	SDL_DestroyTexture(texture);
 	SDL_DestroySurface(surface);
 
 	return true;
 }
 
-bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color, FontType fontType) const
+bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color) const
 {
-	if (!renderer || !text || text[0] == '\0') return false;
+	if (!font || !renderer || !text) return false;
 
-	TTF_Font* selectedFont = nullptr;
-	auto it = fonts.find(fontType);
-	if (it != fonts.end()) {
-		selectedFont = it->second;
-	}
-	else if (!fonts.empty()) {
-		selectedFont = fonts.begin()->second;
-	}
-
-	if (!selectedFont) return false;
-
-	SDL_Surface* surface = TTF_RenderText_Solid(selectedFont, text, 0, color);
+	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
 	if (!surface) return false;
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -594,83 +530,39 @@ bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Colo
 		return false;
 	}
 
-	float padding = bounds.h * 0.1f;
-	float maxW = (float)bounds.w - (padding * 2);
-	float maxH = (float)bounds.h - (padding * 2);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-	float finalW = (float)surface->w;
-	float finalH = (float)surface->h;
+	float padding = bounds.h * 0.2f;
+	float maxW = bounds.w - (padding * 2);
+	float maxH = bounds.h - (padding * 2);
 
-	float scaleX = maxW / finalW;
-	float scaleY = maxH / finalH;
-	float finalScale = (scaleX < scaleY) ? scaleX : scaleY;
+	float textRatio = (float)surface->w / (float)surface->h;
+	float boxRatio = maxW / maxH;
 
-	if (finalScale < 1.0f) {
-		finalW *= finalScale;
-		finalH *= finalScale;
+	float finalW, finalH;
+
+	if (textRatio > boxRatio) {
+		finalW = maxW;
+		finalH = maxW / textRatio;
+	}
+	else {
+		finalH = maxH;
+		finalW = maxH * textRatio;
 	}
 
-	float finalX = (float)bounds.x + ((float)bounds.w - finalW) / 2.0f;
-	float finalY = (float)bounds.y + ((float)bounds.h - finalH) / 2.0f;
+	// 4. Centramos el texto exactamente en el medio del botón
+	float finalX = bounds.x + (bounds.w - finalW) / 2.0f;
+	float finalY = bounds.y + (bounds.h - finalH) / 2.0f;
 
-	SDL_FRect dstRect = { finalX, finalY, finalW, finalH };
+	SDL_FRect dstrect = { finalX, finalY, finalW, finalH };
 
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-	SDL_RenderTexture(renderer, texture, nullptr, &dstRect);
+	SDL_RenderTexture(renderer, texture, nullptr, &dstrect);
 
 	SDL_DestroyTexture(texture);
 	SDL_DestroySurface(surface);
 
 	return true;
 }
-
-SDL_Rect Render::GetTextRenderedBounds(const char* text, const SDL_Rect& bounds, FontType fontType) const
-{
-	SDL_Rect resultRect = { 0, 0, 0, 0 };
-
-	if (!text || text[0] == '\0') return resultRect;
-
-	TTF_Font* selectedFont = nullptr;
-	auto it = fonts.find(fontType);
-	if (it != fonts.end()) {
-		selectedFont = it->second;
-	}
-	else if (!fonts.empty()) {
-		selectedFont = fonts.begin()->second;
-	}
-
-	if (!selectedFont) return resultRect;
-
-	
-	SDL_Surface* surface = TTF_RenderText_Solid(selectedFont, text, 0, { 255, 255, 255, 255 });
-	if (!surface) return resultRect;
-
-	float padding = (float)bounds.h * 0.1f;
-	float maxW = (float)bounds.w - (padding * 2);
-	float maxH = (float)bounds.h - (padding * 2);
-
-	float textW = (float)surface->w;
-	float textH = (float)surface->h;
-
-	float scaleX = maxW / textW;
-	float scaleY = maxH / textH;
-	float finalScale = (scaleX < scaleY) ? scaleX : scaleY;
-
-	if (finalScale < 1.0f) {
-		textW *= finalScale;
-		textH *= finalScale;
-	}
-
-	resultRect.x = (int)((float)bounds.x + ((float)bounds.w - textW) / 2.0f);
-	resultRect.y = (int)((float)bounds.y + ((float)bounds.h - textH) / 2.0f);
-	resultRect.w = (int)textW;
-	resultRect.h = (int)textH;
-
-	SDL_DestroySurface(surface);
-
-	return resultRect;
-}
-
 void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;

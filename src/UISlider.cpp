@@ -1,4 +1,4 @@
- #include "UISlider.h"
+#include "UISlider.h"
 #include "Engine.h"
 #include "Render.h"
 
@@ -9,11 +9,9 @@ UISlider::UISlider(int id, float anchorX, float anchorY, float wPerc, float hPer
 }
 
 void UISlider::UpdateBarAndThumb() {
-	sliderBar = { bounds.x, bounds.y + (bounds.h / 2) - 4, bounds.w, 8 };
-	thumb.w = thumbSize;
-	thumb.h = thumbSize;
-	thumb.y = bounds.y + (bounds.h - thumbSize) / 2;
-	thumb.x = sliderBar.x + (int)(value * (float)(sliderBar.w - thumb.w));
+    sliderBar = { bounds.x, bounds.y + (bounds.h / 2) - 2, bounds.w, 4 };
+    thumb = { bounds.x, bounds.y, 20, bounds.h };
+    thumb.x = sliderBar.x + (int)(value * (float)(sliderBar.w - thumb.w));
 }
 
 void UISlider::SetValue(float val) {
@@ -72,17 +70,8 @@ void UISlider::Draw() const {
     if (!visible) return;
 
     Engine::GetInstance().render->DrawRectangle(sliderBar, 200, 200, 200, 255, true, false);
-
-	if (thumbTex != nullptr) {
-		Engine::GetInstance().render->DrawTextureScaled(thumbTex, thumb);
-	}
-	else {
-		Engine::GetInstance().render->DrawRectangle(thumb, 255, 0, 0, 255, true, false);
-	}
-
-	if (!text.empty()) {
-		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y - 49, 0, 0, { 255,255,255,255 }, FontType::SPEAKER);
-	}
+    Engine::GetInstance().render->DrawRectangle(thumb, 255, 0, 0, 255, true, false);
+    Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y - 20, 0, 0, { 255,255,255,255 });
 }
 
 bool UISlider::CleanUp() {

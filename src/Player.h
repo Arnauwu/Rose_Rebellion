@@ -23,8 +23,8 @@ enum class ItemID {
 };
 
 enum class CameraMode {
-	CLASSIC,  // Para la fortaleza (Mtodo original: 1.25f, bloqueo de salto Y)
-	DYNAMIC   // Para exploracin (Nuevo mtodo: 1.75f, Look down, anticipacin)
+	CLASSIC,  
+	DYNAMIC   
 };
 
 enum class SkillTree {
@@ -59,7 +59,7 @@ class Player : public Entity
 public:
 
 	Player();
-
+	
 	virtual ~Player();
 
 	bool Awake();
@@ -77,7 +77,7 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
-
+	
 	// Unlocks
 	void UnlockCape();
 	void UnlockSickle();
@@ -85,7 +85,7 @@ public:
 	void UnlockDoubleJump();
 	void UnlockSkill(SkillTree skill, int currentForceOrbs);
 
-
+	
 	//Inventary Variables
 	std::map<ItemID, int> inventory;
 
@@ -149,6 +149,8 @@ public:
 	// Wall
 	bool onWall = false;
 
+
+
 	/*--- PLAYER SKILLS --- */
 	// Jump
 	float jumpForce = -18.0f; // The force to apply when jumping
@@ -167,7 +169,7 @@ public:
 	float wallJumpTimer = 0.0f;
 	const float wallJumpDuration = 0.15f;
 	int wallDirection = 0;
-
+	
 	// Gliding
 	bool isGliding = false; // Flag
 
@@ -180,6 +182,7 @@ public:
 
 	Timer dashCooldownTimer;
 	float dashCooldownMS = 300;
+
 
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
@@ -216,25 +219,27 @@ public:
 	int currentAttackHeight = 0;
 	int currentAttackOffsetX = 0;
 
+	//Audio fx
+	//int pickCoinFxId;
+
 	// Last Postion
 	Vector2D lastSafePosition;
 	Timer safePositionTimer;
 	const int safePositionInterval = 1000; //In Ms
 
-	// Item & states
-	bool isFrozen = false;
+	//Item
+	
+private: 
 
-private:
-
-	int jumpFx;
-	int attackFx;
+	int jumpFx = -1;
+	int attackFx = -1;
 	int dashPrincesa;
 	int morirPrincesa;
 	int planearPrincesa;
 	int recibirDamage;
 	int caminarPrincesa;
 
-	int pickItemFx;
+	int pickItemFx = -1;
 	int savePointFx;
 	int openDoor;
 	int closedDoor;
@@ -243,9 +248,8 @@ private:
 
 	bool wasWalking = false;
 	float stepTimer = 0.0f;
-	float timeBetweenSteps = 14.9f;
-	float footX = 0.0f;
-	float footY = 0.0f;
+	float timeBetweenSteps = 0.35f;
+
 	float lookDownTimer = 0.0f;
 	float currentCameraYOffset = 0.0f;
 
@@ -254,6 +258,17 @@ private:
 
 	AnimationSet anims;
 	int currentAnimPriority = 0;
+
+	/*	
+		Idle = 0
+		Move = 1
+		Jump = 2
+		Fall = 3
+		Attack = 4
+		Glide = 5
+
+		Death = 99
+	*/
 
 	CameraController cameraController;
 	Vector2D respawnPosition;

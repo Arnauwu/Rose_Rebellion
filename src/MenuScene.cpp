@@ -3,7 +3,6 @@
 #include "UIManager.h"
 #include "SceneManager.h"
 #include "GameManager.h"
-#include "Input.h"
 
 #include "Window.h"
 #include "Log.h"
@@ -14,8 +13,7 @@ MenuScene::~MenuScene() {}
 bool MenuScene::Start() {
 
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
-	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
-	uiHover = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
 
 	if (menuBackground == nullptr) {
 		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
@@ -23,14 +21,6 @@ bool MenuScene::Start() {
 	if (menuBackground_S == nullptr) {
 		menuBackground_S = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu_S.png");
 	}
-	if (frameTex == nullptr) {
-		frameTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/frameTex.png");
-	}
-
-	if (sliderThumbTex == nullptr) {
-		sliderThumbTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/pomo.png");
-	}
-	// Textura temporal para pruebas (testear)
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -50,12 +40,7 @@ bool MenuScene::Start() {
 	};
 
 	for (const auto& def : mainBtnDefs) {
-		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, currentY, wPerc, hPerc, sceneObserver);
-		
-		if (auto* b = dynamic_cast<UIButton*>(btn.get())) {
-			b->SetFrameTexture(frameTex);
-		}
-		mainButtons.push_back(btn);
+		mainButtons.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, currentY, wPerc, hPerc, sceneObserver));
 		currentY += spacing;
 	}
 
@@ -63,18 +48,12 @@ bool MenuScene::Start() {
 	float setY = 0.45f;
 
 	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_MUSIC, "Music Volume", 0.5f, setY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get())) {
-	s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
-	s->SetThumbTexture(sliderThumbTex);}
+	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get())) s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
 	settingsButtons.push_back(sldMusic);
-
 	setY += spacing;
 
 	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_FX, "FX Volume", 0.5f, setY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldFX.get())) {
-		s->SetThumbTexture(sliderThumbTex);
-		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
-	}
+	if (auto* s = dynamic_cast<UISlider*>(sldFX.get())) s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
 	settingsButtons.push_back(sldFX);
 	setY += spacing;
 
@@ -85,9 +64,6 @@ bool MenuScene::Start() {
 
 	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, (int)MenuUI_ID::BTN_BACK, "BACK", 0.5f, setY, wPerc, hPerc, sceneObserver);
 	settingsButtons.push_back(btnBack);
-	if (auto* b = dynamic_cast<UIButton*>(btnBack.get())) {
-		b->SetFrameTexture(frameTex); 
-	}
 
 	ShowSettings(false);
 	return true;
@@ -106,29 +82,6 @@ bool MenuScene::Update(float dt) {
 		Engine::GetInstance().render->DrawTextureScaled(currentBackground, fullScreenRect);
 	}
 
-	bool isAnyHovered = false;
-
-	// Juntamos todos los botones activos según en qué menú estemos
-	auto& activeButtons = isSettingsOpen ? settingsButtons : mainButtons;
-
-	for (auto& btn : activeButtons) {
-		// Tu UIElement llama "FOCUSED" al estado cuando el ratón está encima
-		if (btn->visible && btn->state == UIElementState::FOCUSED) {
-			isAnyHovered = true;
-
-			// Si el ratón acaba de entrar en este botón
-			if (lastHoveredId != btn->id) {
-				Engine::GetInstance().audio->PlayFx(uiHover); // ¡Suena!
-				lastHoveredId = btn->id; // Guardamos el ID
-			}
-		}
-	}
-
-	// Si el ratón no está encima de NINGÚN botón, reseteamos el ID
-	if (!isAnyHovered) {
-		lastHoveredId = -1;
-	}
-
 	return true;
 }
 
@@ -140,14 +93,11 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     {
     case (int)MenuUI_ID::BTN_PLAY:
 		GameManager::GetInstance().StartNewGame();
-		Engine::GetInstance().audio->StopMusic();
-		SDL_Delay(150);
         sceneManager->ChangeScene(SceneID::INTRO_CINEMATIC);
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
 		if (GameManager::GetInstance().LoadGame("savegame.xml")) {
 			LOG("Partida cargada con éxito. Entrando al juego...");
-			SDL_Delay(150);
 			sceneManager->ChangeScene(SceneID::GAME);
 		}
 		else {
@@ -218,11 +168,6 @@ bool MenuScene::CleanUp() {
 		Engine::GetInstance().textures->UnLoad(menuBackground_S);
 		menuBackground_S = nullptr;
 	}
-	if (frameTex != nullptr) {
-		Engine::GetInstance().textures->UnLoad(frameTex);
-		frameTex = nullptr;
-	}
-
 	mainButtons.clear();
 	settingsButtons.clear();
 	return true;

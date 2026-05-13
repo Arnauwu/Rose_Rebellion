@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include <SDL3/SDL.h>
 #include <string>
+struct SDL_Texture;
 
 class HealthOrb : public Entity
 {
@@ -11,19 +12,24 @@ public:
 	HealthOrb();
 	~HealthOrb();
 
-	bool Awake() override;
-	bool Start() override;
-	bool Update(float dt) override;
-	bool CleanUp() override;
+	bool Awake();
+
+	bool Start();
+
+	bool Update(float dt);
+
+	bool CleanUp();
+
 	bool Destroy();
 
-	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
+	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 
 public:
 
 private:
 
 	SDL_Texture* texture;
+	const char* texturePath;
 	int texW, texH;
 
 	// Add a physics to an item

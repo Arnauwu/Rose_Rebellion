@@ -26,7 +26,7 @@ bool SceneManager::Awake() {
 }
 
 bool SceneManager::Start() {
-    nextSceneID = SceneID::GAME;
+    nextSceneID = SceneID::INTRO;
     PerformSceneChange();
     return true;
 }

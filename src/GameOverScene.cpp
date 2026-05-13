@@ -27,7 +27,7 @@ bool GameOverScene::Update(float dt) {
 
     Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 255, true, false);
 
-    Engine::GetInstance().render->DrawTextCentered("GAME OVER", fullScreenRect, { 255, 0, 0, 255 }, FontType::MENU);
+    Engine::GetInstance().render->DrawTextCentered("GAME OVER", fullScreenRect, { 255, 0, 0, 255 });
 
     timer += dt / 1000.0f;
 
