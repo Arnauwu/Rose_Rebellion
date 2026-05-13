@@ -968,6 +968,94 @@ void Player::UnlockDash() {
 	LOG("Dash Unlocked! You can do a dash");
 }
 
+void Player::UnlockSkill(SkillTree skill, int currentForceOrbs)
+{
+	switch (skill)
+	{
+	case SkillTree::UPDOWNATTACK:
+		if(currentForceOrbs >= 1)
+		{
+			stUpDownAttack = true;
+			currentForceOrbs--;
+		} else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::COMBO:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stCombo = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP1:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDmgUp1 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP2:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDmgUp2 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP3:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDmgUp3 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::FASTDASH:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stFastDash = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP1:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDefUp1 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP2:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDefUp2 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP3:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDefUp3 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::IFRAMESUP:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stIframesUp = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	default:
+		break;
+	}
+}
+
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
