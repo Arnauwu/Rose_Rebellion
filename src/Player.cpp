@@ -432,7 +432,7 @@ void Player::Jump(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		// --- 1. WALL JUMP (Estilo Hollow Knight) ---
-		if (onWall == true && onGround == false)
+		if (onWall == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
@@ -859,10 +859,10 @@ void Player::Interact()
 
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
-	if (isJumping == true || secondJumpUsed == true) {
+	/*if (isJumping == true || secondJumpUsed == true) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
-	}
-
+	}*/
+	velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	// --- LA CLAVE DEL IMPULSO HACIA ATRÁS ---
 	// Si estamos en medio del rebote, FORZAMOS la velocidad horizontal
 	// Esto evita que Box2D mate el impulso por la fricción contra la pared
@@ -878,31 +878,34 @@ void Player::ApplyPhysics() {
 
 	// --- WALL SLIDE ---
 	// Añadida la condición !isWallJumping para que no te aplique el freno al saltar
-	if (onWall && !onGround && velocity.y > 0 && !isWallJumping) {
-		velocity.y = 2.0f;
-	}
-
-	if (isGliding)
+	if (onWall && !onGround && !isWallJumping)
 	{
-		int maxFallSpeed = 1;
-		if (velocity.y >= maxFallSpeed)
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
 		{
-			LOG("Gliding");
-			velocity.y = maxFallSpeed;
-		}
-	}
+			// Se agarra: Frenamos la caída
+			if (velocity.y > 0) {
+				velocity.y = 2.0f;
+			}
 
-	if (velocity.y > 5 && currentAnimPriority != 3)
-	{
-		if (lookingRight)
-		{
-			anims.SetCurrent("fall_right");
+			// Recargamos estados
+			isJumping = false;
+			secondJumpUsed = false;
+			onAir = false;
+
+			// Animación
+			if (anims.GetCurrentName() != "wall") {
+				anims.SetCurrent("wall");
+				currentAnimPriority = 1;
+			}
 		}
 		else
 		{
-			anims.SetCurrent("fall_left");
+			// NO PRESIONA 'L': Caída normal.
+			// Para evitar que la fricción de Box2D nos deje pegados al presionar hacia la pared,
+			// matamos la velocidad X en la dirección de la pared si intentamos empujarla.
+			if (wallDirection == 1 && velocity.x > 0) velocity.x = 0;   // Pared derecha
+			if (wallDirection == -1 && velocity.x < 0) velocity.x = 0;  // Pared izquierda
 		}
-		currentAnimPriority = 3;
 	}
 
 	// Apply velocity via helper
@@ -1248,20 +1251,16 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		else if (typeA == ShapeType::SHAPE_MIDDLE)
 		{
 			LOG("Collision middle / WALL");
-			// Reset the jump flag
-			isJumping = false;
-			secondJumpUsed = false;
 
-			anims.SetCurrent("wall"); //TODO: On wall anim
+			// Solo marcamos que tocamos pared y la dirección. 
+			// ELIMINADO el reseteo de saltos y la animación.
 			onWall = true;
 
-			onAir = false;
-
 			if (lookingRight) {
-				wallDirection = 1;  // La pared está a la derecha
+				wallDirection = 1;
 			}
 			else {
-				wallDirection = -1; // La pared está a la izquierda
+				wallDirection = -1;
 			}
 		}
 		else if (typeA == ShapeType::SHAPE_TOP)
