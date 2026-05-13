@@ -45,7 +45,7 @@ bool UIButton::Update(float dt)
 		}
 		else {
 			state = UIElementState::NORMAL;
-			targetTextScale = 0.7f;
+			targetTextScale = 0.8f;
 			currentTextColor = { 255, 255, 255, 255 };
 		}
 	}

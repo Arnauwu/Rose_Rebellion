@@ -84,7 +84,7 @@ bool Render::Start() {
 	LOG("render start");
 
 	// Cargamos la misma fuente con diferentes tamaños
-	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 49);
+	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 69);
 	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 39);
 	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 31); // Tamaño más adecuado para texto largo
 	fonts[FontType::CUERPO] = TTF_OpenFont(fontPath, 25);

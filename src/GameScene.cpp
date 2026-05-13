@@ -122,8 +122,7 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-	//LoadTextureIfNull(orbFrameUI, "Assets/Textures/UI/Buttons/orbFrameUI.png");
-	//LoadTextureIfNull(keyFrameUI, "Assets/Textures/UI/Buttons/keyFrameUI.png");
+
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
 
 
