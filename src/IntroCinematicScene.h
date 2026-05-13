@@ -10,7 +10,6 @@ public:
     bool Start() override;
     bool Update(float dt) override;
     bool CleanUp() override;
-
 private:
     bool isFadingOut; // Para controlar si ya hemos pedido cambiar de escena
 };

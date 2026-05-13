@@ -8,6 +8,7 @@
 #include "UIManager.h"
 #include "DialogueManager.h"
 #include "UIDialogueBox.h"
+#include "Cinematics.h"
 
 #include "window.h"
 #include "Player.h"
@@ -109,6 +110,8 @@ void GameScene::LoadMap(std::string mapFile)
 }
 
 bool GameScene::Start() {
+	Engine::GetInstance().cinematics->CloseVideo();
+
 	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
 
 	auto uiManager = Engine::GetInstance().uiManager;

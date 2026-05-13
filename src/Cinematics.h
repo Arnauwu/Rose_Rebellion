@@ -30,12 +30,12 @@ public:
 	bool IsPlaying() const;
 
 	void RequestSkip();
+	void CloseVideo();
 
 private:
 
 	// Internal helpers
 	bool OpenVideo(const char* path);
-	void CloseVideo();
 	bool DecodeNextFrame();
 	void RenderFrame();
 

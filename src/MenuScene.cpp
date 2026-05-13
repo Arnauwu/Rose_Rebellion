@@ -4,6 +4,7 @@
 #include "SceneManager.h"
 #include "GameManager.h"
 #include "Input.h"
+#include "Cinematics.h"
 
 #include "Window.h"
 #include "Log.h"
@@ -13,6 +14,7 @@ MenuScene::~MenuScene() {}
 
 bool MenuScene::Start() {
 
+	Engine::GetInstance().cinematics->CloseVideo();
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
 	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
 	uiHover = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
@@ -23,14 +25,18 @@ bool MenuScene::Start() {
 	if (menuBackground_S == nullptr) {
 		menuBackground_S = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu_S.png");
 	}
-	if (frameTex == nullptr) {
-		frameTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/frameTex.png");
-	}
 
 	if (sliderThumbTex == nullptr) {
 		sliderThumbTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/pomo.png");
 	}
-	// Textura temporal para pruebas (testear)
+
+	if (mainFrame == nullptr) {
+		mainFrame = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/frameTex.png");
+	}
+	if (mainClick == nullptr) {
+		mainClick = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/clickAnim.png");
+	}
+
 
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -53,8 +59,10 @@ bool MenuScene::Start() {
 		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, currentY, wPerc, hPerc, sceneObserver);
 		
 		if (auto* b = dynamic_cast<UIButton*>(btn.get())) {
-			b->SetFrameTexture(frameTex);
+			b->SetFrameTexture(mainFrame);
+			b->SetClickTexture(mainClick);
 		}
+		
 		mainButtons.push_back(btn);
 		currentY += spacing;
 	}
@@ -86,7 +94,6 @@ bool MenuScene::Start() {
 	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, (int)MenuUI_ID::BTN_BACK, "BACK", 0.5f, setY, wPerc, hPerc, sceneObserver);
 	settingsButtons.push_back(btnBack);
 	if (auto* b = dynamic_cast<UIButton*>(btnBack.get())) {
-		b->SetFrameTexture(frameTex); 
 	}
 
 	ShowSettings(false);
@@ -218,11 +225,14 @@ bool MenuScene::CleanUp() {
 		Engine::GetInstance().textures->UnLoad(menuBackground_S);
 		menuBackground_S = nullptr;
 	}
-	if (frameTex != nullptr) {
-		Engine::GetInstance().textures->UnLoad(frameTex);
-		frameTex = nullptr;
+	if (mainClick != nullptr) {
+		Engine::GetInstance().textures->UnLoad(mainClick);
+		mainClick = nullptr;
 	}
-
+	if (mainFrame != nullptr) {
+		Engine::GetInstance().textures->UnLoad(mainFrame);
+		mainFrame = nullptr;
+	}
 	mainButtons.clear();
 	settingsButtons.clear();
 	return true;

@@ -64,11 +64,9 @@ bool Cinematics::Update(float dt)
 bool Cinematics::PostUpdate()
 {
 	ZoneScoped;
-
-	if (!playing) return true;
+	if (videoTexture == nullptr) return true;
 
 	RenderFrame();
-
 	return true;
 }
 
@@ -104,9 +102,11 @@ bool Cinematics::PlayVideo(const char* path)
 void Cinematics::StopVideo()
 {
 	if (!playing) return;
-	LOG("Cinematics: stopped");
+	LOG("Cinematics: stopped playback, retaining last frame");
 	playing = false;
-	CloseVideo();
+
+	if (audioStream) { SDL_DestroyAudioStream(audioStream); audioStream = nullptr; }
+	if (audioDevice != 0) { SDL_PauseAudioDevice(audioDevice); }
 }
 
 bool Cinematics::IsPlaying() const
