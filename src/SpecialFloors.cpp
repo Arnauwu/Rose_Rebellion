@@ -26,10 +26,13 @@ bool SpecialFloor::Start() {
 	texW = width;
 	texH = height;
 
-	//Initilize textures
-	//texture = Engine::GetInstance().textures->Load("Assets/Textures/plataforma.png"); //TO DO: Cambiar textura
-	if (texture != nullptr) {
-		Engine::GetInstance().textures->GetSize(texture, texW, texH);
+	//Initialize animation
+	std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"} };
+	anims.LoadFromTSX("Assets/Maps/Catacombs/SpecialFloor_Broken.tsx", aliases);
+	anims.SetCurrent("broken");
+
+	if (floorType == TypeFloor::BROKENFLOOR) {
+		texture = Engine::GetInstance().textures->Load("Assets/Maps/Catacombs/SpecialFloor_Broken.png");
 	}
 
 	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW, texH, bodyType::KINEMATIC);
@@ -55,6 +58,27 @@ bool SpecialFloor::Start() {
 		maxMoveLimit = std::max(startPosition.getY(), limitY);
 		currentVel.y = (float)(moveDirection * moveSpeed);
 	}
+	else if (floorType == TypeFloor::CIRCULARFLOOR) {
+		if (moveDirection == 1) {
+			// Start moving to the RIGHT (+1)
+			limitLeft = startPosition.getX();
+			limitRight = startPosition.getX() + distance;
+			limitUp = startPosition.getY();
+			limitDown = startPosition.getY() + distance;
+			currentVel.x = (float)abs(moveSpeed);
+			currentVel.y = 0.0f;
+		}
+		else {
+			// Start moving to the LEFT (-1)
+			limitLeft = startPosition.getX() - distance;
+			limitRight = startPosition.getX();
+			limitUp = startPosition.getY() - distance;
+			limitDown = startPosition.getY();
+			currentVel.x = -(float)abs(moveSpeed);
+			currentVel.y = 0.0f;
+		}
+		pathStep = 0;
+	}
 
 	currentBreakTime = breakTimeMax;
 
@@ -72,6 +96,8 @@ bool SpecialFloor::Start() {
 bool SpecialFloor::Update(float dt)
 {
 	if (!active) return true;
+
+	Draw(dt);
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -143,10 +169,76 @@ bool SpecialFloor::Update(float dt)
 					Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 				}
 			}
+			else if (floorType == TypeFloor::CIRCULARFLOOR) {
+				if (moveDirection == 1) {
+					// Path (+1): Right -> Down -> Left -> Up
+					if (pathStep == 0) {
+						if (position.getX() >= limitRight && currentVel.x > 0) {
+							pbody->SetPosition((int)limitRight, (int)position.getY());
+							pathStep = 1; currentVel = { 0.0f, (float)abs(moveSpeed) }; // Now Down
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+					else if (pathStep == 1) {
+						if (position.getY() >= limitDown && currentVel.y > 0) {
+							pbody->SetPosition((int)position.getX(), (int)limitDown);
+							pathStep = 2; currentVel = { -(float)abs(moveSpeed), 0.0f }; // Now Left
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+					else if (pathStep == 2) {
+						if (position.getX() <= limitLeft && currentVel.x < 0) {
+							pbody->SetPosition((int)limitLeft, (int)position.getY());
+							pathStep = 3; currentVel = { 0.0f, -(float)abs(moveSpeed) }; // Now Up
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+					else if (pathStep == 3) {
+						if (position.getY() <= limitUp && currentVel.y < 0) {
+							pbody->SetPosition((int)position.getX(), (int)limitUp);
+							pathStep = 0; currentVel = { (float)abs(moveSpeed), 0.0f }; // Now Right
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+				}
+				else {
+					// Path (-1): Left -> Up -> Right -> Down
+					if (pathStep == 0) {
+						if (position.getX() <= limitLeft && currentVel.x < 0) {
+							pbody->SetPosition((int)limitLeft, (int)position.getY());
+							pathStep = 1; currentVel = { 0.0f, -(float)abs(moveSpeed) }; // Now Up
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+					else if (pathStep == 1) {
+						if (position.getY() <= limitUp && currentVel.y < 0) {
+							pbody->SetPosition((int)position.getX(), (int)limitUp);
+							pathStep = 2; currentVel = { (float)abs(moveSpeed), 0.0f }; // Now Right
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+					else if (pathStep == 2) {
+						if (position.getX() >= limitRight && currentVel.x > 0) {
+							pbody->SetPosition((int)limitRight, (int)position.getY());
+							pathStep = 3; currentVel = { 0.0f, (float)abs(moveSpeed) }; // Now Down
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+					else if (pathStep == 3) {
+						if (position.getY() >= limitDown && currentVel.y > 0) {
+							pbody->SetPosition((int)position.getX(), (int)limitDown);
+							pathStep = 0; currentVel = { -(float)abs(moveSpeed), 0.0f }; // Now Left
+							isWaiting = true; currentWaitTime = waitTimeMax;
+						}
+					}
+				}
+
+				// Apply velocity at the end
+				if (!isWaiting) Engine::GetInstance().physics->SetLinearVelocity(pbody, currentVel);
+				else Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
+			}
 		}
 	}
-
-	// TO DO: Falta para la plataforma que da la vuelta completa
 
 	// Breakage Management
 	if (floorType == TypeFloor::BROKENFLOOR && isSteppedOn) {
@@ -175,12 +267,25 @@ bool SpecialFloor::Update(float dt)
 		}
 	}
 
-	// Drawing
-	if (texture != nullptr) {
-		Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
-	}
-
 	return true;
+}
+
+void SpecialFloor::Draw(float dt)
+{
+	if (Engine::GetInstance().sceneManager->isGamePaused == false)
+	{
+		anims.Update(dt);
+	}
+	const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+	// Update render position using your PhysBody helper
+	int x, y;
+	pbody->GetPosition(x, y);
+	position.setX((float)x);
+	position.setY((float)y);
+
+	Engine::GetInstance().render->DrawTexture(texture, x, y - animFrame.h / 3, &animFrame, 1);
+
 }
 
 bool SpecialFloor::CleanUp()

@@ -37,6 +37,7 @@ enum class EntityType
 	DRAGON_PROJECTILE,
 
 	SAVEPOINT,
+	DOOR,
 
 	SPECIALFLOOR,
 

@@ -145,6 +145,8 @@
     </Filter>
     <Filter Include="Source Files\Game\Entity\Bosses\Dragon">
       <UniqueIdentifier>{e8439573-1af1-4664-b322-2b6c4d96497a}</UniqueIdentifier>
+    <Filter Include="Source Files\Game\Entity\Door">
+      <UniqueIdentifier>{b5345a9d-0db3-46b9-b931-68ea536ab439}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +337,8 @@
     </ClCompile>
     <ClCompile Include="src\DragonProjectile.cpp">
       <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
+    <ClCompile Include="src\Door.cpp">
+      <Filter>Source Files\Game\Entity\Door</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -523,6 +527,8 @@
     </ClInclude>
     <ClInclude Include="src\DragonProjectile.h">
       <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
+    <ClInclude Include="src\Door.h">
+      <Filter>Source Files\Game\Entity\Door</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

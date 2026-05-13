@@ -14,6 +14,8 @@
 #include "Log.h"
 #include "Textures.h"
 
+#include "tracy/Tracy.hpp"
+
 GameScene::GameScene() : SceneBase() {
 }
 
@@ -68,7 +70,7 @@ void GameScene::LoadMap(std::string mapFile)
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
-		// ASIGNAR EL MODO DE CÁMARA AQUÍ
+		// ASIGNAR EL MODO DE CÁMARA AQU?
 		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
@@ -96,6 +98,8 @@ void GameScene::LoadMap(std::string mapFile)
 		}
 
 		newPlayer->SetPosition(spawnPos);
+
+		newPlayer->isFrozen = false;
 
 		if (newPlayer->pbody != nullptr) {
 			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
@@ -150,16 +154,20 @@ bool GameScene::Start() {
 	CreateDialogueUI();
 
 	RefreshMenuUI();
-
 	return true;
 }
 
 
 bool GameScene::Update(float dt) {
+	ZoneScoped;
+
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
 	auto dialogueMgr = Engine::GetInstance().dialogueManager;
 
+	if (dialogueMgr->IsDialogueActive()) {
+		return true;
+	}
 	// --- SUB-MENU INPUT HANDLING ---
 	// Toggle menus based on keyboard shortcuts
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
@@ -192,6 +200,16 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
+	if (dialogueMgr->IsDialogueActive()) {
+		return true;
+	}
+	return true;
+}
+
+bool GameScene::PostUpdate() {
+	ZoneScoped;
+
+	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
@@ -237,17 +255,6 @@ bool GameScene::Update(float dt) {
 			return true;
 		}
 	}
-	if (dialogueMgr->IsDialogueActive()) {
-		return true;
-	}
-
-	return true;
-
-}
-
-bool GameScene::PostUpdate() {
-
-	auto sceneManager = Engine::GetInstance().sceneManager;
 
 	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
 
@@ -513,14 +520,13 @@ void GameScene::CreateDialogueUI() {
 
 	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
 	if (dBox != nullptr) {
-		dBox->SetBackgroundTextures(UIDialogueBoxTex, UIDialogueBoxTex);
+		dBox->SetBackgroundTexture(UIDialogueBoxTex);
 
-		// Cargar retratos (siguiendo tu lógica de carga de texturas)
-		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Portraits/Princess.png");
-		SDL_Texture* texNpc = Engine::GetInstance().textures->Load("Assets/Textures/UI/Portraits/GenericNPC.png");
+		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/princess_portrait.png");
+		SDL_Texture* texAldeano = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/npc_portrait.png");
 
 		dBox->AddPortrait("Princesa", texPrincesa);
-		dBox->AddPortrait("Aldeano", texNpc);
+		dBox->AddPortrait("Jan", texAldeano);
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);

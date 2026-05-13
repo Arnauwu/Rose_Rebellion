@@ -16,6 +16,7 @@
 #include "DoubleJumpObj.h"
 
 #include "SavePoint.h"
+#include "Door.h"
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
@@ -34,6 +35,8 @@
 #include "DragonProjectile.h"
 
 #include "SpecialFloors.h"
+
+#include "tracy/Tracy.hpp"
 
 EntityManager::EntityManager() : Module()
 {
@@ -119,6 +122,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<SpecialFloor>();
 		break;
 
+	case EntityType::DOOR:
+		entity = std::make_shared<DoorEntity>(); 
+		break;
 		//Enemies
 
 	case EntityType::CUCAFERA:
@@ -225,6 +231,8 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 
 bool EntityManager::Update(float dt)
 {
+	ZoneScoped;
+
 	bool ret = true;
 	/*if (Engine::GetInstance().sceneManager->IsGamePaused()) {
 		return true;
@@ -265,6 +273,8 @@ bool EntityManager::Update(float dt)
 
 bool EntityManager::PostUpdate()
 {
+	ZoneScoped;
+
 	bool ret = true;
 	for (const auto entity : entities)
 	{

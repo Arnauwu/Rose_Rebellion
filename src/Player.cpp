@@ -15,6 +15,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "SavePoint.h"
+#include "Door.h"
 #include <iostream>
 #include <unordered_map>
 
@@ -36,7 +37,7 @@ Player::~Player()
 bool Player::Awake()
 {
 	Engine::GetInstance().entityManager->SetPlayer(this);
-	
+
 	currentHealth = GameManager::GetInstance().gameState.currentHealth;
 	LOG("Player Awake: Posición final establecida en %f, %f", position.getX(), position.getY());
 	return true;
@@ -86,7 +87,7 @@ bool Player::Start()
 	// Configuración de Físicas
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19/24 , texH * 3/2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19 / 24, texH * 3 / 2, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -107,8 +108,44 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
+	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 // mmmm entiendo perfectamente
+	if (isFrozen) {
+		GetPhysicsValues();
+		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
+		ApplyPhysics();
+		// Asigno el idle
+		if (lookingRight)
+		{
+			anims.SetCurrent("idle_right");
+		}
+		else
+		{
+			anims.SetCurrent("idle_left");
+		}
+		Draw(dt);
+		return true;
+	}
+
 	if (pbody == nullptr) return true;
 	Engine::GetInstance().entityManager->SetPlayer(this);
+
+	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
+
+	if (isDialogueActive) {
+		if (!Engine::GetInstance().sceneManager->isGamePaused) {
+			velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+			velocity.x = 0.0f; 
+			ApplyPhysics();   
+			Draw(dt);        
+		}
+		else {
+			// DORMIR
+			if (lookingRight) anims.SetCurrent("idle_right");
+			else anims.SetCurrent("idle_left");
+			Draw(dt);
+		}
+		return true;
+	}
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
@@ -147,9 +184,9 @@ bool Player::Update(float dt)
 		{
 			if (safePositionTimer.ReadMSec() >= safePositionInterval)
 			{
-		
+
 				Vector2D start = position;
-				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 };
 
 				if (Engine::GetInstance().physics->Raycast(start, end))
 				{
@@ -204,13 +241,13 @@ bool Player::Update(float dt)
 
 	DevTools(dt);
 
-
 	return true;
 }
 
 bool Player::PostUpdate()
 {
-	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
+	// 【修改】确保没被冻结才能交互
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead && !isFrozen)
 	{
 		Interact();
 	}
@@ -371,8 +408,8 @@ void Player::Respawn()
 	}
 }
 
-void Player::RespawnFromVoid() 
-{ 
+void Player::RespawnFromVoid()
+{
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 
 	if (isAttacking && attackCollider != nullptr) {
@@ -395,7 +432,7 @@ void Player::Jump(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		// --- 1. WALL JUMP (Estilo Hollow Knight) ---
-		if (onWall == true && onGround == false)
+		if (onWall == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
@@ -404,10 +441,10 @@ void Player::Jump(float dt)
 
 			isWallJumping = true;
 			wallJumpTimer = 0.30f;
-	
+
 
 			// Fuerza del rebote
-			float wJumpForceY = jumpForce/2;
+			float wJumpForceY = jumpForce / 2;
 			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
 			float wJumpForceX = speed * 1.0f;
 
@@ -734,8 +771,22 @@ void Player::Interact()
 						if (!doorId.empty()) {
 							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 						}
-						SDL_Delay(150);
-						Engine::GetInstance().sceneManager->setNewMap = true;
+						isFrozen = true;
+						int cx, cy;
+						interactuableBody->GetPosition(cx, cy);
+
+					   //Door size
+						int doorW, doorH;
+						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+						if (doorAnim != nullptr) {
+							doorAnim->zOrder = -1; //Capa hacia atras de player
+
+							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						}
 					}
 					else
 					{
@@ -746,10 +797,25 @@ void Player::Interact()
 				}
 				else
 				{
-
 					// Si no
 					LOG("Esta puerta no necesita llave ");
-					Engine::GetInstance().sceneManager->setNewMap = true;
+					Engine::GetInstance().audio->PlayFx(openDoor);
+
+					isFrozen = true;
+					int cx, cy;
+					interactuableBody->GetPosition(cx, cy);
+
+					int doorW, doorH;
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1;
+
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
 				}
 			}
 		}
@@ -760,11 +826,11 @@ void Player::Interact()
 			{
 				Npc* npc = (Npc*)interactuableBody->listener;
 				// Si el npc no esta vacio comienza el dialogo
-				if (npc != nullptr) 
+				if (npc != nullptr)
 				{
 					Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
 					LOG("INICIO DIALOGO");
-					Engine::GetInstance().input->ClearMouseInput(); 
+					Engine::GetInstance().input->ClearMouseInput();
 				}
 			}
 		}
@@ -773,10 +839,10 @@ void Player::Interact()
 
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
-	if (isJumping == true || secondJumpUsed == true) {
+	/*if (isJumping == true || secondJumpUsed == true) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
-	}
-
+	}*/
+	velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	// --- LA CLAVE DEL IMPULSO HACIA ATRÁS ---
 	// Si estamos en medio del rebote, FORZAMOS la velocidad horizontal
 	// Esto evita que Box2D mate el impulso por la fricción contra la pared
@@ -792,31 +858,34 @@ void Player::ApplyPhysics() {
 
 	// --- WALL SLIDE ---
 	// Añadida la condición !isWallJumping para que no te aplique el freno al saltar
-	if (onWall && !onGround && velocity.y > 0 && !isWallJumping) {
-		velocity.y = 2.0f;
-	}
-
-	if (isGliding)
+	if (onWall && !onGround && !isWallJumping)
 	{
-		int maxFallSpeed = 1;
-		if (velocity.y >= maxFallSpeed)
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
 		{
-			LOG("Gliding");
-			velocity.y = maxFallSpeed;
-		}
-	}
+			// Se agarra: Frenamos la caída
+			if (velocity.y > 0) {
+				velocity.y = 2.0f;
+			}
 
-	if (velocity.y > 5 && currentAnimPriority != 3)
-	{
-		if (lookingRight)
-		{
-			anims.SetCurrent("fall_right");
+			// Recargamos estados
+			isJumping = false;
+			secondJumpUsed = false;
+			onAir = false;
+
+			// Animación
+			if (anims.GetCurrentName() != "wall") {
+				anims.SetCurrent("wall");
+				currentAnimPriority = 1;
+			}
 		}
 		else
 		{
-			anims.SetCurrent("fall_left");
+			// NO PRESIONA 'L': Caída normal.
+			// Para evitar que la fricción de Box2D nos deje pegados al presionar hacia la pared,
+			// matamos la velocidad X en la dirección de la pared si intentamos empujarla.
+			if (wallDirection == 1 && velocity.x > 0) velocity.x = 0;   // Pared derecha
+			if (wallDirection == -1 && velocity.x < 0) velocity.x = 0;  // Pared izquierda
 		}
-		currentAnimPriority = 3;
 	}
 
 	// Apply velocity via helper
@@ -825,12 +894,13 @@ void Player::ApplyPhysics() {
 
 void Player::Draw(float dt)
 {
-	if (Engine::GetInstance().sceneManager->isGamePaused == false)
+	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
+
+	if (Engine::GetInstance().sceneManager->isGamePaused == false || isDialogueActive)
 	{
 		anims.Update(dt);
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-
 
 	// Update render position using your PhysBody helper
 	int x, y;
@@ -1096,10 +1166,10 @@ int Player::GetItemCount(ItemID id) {
 }
 
 // Define OnCollision function for the player. 
-void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) 
+void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physA == attackCollider) { return; }
-	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER)	{return;}
+	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER) { return; }
 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
 	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
@@ -1114,7 +1184,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	{
 	case ColliderType::DANGER:
 		LOG("Collision with DANGER zone!");
-		if (!godMode && !isdead) 
+		if (!godMode && !isdead)
 		{
 			TakeDamage(10); // Environmental Damage
 			if (!isdead)
@@ -1161,20 +1231,16 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		else if (typeA == ShapeType::SHAPE_MIDDLE)
 		{
 			LOG("Collision middle / WALL");
-			// Reset the jump flag
-			isJumping = false;
-			secondJumpUsed = false;
 
-			anims.SetCurrent("wall"); //TODO: On wall anim
+			// Solo marcamos que tocamos pared y la dirección. 
+			// ELIMINADO el reseteo de saltos y la animación.
 			onWall = true;
-			
-			onAir = false;
 
 			if (lookingRight) {
-				wallDirection = 1;  // La pared está a la derecha
+				wallDirection = 1;
 			}
 			else {
-				wallDirection = -1; // La pared está a la izquierda
+				wallDirection = -1;
 			}
 		}
 		else if (typeA == ShapeType::SHAPE_TOP)
@@ -1188,9 +1254,37 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::PATH:
+	{
+		bool requiresGlide = Engine::GetInstance().map->DoorRequiresGlide(physB);
+
+		if (requiresGlide && !GameManager::GetInstance().gameState.glideUnlocked)
+		{
+			Engine::GetInstance().hud->ShowNotification("Quieres morir estampada contra el suelo?");
+
+			velocity = { 0.0f, 0.0f };
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+
+			Vector2D roomStartPos = Engine::GetInstance().map->GetPlayerSpawnPoint("");
+
+			SetPosition(roomStartPos);
+
+			lastSafePosition = roomStartPos;
+
+			isJumping = false;
+			secondJumpUsed = false;
+
+			Engine::GetInstance().audio->PlayFx(respawnFx);
+
+			return;
+		}
+
 		interactuableBody = physB;
 		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
+	}
+    interactuableBody = physB;
+    Engine::GetInstance().sceneManager->setNewMap = true;
+    break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 		//efecto Particula
@@ -1336,7 +1430,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		}
 		else if (typeA == ShapeType::SHAPE_MIDDLE)
 		{
-			LOG("Off WALL");		
+			LOG("Off WALL");
 			onAir = true;
 			onWall = false;
 
@@ -1481,7 +1575,7 @@ void Player::DevTools(float dt)
 		UnlockCape();
 		UnlockSickle();
 		GameManager::GetInstance().gameState.hasSickle = true;
-		GameManager::GetInstance().gameState.dashUnlocked= true;
+		GameManager::GetInstance().gameState.dashUnlocked = true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	}
 }

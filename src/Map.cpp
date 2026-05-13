@@ -34,6 +34,7 @@
 
 #include "GameManager.h"
 #include "SavePoint.h"
+#include "Door.h"
 #include "Item.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
@@ -42,6 +43,8 @@
 #include "Sickle.h"
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
+
+#include "tracy/Tracy.hpp"
 
 Map::Map() : Module(), mapLoaded(false)      
 {
@@ -69,6 +72,8 @@ bool Map::Start() {
 
 bool Map::Update(float dt)
 {
+	ZoneScoped;
+
 	bool ret = true;
 
 	if (mapLoaded)
@@ -76,10 +81,16 @@ bool Map::Update(float dt)
 		// Loop to draw all images
 		for (const auto& objectGroup : mapData.objectGroups)
 		{
-			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true)
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
+				&& objectGroup->properties.GetProperty("BG") != NULL && objectGroup->properties.GetProperty("BG")->value == true)
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
+ 					if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 0) == false)
+					{
+						continue;
+					}
+
 					//Get the gid from tile
 					unsigned int gid = obj->gid;
 
@@ -165,14 +176,18 @@ bool Map::Update(float dt)
 
 			if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true)
 			{
-				for (int x = 0; x < mapData.width; x++)
+				Vector2D camPosTile = GetCameraPositionInTiles();
+				Vector2D limits = GetCameraLimitsInTiles(camPosTile,{5,5});
+
+
+				for (int x = camPosTile.getX(); x <= limits.getX(); x++)
 				{
 					if (x < 0 || x >= mapData.width) // FailSave
 					{
 						continue;
 					}
 
-					for (int y = 0; y < mapData.height; y++)
+					for (int y = camPosTile.getY(); y <= limits.getY(); y++)
 					{
 						if (y < 0 || y >= mapData.height) //FailSave
 						{
@@ -267,6 +282,97 @@ bool Map::Update(float dt)
 		}
 	}
 
+	return ret;
+}
+
+bool Map::PostUpdate()
+{
+	ZoneScoped;
+
+	bool ret = true;
+
+	if (mapLoaded)
+	{
+		// Loop to draw all images
+		for (const auto& objectGroup : mapData.objectGroups)
+		{
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
+				&& objectGroup->properties.GetProperty("Front") != NULL && objectGroup->properties.GetProperty("Front")->value == true)
+			{
+				for (const auto& obj : objectGroup->objects)
+				{
+					if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 0) == false)
+					{
+						continue;
+					}
+
+					//Get the gid from tile
+					unsigned int gid = obj->gid;
+
+					//Check if the gid is different from 0 - some tiles are empty
+					if (gid != 0)
+					{
+						// Decode flip flags from GID
+						const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+						const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
+						const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+						const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
+
+						//Get Flip Variables and Correct Tile GID
+						bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
+						bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
+						bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
+						uint32_t tileId = gid & TILE_ID_MASK;
+
+						// Determine rotation and final horizontal flip
+						float rotation = 0.0f;
+						SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+
+						if (!flipD)
+						{
+							if (flipH && flipV) { rotation = 180.0f; }
+							else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
+						}
+						else // Diagonal Flip  == True
+						{
+							if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipH && !flipV) { rotation = 90.0f; }
+							else if (!flipH && flipV) { rotation = 270.0f; }
+							else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+						}
+
+						// Obtain the tile set using GetTilesetFromTileId
+						TileSet* tileSet = GetTilesetFromTileId(tileId);
+
+						if (tileSet != nullptr)
+						{
+							//Get the Rect from the tileSetTexture;
+							SDL_Rect tileRect;
+
+							tileRect.x = obj->x;
+							tileRect.y = obj->y;
+							tileRect.w = obj->width;
+							tileRect.h = obj->height;
+
+							SDL_Rect dstRect;
+
+							dstRect.x = tileSet->GetRect(tileId).x;
+							dstRect.y = tileSet->GetRect(tileId).y;
+							dstRect.w = tileSet->GetRect(tileId).w;
+							dstRect.h = tileSet->GetRect(tileId).h;
+
+							// Center point for rotation
+							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+							//Draw the texture
+							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
+						}
+					}
+				}
+			}
+		}
+	}
 	return ret;
 }
 
@@ -529,6 +635,8 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
 
 						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+						newDoor.width = (int)obj->width;
+						newDoor.height = (int)obj->height;
 
 						//Mira si necesita una llave para abrirlo o no
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
@@ -569,11 +677,20 @@ bool Map::Load(std::string path, std::string fileName)
 					{
 						collider->ctype = ColliderType::PATH;
 
-						// TODO: Assign Listener
-
 						Door newDoor;
 						newDoor.body = collider;
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+
+						Properties::Property* glideProp = obj->properties.GetProperty("RequiresGlide");
+						if (glideProp != nullptr)
+						{
+							newDoor.requiresGlide = glideProp->value;
+						}
+						else
+						{
+							newDoor.requiresGlide = false;
+						}
+
 						mapData.doors.push_back(newDoor);
 					}
 					else
@@ -631,6 +748,33 @@ bool Map::Load(std::string path, std::string fileName)
 						collider->ctype = ColliderType::UNKNOWN;
 					}
 					colliderList.push_back(collider);
+				}
+			}
+			else if (objectsGroups->properties.GetProperty("Polygon") != NULL && objectsGroups->properties.GetProperty("Polygon")->value) // NUEVO: POLYGON
+			{
+				for (const auto& obj : objectsGroups->objects)
+				{
+					int* pointsArray = new int[obj->points.size() * 2];
+
+					for (size_t i = 0; i < obj->points.size(); i++)
+					{
+						pointsArray[i * 2] = obj->points[i].x - obj->x;
+						pointsArray[i * 2 + 1] = obj->points[i].y - obj->y;
+					}
+
+					PhysBody* collider = Engine::GetInstance().physics.get()->CreatePolygon(obj->x, obj->y, pointsArray, obj->points.size() * 2, STATIC);
+
+					if (objectsGroups->properties.GetProperty("Danger") != NULL && objectsGroups->properties.GetProperty("Danger")->value)
+					{
+						collider->ctype = ColliderType::DANGER;
+					}
+					else
+					{
+						collider->ctype = ColliderType::MAP;
+					}
+
+					colliderList.push_back(collider);
+					delete[] pointsArray;
 				}
 			}
 		}
@@ -1032,6 +1176,33 @@ void Map::SpawnEntities()
 						brokenFloor->respawnTimeMax = (float)floorProps.GetProperty("RespawnTime")->value;
 					}
 				}
+				else if (entityType == std::string("CircularFloor"))
+				{
+					std::shared_ptr<SpecialFloor> circularFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
+					circularFloor->position = Vector2D(x, y);
+					circularFloor->floorType = TypeFloor::CIRCULARFLOOR;
+					circularFloor->width = (int)w;
+					circularFloor->height = (int)h;
+
+					Properties floorProps;
+					LoadProperties(objectNode, floorProps);
+
+					if (floorProps.GetProperty("Distance") != nullptr) {
+						circularFloor->distance = floorProps.GetProperty("Distance")->value;
+					}
+					if (floorProps.GetProperty("Speed") != nullptr) {
+						circularFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					}
+					if (floorProps.GetProperty("Direction") != nullptr) {
+						circularFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					}
+					if (floorProps.GetProperty("WaitTime") != nullptr) {
+						circularFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					}
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
+						circularFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+					}
+					}
 			}
 		}
 
@@ -1086,6 +1257,18 @@ bool Map::DoorNeedsKey(PhysBody* door)
 			return ndoor.needsKey;
 		}
 	}
+	return false;
+}
+bool Map::DoorRequiresGlide(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door)
+		{
+			return ndoor.requiresGlide;
+		}
+	}
+	
 	return false;
 }
 
@@ -1148,4 +1331,33 @@ bool Map::DoorClosed(PhysBody* door) {
 		}
 	}
 	return false;
+}
+
+// 【新增在文件最后面】
+void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door)
+		{
+			w = ndoor.width;
+			h = ndoor.height;
+			return;
+		}
+	}
+	w = 256; h = 256; // 默认防错值
+}
+
+Vector2D Map::GetCameraPositionInTiles()
+{
+	SDL_Rect camera = Engine::GetInstance().render->camera;
+	Vector2D camPosTile = WorldToMap(-camera.x, -camera.y); //Inverted numbers
+	return camPosTile;
+}
+
+Vector2D Map::GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin)
+{
+	SDL_Rect camera = Engine::GetInstance().render->camera;
+	Vector2D camLimitTile = WorldToMap(camera.w, camera.h);
+	return camPosTile + camLimitTile + margin;
 }

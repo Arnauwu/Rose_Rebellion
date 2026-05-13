@@ -11,6 +11,8 @@
 #include <string>
 #include "Physics.h"
 
+#include "tracy/Tracy.hpp"
+
 Hud::Hud() : Module() {
     name = "hud";
 }
@@ -29,6 +31,8 @@ bool Hud::Start() {
 }
 
 bool Hud::Update(float dt) {
+    ZoneScoped;
+
     Player* player = Engine::GetInstance().entityManager->GetPlayer();
     if (player == nullptr) return true;
 
@@ -66,6 +70,7 @@ bool Hud::Update(float dt) {
 }
 
 bool Hud::PostUpdate() {
+    ZoneScoped;
 
     auto sceneManager = Engine::GetInstance().sceneManager;
     Player* player = Engine::GetInstance().entityManager->GetPlayer();

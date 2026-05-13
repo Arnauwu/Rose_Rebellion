@@ -30,6 +30,7 @@ private:
     const std::vector<DialogueLine>* currentConversation = nullptr;
     int currentLineIndex = 0;
     bool isActive = false;
+    bool isWaitingForLanding = false;
 
     // Efecto Typewriter
     std::string displayedText;

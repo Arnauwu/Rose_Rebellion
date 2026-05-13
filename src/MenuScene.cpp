@@ -27,6 +27,9 @@ bool MenuScene::Start() {
 		frameTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/frameTex.png");
 	}
 
+	if (sliderThumbTex == nullptr) {
+		sliderThumbTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/pomo.png");
+	}
 	// Textura temporal para pruebas (testear)
 
 	auto uiManager = Engine::GetInstance().uiManager;
@@ -60,12 +63,18 @@ bool MenuScene::Start() {
 	float setY = 0.45f;
 
 	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_MUSIC, "Music Volume", 0.5f, setY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get())) s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
+	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get())) {
+	s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
+	s->SetThumbTexture(sliderThumbTex);}
 	settingsButtons.push_back(sldMusic);
+
 	setY += spacing;
 
 	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_FX, "FX Volume", 0.5f, setY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldFX.get())) s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
+	if (auto* s = dynamic_cast<UISlider*>(sldFX.get())) {
+		s->SetThumbTexture(sliderThumbTex);
+		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
+	}
 	settingsButtons.push_back(sldFX);
 	setY += spacing;
 

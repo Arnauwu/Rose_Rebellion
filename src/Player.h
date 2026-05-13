@@ -23,8 +23,8 @@ enum class ItemID {
 };
 
 enum class CameraMode {
-	CLASSIC,  // Para la fortaleza (M��todo original: 1.25f, bloqueo de salto Y)
-	DYNAMIC   // Para exploraci��n (Nuevo m��todo: 1.75f, Look down, anticipaci��n)
+	CLASSIC,  // Para la fortaleza (Mtodo original: 1.25f, bloqueo de salto Y)
+	DYNAMIC   // Para exploracin (Nuevo mtodo: 1.75f, Look down, anticipacin)
 };
 
 struct SDL_Texture;
@@ -34,7 +34,7 @@ class Player : public Entity
 public:
 
 	Player();
-	
+
 	virtual ~Player();
 
 	bool Awake();
@@ -52,14 +52,14 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
-	
+
 	// Unlocks
 	void UnlockCape();
 	void UnlockSickle();
 	void UnlockDash();
 	void UnlockDoubleJump();
 
-	
+
 	//Inventary Variables
 	std::map<ItemID, int> inventory;
 
@@ -123,8 +123,6 @@ public:
 	// Wall
 	bool onWall = false;
 
-
-
 	/*--- PLAYER SKILLS --- */
 	// Jump
 	float jumpForce = -18.0f; // The force to apply when jumping
@@ -143,7 +141,7 @@ public:
 	float wallJumpTimer = 0.0f;
 	const float wallJumpDuration = 0.15f;
 	int wallDirection = 0;
-	
+
 	// Gliding
 	bool isGliding = false; // Flag
 
@@ -156,7 +154,6 @@ public:
 
 	Timer dashCooldownTimer;
 	float dashCooldownMS = 300;
-
 
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
@@ -184,17 +181,15 @@ public:
 	int currentAttackOffsetX = 0;
 	int currentAttackOffsetY = 0;
 
-	//Audio fx
-	//int pickCoinFxId;
-
 	// Last Postion
 	Vector2D lastSafePosition;
 	Timer safePositionTimer;
 	const int safePositionInterval = 1000; //In Ms
 
-	//Item
-	
-private: 
+	// Item & states
+	bool isFrozen = false;
+
+private:
 
 	int jumpFx;
 	int attackFx;
@@ -224,17 +219,6 @@ private:
 
 	AnimationSet anims;
 	int currentAnimPriority = 0;
-
-	/*	
-		Idle = 0
-		Move = 1
-		Jump = 2
-		Fall = 3
-		Attack = 4
-		Glide = 5
-
-		Death = 99
-	*/
 
 	CameraController cameraController;
 	Vector2D respawnPosition;

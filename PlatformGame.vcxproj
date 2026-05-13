@@ -106,8 +106,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;TRACY_ENABLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions>/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +156,7 @@
     <ClCompile Include="src\DashObj.cpp" />
     <ClCompile Include="src\Dragon.cpp" />
     <ClCompile Include="src\DragonProjectile.cpp" />
+    <ClCompile Include="src\Door.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
     <ClCompile Include="src\SpecialFloors.cpp" />
     <ClCompile Include="src\UIDialogueBox.cpp" />
@@ -216,6 +218,7 @@
     <ClInclude Include="src\DashObj.h" />
     <ClInclude Include="src\Dragon.h" />
     <ClInclude Include="src\DragonProjectile.h" />
+    <ClInclude Include="src\Door.h" />
     <ClInclude Include="src\NinfaBoss.h" />
     <ClInclude Include="src\SpecialFloors.h" />
     <ClInclude Include="src\UIDialogueBox.h" />

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "Animation.h"
 #include "Timer.h"
 #include <SDL3/SDL.h>
 #include <string>
@@ -34,6 +35,9 @@ public:
 	void SetPosition(Vector2D pos);
 
 	bool Destroy();
+private:
+
+	void Draw(float dt);
 
 public:
 	TypeFloor floorType = TypeFloor::NORMALFLOOR;
@@ -56,6 +60,13 @@ public:
 	float minMoveLimit = 0.0f;
 	float maxMoveLimit = 0.0f;
 
+	// For circular movement, we can define limits for each direction
+	float limitLeft = 0.0f;
+	float limitRight = 0.0f;
+	float limitUp = 0.0f;
+	float limitDown = 0.0f;
+	int pathStep = 0; // 0, 1, 2, 3 (the four directions in order)
+
 	// Wait Time Variables for Movement Floors
 	float waitTimeMax = 2000.0f;
 	float currentWaitTime = 0.0f;
@@ -74,6 +85,7 @@ public:
 private:
 
 	SDL_Texture* texture = nullptr;
+	AnimationSet anims;
 	int texW, texH;
 	PhysBody* pbody = nullptr;
 };
