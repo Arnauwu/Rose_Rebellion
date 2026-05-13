@@ -44,6 +44,7 @@ public:
     float GetSFXVolume()   const { return sfx_volume_; }
 
     void StopFx(int id);
+    void StopMusic();
 
 private:
 
@@ -76,4 +77,5 @@ private:
     void FreeSound(SoundData& s);
     bool EnsureDeviceOpen();
     bool EnsureStreams();
+    std::string currentMusicPath = "";
 };

@@ -6,12 +6,16 @@
 #include "Render.h"
 #include "SceneManager.h"
 #include "GameManager.h"
+#include "ParticleManager.h"
+#include "dialogueManager.h"
+#include "Npc.h"
 
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
 #include "SavePoint.h"
+#include "Door.h"
 #include <iostream>
 #include <unordered_map>
 
@@ -33,7 +37,7 @@ Player::~Player()
 bool Player::Awake()
 {
 	Engine::GetInstance().entityManager->SetPlayer(this);
-	
+
 	currentHealth = GameManager::GetInstance().gameState.currentHealth;
 	LOG("Player Awake: Posición final establecida en %f, %f", position.getX(), position.getY());
 	return true;
@@ -83,7 +87,7 @@ bool Player::Start()
 	// Configuración de Físicas
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19/24 , texH * 3/2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19 / 24, texH * 3 / 2, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -104,8 +108,44 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
+	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 // mmmm entiendo perfectamente
+	if (isFrozen) {
+		GetPhysicsValues();
+		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
+		ApplyPhysics();
+		// Asigno el idle
+		if (lookingRight)
+		{
+			anims.SetCurrent("idle_right");
+		}
+		else
+		{
+			anims.SetCurrent("idle_left");
+		}
+		Draw(dt);
+		return true;
+	}
+
 	if (pbody == nullptr) return true;
 	Engine::GetInstance().entityManager->SetPlayer(this);
+
+	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
+
+	if (isDialogueActive) {
+		if (!Engine::GetInstance().sceneManager->isGamePaused) {
+			velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+			velocity.x = 0.0f; 
+			ApplyPhysics();   
+			Draw(dt);        
+		}
+		else {
+			// DORMIR
+			if (lookingRight) anims.SetCurrent("idle_right");
+			else anims.SetCurrent("idle_left");
+			Draw(dt);
+		}
+		return true;
+	}
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
@@ -144,9 +184,9 @@ bool Player::Update(float dt)
 		{
 			if (safePositionTimer.ReadMSec() >= safePositionInterval)
 			{
-		
+
 				Vector2D start = position;
-				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 }; 
+				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 };
 
 				if (Engine::GetInstance().physics->Raycast(start, end))
 				{
@@ -201,13 +241,13 @@ bool Player::Update(float dt)
 
 	DevTools(dt);
 
-
 	return true;
 }
 
 bool Player::PostUpdate()
 {
-	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
+	// 【修改】确保没被冻结才能交互
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead && !isFrozen)
 	{
 		Interact();
 	}
@@ -236,6 +276,8 @@ void Player::Move() {
 
 	// Input del mando (stick izquierdo)
 	if (Engine::GetInstance().input->IsGamepadConnected())
+	// Move Left
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false)
 	{
 		float stickX = Engine::GetInstance().input->GetGamepadLeftStickX();
 		if (fabs(stickX) > fabs(horizontalInput))
@@ -244,6 +286,8 @@ void Player::Move() {
 
 	// Aplicar movimiento
 	if (fabs(horizontalInput) > 0.1f && isDashing == false && !isWallJumping)
+	// Move Right
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
 	{
 		velocity.x = speed * horizontalInput;
 		lookingRight = horizontalInput > 0;
@@ -276,12 +320,20 @@ void Player::Move() {
 
 	if (isWalkingConditions)
 	{
+		// Si AHORA camina, pero en el frame anterior NO caminaba 
+		// (porque estaba parada, saltando, etc.), forzamos el sonido inmediato.
+		if (!wasWalking) {
+			stepTimer = timeBetweenSteps;
+		}
+
+		// Sumamos el tiempo
 		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
 
+		// Si llegamos a los 14.9s (o lo hemos forzado arriba), suena
 		if (stepTimer >= timeBetweenSteps)
 		{
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
-			stepTimer = 0.0f;
+			stepTimer = 0.0f; // Reiniciamos para los próximos 15 segundos
 		}
 	}
 	else
@@ -292,6 +344,8 @@ void Player::Move() {
 			Engine::GetInstance().audio->StopFx(caminarPrincesa);
 		}
 	}
+
+	// Guardamos el estado para el siguiente frame
 	wasWalking = isWalkingConditions;
 }
 
@@ -347,8 +401,8 @@ void Player::Respawn()
 	}
 }
 
-void Player::RespawnFromVoid() 
-{ 
+void Player::RespawnFromVoid()
+{
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 
 	if (isAttacking && attackCollider != nullptr) {
@@ -390,7 +444,10 @@ void Player::Jump(float dt)
 			isWallJumping = true;
 			wallJumpTimer = 0.30f;
 
+
+			// Fuerza del rebote
 			float wJumpForceY = jumpForce / 2;
+			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
 			float wJumpForceX = speed * 1.0f;
 
 			if (wallDirection == 1) {
@@ -421,6 +478,18 @@ void Player::Jump(float dt)
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
 			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
+			//Jump Dust
+			float footY = position.getY() + (texH / 2.0f) - 10.0f;
+			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+
+			if (lookingRight == true)
+			{
+				anims.SetCurrent("jump_right");
+			}
+			else
+			{
+				anims.SetCurrent("jump_left");
+			}
 			currentAnimPriority = 2;
 
 			isJumpKeyDown = true;
@@ -476,34 +545,36 @@ void Player::Attack(float dt)
 
 	// 1. Iniciar ataque
 	if (attackPressed && !isGliding && !isAttacking)
+	// 1. Iniciar el ataque 
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
 	{
-		if (GameManager::GetInstance().gameState.hasSickle && GameManager::GetInstance().gameState.glideUnlocked)
+		if (HasItem(ItemID::WEAPON))
 		{
 			Engine::GetInstance().audio->PlayFx(attackFx);
 			isAttacking = true;
 
 			anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
 			anims.GetAnim(lookingRight ? "attack_right" : "attack_left")->SetLoop(false);
+			// Detectar dirección vertical mediante teclado
+			bool lookUp = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT);
+			bool lookDown = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && !onGround);
 
 			currentAnimPriority = 4;
 			currentAttackTime = 0.0f;
 			timeSinceLastAttack = 0.0f;
 
+			// Configurar dimensiones según el combo
 			if (comboStep == 0)
 			{
 				damage = 10;
 				currentAttackWidth = 60;
 				currentAttackHeight = 64;
-				currentAttackOffsetX = texW / 2 + currentAttackWidth / 2;
-				LOG("Attack 1 started (Normal)");
 			}
 			else
 			{
 				damage = 15;
 				currentAttackWidth = 120;
 				currentAttackHeight = 90;
-				currentAttackOffsetX = texW / 2 + currentAttackWidth / 2;
-				LOG("Attack 2 started (Heavy)");
 			}
 
 			comboStep = (comboStep + 1) % 2;
@@ -520,24 +591,98 @@ void Player::Attack(float dt)
 		{
 			if (!GameManager::GetInstance().gameState.hasSickle && !GameManager::GetInstance().gameState.glideUnlocked) {
 				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape.");
+			// Variables locales para calcular la posición inicial
+			int offsetX = 0;
+			int offsetY = 0;
+
+			if (lookUp)
+			{
+				// Intercambio de dimensiones para ataque vertical
+				int temp = currentAttackWidth;
+				currentAttackWidth = currentAttackHeight;
+				currentAttackHeight = temp;
+
+				// Offset negativo = ARRIBA
+				offsetY = -(texH * 0.8f);
+				currentAttackOffsetX = 0; // Usamos 0 para identificar que no es lateral
+
+				if (lookingRight) anims.SetCurrent("attack_right");
+				else anims.SetCurrent("attack_left");
 			}
-			else if (!GameManager::GetInstance().gameState.hasSickle) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle.");
+			else if (lookDown)
+			{
+				int temp = currentAttackWidth;
+				currentAttackWidth = currentAttackHeight;
+				currentAttackHeight = temp;
+
+				currentAttackOffsetX = 0;
+				offsetX = 0;
+				// Offset POSITIVO = ABAJO
+				offsetY = (texH * 0.8f);
+
+				if (lookingRight) anims.SetCurrent("attack_right");
+				else anims.SetCurrent("attack_left");
 			}
-			else if (!GameManager::GetInstance().gameState.glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Cape.");
+			else
+			{
+				// Ataque lateral estándar
+				currentAttackOffsetX = lookingRight ? (texW / 2 + currentAttackWidth / 2) : -(texW / 2 + currentAttackWidth / 2);
+				offsetX = currentAttackOffsetX;
+				offsetY = 0;
+
+				if (lookingRight)
+				{
+					anims.SetCurrent("attack_right");
+					anims.GetAnim("attack_right")->SetLoop(false);
+				}
+				else
+				{
+					anims.SetCurrent("attack_left");
+					anims.GetAnim("attack_left")->SetLoop(false);
+				}
 			}
+
+
+			currentAnimPriority = 4;
+			comboStep = (comboStep + 1) % 2;
+
+			// Creación del sensor de ataque
+			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(
+				position.getX() + offsetX,
+				position.getY() + offsetY,
+				currentAttackWidth,
+				currentAttackHeight,
+				bodyType::KINEMATIC);
+
+			attackCollider->ctype = ColliderType::PLAYER_ATTACK;
+			attackCollider->listener = this;
 		}
 	}
 
-	// 2. Controlar duración del ataque
+	// 2. Control del ataque activo
 	if (isAttacking)
 	{
 		currentAttackTime += dt / 1000.0f;
 
 		if (attackCollider != nullptr) {
-			int attackOffsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
-			attackCollider->SetPosition(position.getX() + attackOffsetX, position.getY());
+			int tempOffsetY = 0;
+
+			// Si el ataque no es lateral (X=0), determinamos si es arriba o abajo
+			// comparando la posición actual del collider respecto al jugador
+			if (currentAttackOffsetX == 0) {
+				int cX, cY;
+				attackCollider->GetPosition(cX, cY);
+
+				// Usamos exactamente los mismos valores que en la creación
+				if (cY < position.getY()) {
+					tempOffsetY = -(texH * 0.8f); // Mantener ARRIBA
+				}
+				else {
+					tempOffsetY = (texH * 0.8f);  // Mantener ABAJO
+				}
+			}
+
+			attackCollider->SetPosition(position.getX() + currentAttackOffsetX, position.getY() + tempOffsetY);
 		}
 
 		if (currentAttackTime >= attackDuration &&
@@ -552,8 +697,6 @@ void Player::Attack(float dt)
 				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 				attackCollider = nullptr;
 			}
-
-			LOG("Attack ended");
 		}
 	}
 }
@@ -665,6 +808,42 @@ void Player::Interact()
 					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 					if (!doorId.empty()) {
 						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
+				if (requiresKey)
+				{
+					// Si necesita
+					if (GameManager::GetInstance().gameState.keyCount > 0)
+					{
+						Engine::GetInstance().audio->PlayFx(openDoor);
+						//Restar una unidad cuando se usa una llave
+						GameManager::GetInstance().gameState.keyCount--;
+						LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
+
+						std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
+						if (!doorId.empty()) {
+							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
+						}
+						isFrozen = true;
+						int cx, cy;
+						interactuableBody->GetPosition(cx, cy);
+
+					   //Door size
+						int doorW, doorH;
+						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+						if (doorAnim != nullptr) {
+							doorAnim->zOrder = -1; //Capa hacia atras de player
+
+							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						}
+					}
+					else
+					{
+						Engine::GetInstance().audio->PlayFx(closedDoor);
+						LOG("Necesitas una llave para abrir, busca una ");
+						Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 					}
 					Engine::GetInstance().sceneManager->setNewMap = true;
 				}
@@ -673,6 +852,40 @@ void Player::Interact()
 					Engine::GetInstance().audio->PlayFx(closedDoor);
 					LOG("Necesitas una llave para abrir, busca una");
 					Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
+					// Si no
+					LOG("Esta puerta no necesita llave ");
+					Engine::GetInstance().audio->PlayFx(openDoor);
+
+					isFrozen = true;
+					int cx, cy;
+					interactuableBody->GetPosition(cx, cy);
+
+					int doorW, doorH;
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1;
+
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
+				}
+			}
+		}
+		else if (interactuableBody->ctype == ColliderType::NPC)
+		{
+			// Asegurarse que no estabas hablando
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN /*&& !Engine::GetInstance().dialogueManager->IsDialogueActive()*/)
+			{
+				Npc* npc = (Npc*)interactuableBody->listener;
+				// Si el npc no esta vacio comienza el dialogo
+				if (npc != nullptr)
+				{
+					Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
+					LOG("INICIO DIALOGO");
+					Engine::GetInstance().input->ClearMouseInput();
 				}
 			}
 			else
@@ -738,12 +951,13 @@ void Player::ApplyPhysics() {
 
 void Player::Draw(float dt)
 {
-	if (Engine::GetInstance().sceneManager->isGamePaused == false)
+	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
+
+	if (Engine::GetInstance().sceneManager->isGamePaused == false || isDialogueActive)
 	{
 		anims.Update(dt);
 	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-
 
 	// Update render position using your PhysBody helper
 	int x, y;
@@ -798,6 +1012,7 @@ void Player::CameraFollows()
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
 	int screenW = Engine::GetInstance().render->camera.w;
 	int screenH = Engine::GetInstance().render->camera.h;
+
 	float dt = Engine::GetInstance().GetDt();
 	float dtSeconds = dt / 1000.0f;
 
@@ -822,7 +1037,9 @@ void Player::CameraFollows()
 
 		if (onGround && velocity.x == 0 && lookDownPressed) {
 			lookDownTimer += dtSeconds;
-			if (lookDownTimer >= 0.3f) { targetYOffset = 200.0f; }
+			if (lookDownTimer >= 0.3f) {
+				targetYOffset = 200.0f;
+			}
 		}
 		else {
 			lookDownTimer = 0.0f;
@@ -844,18 +1061,33 @@ void Player::CameraFollows()
 	}
 	else if (currentCameraMode == CameraMode::CLASSIC)
 	{
-		// --- MÉTODO ORIGINAL (Fortaleza) ---
-		static float lastGroundY = position.getY();
-		if (onGround) {
-			lastGroundY = position.getY();
-		}
 
-		if (!onGround) {
-			float maxCameraUpward = 40.0f;
-			if (targetCamPos.getY() < lastGroundY - maxCameraUpward) {
-				targetCamPos.setY(lastGroundY - maxCameraUpward);
+		float targetYOffset = 0.0f;
+
+		// 1. Anticipación de caída controlada (Si cae o baja escalones rápidamente)
+		if (!onGround && velocity.y > 1.0f) {
+			targetYOffset = 120.0f; // Límite estricto: Solo muestra un poco más abajo
+			cameraController.SetSmoothSpeed(0.20f);
+		}
+		// 2. Mirar hacia abajo manualmente
+		else if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			lookDownTimer += dtSeconds;
+			if (lookDownTimer >= 0.3f) {
+				targetYOffset = 150.0f; // Límite estricto de visión manual
 			}
 		}
+		else {
+			lookDownTimer = 0.0f;
+			cameraController.SetSmoothSpeed(0.15f); // Velocidad normal
+		}
+
+		// Interpolar suavemente para evitar tirones
+		float lerpY = 4.0f * dtSeconds;
+		if (lerpY > 1.0f) lerpY = 1.0f;
+		currentCameraYOffset += (targetYOffset - currentCameraYOffset) * lerpY;
+
+		// Aplicar el offset limitado
+		targetCamPos.setY(targetCamPos.getY() + currentCameraYOffset);
 	}
 	// ==========================================
 
@@ -1089,10 +1321,10 @@ int Player::GetItemCount(ItemID id) {
 }
 
 // Define OnCollision function for the player. 
-void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) 
+void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physA == attackCollider) { return; }
-	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER)	{return;}
+	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER) { return; }
 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
 	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
@@ -1107,7 +1339,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	{
 	case ColliderType::DANGER:
 		LOG("Collision with DANGER zone!");
-		if (!godMode && !isdead) 
+		if (!godMode && !isdead)
 		{
 			TakeDamage(10); // Environmental Damage
 			if (!isdead)
@@ -1118,10 +1350,18 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		break;
 
 	case ColliderType::MAP:
+	case ColliderType::SPECIALFLOOR:
 
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
 			LOG("Collision inf circle / GROUND");
+
+			// Efecto de polvo al aterrizar
+			if (!onGround) { // Solo si el jugador viene del aire 
+				float footY = position.getY() + (texH / 2.0f) - 10.0f;
+				Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+			}
+
 			// Reset the jump flag when touching the ground
 			isJumping = false;
 			secondJumpUsed = false;
@@ -1152,7 +1392,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 			anims.SetCurrent("wall"); //TODO: On wall anim
 			onWall = true;
-			
+
 			onAir = false;
 
 			if (lookingRight) {
@@ -1173,11 +1413,43 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::PATH:
+	{
+		bool requiresGlide = Engine::GetInstance().map->DoorRequiresGlide(physB);
+
+		if (requiresGlide && !GameManager::GetInstance().gameState.glideUnlocked)
+		{
+			Engine::GetInstance().hud->ShowNotification("Quieres morir estampada contra el suelo?");
+
+			velocity = { 0.0f, 0.0f };
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+
+			Vector2D roomStartPos = Engine::GetInstance().map->GetPlayerSpawnPoint("");
+
+			SetPosition(roomStartPos);
+
+			lastSafePosition = roomStartPos;
+
+			isJumping = false;
+			secondJumpUsed = false;
+
+			Engine::GetInstance().audio->PlayFx(respawnFx);
+
+			return;
+		}
+
 		interactuableBody = physB;
 		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
+	}
+    interactuableBody = physB;
+    Engine::GetInstance().sceneManager->setNewMap = true;
+    break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		//efecto Particula
+		int itemX, itemY;
+		physB->GetPosition(itemX, itemY);
+		Engine::GetInstance().particleManager->EmitItemPickup(itemX, itemY);
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
@@ -1209,6 +1481,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			{
 				currentHealth = maxHealth;
 			}
+			int orbX, orbY;
+			physB->GetPosition(orbX, orbY);
+			Engine::GetInstance().particleManager->EmitItemPickup(orbX, orbY);
+
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
 			Engine::GetInstance().hud->ShowNotification("You have recovered your health.");
@@ -1217,6 +1493,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::SKILL_POINT_ORB:
 		currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
+
+		int spOrbX, spOrbY;
+		physB->GetPosition(spOrbX, spOrbY);
+		Engine::GetInstance().particleManager->EmitItemPickup(spOrbX, spOrbY);
+
 		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy();
 		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power.");
@@ -1245,16 +1526,25 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	}
-
+	case ColliderType::NPC:
+		canInteract = true;
+		interactuableBody = physB;
+		break;
 	case ColliderType::ENEMY:
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(10); // Contact Damage
+		//PARTICULA
+		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
+
 		isKnockedback = true;
 		break;
 	case ColliderType::ENEMY_ATTACK:
 		LOG("Hit player");
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(physB->listener->damage);
+		//PARTICULA
+		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
+
 		isKnockedback = true;
 
 		int enemyX, enemyY;
@@ -1290,6 +1580,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	switch (physB->ctype)
 	{
 	case ColliderType::MAP:
+	case ColliderType::SPECIALFLOOR:
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
 			onGround = false;
@@ -1298,7 +1589,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		}
 		else if (typeA == ShapeType::SHAPE_MIDDLE)
 		{
-			LOG("Off WALL");		
+			LOG("Off WALL");
 			onAir = true;
 			onWall = false;
 
@@ -1313,7 +1604,10 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;
-
+	case ColliderType::NPC:
+		canInteract = false;
+		interactuableBody = nullptr;
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
@@ -1438,8 +1732,9 @@ void Player::DevTools(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_9) == KEY_DOWN)
 	{
 		UnlockCape();
+		UnlockSickle();
 		GameManager::GetInstance().gameState.hasSickle = true;
-		GameManager::GetInstance().gameState.dashUnlocked= true;
+		GameManager::GetInstance().gameState.dashUnlocked = true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	}
 }

@@ -179,6 +179,6 @@ void Hud::DrawNotification() {
         SDL_Color color = { 0, 0, 0, alphaText }; // color negro
         SDL_Rect textBounds = { bgRect.x + 10, bgRect.y + 5, bgRect.w - 20, bgRect.h - 10 };
 
-        Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color);
+        Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color, FontType::MENU);
     }
 }

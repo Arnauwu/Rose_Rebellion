@@ -6,6 +6,9 @@
 #include "EntityManager.h"
 #include "GameManager.h"
 #include "UIManager.h"
+#include "DialogueManager.h"
+#include "UIDialogueBox.h"
+
 #include "window.h"
 #include "Player.h"
 #include "Log.h"
@@ -36,13 +39,13 @@ void GameScene::LoadMap(std::string mapFile)
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M˙sica Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M√∫sica Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M˙sica Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M√∫sica Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M˙sica Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M√∫sica Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
@@ -57,7 +60,7 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().map->SpawnEntities();
 
 	// Camara mode
-	
+
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr)
 	{
@@ -65,7 +68,7 @@ void GameScene::LoadMap(std::string mapFile)
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
-		// ASIGNAR EL MODO DE C¡MARA AQUÕ
+		// ASIGNAR EL MODO DE C√ÅMARA AQU?
 		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
@@ -84,15 +87,17 @@ void GameScene::LoadMap(std::string mapFile)
 		if (previousMap == "")
 		{
 			spawnPos = GameManager::GetInstance().gameState.playerPosition;
-			LOG("Carga inicial: Usando posiciÛn del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
+			LOG("Carga inicial: Usando posici√≥n del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
 		else
 		{
 			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-			LOG("TransiciÛn: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+			LOG("Transici√≥n: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
 
 		newPlayer->SetPosition(spawnPos);
+
+		newPlayer->isFrozen = false;
 
 		if (newPlayer->pbody != nullptr) {
 			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
@@ -115,8 +120,8 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-	LoadTextureIfNull(orbFrameUI, "Assets/Textures/UI/Buttons/orbFrameUI.png");
-	LoadTextureIfNull(keyFrameUI, "Assets/Textures/UI/Buttons/keyFrameUI.png");
+	//LoadTextureIfNull(orbFrameUI, "Assets/Textures/UI/Buttons/orbFrameUI.png");
+	//LoadTextureIfNull(keyFrameUI, "Assets/Textures/UI/Buttons/keyFrameUI.png");
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
 
 
@@ -133,6 +138,9 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texItemGlide, "Assets/Textures/UI/Items/glideUI.png");
 	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
 
+	//Load Dialogue UI
+	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
+
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
@@ -141,8 +149,9 @@ bool GameScene::Start() {
 	// Pause Menu
 	CreatePauseMenuUI();
 
-	RefreshMenuUI();
+	CreateDialogueUI();
 
+	RefreshMenuUI();
 	return true;
 }
 
@@ -150,6 +159,16 @@ bool GameScene::Start() {
 bool GameScene::Update(float dt) {
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
+	auto dialogueMgr = Engine::GetInstance().dialogueManager;
+
+	if (dialogueMgr->IsDialogueActive()) {
+		return true;
+	}
+	// --- SUB-MENU INPUT HANDLING ---
+	// Toggle menus based on keyboard shortcuts
+	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
+	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
+	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
 
 	if (mapState == MapTransitionState::FADING_OUT) {
 
@@ -176,7 +195,7 @@ bool GameScene::Update(float dt) {
 			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
 		}
 	}
-	// Agregado para mando (botÛn START):
+	// Agregado para mando (bot√≥n START):
 	if (Engine::GetInstance().input->IsGamepadConnected())
 	{
 		if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_START) == KEY_DOWN) {
@@ -195,6 +214,16 @@ bool GameScene::Update(float dt) {
 	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
 	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
 	
+
+	if (dialogueMgr->IsDialogueActive()) {
+		return true;
+	}
+	return true;
+}
+
+bool GameScene::PostUpdate() {
+
+	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
@@ -240,17 +269,10 @@ bool GameScene::Update(float dt) {
 			return true;
 		}
 	}
-	return true;
-
-}
-
-bool GameScene::PostUpdate() {
-
-	auto sceneManager = Engine::GetInstance().sceneManager;
 
 	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
 
-		sceneManager->setNewMap = false; 
+		sceneManager->setNewMap = false;
 		Player* p = Engine::GetInstance().entityManager->GetPlayer();
 		if (p != nullptr && p->interactuableBody != nullptr) {
 			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
@@ -292,12 +314,19 @@ bool GameScene::CleanUp() {
 	UnloadTexture(texItemOrb);
 	UnloadTexture(texItemWeapon);
 
+	//UnloadTexture Dialogues
+	UnloadTexture(UIDialogueBoxTex);
+	UnloadTexture(UIDialogueBoxNpc1);
+	//UnloadTexture(UIDialogueBoxNpc2);
+	//UnloadTexture(UIDialogueBoxNpc3);
+
+
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {
-			if (elem) elem->CleanUp(); 
+			if (elem) elem->CleanUp();
 		}
 		group.clear();
-	};
+		};
 
 	deleteGroup(topBarElements);
 	deleteGroup(inventoryUI);
@@ -305,7 +334,11 @@ bool GameScene::CleanUp() {
 	deleteGroup(skillUI);
 	deleteGroup(pauseMainUI);
 	deleteGroup(pauseOptionsUI);
+	deleteGroup(dialogueBox);
+	deleteGroup(dialogueUI);
 
+	dialogueUI.clear();
+	Engine::GetInstance().dialogueManager->SetDialogueUI(nullptr);
 	return true;
 }
 
@@ -325,7 +358,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 		RefreshMenuUI();
 		break;
 	case (int)GameUI_ID::BTN_PAUSE_MAINMENU:
-		ToggleGameMenu(GameMenuTab::NONE); 
+		ToggleGameMenu(GameMenuTab::NONE);
 		Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU); break;
 	case (int)GameUI_ID::BTN_OPTIONS_BACK:
 		currentMenuTab = GameMenuTab::PAUSE_MENU;
@@ -335,7 +368,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
 
-		// GestiÛn texto de los objetos del inventario
+		// Gesti√≥n texto de los objetos del inventario
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
 		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
@@ -415,7 +448,7 @@ void GameScene::CreateInventoryUI() {
 
 		// AMULETOS (Vertices)
 		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si a˙n no tienes textura
+		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si a√∫n no tienes textura
 		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 
@@ -429,7 +462,7 @@ void GameScene::CreateInventoryUI() {
 
 		btn->SetBgTexture(skillFrameUI);
 
-		// Si le hemos asignado una textura, se la ponemos al botÛn
+		// Si le hemos asignado una textura, se la ponemos al bot√≥n
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}
@@ -491,6 +524,31 @@ void GameScene::CreatePauseSettingUI() {
 	pauseOptionsUI.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_OPTIONS_BACK, "BACK", 0.5f, pY, pW, pH, sceneObserver));
 }
 
+void GameScene::CreateDialogueUI() {
+	auto uiManager = Engine::GetInstance().uiManager;
+	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
+
+	// Usamos el mismo patr√≥n que tus otros elementos
+	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(
+		UIElementType::DIALOGUE_BOX, 99, "", 0.5f, 0.8f, 0.7f, 0.3f, sceneObserver);
+
+	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
+	if (dBox != nullptr) {
+		dBox->SetBackgroundTexture(UIDialogueBoxTex);
+
+		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/princess_portrait.png");
+		SDL_Texture* texAldeano = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/npc_portrait.png");
+
+		dBox->AddPortrait("Princesa", texPrincesa);
+		dBox->AddPortrait("Jan", texAldeano);
+
+		// Vincular con el Manager
+		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
+
+		// A√±adir al grupo de control
+		dialogueUI.push_back(rawDialogueBox);
+	}
+}
 // ==========================================
 // SUB-MENU LOGIC
 // ==========================================
@@ -542,6 +600,7 @@ void GameScene::UpdateInventoryVisuals() {
 		}
 	}
 }
+
 void GameScene::RefreshMenuUI() {
 	if (descPanel != nullptr) descPanel->text = "Select an item...";
 	bool showTopBar = (currentMenuTab == GameMenuTab::INVENTORY ||
@@ -569,6 +628,8 @@ void GameScene::SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group
 		elem->state = visible ? UIElementState::NORMAL : UIElementState::DISABLED;
 	}
 }
+
+
 
 // ==========================================
 // Auxiliar Textures funcions
