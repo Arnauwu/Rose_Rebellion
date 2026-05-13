@@ -795,7 +795,7 @@ void Player::Interact()
 						int cx, cy;
 						interactuableBody->GetPosition(cx, cy);
 
-						// 【新增】去问 Map 拿这个门的真实宽高
+					   //Door size
 						int doorW, doorH;
 						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
@@ -803,9 +803,8 @@ void Player::Interact()
 						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 
 						if (doorAnim != nullptr) {
-							doorAnim->zOrder = -1; // 保持在玩家身后的图层
+							doorAnim->zOrder = -1; //Capa hacia atras de player
 
-							// 【重点】把尺寸传给门！
 							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
 						}
 					}
@@ -826,7 +825,6 @@ void Player::Interact()
 					int cx, cy;
 					interactuableBody->GetPosition(cx, cy);
 
-					// 【新增】去问 Map 拿这个门的真实宽高
 					int doorW, doorH;
 					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
@@ -834,9 +832,8 @@ void Player::Interact()
 					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 
 					if (doorAnim != nullptr) {
-						doorAnim->zOrder = -1; // 保持在玩家身后的图层
+						doorAnim->zOrder = -1;
 
-						// 【重点】把尺寸传给门！
 						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
 					}
 				}
