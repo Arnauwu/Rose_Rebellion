@@ -1,0 +1,38 @@
+#pragma once
+
+#include "Entity.h"
+#include "Timer.h"
+#include "Animation.h"
+#include <box2d/box2d.h>
+
+class DragonProjectile : public Entity
+{
+public:
+    DragonProjectile();
+    virtual ~DragonProjectile();
+
+    bool Start() override;
+    bool Update(float dt) override;
+    bool CleanUp() override;
+
+    void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
+
+    void Draw(float dt);
+    Vector2D GetPosition();
+
+public:
+    float speed;
+    float turnSpeed;
+    Vector2D currentVelocity;
+
+    SDL_Texture* texture = nullptr;
+    PhysBody* pbody = nullptr;
+
+    //Si tenemos sprite para bala
+    //AnimationSet anims;
+
+    Timer lifeTimer;
+    float lifeTimeMS;
+private:
+    AnimationSet anims;
+};

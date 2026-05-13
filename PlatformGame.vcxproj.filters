@@ -143,6 +143,8 @@
     <Filter Include="Source Files\Game\Entity\Special Floors">
       <UniqueIdentifier>{4d251b9b-44ca-4a7f-a401-63ba9c8ce22e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Bosses\Dragon">
+      <UniqueIdentifier>{e8439573-1af1-4664-b322-2b6c4d96497a}</UniqueIdentifier>
     <Filter Include="Source Files\Game\Entity\Door">
       <UniqueIdentifier>{b5345a9d-0db3-46b9-b931-68ea536ab439}</UniqueIdentifier>
     </Filter>
@@ -330,6 +332,11 @@
     <ClCompile Include="src\SpecialFloors.cpp">
       <Filter>Source Files\Game\Entity\Special Floors</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dragon.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DragonProjectile.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
     <ClCompile Include="src\Door.cpp">
       <Filter>Source Files\Game\Entity\Door</Filter>
     </ClCompile>
@@ -515,6 +522,11 @@
     <ClInclude Include="src\SpecialFloors.h">
       <Filter>Source Files\Game\Entity\Special Floors</Filter>
     </ClInclude>
+    <ClInclude Include="src\Dragon.h">
+      <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DragonProjectile.h">
+      <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
     <ClInclude Include="src\Door.h">
       <Filter>Source Files\Game\Entity\Door</Filter>
     </ClInclude>

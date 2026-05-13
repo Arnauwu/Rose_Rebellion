@@ -94,6 +94,7 @@ PhysBody* Physics::CreateRectangle(int x, int y, int width, int height, bodyType
     b2BodyDef def = b2DefaultBodyDef();
     def.type = ToB2Type(type);
     def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
+    def.fixedRotation = true;
 
     b2BodyId b = b2CreateBody(world, &def);
 
@@ -102,7 +103,7 @@ PhysBody* Physics::CreateRectangle(int x, int y, int width, int height, bodyType
     sdef.density = 1.0f;
     sdef.enableContactEvents = true;   // contact begin/end for this shape
     sdef.enableSensorEvents = true;   // so it can participate in sensor overlaps
-
+    
     b2CreatePolygonShape(b, &sdef, &box);
 
     PhysBody* pbody = new PhysBody();
