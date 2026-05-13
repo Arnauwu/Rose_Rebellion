@@ -39,13 +39,13 @@ void GameScene::LoadMap(std::string mapFile)
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M鷖ica Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M煤sica Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M鷖ica Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M煤sica Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M鷖ica Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M煤sica Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
@@ -68,7 +68,7 @@ void GameScene::LoadMap(std::string mapFile)
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
-		// ASIGNAR EL MODO DE C罬ARA AQU?
+		// ASIGNAR EL MODO DE C脕MARA AQU?
 		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
@@ -87,12 +87,12 @@ void GameScene::LoadMap(std::string mapFile)
 		if (previousMap == "")
 		{
 			spawnPos = GameManager::GetInstance().gameState.playerPosition;
-			LOG("Carga inicial: Usando posici髇 del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
+			LOG("Carga inicial: Usando posici贸n del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
 		else
 		{
 			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-			LOG("Transici髇: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+			LOG("Transici贸n: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
 
 		newPlayer->SetPosition(spawnPos);
@@ -195,6 +195,25 @@ bool GameScene::Update(float dt) {
 			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
 		}
 	}
+	// Agregado para mando (bot贸n START):
+	if (Engine::GetInstance().input->IsGamepadConnected())
+	{
+		if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_START) == KEY_DOWN) {
+			if (currentMenuTab != GameMenuTab::NONE) {
+				ToggleGameMenu(GameMenuTab::NONE);
+			}
+			else {
+				ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+			}
+		}
+	}
+
+	// --- SUB-MENU INPUT HANDLING ---
+	// Toggle menus based on keyboard shortcuts
+	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
+	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
+	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+	
 
 	if (dialogueMgr->IsDialogueActive()) {
 		return true;
@@ -349,7 +368,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
 
-		// Gesti髇 texto de los objetos del inventario
+		// Gesti贸n texto de los objetos del inventario
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
 		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
 		else descPanel->text = "???";
@@ -429,7 +448,7 @@ void GameScene::CreateInventoryUI() {
 
 		// AMULETOS (Vertices)
 		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si a鷑 no tienes textura
+		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si a煤n no tienes textura
 		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
 
@@ -443,7 +462,7 @@ void GameScene::CreateInventoryUI() {
 
 		btn->SetBgTexture(skillFrameUI);
 
-		// Si le hemos asignado una textura, se la ponemos al bot髇
+		// Si le hemos asignado una textura, se la ponemos al bot贸n
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}
@@ -509,7 +528,7 @@ void GameScene::CreateDialogueUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 
-	// Usamos el mismo patr髇 que tus otros elementos
+	// Usamos el mismo patr贸n que tus otros elementos
 	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(
 		UIElementType::DIALOGUE_BOX, 99, "", 0.5f, 0.8f, 0.7f, 0.3f, sceneObserver);
 
@@ -526,7 +545,7 @@ void GameScene::CreateDialogueUI() {
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
 
-		// A馻dir al grupo de control
+		// A帽adir al grupo de control
 		dialogueUI.push_back(rawDialogueBox);
 	}
 }

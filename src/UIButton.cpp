@@ -22,14 +22,15 @@ bool UIButton::Update(float dt)
 
 	if (state != UIElementState::DISABLED)
 	{
-		// L16: TODO 3: Update the state of the GUiButton according to the mouse position
+		// Update the state of the GUiButton according to the mouse position
 		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
 
 		if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w &&
-			mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) 
-		{
-	
-			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
+			mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
+
+			state = UIElementState::FOCUSED;
+
+			if (Engine::GetInstance().input->GetMouseButtonDown(0) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;
 				targetTextScale = 0.8f;
 				currentTextColor = { 50, 50, 50, 255 };				
@@ -39,7 +40,8 @@ bool UIButton::Update(float dt)
 				targetTextScale = 1.0f;
 				currentTextColor = { 255, 255, 255, 255 };
 			}
-			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
+
+			if (Engine::GetInstance().input->GetMouseButtonDown(0) == KEY_UP) {
 				NotifyObserver();
 			}
 		}
@@ -54,6 +56,7 @@ bool UIButton::Update(float dt)
 
 	return true;
 }
+
 void UIButton::Draw() const
 {
 	if (!visible) return;

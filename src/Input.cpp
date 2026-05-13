@@ -16,6 +16,14 @@ Input::Input() : Module()
 	memset(mouseButtons, KEY_IDLE, sizeof(KeyState) * NUM_MOUSE_BUTTONS);
 	memset(windowEvents, 0, sizeof(windowEvents));
 	mouseMotionX = mouseMotionY = mouseX = mouseY = 0;
+
+	controllerConnected = false;
+	memset(controllerButtons, KEY_IDLE, sizeof(KeyState) * SDL_GAMEPAD_BUTTON_COUNT);
+	controllerLeftStickX = 0.0f;
+	controllerLeftStickY = 0.0f;
+	controllerRightStickX = 0.0f;
+	controllerRightStickY = 0.0f;
+	gamepad = nullptr;
 }
 
 // Destructor
@@ -36,6 +44,12 @@ bool Input::Awake()
 		ret = false;
 	}
 
+	if (SDL_InitSubSystem(SDL_INIT_GAMEPAD) != true)
+	{
+		LOG("SDL_GAMEPAD could not initialize! SDL_Error: %s\n", SDL_GetError());
+		ret = false;
+	}
+
 	return ret;
 }
 
@@ -43,6 +57,22 @@ bool Input::Awake()
 bool Input::Start()
 {
 	SDL_StopTextInput(Engine::GetInstance().window->window);
+
+	int numJoysticks = 0;
+	SDL_JoystickID* joystickIds = SDL_GetJoysticks(&numJoysticks);
+
+	if (numJoysticks > 0 && SDL_IsGamepad(joystickIds[0]))
+	{
+		gamepad = SDL_OpenGamepad(joystickIds[0]);
+		if (gamepad)
+		{
+			controllerConnected = true;
+			LOG("Gamepad connected on startup");
+		}
+	}
+
+	SDL_free(joystickIds);
+
 	return true;
 }
 
@@ -79,6 +109,16 @@ bool Input::PreUpdate()
 
 		if (mouseButtons[i] == KEY_UP)
 			mouseButtons[i] = KEY_IDLE;
+	}
+
+	// Actualizar botones del mando (cambiar DOWN a REPEAT, UP a IDLE)
+	for (int b = 0; b < SDL_GAMEPAD_BUTTON_COUNT; ++b)
+	{
+		if (controllerButtons[b] == KEY_DOWN)
+			controllerButtons[b] = KEY_REPEAT;
+
+		if (controllerButtons[b] == KEY_UP)
+			controllerButtons[b] = KEY_IDLE;
 	}
 
 	while (SDL_PollEvent(&event))
@@ -124,6 +164,81 @@ bool Input::PreUpdate()
 			mouseY = (int)(event.motion.y / scale);
 		}
 		break;
+
+		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+		{
+			SDL_GamepadButton button = (SDL_GamepadButton)event.gbutton.button;
+			if (controllerButtons[button] == KEY_IDLE)
+				controllerButtons[button] = KEY_DOWN;
+			else
+				controllerButtons[button] = KEY_REPEAT;
+		}
+		break;
+
+		case SDL_EVENT_GAMEPAD_BUTTON_UP:
+		{
+			SDL_GamepadButton button = (SDL_GamepadButton)event.gbutton.button;
+			controllerButtons[button] = KEY_UP;
+		}
+		break;
+
+		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+		{
+			// Normalizar valor del eje [-32767, 32767] a [-1.0, 1.0]
+			float normalizedValue = event.gaxis.value / 32767.0f;
+
+			// Aplicar deadzone (si está entre -0.15 y 0.15, considerar como 0)
+			if (normalizedValue > -0.15f && normalizedValue < 0.15f)
+				normalizedValue = 0.0f;
+
+			switch (event.gaxis.axis)
+			{
+			case SDL_GAMEPAD_AXIS_LEFTX:
+				controllerLeftStickX = normalizedValue;
+				break;
+			case SDL_GAMEPAD_AXIS_LEFTY:
+				controllerLeftStickY = normalizedValue;
+				break;
+			case SDL_GAMEPAD_AXIS_RIGHTX:
+				controllerRightStickX = normalizedValue;
+				break;
+			case SDL_GAMEPAD_AXIS_RIGHTY:
+				controllerRightStickY = normalizedValue;
+				break;
+			default:
+				break;
+			}
+		}
+		break;
+
+		case SDL_EVENT_GAMEPAD_ADDED:
+		{
+			if (!controllerConnected)
+			{
+				gamepad = SDL_OpenGamepad(event.gdevice.which);
+				if (gamepad)
+				{
+					controllerConnected = true;
+					LOG("Gamepad connected");
+				}
+			}
+		}
+		break;
+
+		case SDL_EVENT_GAMEPAD_REMOVED:
+		{
+			if (gamepad)
+			{
+				SDL_CloseGamepad(gamepad);
+				gamepad = nullptr;
+				controllerConnected = false;
+				LOG("Gamepad disconnected");
+			}
+		}
+		break;
+
+		default:
+			break;
 		}
 	}
 
@@ -134,6 +249,14 @@ bool Input::PreUpdate()
 bool Input::CleanUp()
 {
 	LOG("Quitting SDL event subsystem");
+
+	if (gamepad)
+	{
+		SDL_CloseGamepad(gamepad);
+		gamepad = nullptr;
+	}
+
+	SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
 }
@@ -168,4 +291,51 @@ void Input::ClearMouseInput()
 	{
 		mouseButtons[i] = KEY_IDLE;
 	}
+}
+
+// Teclado
+KeyState Input::GetKey(SDL_Scancode key) const
+{
+	return keyboard[key];
+}
+
+// Ratón
+KeyState Input::GetMouseButtonDown(int button) const
+{
+	if (button >= 0 && button < NUM_MOUSE_BUTTONS)
+		return mouseButtons[button];
+	return KEY_IDLE;
+}
+
+// Mando
+bool Input::IsGamepadConnected() const
+{
+	return controllerConnected;
+}
+
+KeyState Input::GetGamepadButton(SDL_GamepadButton button) const
+{
+	if (button >= 0 && button < SDL_GAMEPAD_BUTTON_COUNT)
+		return controllerButtons[button];
+	return KEY_IDLE;
+}
+
+float Input::GetGamepadLeftStickX() const
+{
+	return controllerLeftStickX;
+}
+
+float Input::GetGamepadLeftStickY() const
+{
+	return controllerLeftStickY;
+}
+
+float Input::GetGamepadRightStickX() const
+{
+	return controllerRightStickX;
+}
+
+float Input::GetGamepadRightStickY() const
+{
+	return controllerRightStickY;
 }
