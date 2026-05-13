@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Module.h"
-#include "Vector2D.h"
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_rect.h>
+#include "Vector2D.h"
 
 #define NUM_MOUSE_BUTTONS 5
 
@@ -11,59 +12,65 @@ enum EventWindow
 	WE_QUIT = 0,
 	WE_HIDE = 1,
 	WE_SHOW = 2,
-	WE_COUNT = 3
+	WE_COUNT
 };
 
 enum KeyState
 {
 	KEY_IDLE = 0,
-	KEY_DOWN = 1,
-	KEY_REPEAT = 2,
-	KEY_UP = 3
+	KEY_DOWN,
+	KEY_REPEAT,
+	KEY_UP
 };
 
 class Input : public Module
 {
+
 public:
+
 	Input();
+
+	// Destructor
 	virtual ~Input();
 
+	// Called before render is available
 	bool Awake();
+
+	// Called before the first frame
 	bool Start();
+
+	// Called each loop iteration
 	bool PreUpdate();
+
+	// Called before quitting
 	bool CleanUp();
 
-	bool GetWindowEvent(EventWindow ev);
-	
-	// Teclado
-	KeyState GetKey(SDL_Scancode key) const;
-	
-	// Ratón
-	KeyState GetMouseButtonDown(int button) const;
-	Vector2D GetMousePosition();
-	Vector2D GetMouseMotion();
+	// Check key states (includes mouse and joy buttons)
+	KeyState GetKey(int id) const
+	{
+		return keyboard[id];
+	}
+
+	KeyState GetMouseButtonDown(int id) const
+	{
+		return mouseButtons[id - 1];
+	}
+
 	void ClearMouseInput();
 
-	// Mando/Gamepad
-	bool IsGamepadConnected() const;
-	KeyState GetGamepadButton(SDL_GamepadButton button) const;
-	float GetGamepadLeftStickX() const;
-	float GetGamepadLeftStickY() const;
-	float GetGamepadRightStickX() const;
-	float GetGamepadRightStickY() const;
+	// Check if a certain window event happened
+	bool GetWindowEvent(EventWindow ev);
+
+	// Get mouse / axis position
+	Vector2D GetMousePosition();
+	Vector2D GetMouseMotion();
 
 private:
+	bool windowEvents[WE_COUNT];
 	KeyState* keyboard;
 	KeyState mouseButtons[NUM_MOUSE_BUTTONS];
-	bool windowEvents[WE_COUNT];
-	int mouseMotionX, mouseMotionY;
-	int mouseX, mouseY;
-
-	SDL_Gamepad* gamepad;
-	bool controllerConnected;
-	KeyState controllerButtons[SDL_GAMEPAD_BUTTON_COUNT];
-	float controllerLeftStickX;
-	float controllerLeftStickY;
-	float controllerRightStickX;
-	float controllerRightStickY;
+	int	mouseMotionX;
+	int mouseMotionY;
+	int mouseX;
+	int mouseY;
 };

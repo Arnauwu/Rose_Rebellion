@@ -266,44 +266,43 @@ void Player::GetPhysicsValues()
 
 void Player::Move() {
 	bool isMovingThisFrame = false;
-	float horizontalInput = 0.0f;
-
-	// Input de teclado
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		horizontalInput = -1.0f;
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		horizontalInput = 1.0f;
-
-	// Input del mando (stick izquierdo)
-	if (Engine::GetInstance().input->IsGamepadConnected())
 	// Move Left
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false)
 	{
-		float stickX = Engine::GetInstance().input->GetGamepadLeftStickX();
-		if (fabs(stickX) > fabs(horizontalInput))
-			horizontalInput = stickX;
-	}
-
-	// Aplicar movimiento
-	if (fabs(horizontalInput) > 0.1f && isDashing == false && !isWallJumping)
-	// Move Right
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
-	{
-		velocity.x = speed * horizontalInput;
-		lookingRight = horizontalInput > 0;
+		velocity.x = -speed;
+		lookingRight = false;
 		isMovingThisFrame = true;
-
 		if (currentAnimPriority == 3)
 		{
-			anims.SetCurrent(lookingRight ? "fall_right" : "fall_left");
+			anims.SetCurrent("fall_left");
 		}
 		else if (currentAnimPriority == 2)
 		{
-			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
+			anims.SetCurrent("jump_left");
 		}
 		else if (currentAnimPriority <= 1)
 		{
-			anims.SetCurrent(lookingRight ? "move_right" : "move_left");
+			anims.SetCurrent("move_left");
+			currentAnimPriority = 1;
+		}
+	}
+	// Move Right
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
+	{
+		velocity.x = speed;
+		lookingRight = true;
+		isMovingThisFrame = true;
+		if (currentAnimPriority == 3)
+		{
+			anims.SetCurrent("fall_right");
+		}
+		else if (currentAnimPriority == 2)
+		{
+			anims.SetCurrent("jump_right");
+		}
+		if (currentAnimPriority <= 1)
+		{
+			anims.SetCurrent("move_right");
 			currentAnimPriority = 1;
 		}
 	}
@@ -311,7 +310,15 @@ void Player::Move() {
 	{
 		if (!isAttacking && !isJumping && !isDashing)
 		{
-			anims.SetCurrent(lookingRight ? "idle_right" : "idle_left");
+			if (lookingRight)
+			{
+				anims.SetCurrent("idle_right");
+			}
+			else
+			{
+				anims.SetCurrent("idle_left");
+			}
+
 			currentAnimPriority = 0;
 		}
 	}
@@ -338,7 +345,7 @@ void Player::Move() {
 	}
 	else
 	{
-		stepTimer = timeBetweenSteps;
+		// Si deja de cumplir las condiciones (se para, salta, etc.), CORTAMOS.
 		if (wasWalking)
 		{
 			Engine::GetInstance().audio->StopFx(caminarPrincesa);
@@ -422,23 +429,14 @@ void Player::RespawnFromVoid()
 
 void Player::Jump(float dt)
 {
-	bool jumpPressed = Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN;
-
-	// Input del mando (botón Sur = A en Xbox / Cross en PS4)
-	if (Engine::GetInstance().input->IsGamepadConnected())
-	{
-		if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_SOUTH) == KEY_DOWN)
-			jumpPressed = true;
-	}
-
-	if (jumpPressed)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		// --- 1. WALL JUMP (Estilo Hollow Knight) ---
 		if (onWall == true && onGround == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
-			onWall = false;
+			onWall = false; // Nos despegamos de la pared
 			onAir = true;
 
 			isWallJumping = true;
@@ -450,17 +448,21 @@ void Player::Jump(float dt)
 			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
 			float wJumpForceX = speed * 1.0f;
 
+			// Escupir al jugador en la dirección contraria a la pared
 			if (wallDirection == 1) {
+				// Pared a la derecha -> Salto a la izquierda
 				velocity.x = -wJumpForceX;
 				lookingRight = false;
 				anims.SetCurrent("jump_left");
 			}
 			else {
+				// Pared a la izquierda -> Salto a la derecha
 				velocity.x = wJumpForceX;
 				lookingRight = true;
 				anims.SetCurrent("jump_right");
 			}
 
+			// Aplicar las fuerzas directamente al cuerpo físico AHORA MISMO
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 			Engine::GetInstance().physics->SetYVelocity(pbody, wJumpForceY);
 
@@ -477,7 +479,6 @@ void Player::Jump(float dt)
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
 			//Jump Dust
 			float footY = position.getY() + (texH / 2.0f) - 10.0f;
 			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
@@ -492,21 +493,30 @@ void Player::Jump(float dt)
 			}
 			currentAnimPriority = 2;
 
+			//Extra Jump Force
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
 
 			LOG("Jump");
 		}
-		// --- 3. DOUBLE JUMP ---
+		// Double Jump
 		else if (GameManager::GetInstance().gameState.doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
+			if (lookingRight == true)
+			{
+				anims.SetCurrent("jump_right");
+			}
+			else
+			{
+				anims.SetCurrent("jump_left");
+			}
 			currentAnimPriority = 2;
 
+			//Extra Jump Force
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
 
@@ -516,17 +526,11 @@ void Player::Jump(float dt)
 	// --- 4. EXTENDER SALTO MANTENIENDO EL BOTÓN ---
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true);
-		jumpHoldTime += dt / 1000;
-	}
-	else if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_SOUTH) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
-	{
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true);
-		jumpHoldTime += dt / 1000;
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
+		jumpHoldTime += dt / 1000; //To seconds
 	}
 	// --- 5. SOLTAR BOTÓN DE SALTO ---
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP || 
-			 Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_SOUTH) == KEY_UP)
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
 		isJumpKeyDown = false;
 	}
@@ -534,17 +538,6 @@ void Player::Jump(float dt)
 
 void Player::Attack(float dt)
 {
-	bool attackPressed = Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN;
-
-	// Input del mando (botón X)
-	if (Engine::GetInstance().input->IsGamepadConnected())
-	{
-		if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_WEST) == KEY_DOWN)
-			attackPressed = true;
-	}
-
-	// 1. Iniciar ataque
-	if (attackPressed && !isGliding && !isAttacking)
 	// 1. Iniciar el ataque 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
 	{
@@ -553,44 +546,25 @@ void Player::Attack(float dt)
 			Engine::GetInstance().audio->PlayFx(attackFx);
 			isAttacking = true;
 
-			anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
-			anims.GetAnim(lookingRight ? "attack_right" : "attack_left")->SetLoop(false);
 			// Detectar dirección vertical mediante teclado
 			bool lookUp = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT);
 			bool lookDown = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && !onGround);
 
-			currentAnimPriority = 4;
 			currentAttackTime = 0.0f;
 			timeSinceLastAttack = 0.0f;
 
 			// Configurar dimensiones según el combo
 			if (comboStep == 0)
 			{
-				damage = 10;
 				currentAttackWidth = 60;
 				currentAttackHeight = 64;
 			}
 			else
 			{
-				damage = 15;
 				currentAttackWidth = 120;
 				currentAttackHeight = 90;
 			}
 
-			comboStep = (comboStep + 1) % 2;
-
-			int offsetX = lookingRight ? currentAttackOffsetX : -currentAttackOffsetX;
-			int attackX = position.getX() + offsetX;
-			int attackY = position.getY();
-
-			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, currentAttackWidth, currentAttackHeight, bodyType::KINEMATIC);
-			attackCollider->ctype = ColliderType::PLAYER_ATTACK;
-			attackCollider->listener = this;
-		}
-		else
-		{
-			if (!GameManager::GetInstance().gameState.hasSickle && !GameManager::GetInstance().gameState.glideUnlocked) {
-				Engine::GetInstance().hud->ShowNotification("You need to find the Sickle and the Cape.");
 			// Variables locales para calcular la posición inicial
 			int offsetX = 0;
 			int offsetY = 0;
@@ -685,11 +659,13 @@ void Player::Attack(float dt)
 			attackCollider->SetPosition(position.getX() + currentAttackOffsetX, position.getY() + tempOffsetY);
 		}
 
+		// Finalizar ataque
 		if (currentAttackTime >= attackDuration &&
-			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce()))
+			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() ||
+				anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
 		{
 			isAttacking = false;
-			anims.SetCurrent(lookingRight ? "idle_right" : "idle_left");
+			anims.SetCurrent("idle");
 			currentAnimPriority = 0;
 
 			if (attackCollider != nullptr)
@@ -730,30 +706,37 @@ void Player::Glide() // Gliding
 
 void Player::Dash()
 {
-	bool dashPressed = Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN;
-
-	if (Engine::GetInstance().input->IsGamepadConnected())
-	{
-		if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER) == KEY_DOWN)
-			dashPressed = true;
-	}
-
-	// Iniciar Dash
+	// Start Dash
 	if (GameManager::GetInstance().gameState.dashUnlocked == true
-		&& dashPressed
+		&& Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN
 		&& isDashing == false
 		&& dashCooldownTimer.ReadMSec() > dashCooldownMS)
 	{
-		velocity.x = lookingRight ? dashForce : -dashForce;
+		if (lookingRight == true)
+		{
+			velocity.x = dashForce;
+		}
+		else
+		{
+			velocity.x = -dashForce;
+		}
+
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
 		isDashing = true;
 		dashTimer.Start();
 	}
 
-	// Durante Dash
+	// While Dash
 	if (isDashing)
 	{
-		velocity.x = lookingRight ? dashForce : -dashForce;
+		if (lookingRight == true)
+		{
+			velocity.x = dashForce;
+		}
+		else
+		{
+			velocity.x = -dashForce;
+		}
 		velocity.y = 0;
 
 		if (dashTimer.ReadMSec() > dashDurationMS)
@@ -766,48 +749,34 @@ void Player::Dash()
 
 void Player::Interact()
 {
-	bool interactPressed = Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN;
-
-	if (Engine::GetInstance().input->IsGamepadConnected())
+	if (canInteract && interactuableBody != nullptr)
 	{
-		if (Engine::GetInstance().input->GetGamepadButton(SDL_GAMEPAD_BUTTON_NORTH) == KEY_DOWN)
-			interactPressed = true;
-	}
-
-	if (canInteract && interactuableBody != nullptr && interactPressed)
-	{
+		// Asegurarse que es una puerta
 		if (interactuableBody->ctype == ColliderType::DOOR)
 		{
-			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
-			if (isMaintenance)
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 			{
-				Engine::GetInstance().audio->PlayFx(pickItemFx);
-				Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
-				return;
-			}
-
-			bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
-			if (isClosed)
-			{
-				Engine::GetInstance().audio->PlayFx(pickItemFx);
-				Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
-				return;
-			}
-
-			bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
-
-			if (requiresKey)
-			{
-				if (GameManager::GetInstance().gameState.keyCount > 0)
+				bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
+				if (isMaintenance)
 				{
-					Engine::GetInstance().audio->PlayFx(openDoor);
+					Engine::GetInstance().audio->PlayFx(pickItemFx);
 
-					GameManager::GetInstance().gameState.keyCount--;
-					LOG("Has usado una llave. Te quedan: %d", GameManager::GetInstance().gameState.keyCount);
+					Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
+					return;
+				}
 
-					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
-					if (!doorId.empty()) {
-						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
+				bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
+				if (isClosed)
+				{
+					Engine::GetInstance().audio->PlayFx(pickItemFx);
+
+					Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
+					return;
+				}
+
+				//Pregunta si esta puerta necesita llave
+				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
 				if (requiresKey)
 				{
 					// Si necesita
@@ -845,13 +814,9 @@ void Player::Interact()
 						LOG("Necesitas una llave para abrir, busca una ");
 						Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 					}
-					Engine::GetInstance().sceneManager->setNewMap = true;
 				}
 				else
 				{
-					Engine::GetInstance().audio->PlayFx(closedDoor);
-					LOG("Necesitas una llave para abrir, busca una");
-					Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 					// Si no
 					LOG("Esta puerta no necesita llave ");
 					Engine::GetInstance().audio->PlayFx(openDoor);
@@ -887,11 +852,6 @@ void Player::Interact()
 					LOG("INICIO DIALOGO");
 					Engine::GetInstance().input->ClearMouseInput();
 				}
-			}
-			else
-			{
-				LOG("Esta puerta no necesita llave");
-				Engine::GetInstance().sceneManager->setNewMap = true;
 			}
 		}
 	}
@@ -1025,17 +985,7 @@ void Player::CameraFollows()
 	{
 		float targetYOffset = 0.0f;
 
-		bool lookDownPressed = Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT;
-
-		// Input del mando (stick derecho abajo)
-		if (Engine::GetInstance().input->IsGamepadConnected())
-		{
-			float rightStickY = Engine::GetInstance().input->GetGamepadRightStickY();
-			if (rightStickY > 0.5f)
-				lookDownPressed = true;
-		}
-
-		if (onGround && velocity.x == 0 && lookDownPressed) {
+		if (onGround && velocity.x == 0 && Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
 			lookDownTimer += dtSeconds;
 			if (lookDownTimer >= 0.3f) {
 				targetYOffset = 200.0f;
@@ -1198,94 +1148,6 @@ void Player::UnlockDash() {
 	AddItem(ItemID::DASH_OBJ, 1);
 	LOG("Dash Unlocked! You can dash");
 	LOG("Dash Unlocked! You can do a dash");
-}
-
-void Player::UnlockSkill(SkillTree skill, int currentForceOrbs)
-{
-	switch (skill)
-	{
-	case SkillTree::UPDOWNATTACK:
-		if(currentForceOrbs >= 1)
-		{
-			stUpDownAttack = true;
-			currentForceOrbs--;
-		} else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::COMBO:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stCombo = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::DMGUP1:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stDmgUp1 = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::DMGUP2:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stDmgUp2 = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::DMGUP3:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stDmgUp3 = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::FASTDASH:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stFastDash = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::DEFUP1:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stDefUp1 = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::DEFUP2:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stDefUp2 = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::DEFUP3:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stDefUp3 = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	case SkillTree::IFRAMESUP:
-		if (currentForceOrbs >= 1)
-		{
-			currentForceOrbs--;
-			stIframesUp = true;
-		}
-		else { printf("Not enough skill points!"); }
-		break;
-	default:
-		break;
-	}
 }
 
 bool Player::CleanUp()
@@ -1672,57 +1534,57 @@ void Player::DevTools(float dt)
 		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
 	}
 
-	//// Unlock Skills
-	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	//{
-	//	if (currentForceOrbs > 0)
-	//	{
-	//		if (OffensiveSkills[2] == false)
-	//		{
-	//			LOG("Unlocking Offensive Skill:");
-	//			if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
-	//			else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
-	//			else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
-	//			currentForceOrbs--;
-	//		}
-	//		else { LOG("Offensive Tree Maxed"); }
-	//	}
-	//	else { LOG("Not Enough Skill Points"); }
-	//}
+	// Unlock Skills
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (OffensiveSkills[2] == false)
+			{
+				LOG("Unlocking Offensive Skill:");
+				if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
+				else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
+				else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Offensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
 
-	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	//{
-	//	if (currentForceOrbs > 0)
-	//	{
-	//		if (DefensiveSkills[2] == false)
-	//		{
-	//			LOG("Unlocking Defensive Skill:");
-	//			if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
-	//			else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
-	//			else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
-	//			currentForceOrbs--;
-	//		}
-	//		else { LOG("Defensive Tree Maxed"); }
-	//	}
-	//	else { LOG("Not Enough Skill Points"); }
-	//}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (DefensiveSkills[2] == false)
+			{
+				LOG("Unlocking Defensive Skill:");
+				if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
+				else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
+				else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Defensive Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
 
-	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	//{
-	//	if (currentForceOrbs > 0)
-	//	{
-	//		if (UtilitySkills[2] == false)
-	//		{
-	//			LOG("Unlocking Utility Skill:");
-	//			if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
-	//			else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
-	//			else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
-	//			currentForceOrbs--;
-	//		}
-	//		else { LOG("Utility Tree Maxed"); }
-	//	}
-	//	else { LOG("Not Enough Skill Points"); }
-	//}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		if (currentForceOrbs > 0)
+		{
+			if (UtilitySkills[2] == false)
+			{
+				LOG("Unlocking Utility Skill:");
+				if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
+				else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
+				else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
+				currentForceOrbs--;
+			}
+			else { LOG("Utility Tree Maxed"); }
+		}
+		else { LOG("Not Enough Skill Points"); }
+	}
 
 	if (godMode)
 	{
