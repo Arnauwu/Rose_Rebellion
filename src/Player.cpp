@@ -108,12 +108,12 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
-	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 // mmmm entiendo perfectamente
+	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 
 	if (isFrozen) {
 		GetPhysicsValues();
 		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
 		ApplyPhysics();
-		// Asigno el idle
+
 		if (lookingRight)
 		{
 			anims.SetCurrent("idle_right");
@@ -444,7 +444,7 @@ void Player::Jump(float dt)
 
 
 			// Fuerza del rebote
-			float wJumpForceY = jumpForce / 2;
+			float wJumpForceY = jumpForce * 1.0f;
 			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
 			float wJumpForceX = speed * 1.0f;
 
@@ -864,7 +864,7 @@ void Player::ApplyPhysics() {
 		{
 			// Se agarra: Frenamos la caída
 			if (velocity.y > 0) {
-				velocity.y = 2.0f;
+				velocity.y = 1.5f;
 			}
 
 			// Recargamos estados
@@ -886,6 +886,29 @@ void Player::ApplyPhysics() {
 			if (wallDirection == 1 && velocity.x > 0) velocity.x = 0;   // Pared derecha
 			if (wallDirection == -1 && velocity.x < 0) velocity.x = 0;  // Pared izquierda
 		}
+	}
+	
+	if (isGliding)
+	{
+		int maxFallSpeed = 2;
+		if (velocity.y >= maxFallSpeed)
+		{
+			LOG("Gliding");
+			velocity.y = maxFallSpeed;
+		}
+	}
+
+	if (velocity.y > 5 && currentAnimPriority != 3)
+	{
+		if (lookingRight)
+		{
+			anims.SetCurrent("fall_right");
+		}
+		else
+		{
+			anims.SetCurrent("fall_left");
+		}
+		currentAnimPriority = 3;
 	}
 
 	// Apply velocity via helper
