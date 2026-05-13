@@ -16,9 +16,9 @@ DoorEntity::~DoorEntity() {}
 bool DoorEntity::Awake() { return true; }
 
 bool DoorEntity::Start() {
-	texture = Engine::GetInstance().textures->Load("Assets/SS_puerta_abriendo_pruevas.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Animation/Door/SS_puerta_abriendo_pruevas.png");
 	std::unordered_map<int, std::string> aliases = { {0, "open"} };
-	anims.LoadFromTSX("Assets/SS_puerta_abriendo_pruevas.tsx", aliases);
+	anims.LoadFromTSX("Assets/Textures/Animation/Door/SS_puerta_abriendo_pruevas.tsx", aliases);
 
 	if (anims.Has("open")) {
 		anims.GetAnim("open")->SetLoop(false);
