@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="25" height="11" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="23">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="25" height="11" tilewidth="128" tileheight="128" infinite="0" nextlayerid="18" nextobjectid="23">
  <tileset firstgid="1" name="Atlas_Pasillo_02" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_02.png" width="1024" height="1024"/>
  </tileset>
@@ -283,31 +283,31 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
-   <tile gid="403"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
   </data>
  </layer>
  <layer id="11" name="Suelo" width="25" height="11">
@@ -592,7 +592,7 @@
    <tile gid="212"/>
   </data>
  </layer>
- <layer id="9" name="Puerta" width="25" height="11">
+ <layer id="9" name="Puerta" width="25" height="11" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -1720,13 +1720,6 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="17" name="ForeG" visible="0">
-  <properties>
-   <property name="Draw" type="bool" value="true"/>
-   <property name="Front" type="bool" value="true"/>
-  </properties>
-  <object id="22" gid="377" x="1296" y="1330.9" width="1868.61" height="1120.24"/>
- </objectgroup>
  <objectgroup id="3" name="Door">
   <properties>
    <property name="Door" type="bool" value="true"/>
@@ -1761,17 +1754,8 @@
   </properties>
   <object id="12" x="0" y="-128" width="3200" height="128"/>
  </objectgroup>
- <objectgroup id="4" name="EntitiesSpawnPoints" visible="0">
+ <objectgroup id="4" name="EntitiesSpawnPoints">
   <object id="6" name="Player" type="Player" x="2147" y="912">
-   <point/>
-  </object>
-  <object id="19" name="SavePoint" type="SavePoint" x="1152" y="896">
-   <point/>
-  </object>
-  <object id="20" name="Npc" type="Npc" x="932" y="912">
-   <properties>
-    <property name="DialogueID" value="Prueba1"/>
-   </properties>
    <point/>
   </object>
  </objectgroup>

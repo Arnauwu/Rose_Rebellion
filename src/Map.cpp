@@ -655,11 +655,20 @@ bool Map::Load(std::string path, std::string fileName)
 					{
 						collider->ctype = ColliderType::PATH;
 
-						// TODO: Assign Listener
-
 						Door newDoor;
 						newDoor.body = collider;
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+
+						Properties::Property* glideProp = obj->properties.GetProperty("RequiresGlide");
+						if (glideProp != nullptr)
+						{
+							newDoor.requiresGlide = glideProp->value;
+						}
+						else
+						{
+							newDoor.requiresGlide = false;
+						}
+
 						mapData.doors.push_back(newDoor);
 					}
 					else
@@ -1221,6 +1230,18 @@ bool Map::DoorNeedsKey(PhysBody* door)
 			return ndoor.needsKey;
 		}
 	}
+	return false;
+}
+bool Map::DoorRequiresGlide(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door)
+		{
+			return ndoor.requiresGlide;
+		}
+	}
+	
 	return false;
 }
 

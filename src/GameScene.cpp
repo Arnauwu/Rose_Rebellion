@@ -152,7 +152,6 @@ bool GameScene::Start() {
 	CreateDialogueUI();
 
 	RefreshMenuUI();
-	CreateDialogueUI();
 	return true;
 }
 
@@ -197,6 +196,15 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
+	if (dialogueMgr->IsDialogueActive()) {
+		return true;
+	}
+	return true;
+}
+
+bool GameScene::PostUpdate() {
+
+	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
@@ -242,17 +250,6 @@ bool GameScene::Update(float dt) {
 			return true;
 		}
 	}
-	if (dialogueMgr->IsDialogueActive()) {
-		return true;
-	}
-
-	return true;
-
-}
-
-bool GameScene::PostUpdate() {
-
-	auto sceneManager = Engine::GetInstance().sceneManager;
 
 	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
 
@@ -532,7 +529,6 @@ void GameScene::CreateDialogueUI() {
 		// Añadir al grupo de control
 		dialogueUI.push_back(rawDialogueBox);
 	}
-	Engine::GetInstance().dialogueManager->StartDialogue("Prueba1");
 }
 // ==========================================
 // SUB-MENU LOGIC

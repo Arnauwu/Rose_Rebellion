@@ -1278,9 +1278,37 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::PATH:
+	{
+		bool requiresGlide = Engine::GetInstance().map->DoorRequiresGlide(physB);
+
+		if (requiresGlide && !GameManager::GetInstance().gameState.glideUnlocked)
+		{
+			Engine::GetInstance().hud->ShowNotification("Quieres morir estampada contra el suelo?");
+
+			velocity = { 0.0f, 0.0f };
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+
+			Vector2D roomStartPos = Engine::GetInstance().map->GetPlayerSpawnPoint("");
+
+			SetPosition(roomStartPos);
+
+			lastSafePosition = roomStartPos;
+
+			isJumping = false;
+			secondJumpUsed = false;
+
+			Engine::GetInstance().audio->PlayFx(respawnFx);
+
+			return;
+		}
+
 		interactuableBody = physB;
 		Engine::GetInstance().sceneManager->setNewMap = true;
 		break;
+	}
+    interactuableBody = physB;
+    Engine::GetInstance().sceneManager->setNewMap = true;
+    break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 		//efecto Particula

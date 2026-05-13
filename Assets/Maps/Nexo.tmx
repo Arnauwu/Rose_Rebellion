@@ -20,6 +20,7 @@
  </tileset>
  <objectgroup id="13" name="BG">
   <properties>
+   <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <object id="8" gid="129" x="4304" y="1452" width="2816" height="1514.73"/>
@@ -32,15 +33,6 @@
    </properties>
    <point/>
   </object>
- </objectgroup>
- <objectgroup id="16" name="BG2">
-  <properties>
-   <property name="Draw" type="bool" value="true"/>
-  </properties>
-  <object id="30" gid="10" x="5760" y="1152" width="128" height="128"/>
-  <object id="31" gid="18" x="5760" y="1280" width="128" height="128"/>
-  <object id="32" gid="20" x="5632" y="1152" width="128" height="128"/>
-  <object id="33" gid="20" x="5632" y="1280" width="128" height="128"/>
  </objectgroup>
  <layer id="1" name="Suelo" width="72" height="13">
   <properties>
@@ -1610,8 +1602,8 @@
    <tile gid="12"/>
    <tile gid="18"/>
    <tile gid="19"/>
-   <tile/>
-   <tile/>
+   <tile gid="11"/>
+   <tile gid="12"/>
    <tile gid="11"/>
    <tile gid="12"/>
    <tile gid="31"/>
@@ -1682,8 +1674,8 @@
    <tile gid="20"/>
    <tile gid="10"/>
    <tile gid="19"/>
-   <tile/>
-   <tile/>
+   <tile gid="19"/>
+   <tile gid="20"/>
    <tile gid="19"/>
    <tile gid="20"/>
    <tile gid="39"/>

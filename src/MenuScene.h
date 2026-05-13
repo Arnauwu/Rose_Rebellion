@@ -35,7 +35,7 @@ public:
     SDL_Texture* menuBackground = nullptr;
     SDL_Texture* menuBackground_S = nullptr;
     SDL_Texture* frameTex = nullptr;
-
+    SDL_Texture* sliderThumbTex = nullptr;
 private:
     void ShowSettings(bool show);
     bool isSettingsOpen = false;
