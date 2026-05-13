@@ -42,10 +42,20 @@ bool UIButton::Update(float dt)
 		bool mouseInside = (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w &&
 			mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h);
 
+		if (mouseInside && !wasMouseInside) {
+			if (hoverFx != -1) {
+				Engine::GetInstance().audio->PlayFx(hoverFx);
+			}
+		}
+
+		wasMouseInside = mouseInside;
 		auto input = Engine::GetInstance().input;
 		KeyState leftClick = input->GetMouseButtonDown(SDL_BUTTON_LEFT);
 
-		// 1. GESTIÓN DEL CLIC
+		if (mouseInside && leftClick == KEY_DOWN) {
+			isPressedInternally = true;
+		}
+
 		if (mouseInside && leftClick == KEY_DOWN)
 		{
 			isPressedInternally = true;
@@ -55,6 +65,9 @@ bool UIButton::Update(float dt)
 		{
 			if (isPressedInternally && mouseInside) {
 
+				if (clickFx != -1) {
+					Engine::GetInstance().audio->PlayFx(clickFx);
+				}
 				if (clickAnimSet.GetAnim("click") != nullptr) {
 					showClickAnim = true;
 					pendingAction = true;
@@ -219,5 +232,12 @@ void UIButton::Draw() const
 bool UIButton::CleanUp()
 {
 	pendingToDelete = true;
+
+	frameAnimSet.DeleteSelfInfo();
+	clickAnimSet.DeleteSelfInfo();
+
+	frameTexture = nullptr;
+	clickTexture = nullptr;
+
 	return true;
 }

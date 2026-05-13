@@ -125,7 +125,6 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
 
 
@@ -134,22 +133,43 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texInventoryUI, "Assets/Textures/UI/GameMenu/t_inventoryUI.png");
 	LoadTextureIfNull(texSkilltreeUI, "Assets/Textures/UI/GameMenu/t_skilltreeUI.png");
 	LoadTextureIfNull(texPauseUI, "Assets/Textures/UI/GameMenu/t_pauseUI.png");
+	LoadTextureIfNull(texSkillUI, "Assets/Textures/UI/SkillUpgrade/t_skillUI.png");
 
 	//Load Items
 	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
 	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forestKeyUI.png");
+	LoadTextureIfNull(texItemKeyMountain, "Assets/Textures/UI/Items/mountainKeyUI.png");
+	LoadTextureIfNull(texItemKeyCatacumbs, "Assets/Textures/UI/Items/catacumbsKeyUI.png");
 	LoadTextureIfNull(texItemOrb, "Assets/Textures/UI/Items/forceOrbUI.png");
-	LoadTextureIfNull(texItemGlide, "Assets/Textures/UI/Items/glideUI.png");
-	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
 
-	//Load Dialogue UI
+	// Power-upsLoad
+	LoadTextureIfNull(texItemGlide, "Assets/Textures/UI/Items/glideUI.png");
+	LoadTextureIfNull(texItemDash, "Assets/Textures/UI/Items/dashUI.png");
+	LoadTextureIfNull(texItemWallJump, "Assets/Textures/UI/Items/wallJumpUI.png");
+	LoadTextureIfNull(texItemDoubleJump, "Assets/Textures/UI/Items/doubleJumpUI.png");
+	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
+	
+	// Skill upgrade Load
+	LoadTextureIfNull(books_1_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-1.png");
+	LoadTextureIfNull(books_1_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-2.png");
+	LoadTextureIfNull(books_2_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_2-1.png");
+	LoadTextureIfNull(books_2_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_2-2.png");
+	LoadTextureIfNull(books_3_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_3-1.png");
+	LoadTextureIfNull(books_3_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_3-2.png");
+	LoadTextureIfNull(orbsDisplayFrame, "Assets/Textures/UI/SkillUpgrade/SkillMenu_PointsDisplay.png");
+
+	// Dialogue UI Load
 	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
+	LoadTextureIfNull(princessPortrait, "Assets/Textures/UI/Dialogues/princess_portrait.png");
+	LoadTextureIfNull(npcPortrait, "Assets/Textures/UI/Dialogues/npc_portrait1.png");
+	//LoadTextureIfNull(npcPortrait2, "Assets/Textures/UI/Dialogues/npc_portrait2.png");
+	//LoadTextureIfNull(npcPortrait3, "Assets/Textures/UI/Dialogues/npc_portrait3.png");
+	//LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png");
 
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
 	CreateInventoryUI();
-
 	// Pause Menu
 	CreatePauseMenuUI();
 
@@ -230,7 +250,7 @@ bool GameScene::PostUpdate() {
 				currentTextureToDraw = texMapUI;
 				break;
 			case GameMenuTab::SKILL_TREE:
-				currentTextureToDraw = texSkilltreeUI;
+				currentTextureToDraw = texSkillUI;
 				break;
 			case GameMenuTab::PAUSE_MENU:
 			case GameMenuTab::PAUSE_OPTIONS:
@@ -282,31 +302,40 @@ bool GameScene::CleanUp() {
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
-	// UnloadTexture BG buttons
+	// Buttons and Bg
 	UnloadTexture(buttonUI);
 	UnloadTexture(skillFrameUI);
-	UnloadTexture(orbFrameUI);
-	UnloadTexture(keyFrameUI);
 	UnloadTexture(textBgUI);
 
-	//UnloadTexture
-	UnloadTexture(texInventoryUI);
+
+	// Texture Load
 	UnloadTexture(texMapUI);
+	UnloadTexture(texInventoryUI);
 	UnloadTexture(texSkilltreeUI);
 	UnloadTexture(texPauseUI);
+	UnloadTexture(texSkillUI);
 
-	//UnloadTexture Items
+	//Load Items
 	UnloadTexture(texItemKeyCastle);
-	UnloadTexture(texItemGlide);
 	UnloadTexture(texItemKeyForest);
+	UnloadTexture(texItemKeyMountain);
+	UnloadTexture(texItemKeyCatacumbs);
 	UnloadTexture(texItemOrb);
+
+	// Power-ups
+	UnloadTexture(texItemGlide);
+	UnloadTexture(texItemDash);
+	UnloadTexture(texItemWallJump);
+	UnloadTexture(texItemDoubleJump);
 	UnloadTexture(texItemWeapon);
 
-	//UnloadTexture Dialogues
+	//Load Dialogue UI
 	UnloadTexture(UIDialogueBoxTex);
-	UnloadTexture(UIDialogueBoxNpc1);
-	//UnloadTexture(UIDialogueBoxNpc2);
-	//UnloadTexture(UIDialogueBoxNpc3);
+	UnloadTexture(princessPortrait);
+	UnloadTexture(npcPortrait);
+	//UnloadTexture(npcPortrait2);
+	//UnloadTexture(npcPortrait3);
+	//UnloadTexture(npcPortrait4);
 
 
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
@@ -467,6 +496,9 @@ void GameScene::CreateInventoryUI() {
 	inventoryUI.push_back(descPanel);
 }
 
+void GameScene::CreateSkillUpgradeUI() {}
+void GameScene::CreateMiniMapUI() {}
+
 void GameScene::CreatePauseMenuUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
@@ -524,11 +556,12 @@ void GameScene::CreateDialogueUI() {
 	if (dBox != nullptr) {
 		dBox->SetBackgroundTexture(UIDialogueBoxTex);
 
-		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/princess_portrait.png");
-		SDL_Texture* texAldeano = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/npc_portrait.png");
-
-		dBox->AddPortrait("Princesa", texPrincesa);
-		dBox->AddPortrait("Jan", texAldeano);
+		dBox->AddPortrait("Princesa", princessPortrait);
+		dBox->AddPortrait("Jan", npcPortrait);
+		/*dBox->AddPortrait("Jan", npcPortrait1);
+		dBox->AddPortrait("Jan", npcPortrait2);
+		dBox->AddPortrait("Jan", npcPortrait3);
+		dBox->AddPortrait("Jan", npcPortrait4);*/
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);

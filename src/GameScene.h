@@ -45,7 +45,16 @@ enum class GameUI_ID {
 	INV_ITEM_WALL_JUMP,
 	INV_ITEM_KEY,
 	INV_ITEM_ORB,
-	INV_DESC_TEXT
+	INV_DESC_TEXT,
+
+	// SkillUpGrade Ui
+	SKILL_BOOK_1_1 = 200,
+	SKILL_BOOK_1_2,
+	SKILL_BOOK_2_1,
+	SKILL_BOOK_2_2,
+	SKILL_BOOK_3_1,
+	SKILL_BOOK_3_2
+
 };
 
 struct ButtonDef { int id; const char* text; };
@@ -75,36 +84,58 @@ public:
 	
 	//Buttons textures
 	SDL_Texture* buttonUI = nullptr;
-	SDL_Texture* textBgUI = nullptr;
-	SDL_Texture* keyFrameUI = nullptr;
-	SDL_Texture* orbFrameUI = nullptr;
 	SDL_Texture* skillFrameUI = nullptr;
+	SDL_Texture* textBgUI = nullptr;
 
-	//Background textures
+	// Texture BG
 	SDL_Texture* texMapUI = nullptr;
 	SDL_Texture* texInventoryUI = nullptr;
 	SDL_Texture* texSkilltreeUI = nullptr;
 	SDL_Texture* texPauseUI = nullptr;
+	SDL_Texture* texSkillUI = nullptr;
+
 	
-	//Items textures
+	//Items Textures
 	SDL_Texture* texItemKeyCastle = nullptr;
 	SDL_Texture* texItemKeyForest = nullptr;
-
+	SDL_Texture* texItemKeyMountain = nullptr;
+	SDL_Texture* texItemKeyCatacumbs = nullptr;
 	SDL_Texture* texItemOrb = nullptr;
+	
+	// Power-ups
 	SDL_Texture* texItemGlide = nullptr;
+	SDL_Texture* texItemDash = nullptr;
+	SDL_Texture* texItemWallJump = nullptr;
+	SDL_Texture* texItemDoubleJump = nullptr;
 	SDL_Texture* texItemWeapon = nullptr;
 
-	//Dialogue Textures
+	//SkillUpgrade
+	SDL_Texture* books_1_1 = nullptr;
+	SDL_Texture* books_1_2 = nullptr;
+	SDL_Texture* books_2_1 = nullptr;
+	SDL_Texture* books_2_2 = nullptr;
+	SDL_Texture* books_3_1 = nullptr;
+	SDL_Texture* books_3_2 = nullptr;
+	SDL_Texture* orbsDisplayFrame = nullptr;
+
+	//Dialogue UI Textures 
 	SDL_Texture* UIDialogueBoxTex = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
+	SDL_Texture* princessPortrait = nullptr;
+	SDL_Texture* npcPortrait = nullptr;
+	//SDL_Texture* npcPortrait1 = nullptr;
+	//SDL_Texture* npcPortrait2 = nullptr;
+	//SDL_Texture* npcPortrait3 = nullptr;
+	//SDL_Texture* npcPortrait4 = nullptr;
 
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);
 	void CreateTopBarUI();
 	void CreateInventoryUI();
+	void CreateSkillUpgradeUI();
+	void CreateMiniMapUI();
+
 	void CreatePauseMenuUI();
 	void CreatePauseSettingUI() ;
 	void CreateDialogueUI();

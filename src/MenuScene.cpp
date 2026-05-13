@@ -16,8 +16,8 @@ bool MenuScene::Start() {
 
 	Engine::GetInstance().cinematics->CloseVideo();
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
-	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
-	uiHover = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/DoorClosed.wav");
+	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UI/clicButton.wav"); 
+	uiHover = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UI/selecButton.wav");
 
 	if (menuBackground == nullptr) {
 		menuBackground = Engine::GetInstance().textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
@@ -61,6 +61,7 @@ bool MenuScene::Start() {
 		if (auto* b = dynamic_cast<UIButton*>(btn.get())) {
 			b->SetFrameTexture(mainFrame);
 			b->SetClickTexture(mainClick);
+			b->SetSounds(uiHover, uiClick);
 		}
 		
 		mainButtons.push_back(btn);
@@ -94,6 +95,9 @@ bool MenuScene::Start() {
 	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, (int)MenuUI_ID::BTN_BACK, "BACK", 0.5f, setY, wPerc, hPerc, sceneObserver);
 	settingsButtons.push_back(btnBack);
 	if (auto* b = dynamic_cast<UIButton*>(btnBack.get())) {
+		b->SetFrameTexture(mainFrame);
+		b->SetClickTexture(mainClick);
+		b->SetSounds(uiHover, uiClick);
 	}
 
 	ShowSettings(false);
@@ -113,34 +117,10 @@ bool MenuScene::Update(float dt) {
 		Engine::GetInstance().render->DrawTextureScaled(currentBackground, fullScreenRect);
 	}
 
-	bool isAnyHovered = false;
-
-	// Juntamos todos los botones activos según en qué menú estemos
-	auto& activeButtons = isSettingsOpen ? settingsButtons : mainButtons;
-
-	for (auto& btn : activeButtons) {
-		// Tu UIElement llama "FOCUSED" al estado cuando el ratón está encima
-		if (btn->visible && btn->state == UIElementState::FOCUSED) {
-			isAnyHovered = true;
-
-			// Si el ratón acaba de entrar en este botón
-			if (lastHoveredId != btn->id) {
-				Engine::GetInstance().audio->PlayFx(uiHover); // ¡Suena!
-				lastHoveredId = btn->id; // Guardamos el ID
-			}
-		}
-	}
-
-	// Si el ratón no está encima de NINGÚN botón, reseteamos el ID
-	if (!isAnyHovered) {
-		lastHoveredId = -1;
-	}
-
 	return true;
 }
 
 bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
-	Engine::GetInstance().audio->PlayFx(uiClick);
     auto sceneManager = Engine::GetInstance().sceneManager;
 
     switch (uiElement->id)
@@ -233,6 +213,7 @@ bool MenuScene::CleanUp() {
 		Engine::GetInstance().textures->UnLoad(mainFrame);
 		mainFrame = nullptr;
 	}
+	Engine::GetInstance().audio->StopMusic();
 	mainButtons.clear();
 	settingsButtons.clear();
 	return true;

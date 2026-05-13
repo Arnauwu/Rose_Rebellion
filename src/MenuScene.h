@@ -43,7 +43,6 @@ private:
 
     int uiClick;
     int uiHover;
-    int lastHoveredId = -1;
 private:
     // UI Groups
     std::vector<std::shared_ptr<UIElement>> mainButtons;

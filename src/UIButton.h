@@ -18,8 +18,16 @@ public:
 	void SetClickTexture(SDL_Texture* tex) { clickTexture = tex; }
 	bool canClick = true;
 	bool drawBasic = false;
+	void SetSounds(int hoverFxId, int clickFxId) {
+		hoverFx = hoverFxId;
+		clickFx = clickFxId;
+	}
 
 private:
+	int hoverFx = -1;
+	int clickFx = -1;
+	bool wasMouseInside = false;
+
 	// Variables para evitar clics fantasma
 	bool isPressedInternally = false;
 	bool wasFocused = false;
