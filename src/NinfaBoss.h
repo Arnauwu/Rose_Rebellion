@@ -57,7 +57,7 @@ public:
 
     Timer stateTimer;
     float spawnDurationMs = 2000.0f;
-    float shotCooldownMs = 500.0f;
+    float shotCooldownMs = 800.0f;
     float specialAttackCooldownMs = 600.0f;
 
     float hurtDurationMs = 400.0f;
