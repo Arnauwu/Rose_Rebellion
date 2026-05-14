@@ -649,6 +649,18 @@ bool Map::Load(std::string path, std::string fileName)
 						{
 							newDoor.needsKey = false;
 						}
+						newDoor.requiredKey = KeyType::NONE; // Por defecto
+						Properties::Property* keyRegionProp = obj->properties.GetProperty("KeyRegion");
+						if (keyRegionProp != nullptr)
+						{
+							std::string region = keyRegionProp->value2;
+							if (region == "Forest") newDoor.requiredKey = KeyType::FOREST;
+							else if (region == "Mountain") newDoor.requiredKey = KeyType::MOUNTAIN;
+							else if (region == "Catacumba") newDoor.requiredKey = KeyType::CATACUMBA;
+							else if (region == "Boss") newDoor.requiredKey = KeyType::BOSS;
+							else if (region == "Castle") newDoor.requiredKey = KeyType::CASTLE;
+
+						}
 
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
 							if (unlockedId == newDoor.uniqueId) {
@@ -1048,6 +1060,17 @@ void Map::SpawnEntities()
 					std::shared_ptr<Keys> key = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
 					if (key != nullptr) {
 						key->position = Vector2D(x, y);
+
+						Properties keyProps;
+						LoadProperties(objectNode, keyProps);
+
+						if (keyProps.GetProperty("KeyRegion") != nullptr) {
+							std::string region = keyProps.GetProperty("KeyRegion")->value2;
+
+							if (region == "Forest") key->SetKeyType(KeyType::FOREST);
+							else if (region == "Mountain") key->SetKeyType(KeyType::MOUNTAIN);
+							else if (region == "Catacumba") key->SetKeyType(KeyType::CATACUMBA);
+						}
 					}
 				}
 				else if (entityType == std::string("Manta")) {
@@ -1339,7 +1362,6 @@ bool Map::DoorClosed(PhysBody* door) {
 	return false;
 }
 
-// 【新增在文件最后面】
 void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
 {
 	for (const auto& ndoor : mapData.doors)
@@ -1351,7 +1373,7 @@ void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
 			return;
 		}
 	}
-	w = 256; h = 256; // 默认防错值
+	w = 256; h = 256;
 }
 
 Vector2D Map::GetCameraPositionInTiles()
@@ -1366,4 +1388,16 @@ Vector2D Map::GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin)
 	SDL_Rect camera = Engine::GetInstance().render->camera;
 	Vector2D camLimitTile = WorldToMap(camera.w, camera.h);
 	return camPosTile + camLimitTile + margin;
+}
+
+KeyType Map::GetDoorKeyType(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door)
+		{
+			return ndoor.requiredKey;
+		}
+	}
+	return KeyType::NONE;
 }

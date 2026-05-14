@@ -1,4 +1,4 @@
-#include "Dip.h"
+ï»¿#include "Dip.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -10,9 +10,9 @@
 #include "EntityManager.h"
 #include "ParticleManager.h"
 #include "Map.h"
-#include <cmath> 
+#include <cmath> // Para sqrt()
 
-Dip::Dip() : Enemy(EntityType::UNKNOWN) // Usa tu EntityType::DIP cuando lo tengas
+Dip::Dip() : Enemy(EntityType::UNKNOWN) // Reemplaza UNKNOWN por EntityType::DIP cuando lo tengas
 {
 	name = "Dip";
 }
@@ -25,32 +25,32 @@ bool Dip::Awake() {
 
 bool Dip::Start()
 {
-	// 1. Cargar las 5 animaciones reales de Ninfa para pruebas
+	// 1. Cargar las 5 animaciones reales de Ninfa para realizar las pruebas (Placeholder)
 	std::unordered_map<int, std::string> aliases = {
 		{0, "idle"},
 		{3, "walk"},
 		{13, "jumpFwd"},
 		{26, "claw"},
-		{39, "howl"} // Usado para muerte temporal
+		{39, "howl"} // Usado temporalmente para la animaciÃ³n de muerte
 	};
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
 
-	// 2. F¨ªsicas (C¨ªrculo Din¨¢mico)
+	// 2. FÃ­sicas (CÃ­rculo DinÃ¡mico)
 	texW = 64;
 	texH = 64;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
 	pbody->listener = this;
 	pbody->ctype = ColliderType::ENEMY;
 
-	// 3. Pathfinding
+	// 3. Inicializar Pathfinding
 	pathfinding = std::make_shared<Pathfinding>(true);
 	pathfinding->ResetPath(GetTilePos());
 	pathFindingCooldown.Start();
 
-	// 4. Estad¨ªsticas
+	// 4. EstadÃ­sticas del enemigo
 	vision = 15;
 	speed = 3.0f;
 	knockbackForce = 5.0f;
@@ -63,7 +63,8 @@ bool Dip::Start()
 	position.setX((float)x);
 	position.setY((float)y);
 
-	startAttack.Start(); // Timer para el cooldown de 5 segundos
+	// Iniciar el temporizador para el cooldown de 5 segundos del ataque de salto
+	startAttack.Start();
 
 	return true;
 }
@@ -74,7 +75,7 @@ bool Dip::Update(float dt)
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
-		// Actualizar Pathfinding cada 500ms si no est¨¢ atacando
+		// Actualizar el Pathfinding cada 500ms si no estÃ¡ atacando
 		if (pathFindingCooldown.ReadMSec() > 500 && !isJumpingFwd && !isJumpingBack && !isClawing && !isKnockedback)
 		{
 			PerformPathfinding();
@@ -85,36 +86,36 @@ bool Dip::Update(float dt)
 
 		Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-		// L¨®gica Principal de Acci¨®n
+		// LÃ³gica Principal de AcciÃ³n y Distancia
 		if (player != nullptr && !isJumpingFwd && !isJumpingBack && !isClawing && !isKnockedback)
 		{
-			// ?DISTANCIA EXACTA EN PIXELES! (Adi¨®s al bug de tiles enteros)
+			// Â¡CÃ¡lculo de distancia EXACTA en pÃ­xeles! (Evita el bug del tipo int con los tiles)
 			float dist = sqrt(position.distanceSquared(player->GetPosition()));
 
-			// Ataque Cercano: Zarpazo (< 80 pixeles)
+			// Ataque Cercano: Zarpazo (< 80 pÃ­xeles)
 			if (dist < 80.0f)
 			{
 				isClawing = true;
 				anims.SetCurrent("claw");
 			}
-			// Ataque Lejano: Salto/Embestida (Entre 80 y 250 pixeles) -> CADA 5 SEGUNDOS
+			// Ataque Lejano: Salto/Embestida (Entre 80 y 250 pÃ­xeles) -> SOLO SI HAN PASADO 5 SEGUNDOS
 			else if (dist < 250.0f && startAttack.ReadSec() >= 5.0f)
 			{
 				isJumpingFwd = true;
-				initialJumpPos = { position.getX(), position.getY() }; // Guardar posici¨®n original
+				initialJumpPos = { position.getX(), position.getY() }; // Guardar posiciÃ³n original para poder volver
 				actionTimer.Start();
 				anims.SetCurrent("jumpFwd");
 
-				// Darle un peque?o impulso hacia arriba al saltar
+				// Darle un pequeÃ±o impulso inicial hacia arriba al saltar
 				velocity.y = -4.0f;
 			}
-			// Moverse hacia el jugador con Pathfinding
+			// Fuera de rango de ataque: Moverse hacia el jugador
 			else
 			{
 				Move();
 			}
 		}
-		// Ejecutar la acci¨®n si ya est¨¢ en estado de ataque
+		// Ejecutar la acciÃ³n si ya se encuentra en un estado de ataque
 		else if (player != nullptr)
 		{
 			if (isJumpingFwd || isJumpingBack) JumpAttack();
@@ -125,7 +126,7 @@ bool Dip::Update(float dt)
 		ApplyPhysics();
 	}
 
-	// L¨®gica de Muerte Temporal
+	// LÃ³gica de Muerte Temporal (Placeholder)
 	if (isdead)
 	{
 		if (anims.GetCurrentName() != "howl")
@@ -157,7 +158,7 @@ void Dip::PerformPathfinding()
 	Vector2D pos = GetPosition();
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-	// Solo para limitar el c¨¢lculo de A* si est¨¢ demasiado lejos
+	// Limitar el cÃ¡lculo pesado de A* si el jugador estÃ¡ demasiado lejos
 	float dist = sqrt(pos.distanceSquared(player->GetPosition())) / 128.0f;
 	int iter = 0;
 
@@ -171,7 +172,7 @@ void Dip::PerformPathfinding()
 void Dip::GetPhysicsValues()
 {
 	b2Vec2 vel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	velocity = { 0.0f, vel.y }; // Resetear X en cada frame, conservar gravedad
+	velocity = { 0.0f, vel.y }; // Resetear X en cada frame, conservar la gravedad (Y)
 }
 
 void Dip::Move()
@@ -179,7 +180,7 @@ void Dip::Move()
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (!player) return;
 
-	// 1. Èç¹ûÍæ¼ÒÔÚ¾ø¶ÔÊÓÒ°Ö®Íâ£¨15¸ö¸ñ×Ó * 128ÏñËØ = 1920ÏñËØÖ®Íâ£©£¬²Å³¹µ×Í£ÏÂÐÝÏ¢
+	// 1. Si el jugador estÃ¡ fuera de la visiÃ³n absoluta (15 tiles * 128px = 1920px), se detiene por completo
 	float dist = sqrt(position.distanceSquared(player->GetPosition()));
 	if (dist > vision * 128.0f) {
 		anims.SetCurrent("idle");
@@ -189,12 +190,12 @@ void Dip::Move()
 
 	if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
 
-	// 2. Õý³£Çé¿ö£ºÈç¹û A* Ñ°Â·³É¹¦ÕÒµ½ÁËÂ·Ïß£¬¾Í¸ú×ÅÂÌ¸ñ×Ó£¨Â·Ïß£©×ß
+	// 2. CASO NORMAL: Si el Pathfinding (A*) encuentra una ruta vÃ¡lida, sigue los nodos
 	if (!pathfinding->pathTiles.empty())
 	{
 		Vector2D tilePos = GetTilePos();
 
-		// Ïû·Ñ×ß¹ýµÄ½Úµã
+		// Consumir el nodo actual de la ruta si ya lo hemos alcanzado
 		if (pathfinding->pathTiles.back() == tilePos) {
 			pathfinding->pathTiles.pop_back();
 		}
@@ -211,21 +212,21 @@ void Dip::Move()
 				lookingRight = false;
 			}
 
-			// ÆÂµÀÓë½×ÌÝ·À¿¨Ç½²¹³¥
+			// CompensaciÃ³n de velocidad para evitar quedarse atascado en rampas o bajadas
 			if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1)) {
 				velocity.x *= 5;
 			}
 		}
 	}
-	// 3. ¡¾ºËÐÄÐÞ¸´£º½µ¼¶×·×Ù¡¿
-	// Èç¹û A* ÕÒ²»µ½Â·£¨ÒòÎªÍæ¼ÒÌøµ½ÁË°ë¿ÕÖÐ£¬»òÕß¾àÀëÌ«Ô¶³¬¹ýÁË90´Î¼ÆËãÏÞÖÆ£©
-	// Dip ¾ø¶Ô²»ÄÜ·¢´ô£¡Ö±½Ó´Ö±©µØ³¯×ÅÍæ¼ÒËùÔÚµÄ X Öá×ø±ê¿ñ±¼£¡
+	// 3. FIX CENTRAL (FALLBACK TRACKING): 
+	// Si el A* falla (porque el jugador saltÃ³ o superÃ³ el lÃ­mite de iteraciones),
+	// el enemigo correrÃ¡ agresivamente hacia la coordenada X del jugador sin dudarlo.
 	else
 	{
 		float playerX = player->GetPosition().getX();
 		float myX = position.getX();
 
-		// ¸ø¶¨Ò»¸ö 10 ÏñËØµÄ»º³åÇø£¬·ÀÖ¹Á½ÕßµÄ X ×ø±êÖØºÏÊ±µÐÈËÔ­µØ¹íÐó×ªÉí
+		// Margen de 10 pÃ­xeles para evitar que el sprite tiemble cuando coinciden las coordenadas
 		if (playerX > myX + 10.0f) {
 			velocity.x = speed;
 			lookingRight = true;
@@ -245,7 +246,7 @@ void Dip::JumpAttack()
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	float dashSpeed = 6.0f;
 
-	// FASE 1: Saltar hacia el jugador
+	// FASE 1: Saltar y embestir hacia el jugador
 	if (isJumpingFwd)
 	{
 		lookingRight = (player->GetPosition().getX() > position.getX());
@@ -254,27 +255,27 @@ void Dip::JumpAttack()
 		// A los 0.4s termina la embestida, golpea y cambia a la fase de retroceso
 		if (actionTimer.ReadSec() > 0.4f)
 		{
-			// Empujar al jugador
+			// Empujar y repeler al jugador (Knockback)
 			float pushX = lookingRight ? 15.0f : -15.0f;
 			Engine::GetInstance().physics->SetLinearVelocity(player->pbody, { pushX, -5.0f });
 
 			isJumpingFwd = false;
-			isJumpingBack = true; // Iniciar vuelta
+			isJumpingBack = true; // Iniciar el viaje de vuelta
 			actionTimer.Start();
 		}
 	}
-	// FASE 2: Volver a la posici¨®n original
+	// FASE 2: Volver a la posiciÃ³n original
 	else if (isJumpingBack)
 	{
 		bool goRight = (initialJumpPos.x > position.getX());
 		velocity.x = goRight ? dashSpeed : -dashSpeed;
-		lookingRight = !goRight; // Mirar hacia donde ataca, no hacia donde retrocede (efecto chulo)
+		lookingRight = !goRight; // Mirar hacia donde ataca, no hacia donde retrocede (efecto visual)
 
-		// A los 0.4s llega a su sitio
+		// A los 0.4s llega a su sitio original y aterriza
 		if (actionTimer.ReadSec() > 0.4f)
 		{
 			isJumpingBack = false;
-			startAttack.Start(); // REINICIAR EL COOLDOWN DE 5 SEGUNDOS AQU?
+			startAttack.Start(); // Â¡REINICIAR EL COOLDOWN DE 5 SEGUNDOS AQUÃ!
 			anims.SetCurrent("idle");
 			velocity.x = 0;
 		}
@@ -283,14 +284,14 @@ void Dip::JumpAttack()
 
 void Dip::ClawAttack()
 {
-	velocity.x = 0.0f; // Quedarse quieto para ara?ar
+	velocity.x = 0.0f; // Quedarse quieto en el sitio para araÃ±ar
 
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr) {
 		lookingRight = (player->GetPosition().getX() > position.getX());
 	}
 
-	// Cuando termine la animaci¨®n, salir del ataque
+	// Cuando termine la animaciÃ³n, salir del estado de ataque cercano
 	if (anims.GetAnim("claw")->HasFinishedOnce()) {
 		isClawing = false;
 		anims.SetCurrent("idle");
@@ -307,7 +308,8 @@ void Dip::Knockback()
 		isJumpingBack = false;
 		isClawing = false;
 
-		if (anims.GetCurrentName() != "idle") anims.SetCurrent("idle"); // Sin anim de da?o, usa idle
+		// No tenemos animaciÃ³n de daÃ±o (hurt) en este placeholder, usamos idle
+		if (anims.GetCurrentName() != "idle") anims.SetCurrent("idle");
 		velocity.x = lookingRight ? knockbackForce : -knockbackForce;
 	}
 
@@ -322,7 +324,7 @@ void Dip::Knockback()
 
 void Dip::ApplyPhysics()
 {
-	// Aplica el movimiento horizontal y respeta la gravedad vertical (excepto cuando salta que la forzamos nosotros)
+	// Aplica el movimiento horizontal modificado y respeta la gravedad vertical (Box2D)
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
 }
 
@@ -359,6 +361,7 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 {
 	if (isdead) return;
 
+	// Recibir daÃ±o si choca con el ataque del jugador
 	if (physB->ctype == ColliderType::PLAYER_ATTACK) {
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;

@@ -108,10 +108,10 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
-	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 
+	
 	if (isFrozen) {
 		GetPhysicsValues();
-		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
+		velocity = { 0, velocity.y }; 
 		ApplyPhysics();
 
 		if (lookingRight)
@@ -246,7 +246,6 @@ bool Player::Update(float dt)
 
 bool Player::PostUpdate()
 {
-	// 【修改】确保没被冻结才能交互
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead && !isFrozen)
 	{
 		Interact();
@@ -767,15 +766,52 @@ void Player::Interact()
 				return;
 			}
 
+			//bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
+			//if (requiresKey)
+			//{
+			//	if (GameManager::GetInstance().gameState.keyCount > 0)
+			//	{
+			//		Engine::GetInstance().audio->PlayFx(openDoor);
+			//		GameManager::GetInstance().gameState.keyCount--;
+			//		LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
+
+			//		std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
+			//		if (!doorId.empty()) {
+			//			GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
+			//		}
+			//		isFrozen = true;
+			//		int cx, cy;
+			//		interactuableBody->GetPosition(cx, cy);
+
+			//		int doorW, doorH;
+			//		Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+			//		auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+			//		DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+			//		if (doorAnim != nullptr) {
+			//			doorAnim->zOrder = -1;
+			//			doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+			//		}
+			//	}
+			//	else
+			//	{
+			//		Engine::GetInstance().audio->PlayFx(closedDoor);
+			//		LOG("Necesitas una llave para abrir, busca una ");
+			//		Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
+			//	}
+			//}
 			bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
 
 			if (requiresKey)
 			{
-				if (GameManager::GetInstance().gameState.keyCount > 0)
+				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
+
+				if (this->HasKey(requiredKey))
 				{
 					Engine::GetInstance().audio->PlayFx(openDoor);
-					GameManager::GetInstance().gameState.keyCount--;
-					LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
+					LOG("Has usado la llave correcta para esta zona.");
 
 					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 					if (!doorId.empty()) {
@@ -799,8 +835,8 @@ void Player::Interact()
 				else
 				{
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					LOG("Necesitas una llave para abrir, busca una ");
-					Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
+					LOG("Necesitas la llave ESPECIFICA de esta región para abrir.");
+					Engine::GetInstance().hud->ShowNotification("You need the specific region key to open this door.");
 				}
 			}
 			else

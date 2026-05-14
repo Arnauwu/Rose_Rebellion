@@ -21,12 +21,37 @@ bool Keys::Start()
 {
     if (CheckIfCollected()) return true;
    //Textura
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/obj_llave_castillo_game.png");
+    std::string texPath = "";
+    switch (keyType)
+    {
+    case KeyType::FOREST:
+        texPath = "Assets/Textures/Items/Keys/obj_llave_bosque_game.png";
+        break;
+    case KeyType::MOUNTAIN:
+        texPath = "Assets/Textures/Items/Keys/obj_llave_montaña_game.png"; 
+        break;
+    case KeyType::CATACUMBA:
+        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
+        break;
+    case KeyType::BOSS:
+        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
+        break;
+    case KeyType::CASTLE:
+        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
+        break;
+    default:
+        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
+        break;
+    }
+
+    texture = Engine::GetInstance().textures->Load(texPath.c_str());
 
     //Fisica
-    pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);
-    pbody->listener = this;
-    pbody->ctype = ColliderType::ITEM;
+    if (texture != nullptr) {
+        pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);
+        pbody->listener = this;
+        pbody->ctype = ColliderType::ITEM;
+    }
 
     return true;
 }
@@ -45,7 +70,10 @@ bool Keys::Update(float dt)
 
 bool Keys::CleanUp()
 {
-    Engine::GetInstance().textures->UnLoad(texture);
+    if (texture != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texture);
+        texture = nullptr;
+    }  
     if (pbody != nullptr)
     {
         Engine::GetInstance().physics->DeletePhysBody(pbody);
@@ -56,7 +84,22 @@ bool Keys::CleanUp()
 
 void Keys::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
-    if (physB->ctype == ColliderType::PLAYER) {
+    if (physB->ctype == ColliderType::PLAYER && !isPicked) {
         SetCollected();
+
+        //KeyType
+        Player* player = (Player*)physB->listener;
+        if (player != nullptr) {
+            player->AddKey(this->keyType);
+            LOG("Jugador recogió una llave tipo: %d", (int)this->keyType);
+        }
     }
+}
+
+void Keys::SetKeyType(KeyType type) {
+    keyType = type;
+}
+
+KeyType Keys::GetKeyType() const {
+    return keyType;
 }

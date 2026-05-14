@@ -9,6 +9,7 @@
 #include "Animation.h"
 
 #include "Physics.h"
+#include "Keys.h"
 
 struct Properties
 {
@@ -58,6 +59,8 @@ struct Door
     int width;
     int height;
     bool requiresGlide;
+
+    KeyType requiredKey = KeyType::NONE;
 };
 
 struct Path
@@ -221,9 +224,12 @@ public:
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
     void GetDoorDimensions(PhysBody* door, int& w, int& h);
+   
+    KeyType GetDoorKeyType(PhysBody* door);
 
     Vector2D GetCameraPositionInTiles();
     Vector2D GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin = {0,0});
+
 
 public: 
     std::string mapFileName;

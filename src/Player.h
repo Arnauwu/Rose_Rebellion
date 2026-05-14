@@ -9,9 +9,11 @@
 #include "CameraController.h"
 #include <iostream>
 #include <map>
+#include <set>
 #include <vector>
 #include <string>
 #include "Hud.h"
+#include "Keys.h"
 
 enum class ItemID {
 	WEAPON,
@@ -71,6 +73,10 @@ public:
 	// Select camara follow mode
 	void SetCameraMode(CameraMode mode);
 	CameraMode GetCameraMode() const { return currentCameraMode; }
+
+	//Key
+	void AddKey(KeyType type) { heldKeys.insert(type); }
+	bool HasKey(KeyType type) const { return heldKeys.find(type) != heldKeys.end(); }
 private:
 
 	void GodModeMove(float dt);
@@ -98,6 +104,9 @@ private:
 
 	// DevTools / Debug
 	void DevTools(float dt);
+
+	//KeyType
+	std::set<KeyType> heldKeys;
 
 public:
 	float speed = 10.0f;
