@@ -456,11 +456,13 @@ void Player::Jump(float dt)
 				velocity.x = -wJumpForceX;
 				lookingRight = false;
 				anims.SetCurrent("wall_jump_left");
+				anims.GetAnim("wall_jump_left")->SetLoop(false);
 			}
 			else {
 				velocity.x = wJumpForceX;
 				lookingRight = true;
 				anims.SetCurrent("wall_jump_right");
+				anims.GetAnim("wall_jump_right")->SetLoop(false);
 			}
 
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
@@ -708,10 +710,15 @@ void Player::Dash()
 		if (lookingRight == true)
 		{
 			velocity.x = dashForce;
+			anims.SetCurrent("dash_right");
+			anims.GetAnim("dash_right")->SetLoop(false);
 		}
 		else
 		{
 			velocity.x = -dashForce;
+			anims.SetCurrent("dash_left");
+			anims.GetAnim("dash_left")->SetLoop(false);
+
 		}
 
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
@@ -878,8 +885,15 @@ void Player::ApplyPhysics() {
 			onAir = false;
 
 			// Animación
-			if (anims.GetCurrentName() != "wall") {
-				anims.SetCurrent("wall");
+			if (anims.GetCurrentName() != "onWall_right" || anims.GetCurrentName() != "onWall_left") {
+				if (!lookingRight)
+				{
+					anims.SetCurrent("onWall_right");
+				}
+				else
+				{
+					anims.SetCurrent("onWall_left");
+				}
 				currentAnimPriority = 1;
 			}
 		}
@@ -1125,9 +1139,9 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 										 {240,"attack_right" },
 										 {252,"attack_left" },
 										 {264,"onWall_right" },
-										 {265,"jump_wall_right" },
+										 {265,"wall_jump_right" },
 										 {276,"onWall_left" },
-										 {277,"jump_wall_left" },
+										 {277,"wall_jump_left" },
 										 {288,"attack_up_right" },
 										 {300,"attack_up_left" }
 		};
