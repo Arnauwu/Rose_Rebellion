@@ -190,13 +190,22 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
-	if (input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
-		if (currentMenuTab != GameMenuTab::NONE) {
-			ToggleGameMenu(GameMenuTab::NONE);
-		}
-		else {
-			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
-		}
+	// Pause Menu - ESC o START del gamepad
+	bool pauseInput = input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
+
+	if (input->IsGamepadConnected() && 
+	    input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
+	{
+	    pauseInput = true;
+	}
+
+	if (pauseInput) {
+	    if (currentMenuTab != GameMenuTab::NONE) {
+	        ToggleGameMenu(GameMenuTab::NONE);
+	    }
+	    else {
+	        ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+	    }
 	}
 
 	if (dialogueMgr->IsDialogueActive()) {
