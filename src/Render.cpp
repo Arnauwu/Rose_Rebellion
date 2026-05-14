@@ -7,6 +7,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#include "tracy/Tracy.hpp"
+
 Render::Render() : Module()
 {
 	name = "render";
@@ -82,7 +84,7 @@ bool Render::Start() {
 	LOG("render start");
 
 	// Cargamos la misma fuente con diferentes tamaños
-	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 49);
+	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 69);
 	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 39);
 	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 31); // Tamaño más adecuado para texto largo
 	fonts[FontType::CUERPO] = TTF_OpenFont(fontPath, 25);
@@ -99,18 +101,24 @@ bool Render::Start() {
 // Called each loop iteration
 bool Render::PreUpdate()
 {
+	ZoneScoped;
+
 	SDL_RenderClear(renderer);
 	return true;
 }
 
 bool Render::Update(float dt)
 {
+	ZoneScoped;
+
 	UpdateFade(dt);
 	return true;
 }
 
 bool Render::PostUpdate()
 {
+	ZoneScoped;
+
 	DrawFade();
 	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.g, background.a);
 	SDL_RenderPresent(renderer);
@@ -708,6 +716,8 @@ void Render::UpdateFade(float dt)
 
 void Render::DrawFade()
 {
+	ZoneScoped;
+
 	if (fadeAlpha_ == 0) return;
 
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

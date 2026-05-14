@@ -32,8 +32,12 @@
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include "Dragon.h"
+#include "DragonProjectile.h"
 
 #include "SpecialFloors.h"
+
+#include "tracy/Tracy.hpp"
 
 EntityManager::EntityManager() : Module()
 {
@@ -115,6 +119,10 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
 		break;
+	case EntityType::SPECIALFLOOR:
+		entity = std::make_shared<SpecialFloor>();
+		break;
+
 	case EntityType::DOOR:
 		entity = std::make_shared<DoorEntity>(); 
 		break;
@@ -154,10 +162,12 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::NINFA_MARE:
 		entity = std::make_shared<NinfaMare>();
 		break;
-	case EntityType::SPECIALFLOOR:
-		entity = std::make_shared<SpecialFloor>();
+	case EntityType::DRAGON:
+		entity = std::make_shared<Dragon>();
 		break;
-
+	case EntityType::DRAGON_PROJECTILE:
+		entity = std::make_shared<DragonProjectile>();
+		break;
 
 		// Items
 	case EntityType::ITEM:
@@ -225,6 +235,8 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 
 bool EntityManager::Update(float dt)
 {
+	ZoneScoped;
+
 	bool ret = true;
 	/*if (Engine::GetInstance().sceneManager->IsGamePaused()) {
 		return true;
@@ -265,6 +277,8 @@ bool EntityManager::Update(float dt)
 
 bool EntityManager::PostUpdate()
 {
+	ZoneScoped;
+
 	bool ret = true;
 	for (const auto entity : entities)
 	{

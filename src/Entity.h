@@ -34,6 +34,8 @@ enum class EntityType
 
 	KNIGHT_BOSS,
 	NINFA_MARE,
+	DRAGON,
+	DRAGON_PROJECTILE,
 
 	SAVEPOINT,
 	DOOR,

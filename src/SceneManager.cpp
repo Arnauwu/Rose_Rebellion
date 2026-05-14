@@ -14,6 +14,8 @@
 #include "IntroCinematicScene.h"
 #include "GameOverScene.h"
 
+//#include "tracy/Tracy.hpp"
+
 SceneManager::SceneManager() : Module() {
     name = "scene_manager";
 }
@@ -31,7 +33,33 @@ bool SceneManager::Start() {
     return true;
 }
 
-bool SceneManager::PreUpdate() {
+bool SceneManager::PreUpdate()
+{
+    //ZoneScoped;
+
+    // Pause Logic
+    bool pausePressed = false;
+
+    // Keyboard ESC o 0
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN ||
+        Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+    {
+        pausePressed = true;
+    }
+
+    // Gamepad - START button
+    if (Engine::GetInstance().input->IsGamepadConnected() &&
+        Engine::GetInstance().input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
+    {
+        pausePressed = true;
+    }
+
+    if (pausePressed)
+    {
+        isGamePaused = !isGamePaused;
+        // Aquí va la lógica para mostrar/ocultar menú de pausa
+    }
+
     if (currentScene != nullptr) {
         return currentScene->PreUpdate();
     }
@@ -39,6 +67,7 @@ bool SceneManager::PreUpdate() {
 }
 
 bool SceneManager::Update(float dt) {
+    //ZoneScoped;
 
     if (isFadingOut && Engine::GetInstance().render->IsFadeComplete()) {
 
@@ -56,6 +85,7 @@ bool SceneManager::Update(float dt) {
 }
 
 bool SceneManager::PostUpdate() {
+    //ZoneScoped;
 
     bool ret = true;
     if (currentScene != nullptr) {

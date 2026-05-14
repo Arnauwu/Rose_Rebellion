@@ -28,6 +28,8 @@
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include"Dragon.h"
+
 
 #include "SpecialFloors.h"
 
@@ -42,6 +44,8 @@
 #include "Sickle.h"
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
+
+#include "tracy/Tracy.hpp"
 
 Map::Map() : Module(), mapLoaded(false)      
 {
@@ -69,6 +73,8 @@ bool Map::Start() {
 
 bool Map::Update(float dt)
 {
+	ZoneScoped;
+
 	bool ret = true;
 
 	if (mapLoaded)
@@ -81,6 +87,11 @@ bool Map::Update(float dt)
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
+ 					if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 0) == false)
+					{
+						continue;
+					}
+
 					//Get the gid from tile
 					unsigned int gid = obj->gid;
 
@@ -166,14 +177,18 @@ bool Map::Update(float dt)
 
 			if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true)
 			{
-				for (int x = 0; x < mapData.width; x++)
+				Vector2D camPosTile = GetCameraPositionInTiles();
+				Vector2D limits = GetCameraLimitsInTiles(camPosTile,{5,5});
+
+
+				for (int x = camPosTile.getX(); x <= limits.getX(); x++)
 				{
 					if (x < 0 || x >= mapData.width) // FailSave
 					{
 						continue;
 					}
 
-					for (int y = 0; y < mapData.height; y++)
+					for (int y = camPosTile.getY(); y <= limits.getY(); y++)
 					{
 						if (y < 0 || y >= mapData.height) //FailSave
 						{
@@ -273,6 +288,8 @@ bool Map::Update(float dt)
 
 bool Map::PostUpdate()
 {
+	ZoneScoped;
+
 	bool ret = true;
 
 	if (mapLoaded)
@@ -285,6 +302,11 @@ bool Map::PostUpdate()
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
+					if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 0) == false)
+					{
+						continue;
+					}
+
 					//Get the gid from tile
 					unsigned int gid = obj->gid;
 
@@ -700,7 +722,7 @@ bool Map::Load(std::string path, std::string fileName)
 					colliderList.push_back(collider);
 				}
 			}
-			else if (objectsGroups->properties.GetProperty("Chain") != NULL and objectsGroups->properties.GetProperty("Triangle")->value) // Triangle / Chain
+			else if (objectsGroups->properties.GetProperty("Triangle") != NULL and objectsGroups->properties.GetProperty("Triangle")->value) // Triangle / Chain
 			{
 				for (const auto& obj : objectsGroups->objects)
 				{
@@ -1014,6 +1036,11 @@ void Map::SpawnEntities()
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					ninfaBoss->position = Vector2D(x, y);
 				}
+				else if (entityType == std::string("Dragon"))
+				{
+					std::shared_ptr<Dragon> dragon = std::dynamic_pointer_cast<Dragon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DRAGON));
+					dragon->position = Vector2D(x, y);
+				}
 
 				//Items
 				else if (entityType == std::string("Key"))
@@ -1325,4 +1352,18 @@ void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
 		}
 	}
 	w = 256; h = 256; // 默认防错值
+}
+
+Vector2D Map::GetCameraPositionInTiles()
+{
+	SDL_Rect camera = Engine::GetInstance().render->camera;
+	Vector2D camPosTile = WorldToMap(-camera.x, -camera.y); //Inverted numbers
+	return camPosTile;
+}
+
+Vector2D Map::GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin)
+{
+	SDL_Rect camera = Engine::GetInstance().render->camera;
+	Vector2D camLimitTile = WorldToMap(camera.w, camera.h);
+	return camPosTile + camLimitTile + margin;
 }

@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "Render.h"
 
+#include "tracy/Tracy.hpp"
+
 ParticleManager::ParticleManager() : Module() {
     name = "particle_manager";
 }
@@ -76,6 +78,8 @@ bool ParticleManager::Start() {
 }
 
 bool ParticleManager::Update(float dt) {
+    ZoneScoped;
+
     // Actualizamos SOLO las articulas encendidas
     for (auto& particles : pool) {
         if (particles.active) {
@@ -100,6 +104,7 @@ bool ParticleManager::Update(float dt) {
 }
 
 bool ParticleManager::PostUpdate() {
+    ZoneScoped;
 
     SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
 

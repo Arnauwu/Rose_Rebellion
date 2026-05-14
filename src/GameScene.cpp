@@ -14,6 +14,8 @@
 #include "Log.h"
 #include "Textures.h"
 
+#include "tracy/Tracy.hpp"
+
 GameScene::GameScene() : SceneBase() {
 }
 
@@ -120,8 +122,7 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-	//LoadTextureIfNull(orbFrameUI, "Assets/Textures/UI/Buttons/orbFrameUI.png");
-	//LoadTextureIfNull(keyFrameUI, "Assets/Textures/UI/Buttons/keyFrameUI.png");
+
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
 
 
@@ -157,6 +158,8 @@ bool GameScene::Start() {
 
 
 bool GameScene::Update(float dt) {
+	ZoneScoped;
+
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
 	auto dialogueMgr = Engine::GetInstance().dialogueManager;
@@ -203,6 +206,7 @@ bool GameScene::Update(float dt) {
 }
 
 bool GameScene::PostUpdate() {
+	ZoneScoped;
 
 	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {

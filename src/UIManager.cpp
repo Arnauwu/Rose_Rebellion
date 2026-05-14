@@ -7,6 +7,8 @@
 #include "Textures.h"
 #include "Audio.h"
 
+#include "tracy/Tracy.hpp"
+
 UIManager::UIManager() :Module()
 {
 	name = "UIManager";
@@ -49,6 +51,8 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 
 bool UIManager::Update(float dt)
 {
+	ZoneScoped;
+
 	for (const auto& uiElement : UIElementsList)
 	{
 		//If the entity is marked for deletion, add it to the pendingDelete list
@@ -74,6 +78,8 @@ bool UIManager::Update(float dt)
 }
 bool UIManager::PostUpdate()
 {
+	ZoneScoped;
+
 	Draw();
 	return true;
 }

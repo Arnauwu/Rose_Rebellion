@@ -11,6 +11,8 @@
 #include <vector>
 #include <box2d/box2d.h>
 
+#include "tracy/Tracy.hpp"
+
 Physics::Physics() : Module()
 {
     world = b2_nullWorldId;
@@ -39,6 +41,8 @@ bool Physics::Start()
 // 
 bool Physics::PreUpdate()
 {
+    ZoneScoped;
+
     bool ret = true;
 
     if (Engine::GetInstance().sceneManager->IsGamePaused())
@@ -90,6 +94,7 @@ PhysBody* Physics::CreateRectangle(int x, int y, int width, int height, bodyType
     b2BodyDef def = b2DefaultBodyDef();
     def.type = ToB2Type(type);
     def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
+    def.fixedRotation = true;
 
     b2BodyId b = b2CreateBody(world, &def);
 
@@ -98,7 +103,7 @@ PhysBody* Physics::CreateRectangle(int x, int y, int width, int height, bodyType
     sdef.density = 1.0f;
     sdef.enableContactEvents = true;   // contact begin/end for this shape
     sdef.enableSensorEvents = true;   // so it can participate in sensor overlaps
-
+    
     b2CreatePolygonShape(b, &sdef, &box);
 
     PhysBody* pbody = new PhysBody();
@@ -331,6 +336,8 @@ void* Physics::GetShapeUserData(b2ShapeId shape)
 // 
 bool Physics::PostUpdate()
 {
+    ZoneScoped;
+
     bool ret = true;
 
     // Activate or deactivate debug mode

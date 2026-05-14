@@ -221,6 +221,10 @@ public:
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
     void GetDoorDimensions(PhysBody* door, int& w, int& h);
+
+    Vector2D GetCameraPositionInTiles();
+    Vector2D GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin = {0,0});
+
 public: 
     std::string mapFileName;
     std::string mapPath;

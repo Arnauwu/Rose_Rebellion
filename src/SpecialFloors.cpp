@@ -26,10 +26,13 @@ bool SpecialFloor::Start() {
 	texW = width;
 	texH = height;
 
-	//Initilize textures
-	//texture = Engine::GetInstance().textures->Load("Assets/Textures/plataforma.png"); //TO DO: Cambiar textura
-	if (texture != nullptr) {
-		Engine::GetInstance().textures->GetSize(texture, texW, texH);
+	//Initialize animation
+	std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"} };
+	anims.LoadFromTSX("Assets/Maps/Catacombs/SpecialFloor_Broken.tsx", aliases);
+	anims.SetCurrent("broken");
+
+	if (floorType == TypeFloor::BROKENFLOOR) {
+		texture = Engine::GetInstance().textures->Load("Assets/Maps/Catacombs/SpecialFloor_Broken.png");
 	}
 
 	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW, texH, bodyType::KINEMATIC);
@@ -93,6 +96,8 @@ bool SpecialFloor::Start() {
 bool SpecialFloor::Update(float dt)
 {
 	if (!active) return true;
+
+	Draw(dt);
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -262,12 +267,25 @@ bool SpecialFloor::Update(float dt)
 		}
 	}
 
-	// Drawing
-	if (texture != nullptr) {
-		Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
-	}
-
 	return true;
+}
+
+void SpecialFloor::Draw(float dt)
+{
+	if (Engine::GetInstance().sceneManager->isGamePaused == false)
+	{
+		anims.Update(dt);
+	}
+	const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+	// Update render position using your PhysBody helper
+	int x, y;
+	pbody->GetPosition(x, y);
+	position.setX((float)x);
+	position.setY((float)y);
+
+	Engine::GetInstance().render->DrawTexture(texture, x, y - animFrame.h / 3, &animFrame, 1);
+
 }
 
 bool SpecialFloor::CleanUp()
