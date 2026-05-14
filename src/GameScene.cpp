@@ -148,7 +148,7 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texItemWallJump, "Assets/Textures/UI/Items/wallJumpUI.png");
 	LoadTextureIfNull(texItemDoubleJump, "Assets/Textures/UI/Items/doubleJumpUI.png");
 	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
-	
+
 	// Skill upgrade Load
 	LoadTextureIfNull(books_1_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-1.png");
 	LoadTextureIfNull(books_1_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-2.png");
@@ -170,6 +170,12 @@ bool GameScene::Start() {
 	CreateTopBarUI();
 	//Inventario
 	CreateInventoryUI();
+
+	//Skill
+	CreateSkillUpgradeUI();
+	// Minimap
+	CreateMiniMapUI();
+
 	// Pause Menu
 	CreatePauseMenuUI();
 
@@ -351,7 +357,6 @@ bool GameScene::CleanUp() {
 	deleteGroup(skillUI);
 	deleteGroup(pauseMainUI);
 	deleteGroup(pauseOptionsUI);
-	deleteGroup(dialogueBox);
 	deleteGroup(dialogueUI);
 
 	dialogueUI.clear();
@@ -445,11 +450,16 @@ void GameScene::CreateInventoryUI() {
 	float baseSize = 0.08f;
 	float squareH = baseSize * aspect;
 
-	float centerX = 0.38f;
-	float centerY = 0.55f;
-	float offsetX = 0.13f;
-	float offsetY = 0.20f;
+	float centerX = 0.40f;
+	float centerXKey = 0.39f;
 
+	float centerY = 0.470f;
+
+	float offsetX = 0.13f;
+	float offsetXKey = 0.15f;
+
+	float offsetY = 0.1f;
+	float offsetYKey = 0.30f;
 
 	struct InventorySlotDef {
 		GameUI_ID id;
@@ -461,17 +471,20 @@ void GameScene::CreateInventoryUI() {
 
 	std::vector<InventorySlotDef> slots = {
 		// ARMA (Centro)
-		{ GameUI_ID::INV_ITEM_WEAPON, "", centerX, centerY,baseSize + float(0.1), squareH + float(0.2), texItemWeapon},
+		{ GameUI_ID::INV_ITEM_WEAPON, "", centerX, centerY,baseSize + float(0.07), squareH + float(0.14), texItemWeapon},
 
 		// AMULETOS (Vertices)
-		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si aún no tienes textura
-		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
-		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
+		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX,			centerY - offsetY ,baseSize, squareH, texItemGlide },
+		{ GameUI_ID::INV_ITEM_DASH, "DASH", centerX + offsetX ,		centerY - offsetY ,baseSize, squareH, texItemDash },
+		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "", centerX - offsetX,	centerY + offsetY ,baseSize, squareH, texItemDoubleJump },
+		{ GameUI_ID::INV_ITEM_WALL_JUMP, "", centerX + offsetX,		centerY + offsetY ,baseSize, squareH, texItemWallJump },
 
 		// ITEMS
-		{ GameUI_ID::INV_ITEM_KEY, "", centerX - offsetX - float(0.04), centerY,baseSize, squareH, texItemKeyCastle },
-		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, texItemOrb }
+		{ GameUI_ID::INV_ITEM_KEY, "", centerXKey - offsetXKey, centerY + offsetYKey,						   baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle},
+		{ GameUI_ID::INV_ITEM_KEYCASTLE, "", centerXKey - offsetXKey + float(0.08),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle },
+		{ GameUI_ID::INV_ITEM_KEYFOREST, "", centerXKey - offsetXKey + float(0.16),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyForest },
+		{ GameUI_ID::INV_ITEM_KEYMOUNTAIN, "", centerXKey - offsetXKey + float(0.24),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyMountain },
+		{ GameUI_ID::INV_ITEM_KEYCATACUMBS, "", centerXKey - offsetXKey + float(0.32),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCatacumbs },
 	};
 
 	for (const auto& slot : slots) {
@@ -496,7 +509,55 @@ void GameScene::CreateInventoryUI() {
 	inventoryUI.push_back(descPanel);
 }
 
-void GameScene::CreateSkillUpgradeUI() {}
+void GameScene::CreateSkillUpgradeUI() {
+
+	auto uiManager = Engine::GetInstance().uiManager;
+	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
+
+	int sw = Engine::GetInstance().render->camera.w;
+	int sh = Engine::GetInstance().render->camera.h;
+	float aspect = (float)sw / (float)sh;
+
+	float baseSize = 0.1f;
+	float squareH = baseSize * aspect;
+
+	float centerX = 0.37f;
+	float centerY = 0.50f;
+	float offsetX = 0.07f;
+	float offsetY = 0.20f;
+
+	struct SkillSlotDef {
+		GameUI_ID id;
+		const char* name;
+		float relX, relY;
+		float w, h;
+		SDL_Texture* tex;
+	};
+
+	std::vector<SkillSlotDef> slots = {
+		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, books_1_1 }, // Arriba derecha
+		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY,baseSize, squareH, books_1_2 }, // Arriba izquierda
+
+		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX - float(0.04), centerY, baseSize, squareH, books_2_1 }, // Medio derecha
+		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, books_2_2 }, // Medio Izquierda
+
+		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX, centerY + offsetY,baseSize, squareH, books_3_1 }, // Abajo derecha
+		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX, centerY + offsetY,baseSize, squareH, books_3_2 }, // Abajo Izquierda 
+
+		// ITEMS
+		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.3), centerY + float(0.1),baseSize, squareH, texItemOrb } // Orbe
+	};
+
+	for (const auto& slot : slots) {
+		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, slot.w, slot.h, sceneObserver);
+
+		if (slot.tex != nullptr) {
+			btn->SetTexture(slot.tex);
+		}
+		skillUI.push_back(btn);
+	}
+}
+
 void GameScene::CreateMiniMapUI() {}
 
 void GameScene::CreatePauseMenuUI() {

@@ -44,6 +44,11 @@ enum class GameUI_ID {
 	INV_ITEM_DOUBLE_JUMP,
 	INV_ITEM_WALL_JUMP,
 	INV_ITEM_KEY,
+	INV_ITEM_KEYFOREST,
+	INV_ITEM_KEYMOUNTAIN,
+	INV_ITEM_KEYCATACUMBS,
+	INV_ITEM_KEYCASTLE,
+
 	INV_ITEM_ORB,
 	INV_DESC_TEXT,
 
@@ -156,16 +161,17 @@ private:
 	std::vector<std::shared_ptr<UIElement>> inventoryUI;
 	std::vector<std::shared_ptr<UIElement>> mapUI;
 	std::vector<std::shared_ptr<UIElement>> skillUI;
-	std::vector<std::shared_ptr<UIElement>> dialogueBox;
 
 	// Descriptión Panel
 	std::shared_ptr<UIElement> descPanel = nullptr;
+
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
 
 	// Dialogue UI
 	std::vector<std::shared_ptr<UIElement>> dialogueUI;
+
 	//MapChanging Variables
 	// Fade point
 	enum class MapTransitionState {
