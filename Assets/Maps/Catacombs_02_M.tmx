@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="520">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="521">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -70506,6 +70506,9 @@
     <property name="Speed" type="int" value="3"/>
     <property name="WaitTime" type="int" value="2000"/>
    </properties>
+  </object>
+  <object id="520" name="Minairon" type="Minairon" x="18048" y="10240">
+   <point/>
   </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns">

@@ -28,7 +28,7 @@ bool SpecialFloor::Start() {
 	texH = height;
 
 	// Initialize animation
-	std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"} };
+	std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"}, {2,"reconstruct"} };
 	anims.LoadFromTSX("Assets/Maps/Catacombs/SpecialFloor_Broken.tsx", aliases);
 	anims.SetCurrent("normal");
 
@@ -246,6 +246,13 @@ bool SpecialFloor::Update(float dt)
 		if (isBroken) {
 			// If it's broken, wait for it to reappear
 			currentRespawnTime -= dt;
+
+			if (currentRespawnTime <= animBreakDuration && anims.GetCurrentName() != "reconstruct") {
+				anims.SetCurrent("reconstruct");
+				anims.GetAnim("reconstruct")->Reset();
+				anims.GetAnim("reconstruct")->SetLoop(false);
+			}
+
 			if (currentRespawnTime <= 0) {
 				isBroken = false;
 				isSteppedOn = false;
@@ -286,7 +293,7 @@ void SpecialFloor::Draw(float dt)
 		anims.Update(dt);
 	}
 	
-	if (isBroken && anims.GetAnim("broken")->HasFinishedOnce()) {
+	if (isBroken && currentRespawnTime > animBreakDuration) {
 		return;
 	}
 
@@ -370,7 +377,11 @@ void SpecialFloor::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shape
 
 		if (floorType == TypeFloor::BROKENFLOOR)
 		{
-			if (!isSteppedOn && !isBroken) {
+			int xP, yP, xB, yB;
+			physB->GetPosition(xP, yP);
+			pbody->GetPosition(xB, yB);
+
+			if (!isSteppedOn && !isBroken && yP <= yB ) {
 				isSteppedOn = true;		
 				LOG("Suelo ROMPIBLE pisado.");
 			}

@@ -1,4 +1,4 @@
-#include "SpiderEnemy.h"
+#include "CucaferaMutant.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -11,17 +11,17 @@
 #include "Map.h"
 
 
-SpiderEnemy::SpiderEnemy() : Enemy(EntityType::ENEMY) {
+CucaferaMutant::CucaferaMutant() : Enemy(EntityType::ENEMY) {
     name = "spider";
 }
 
-SpiderEnemy::~SpiderEnemy() {}
+CucaferaMutant::~CucaferaMutant() {}
 
-bool SpiderEnemy::Awake() {
+bool CucaferaMutant::Awake() {
     return true;
 }
 
-bool SpiderEnemy::Start() {
+bool CucaferaMutant::Start() {
 
     std::unordered_map<int, std::string> spiderr = { {0,"idle"},{11,"move"},{22,"jump"} };
     anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", spiderr);
@@ -46,7 +46,7 @@ bool SpiderEnemy::Start() {
     return true;
 }
 
-bool SpiderEnemy::Update(float dt) {
+bool CucaferaMutant::Update(float dt) {
     
     if (!active) return true;
 
@@ -74,12 +74,12 @@ bool SpiderEnemy::Update(float dt) {
     return true;
 }
 
-void SpiderEnemy::GetPhysicsValues() {
+void CucaferaMutant::GetPhysicsValues() {
     // Read current velocity
     velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 }
 
-void SpiderEnemy::Move() {
+void CucaferaMutant::Move() {
     
     float stickyForce = 3.5f;
 
@@ -107,7 +107,7 @@ void SpiderEnemy::Move() {
     }
 }
 
-void SpiderEnemy::Knockback()
+void CucaferaMutant::Knockback()
 {
     if (isdead) return;
 
@@ -134,7 +134,7 @@ void SpiderEnemy::Knockback()
     }
 }
 
-void SpiderEnemy::RotateFacing() {
+void CucaferaMutant::RotateFacing() {
     // Ciclo de rotación: DOWN -> LEFT -> UP -> RIGHT -> DOWN
     int next = (int)currentFacing + 1;
     if (next > 3) next = 0;
@@ -142,13 +142,13 @@ void SpiderEnemy::RotateFacing() {
     LOG("Outer corner detected! New facing: %d", currentFacing);
 }
 
-void SpiderEnemy::ApplyPhysics() {
+void CucaferaMutant::ApplyPhysics() {
 
     // Apply velocity via helper
     Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 }
 
-void SpiderEnemy::Draw(float dt)
+void CucaferaMutant::Draw(float dt)
 {
     if (Engine::GetInstance().sceneManager->isGamePaused == false)
     {
@@ -187,7 +187,7 @@ void SpiderEnemy::Draw(float dt)
     Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, SDL_FLIP_NONE, 1.0f, angle, 16, 16);
 }
 
-Vector2D SpiderEnemy::GetTilePos()
+Vector2D CucaferaMutant::GetTilePos()
 {
     //Get the position of the enemy
     Vector2D pos = GetPosition();
@@ -196,7 +196,7 @@ Vector2D SpiderEnemy::GetTilePos()
     return tilePos;
 }
 
-void SpiderEnemy::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
+void CucaferaMutant::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 
 	
     switch (physB->ctype)
@@ -237,4 +237,4 @@ void SpiderEnemy::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA
     }
 }
 
-void SpiderEnemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {}
+void CucaferaMutant::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {}
