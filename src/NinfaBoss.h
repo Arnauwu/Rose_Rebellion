@@ -47,14 +47,19 @@ public:
     NinfaMareState currentState;
 
     // Ajustes de Boss (Más grandes que la ninfa joven)
-    float targetOffsetX = 180.0f;
+    float targetOffsetX = 220.0f;
     float targetOffsetY = 120.0f;
-    float attackRange = 500.0f;
+    float attackRange = 1000.0f;
 
     Timer stateTimer;
     float spawnDurationMs = 3000.0f;
-    float shotCooldownMs = 2000.0f;
-    float specialAttackCooldownMs = 6000.0f;
+    float shotCooldownMs = 500.0f;
+    float specialAttackCooldownMs = 600.0f;
+
+    int shotsFiredInCombo = 0;       // Cuenta cuántos disparos lleva
+    bool nextSpecialIsWave = true;
+
+    bool hasAppeared = false;
 
     // Sonidos
     int volarFx, atacarFx, morirFx, gritoFx, waveFx;
