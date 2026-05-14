@@ -31,21 +31,17 @@ bool ShieldKnight::CleanUp()
 	active = false;
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().physics->DeletePhysBody(pbody);
-	if (attackHitbox != nullptr)
-	{
-		Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
-	}
 	return true;
 }
 
 bool ShieldKnight::Start()
 {
-	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{32,"assault"},{40,"hurt"}, {56,"idle"}, {64,"run"}};
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/ShieldKnight.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/ShieldKnight.png");
 
 	//Load Audio
 	morirEscudo = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
@@ -92,8 +88,13 @@ bool ShieldKnight::Start()
 
 bool ShieldKnight::Update(float dt)
 {
-
 	if (!active) return true;
+
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		return true;
+	}
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
@@ -111,11 +112,6 @@ bool ShieldKnight::Update(float dt)
 
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
-		if (attackHitbox != nullptr)
-		{
-			Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
-			attackHitbox = nullptr;
-		}
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
 
@@ -241,11 +237,7 @@ void ShieldKnight::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
-		if (attackHitbox != nullptr) {
-			Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
-			attackHitbox = nullptr;
-		}
+		anims.SetCurrent("hurt"); //Animation for taking damage
 
 		if (hitFromRight) {
 			velocity.x = -knockbackForce;
@@ -327,36 +319,19 @@ void ShieldKnight::Attack()
 		startAttack.Start();
 		return;
 	}
-	else if (attackDuration.ReadMSec() >= 1000 && attackHitbox != nullptr)
+	else if (attackDuration.ReadMSec() >= 1000 && pbody->ctype == ColliderType::ENEMY_ATTACK)
 	{
-		Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
-		attackHitbox = nullptr;
+		pbody->ctype = ColliderType::ENEMY;
 
 		attackCooldown.Start();
 		isAttacking = false;
 	}
-	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr && !isKnockedback)
+	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && pbody->ctype == ColliderType::ENEMY && !isKnockedback)
 	{
 		anims.SetCurrent("assault"); //Attack
-
-		//CreateHitbox
-		float attackX = position.getX();
-		float attackY = position.getY();
-		int attackW = 100; int attackH = 120;
-
-		if (lookingRight)
-		{
-			attackX += texW / 2;
-		}
-		else
-		{
-			attackX -= texW / 2;
-		}
-
-		attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, attackW, attackH, bodyType::STATIC);
-		attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
-		attackHitbox->listener = this;
 		damage = 20;
+
+		pbody->ctype = ColliderType::ENEMY_ATTACK;
 
 		attackDuration.Start();
 	}
@@ -378,9 +353,6 @@ void ShieldKnight::Attack()
 //Define OnCollision function for the enemy. 
 void ShieldKnight::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) 
 {
-
-	if (physA == attackHitbox) { return; }
-
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:

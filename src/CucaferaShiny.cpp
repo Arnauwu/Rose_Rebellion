@@ -79,8 +79,13 @@ bool CucaferaShiny::Start()
 
 bool CucaferaShiny::Update(float dt)
 {
-
 	if (!active) return true;
+
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		return true;
+	}
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
