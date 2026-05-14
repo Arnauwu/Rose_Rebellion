@@ -45,8 +45,8 @@ bool NinfaMare::Start()
     // Especificaciones físicas: Más grande (128x128 o similar)[cite: 1]
     texW = 128;
     texH = 128;
-
-    pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 3, bodyType::DYNAMIC);
+    pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW / 1.0, texH * 2.5, bodyType::DYNAMIC);
+    //pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 4, bodyType::DYNAMIC);
     pbody->listener = this;
     pbody->ctype = ColliderType::ENEMY;
 
@@ -70,21 +70,12 @@ bool NinfaMare::Start()
 bool NinfaMare::Update(float dt)
 {
     if (!active) return true;
+    if (damageCooldown > 0) damageCooldown -= dt;
 
     if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
     {
-        switch (currentState) {
-        case NinfaMareState::SPAWNING: HandleSpawningLogic(); break;
-        case NinfaMareState::IDLE:
-        case NinfaMareState::CHASE:
-        case NinfaMareState::ATTACK_SHOT:
-        case NinfaMareState::ATTACK_WAVE:
-        case NinfaMareState::ATTACK_RAIN:
-        case NinfaMareState::COOLDOWN:
-            Move();
-            break;
-        }
-
+        Move();
+        Knockback();
         ApplyPhysics();
     }
 
@@ -111,7 +102,7 @@ void NinfaMare::HandleSpawningLogic() {
 }
 
 void NinfaMare::Move() {
-    if (isdead || isKnockedback) return;
+    if (isdead) return;
 
     Player* player = Engine::GetInstance().entityManager->GetPlayer();
     Vector2D playerPos = player->GetPosition();
@@ -148,6 +139,17 @@ void NinfaMare::Move() {
             }
         }
         break;
+    case NinfaMareState::HURT:
+        velocity = { 0, 0 }; // Se queda quieta por el impacto
+
+        if (stateTimer.ReadMSec() >= hurtDurationMs) {
+            // Al terminar el tiempo, volvemos a CHASE. 
+            // Hasta este momento, OnCollision no dejaba entrar nuevos golpes.
+            currentState = NinfaMareState::CHASE;
+            anims.SetCurrent("fly");
+        }
+        break;
+
     case NinfaMareState::CHASE:
         anims.SetCurrent("fly");
         velocity.x = moveDir.getX() * speed;
@@ -191,6 +193,7 @@ void NinfaMare::Move() {
                     currentState = NinfaMareState::ATTACK_RAIN;
                     anims.SetCurrent("attack_rain");
                     if (anims.GetAnim("attack_rain") != nullptr) anims.GetAnim("attack_rain")->Reset();
+                    rainTimer.Start();
                 }
 
                 // Cambiamos el interruptor para que el SIGUIENTE ataque especial sea el otro
@@ -221,11 +224,27 @@ void NinfaMare::Move() {
         break;
 
     case NinfaMareState::ATTACK_RAIN:
-        velocity = { 0, 0 };
-        if (stateTimer.ReadMSec() > 1000 && anims.GetCurrentName() == "attack_rain") {
-            StartRainAttack();
-            anims.SetCurrent("fly");
+        velocity = { 0, 0 }; // Se queda totalmente quieta canalizando
+
+        // Mantener la animación de lluvia y evitar que cambie
+        anims.SetCurrent("attack_rain");
+
+        // Dejamos 1 segundo de "casteo" (preparación) antes de que empiece a caer el agua
+        if (stateTimer.ReadMSec() > 1000) {
+
+            // Cada 200ms genera una nueva bala desde el cielo
+            if (rainTimer.ReadMSec() > 200) {
+                StartRainAttack();
+                rainTimer.Start(); // Resetea el contador para la siguiente bala
+            }
         }
+
+        // El ataque dura 10 segundos + 1 segundo de preparación inicial = 11000ms
+        if (stateTimer.ReadMSec() >= 11000) {
+            currentState = NinfaMareState::COOLDOWN; // Acaba la lluvia y descansa
+            stateTimer.Start();
+        }
+        break;
 
         if (stateTimer.ReadMSec() >= 1800) {
             currentState = NinfaMareState::COOLDOWN; // Descanso tras completar el combo completo
@@ -287,7 +306,7 @@ void NinfaMare::Draw(float dt) {
     SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
     // Dibujar con escala mayor (1.5f para que sea imponente)[cite: 1]
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1.5);
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1.0);
 }
 
 void NinfaMare::Knockback() {
@@ -309,16 +328,70 @@ bool NinfaMare::CleanUp() {
 }
 
 void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
-    if (isdead || currentState == NinfaMareState::SPAWNING) return;
+    // CONDICIÓN CRÍTICA: Si ya está en HURT, ignoramos el resto de frames del mismo golpe
+    if (isdead || currentState == NinfaMareState::SPAWNING || currentState == NinfaMareState::HURT) {
+        return;
+    }
 
     if (physB->ctype == ColliderType::PLAYER_ATTACK) {
+        // 1. Aplicar daño
         TakeDamage(physB->listener->damage);
+
+        // 2. Cambiar estado inmediatamente (esto bloquea nuevas entradas aquí)
+        currentState = NinfaMareState::HURT;
+
+        // 3. Resetear y poner la animación una sola vez
+        anims.SetCurrent("hurt");
+        if (anims.GetAnim("hurt") != nullptr) {
+            anims.GetAnim("hurt")->Reset();
+        }
+
+        // 4. Iniciar el contador de tiempo de la animación (400ms)
+        stateTimer.Start();
+
+        // 5. Knockback opcional
         isKnockedback = true;
         knockbackTime = 200.0f;
     }
 }
 
 void NinfaMare::StartRainAttack() {
-    // Aquí puedes instanciar gotas de agua cayendo desde arriba de la pantalla
-    LOG("Ninfa Mare invoca una LLUVIA de agua!");
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    Vector2D playerPos = player->GetPosition();
+
+    // 1. Calculamos la posición en el cielo
+    float randomX = playerPos.getX() + (rand() % 600 - 300); // 300px a la izq o derecha
+    float spawnY = playerPos.getY() - 600; // 600px en el cielo
+    Vector2D spawnPos(randomX, spawnY);
+
+    // 2. Creamos la bala
+    auto raindrop = std::make_shared<HomingProjectile>(spawnPos);
+
+    // 3. Dejamos que haga su Start() (el cual crea el hitbox equivocadamente dentro del boss)
+    raindrop->Start();
+
+    // 4. ¡EL TRUCO CON TU MOTOR! 
+    // Borramos su colisionador atascado y se lo recreamos en el cielo
+    if (raindrop->pbody != nullptr) {
+
+        // Guardamos su tipo (ENEMY_PROJECTILE o el que sea) para no perderlo
+        ColliderType oldType = raindrop->pbody->ctype;
+
+        // Eliminamos el cuerpo que se quedó atascado en el Boss
+        Engine::GetInstance().physics->DeletePhysBody(raindrop->pbody);
+
+        // Le creamos un círculo nuevo exactamente en las coordenadas del cielo
+        // (Ponemos radio 15, puedes ajustarlo si la bala es más grande/pequeña)
+        raindrop->pbody = Engine::GetInstance().physics->CreateCircle((int)spawnPos.getX(), (int)spawnPos.getY(), 15, bodyType::DYNAMIC);
+
+        // Le volvemos a conectar las colisiones y su tipo
+        raindrop->pbody->listener = raindrop.get();
+        raindrop->pbody->ctype = oldType;
+    }
+
+    // 5. Corregimos su posición visual
+    raindrop->position = spawnPos;
+
+    // 6. Añadimos al juego
+    Engine::GetInstance().entityManager->AddEntity(raindrop);
 }

@@ -14,7 +14,8 @@ enum class NinfaMareState {
     ATTACK_WAVE, // Ataque de ola (manos adelante)
     ATTACK_RAIN, // Ataque de lluvia (manos arriba)
     COOLDOWN,    // Descanso entre ataques
-    DEAD         // Estado de muerte
+    DEAD,        // Estado de muerte
+    HURT
 };
 
 class NinfaMare : public Enemy {
@@ -51,10 +52,17 @@ public:
     float targetOffsetY = 120.0f;
     float attackRange = 1000.0f;
 
+    Timer rainTimer; // Temporizador para el ritmo de caída de la lluvia
+    float rainDurationMs = 10000.0f;
+
     Timer stateTimer;
-    float spawnDurationMs = 3000.0f;
+    float spawnDurationMs = 2000.0f;
     float shotCooldownMs = 500.0f;
     float specialAttackCooldownMs = 600.0f;
+
+    float hurtDurationMs = 400.0f;
+    float damageCooldown = 0.0f;
+    NinfaMareState previousState;
 
     int shotsFiredInCombo = 0;       // Cuenta cuántos disparos lleva
     bool nextSpecialIsWave = true;
