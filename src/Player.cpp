@@ -350,7 +350,7 @@ void Player::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
+		//anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
 		if (attackCollider != nullptr) {
 			Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 			attackCollider = nullptr;
@@ -455,12 +455,12 @@ void Player::Jump(float dt)
 			if (wallDirection == 1) {
 				velocity.x = -wJumpForceX;
 				lookingRight = false;
-				anims.SetCurrent("jump_left");
+				anims.SetCurrent("wall_jump_left");
 			}
 			else {
 				velocity.x = wJumpForceX;
 				lookingRight = true;
-				anims.SetCurrent("jump_right");
+				anims.SetCurrent("wall_jump_right");
 			}
 
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
@@ -590,7 +590,8 @@ void Player::Attack(float dt)
 				currentAttackOffsetY = -(texH * 0.8f) - currentAttackHeight;
 				currentAttackOffsetX = 0;
 
-				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
+				anims.SetCurrent(lookingRight ? "attack_up_right" : "attack_up_left");
+				anims.GetAnim(lookingRight ? "attack_up_right" : "attack_up_left")->SetLoop(false);
 			}
 			else if (lookDown)
 			{
@@ -601,7 +602,8 @@ void Player::Attack(float dt)
 				currentAttackOffsetY = (texH * 0.8f);
 				currentAttackOffsetX = 0;
 
-				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
+				anims.SetCurrent(lookingRight ? "attack_down_right" : "attack_down_left");
+				anims.GetAnim(lookingRight ? "attack_down_right" : "attack_down_left")->SetLoop(false);
 			}
 			else
 			{
@@ -636,8 +638,11 @@ void Player::Attack(float dt)
 		}
 
 		if (currentAttackTime >= attackDuration &&
-			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() ||
-				anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
+			(anims.GetAnim(anims.GetCurrentName())->HasFinishedOnce() ||
+			anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left" ||
+			anims.GetCurrentName() != "attack_up_right" || anims.GetCurrentName() != "attack_up_left" ||
+			anims.GetCurrentName() != "attack_down_right" || anims.GetCurrentName() != "attack_down_left")
+			)
 		{
 			isAttacking = false;
 			anims.SetCurrent("idle");
@@ -1111,11 +1116,20 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 										 {84,"death_left" } ,
 										 {96,"idle_right"},
 										 {120,"idle_left" },
-										 {144,"attack_right" },
-										 {156,"attack_left" } ,
+										 {144,"attack_down_right" },
+										 {156,"attack_down_left" } ,
 										 {168,"glide_right"},
 										 {192,"glide_left" },
-
+										 {216,"dash_right" },
+										 {228,"dash_left" },
+										 {240,"attack_right" },
+										 {252,"attack_left" },
+										 {264,"onWall_right" },
+										 {265,"jump_wall_right" },
+										 {276,"onWall_left" },
+										 {277,"jump_wall_left" },
+										 {288,"attack_up_right" },
+										 {300,"attack_up_left" }
 		};
 	}
 	return aliases;

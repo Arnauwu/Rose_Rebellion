@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="400" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="33" nextobjectid="684">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="400" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="33" nextobjectid="690">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -138,13 +138,12 @@
   <object id="411" gid="196" x="48644.6" y="4825.79" width="2427.43" height="1521.36"/>
   <object id="433" gid="201" x="46352" y="4825.79" width="2427.43" height="1521.36"/>
   <object id="560" gid="206" x="38272" y="3968" width="2560" height="1792"/>
-  <object id="569" gid="211" x="34688" y="5120" width="2944" height="2432"/>
   <object id="576" gid="214" x="31975.5" y="4608" width="2712.47" height="1700"/>
   <object id="584" gid="214" x="29312" y="4608" width="2688" height="1664"/>
   <object id="585" gid="214" x="26624" y="4608" width="2688" height="2048"/>
   <object id="586" gid="214" x="24704" y="4608" width="1920" height="1664"/>
   <object id="587" gid="214" x="22016" y="4480" width="2688" height="1444"/>
-  <object id="588" gid="202" x="35968" y="3968" width="2304" height="1792"/>
+  <object id="588" gid="202" x="37120" y="3968" width="1152" height="1792"/>
   <object id="595" gid="1073742038" x="22400" y="8704" width="3200" height="4260"/>
   <object id="596" gid="1073742038" x="27392" y="7296" width="3200" height="2724"/>
   <object id="600" gid="201" x="27520" y="1408" width="2304" height="1444"/>
@@ -163,6 +162,7 @@
   <object id="671" gid="201" x="14720" y="1408" width="2304" height="1444"/>
   <object id="672" gid="201" x="12160" y="1408" width="2304" height="1444"/>
   <object id="673" gid="201" x="9600" y="1408" width="2304" height="1444"/>
+  <object id="685" gid="211" x="34688" y="5120" width="2944" height="2432"/>
  </objectgroup>
  <objectgroup id="21" name="Fondo3">
   <properties>
@@ -206,24 +206,18 @@
   <object id="625" gid="216" x="22400" y="5120" width="3328" height="2084"/>
   <object id="633" gid="216" x="4736" y="4864" width="3840" height="2432"/>
   <object id="636" gid="216" x="8576" y="5120" width="4096" height="2560"/>
-  <object id="643" gid="216" x="22016" y="2609.45" width="5888" height="2609.45"/>
-  <object id="644" gid="216" x="26112" y="5072" width="2980.52" height="2512"/>
+  <object id="643" gid="216" x="22016" y="2688" width="5888" height="2688"/>
+  <object id="644" gid="216" x="26112" y="5072" width="2980.52" height="2384"/>
   <object id="645" gid="216" x="29056" y="4993.78" width="3328" height="2085.78"/>
   <object id="646" gid="216" x="32384" y="5120" width="2944" height="2432"/>
   <object id="647" gid="216" x="35328" y="5120" width="2304" height="2816"/>
-  <object id="677" gid="203" x="17792" y="2560" width="4224" height="2560"/>
+  <object id="677" gid="203" x="17792" y="2688" width="4224" height="2688"/>
   <object id="678" gid="203" x="13696" y="2560" width="4096" height="2560"/>
   <object id="679" gid="203" x="9600" y="2560" width="4096" height="2567.11"/>
   <object id="680" gid="215" x="18176" y="2560" width="4608" height="2560"/>
   <object id="681" gid="215" x="19200" y="2688" width="4608" height="2560"/>
   <object id="682" gid="215" x="20352" y="2816" width="4608" height="2560"/>
   <object id="683" gid="215" x="15104" y="2560" width="4608" height="2560"/>
- </objectgroup>
- <objectgroup id="23" name="Fondo5">
-  <properties>
-   <property name="BG" type="bool" value="true"/>
-   <property name="Draw" type="bool" value="true"/>
-  </properties>
  </objectgroup>
  <layer id="1" name="Map" width="400" height="40">
   <properties>
@@ -7976,7 +7970,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="28"/>
+   <tile gid="26"/>
    <tile/>
    <tile/>
    <tile/>
@@ -8001,7 +7995,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="30"/>
+   <tile gid="26"/>
    <tile/>
    <tile/>
    <tile/>
@@ -16232,12 +16226,14 @@
    <tile gid="40"/>
   </data>
  </layer>
- <objectgroup id="28" name="Fondo6" visible="0">
+ <objectgroup id="28" name="Fondo5    ">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
   </properties>
   <object id="515" gid="199" x="48640" y="5120" width="2560" height="1792"/>
+  <object id="688" gid="204" x="43904" y="5120" width="2304" height="1792"/>
+  <object id="689" gid="209" x="37632" y="3584" width="2304" height="1444"/>
  </objectgroup>
  <objectgroup color="#aa0000" id="19" name="Spikes" visible="0">
   <properties>
@@ -48512,7 +48508,7 @@
   <object id="541" name="ShieldKnight" type="ShieldKnight" x="29440" y="1536">
    <point/>
   </object>
-  <object id="542" name="ShieldKnight" type="ShieldKnight" x="34944" y="4352">
+  <object id="542" name="ShieldKnight" type="ShieldKnight" x="32896" y="4480">
    <point/>
   </object>
   <object id="543" name="ShieldKnight" type="ShieldKnight" x="22280" y="2416">
