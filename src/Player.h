@@ -40,18 +40,6 @@ enum class SkillTree {
 	IFRAMESUP
 };
 
-bool stUpDownAttack = false;
-bool stCombo = false;
-bool stDmgUp1 = false;
-bool stDmgUp2 = false;
-bool stDmgUp3 = false;
-
-bool stFastDash = false;
-bool stDefUp1 = false;
-bool stDefUp2 = false;
-bool stDefUp3 = false;
-bool stIframesUp = false;
-
 struct SDL_Texture;
 
 class Player : public Entity
@@ -97,6 +85,7 @@ public:
 	// Select camara follow mode
 	void SetCameraMode(CameraMode mode);
 	CameraMode GetCameraMode() const { return currentCameraMode; }
+
 private:
 
 	void GodModeMove(float dt);
@@ -187,19 +176,21 @@ public:
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
 
+	// Skills - Offensive Tree
 	bool stUpDownAttack = false;
 	bool stCombo = false;
 	bool stDmgUp1 = false;
 	bool stDmgUp2 = false;
 	bool stDmgUp3 = false;
 
+	// Skills - Defensive Tree
 	bool stFastDash = false;
 	bool stDefUp1 = false;
 	bool stDefUp2 = false;
 	bool stDefUp3 = false;
-	bool stIframesUp = false;
 
-	//utility tree
+	// Skills - Utility Tree
+	bool stIframesUp = false;
 
 	// Interact
 	bool canInteract = false;
