@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="15">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="10" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="15">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -1363,11 +1363,11 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="182"/>
+   <tile/>
    <tile/>
    <tile gid="103"/>
    <tile gid="104"/>
-   <tile gid="182"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1436,7 +1436,7 @@
    <tile/>
    <tile/>
    <tile gid="184"/>
-   <tile gid="132"/>
+   <tile gid="182"/>
    <tile gid="183"/>
    <tile/>
    <tile/>
@@ -1616,7 +1616,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="6" name="PlayerSpawns" x="3387.14" y="785">
+  <object id="6" name="PlayerSpawns" x="3403.14" y="761">
    <properties>
     <property name="FromRoom" type="file" value="Castle_Inside.tmx"/>
    </properties>
