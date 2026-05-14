@@ -14,7 +14,8 @@ enum class UIElementType
 	BUTTON,
 	CHECKBOX,
 	SLIDER,
-	DIALOGUE_BOX
+	DIALOGUE_BOX,
+	ITEM_INFO_BOX
 };
 
 enum class UIElementState

@@ -14,8 +14,11 @@
 #include "Player.h"
 #include "Log.h"
 #include "Textures.h"
+#include <fstream>
+#include <nlohmann/json.hpp>
 
-#include "tracy/Tracy.hpp"
+using json = nlohmann::json;
+
 
 GameScene::GameScene() : SceneBase() {
 }
@@ -109,6 +112,27 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().entityManager->Start();
 }
 
+void GameScene::LoadItemsLore() {
+	std::ifstream file("Assets/Dialogues/items_lore.json");
+	if (!file.is_open()) {
+		LOG("Error: No se pudo abrir dialogues.json");
+
+		return;
+	}
+
+	nlohmann::json j;
+	file >> j;
+
+	for (auto& element : j.items()) {
+		std::string key = element.key();
+		ItemLore lore;
+		lore.name = element.value()["name"].get<std::string>();
+		lore.description = element.value()["description"].get<std::string>();
+
+		itemsLoreDB[key] = lore;
+	}
+	LOG("Lore de items cargado correctamente.");
+}
 bool GameScene::Start() {
 	Engine::GetInstance().cinematics->CloseVideo();
 
@@ -187,7 +211,6 @@ bool GameScene::Start() {
 
 
 bool GameScene::Update(float dt) {
-	ZoneScoped;
 
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
@@ -235,7 +258,6 @@ bool GameScene::Update(float dt) {
 }
 
 bool GameScene::PostUpdate() {
-	ZoneScoped;
 
 	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {
@@ -365,8 +387,19 @@ bool GameScene::CleanUp() {
 }
 
 bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
+
 	Engine::GetInstance().audio->PlayFx(uiClick);
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
+	auto updateLorePanel = [&](const std::string& itemKey, bool hasItem) {
+		if (hasItem && itemsLoreDB.find(itemKey) != itemsLoreDB.end()) {
+			const auto& lore = itemsLoreDB[itemKey];
+			// Formatamos Título + Descripción
+			descPanel->text = lore.name + "\n\n" + lore.description;
+		}
+		else {
+			descPanel->text = "???\n\nObjeto desconocido, dicen que esta perdido por el reino.";
+		}
+	};
 	switch (uiElement->id) {
 	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
@@ -389,28 +422,18 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_MUSIC: Engine::GetInstance().audio->SetMusicVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
-
-		// Gestión texto de los objetos del inventario
+	
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("WEAPON", p && p->HasItem(ItemID::WEAPON));
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_GLIDE:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
-		break;
-
-	case (int)GameUI_ID::INV_ITEM_KEY:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("GLIDE", p && p->HasItem(ItemID::GLIDE));
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_ORB:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("STRENGTH_ORB", p && p->HasItem(ItemID::STRENGTH_ORB));
 		break;
-
 	}
 	return true;
 }
@@ -500,13 +523,16 @@ void GameScene::CreateInventoryUI() {
 	}
 
 	descPanel = uiManager->CreateUIElement(
-		UIElementType::BUTTON,
-		(int)GameUI_ID::INV_DESC_TEXT, "Select an item...", 0.72f, 0.55f, 0.20f, 0.60f, sceneObserver
+		UIElementType::ITEM_INFO_BOX, // Nuevo tipo dedicado
+		(int)GameUI_ID::INV_DESC_TEXT,
+		"Selecciona un objeto para ver su historia...",
+		0.72f, 0.55f, 0.20f, 0.60f,
+		sceneObserver
 	);
-	descPanel->SetBgTexture(textBgUI);
 
-	descPanel->state = UIElementState::DISABLED;
+	descPanel->SetBgTexture(textBgUI);
 	inventoryUI.push_back(descPanel);
+
 }
 
 void GameScene::CreateSkillUpgradeUI() {

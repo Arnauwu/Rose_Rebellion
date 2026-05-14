@@ -66,6 +66,11 @@ struct ButtonDef { int id; const char* text; };
 
 struct SDL_Texture;
 
+struct ItemLore {
+	std::string name;
+	std::string description;
+};
+
 class GameScene : public SceneBase {
 public:
 	GameScene();
@@ -73,7 +78,7 @@ public:
 
 	//Load Map
 	void LoadMap(std::string mapFile);
-
+	void LoadItemsLore();
 	// Scene lifecycle
 	bool Start() override;
 	bool Update(float dt) override;
@@ -163,6 +168,7 @@ private:
 	std::vector<std::shared_ptr<UIElement>> skillUI;
 
 	// Descriptión Panel
+	std::unordered_map<std::string, ItemLore> itemsLoreDB;
 	std::shared_ptr<UIElement> descPanel = nullptr;
 
 	// Pause Vectos
