@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.1" name="princess" tilewidth="256" tileheight="256" tilecount="300" columns="12">
- <image source="princess.PNG" width="3072" height="6655"/>
+<tileset version="1.10" tiledversion="1.12.1" name="princess" tilewidth="256" tileheight="256" tilecount="312" columns="12">
+ <image source="princess.PNG" width="3072" height="6656"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
@@ -236,6 +236,15 @@
    <frame tileid="290" duration="100"/>
    <frame tileid="291" duration="100"/>
    <frame tileid="292" duration="100"/>
+  </animation>
+ </tile>
+ <tile id="300">
+  <animation>
+   <frame tileid="300" duration="100"/>
+   <frame tileid="301" duration="100"/>
+   <frame tileid="302" duration="100"/>
+   <frame tileid="303" duration="100"/>
+   <frame tileid="304" duration="100"/>
   </animation>
  </tile>
 </tileset>
