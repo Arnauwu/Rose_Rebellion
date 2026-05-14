@@ -154,6 +154,7 @@
     <ClCompile Include="src\Cucafera.cpp" />
     <ClCompile Include="src\CucaferaShiny.cpp" />
     <ClCompile Include="src\DashObj.cpp" />
+    <ClCompile Include="src\Dip.cpp" />
     <ClCompile Include="src\Dragon.cpp" />
     <ClCompile Include="src\DragonProjectile.cpp" />
     <ClCompile Include="src\Door.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="src\Cucafera.h" />
     <ClInclude Include="src\CucaferaShiny.h" />
     <ClInclude Include="src\DashObj.h" />
+    <ClInclude Include="src\Dip.h" />
     <ClInclude Include="src\Dragon.h" />
     <ClInclude Include="src\DragonProjectile.h" />
     <ClInclude Include="src\Door.h" />
