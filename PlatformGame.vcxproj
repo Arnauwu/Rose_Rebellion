@@ -149,16 +149,21 @@
   <ItemGroup>
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
+    <ClCompile Include="src\Bat.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
     <ClCompile Include="src\Cinematics.cpp" />
     <ClCompile Include="src\Cucafera.cpp" />
+    <ClCompile Include="src\CucaferaMutant.cpp" />
     <ClCompile Include="src\CucaferaShiny.cpp" />
     <ClCompile Include="src\DashObj.cpp" />
     <ClCompile Include="src\Dragon.cpp" />
     <ClCompile Include="src\DragonProjectile.cpp" />
     <ClCompile Include="src\Door.cpp" />
+    <ClCompile Include="src\GwellBoss.cpp" />
+    <ClCompile Include="src\Minairon.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
     <ClCompile Include="src\SpecialFloors.cpp" />
+    <ClCompile Include="src\ToxicBall.cpp" />
     <ClCompile Include="src\UIDialogueBox.cpp" />
     <ClCompile Include="src\DialogueManager.cpp" />
     <ClCompile Include="src\Demon.cpp" />
@@ -196,7 +201,6 @@
     <ClCompile Include="src\ShieldKnight.cpp" />
     <ClCompile Include="src\Sickle.cpp" />
     <ClCompile Include="src\SkillPointOrb.cpp" />
-    <ClCompile Include="src\SpiderEnemy.cpp" />
     <ClCompile Include="src\SwordKnight.cpp" />
     <ClCompile Include="src\Textures.cpp" />
     <ClCompile Include="src\Timer.cpp" />
@@ -211,16 +215,21 @@
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
+    <ClInclude Include="src\Bat.h" />
     <ClInclude Include="src\CameraController.h" />
     <ClInclude Include="src\Cinematics.h" />
     <ClInclude Include="src\Cucafera.h" />
+    <ClInclude Include="src\CucaferaMutant.h" />
     <ClInclude Include="src\CucaferaShiny.h" />
     <ClInclude Include="src\DashObj.h" />
     <ClInclude Include="src\Dragon.h" />
     <ClInclude Include="src\DragonProjectile.h" />
     <ClInclude Include="src\Door.h" />
+    <ClInclude Include="src\GwellBoss.h" />
+    <ClInclude Include="src\Minairon.h" />
     <ClInclude Include="src\NinfaBoss.h" />
     <ClInclude Include="src\SpecialFloors.h" />
+    <ClInclude Include="src\ToxicBall.h" />
     <ClInclude Include="src\UIDialogueBox.h" />
     <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />
@@ -261,7 +270,6 @@
     <ClInclude Include="src\ShieldKnight.h" />
     <ClInclude Include="src\Sickle.h" />
     <ClInclude Include="src\SkillPointOrb.h" />
-    <ClInclude Include="src\SpiderEnemy.h" />
     <ClInclude Include="src\SwordKnight.h" />
     <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\Timer.h" />

@@ -145,9 +145,21 @@
     </Filter>
     <Filter Include="Source Files\Game\Entity\Bosses\Dragon">
       <UniqueIdentifier>{e8439573-1af1-4664-b322-2b6c4d96497a}</UniqueIdentifier>
-	</Filter>
-	<Filter Include="Source Files\Game\Entity\Door">
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Door">
       <UniqueIdentifier>{b5345a9d-0db3-46b9-b931-68ea536ab439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Minairon">
+      <UniqueIdentifier>{8ab5b7db-9061-49bd-b37c-38cecc13b794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Bat">
+      <UniqueIdentifier>{f101241d-3a0c-4910-a365-14f20453295d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\ToxicBall">
+      <UniqueIdentifier>{cb15113c-7074-4831-ad5c-f8e806683d6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Bosses\GwellBoss">
+      <UniqueIdentifier>{3f781e1f-90dd-4a9e-840c-eaca8ac149a4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -249,9 +261,6 @@
     <ClCompile Include="src\Hud.cpp">
       <Filter>Source Files\Utils\Hud</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpiderEnemy.cpp">
-      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
-    </ClCompile>
     <ClCompile Include="src\Ninfa.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Ninfa</Filter>
     </ClCompile>
@@ -338,9 +347,24 @@
     </ClCompile>
     <ClCompile Include="src\DragonProjectile.cpp">
       <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="src\Door.cpp">
       <Filter>Source Files\Game\Entity\Door</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CucaferaMutant.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Minairon.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Minairon</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Bat.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Bat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ToxicBall.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\ToxicBall</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GwellBoss.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -437,9 +461,6 @@
     <ClInclude Include="src\Hud.h">
       <Filter>Source Files\Utils\Hud</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpiderEnemy.h">
-      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
-    </ClInclude>
     <ClInclude Include="src\Map.h">
       <Filter>Source Files\Engine\Map</Filter>
     </ClInclude>
@@ -529,9 +550,24 @@
     </ClInclude>
     <ClInclude Include="src\DragonProjectile.h">
       <Filter>Source Files\Game\Entity\Bosses\Dragon</Filter>
-	</ClInclude>
-	<ClInclude Include="src\Door.h">
+    </ClInclude>
+    <ClInclude Include="src\Door.h">
       <Filter>Source Files\Game\Entity\Door</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CucaferaMutant.h">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Minairon.h">
+      <Filter>Source Files\Game\Entity\Enemies\Minairon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bat.h">
+      <Filter>Source Files\Game\Entity\Enemies\Bat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ToxicBall.h">
+      <Filter>Source Files\Game\Entity\Enemies\ToxicBall</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GwellBoss.h">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

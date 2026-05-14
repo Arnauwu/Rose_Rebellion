@@ -11,6 +11,7 @@
 #include "EntityManager.h"
 #include  "Map.h"
 #include <algorithm>
+#include <cstdlib>
 
 SpecialFloor::SpecialFloor() : Entity(EntityType::SPECIALFLOOR)
 {
@@ -26,10 +27,10 @@ bool SpecialFloor::Start() {
 	texW = width;
 	texH = height;
 
-	//Initialize animation
-	std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"} };
+	// Initialize animation
+	std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"}, {2,"reconstruct"} };
 	anims.LoadFromTSX("Assets/Maps/Catacombs/SpecialFloor_Broken.tsx", aliases);
-	anims.SetCurrent("broken");
+	anims.SetCurrent("normal");
 
 	if (floorType == TypeFloor::BROKENFLOOR) {
 		texture = Engine::GetInstance().textures->Load("Assets/Maps/Catacombs/SpecialFloor_Broken.png");
@@ -109,13 +110,13 @@ bool SpecialFloor::Update(float dt)
 	}
 	else {
 		if (isWaiting) {
-			// 1. Si está esperando, restamos el tiempo
+			// If you're waiting, we'll deduct the time
 			currentWaitTime -= dt;
 			if (currentWaitTime <= 0) {
-				isWaiting = false; // El tiempo se ha acabado, vuelve a moverse
+				isWaiting = false; // Time's up, get moving again
 			}
 			else {
-				// Mantiene la plataforma totalmente quieta mientras espera
+				// Keep the platform completely still whilst you wait
 				Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
 			}
 		}
@@ -243,25 +244,40 @@ bool SpecialFloor::Update(float dt)
 	// Breakage Management
 	if (floorType == TypeFloor::BROKENFLOOR && isSteppedOn) {
 		if (isBroken) {
-			// Si está rota, contar tiempo para reaparecer
+			// If it's broken, wait for it to reappear
 			currentRespawnTime -= dt;
+
+			if (currentRespawnTime <= animBreakDuration && anims.GetCurrentName() != "reconstruct") {
+				anims.SetCurrent("reconstruct");
+				anims.GetAnim("reconstruct")->Reset();
+				anims.GetAnim("reconstruct")->SetLoop(false);
+			}
+
 			if (currentRespawnTime <= 0) {
 				isBroken = false;
 				isSteppedOn = false;
 				currentBreakTime = breakTimeMax;
 
-				// Volver a activar colisiones
+				anims.SetCurrent("normal");
+
+				// Re-enable collisions
 				if (pbody != nullptr) pbody->SetCollisionsActive(true);
 			}
 		}
 		else if (isSteppedOn) {
-			// Si la han pisado y no está rota, contar tiempo para romperse
+			// If it’s been stepped on and isn’t broken, wait for it to break
 			currentBreakTime -= dt;
+
+			if (currentBreakTime <= animBreakDuration && anims.GetCurrentName() != "broken") {
+				anims.SetCurrent("broken");
+				anims.GetAnim("broken")->Reset();
+				anims.GetAnim("broken")->SetLoop(false);
+			}
+
 			if (currentBreakTime <= 0) {
 				isBroken = true;
 				currentRespawnTime = respawnTimeMax;
 
-				// Desactivar colisiones sin borrar el cuerpo (el jugador caerá a través)
 				if (pbody != nullptr) pbody->SetCollisionsActive(false);
 			}
 		}
@@ -276,16 +292,54 @@ void SpecialFloor::Draw(float dt)
 	{
 		anims.Update(dt);
 	}
+	
+	if (isBroken && currentRespawnTime > animBreakDuration) {
+		return;
+	}
+
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	// Update render position using your PhysBody helper
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
 
-	Engine::GetInstance().render->DrawTexture(texture, x, y - animFrame.h / 3, &animFrame, 1);
+	
 
+	if (texture != nullptr)
+	{
+		// --- SHAKE LOGIC ---
+
+		int shakeOffsetX = 0;
+		int shakeOffsetY = 0;
+
+		if (floorType == TypeFloor::BROKENFLOOR && isSteppedOn && !isBroken && currentBreakTime > animBreakDuration) {
+
+			shakeOffsetX = (rand() % 5) - 2;
+			shakeOffsetY = (rand() % 5) - 2; 
+		}
+
+		// ---- MOSAICO SISTEM (TILING) ----
+
+		int drawHeight = (int)(texH * 1.8f);
+
+		float aspect = (float)animFrame.w / (float)animFrame.h;
+		float idealDrawWidth = drawHeight * aspect;
+
+		int numBlocks = std::max(1, (int)std::ceil((float)texW / idealDrawWidth));
+		int actualDrawWidth = texW / numBlocks;
+
+		int startX = (x - (texW / 2)) + shakeOffsetX; //Apply shake to the floor
+		int topY = (y - (texH / 2)) + shakeOffsetY;
+
+		int bottomY = topY + drawHeight;
+
+		for (int i = 0; i < numBlocks; i++)
+		{
+			SDL_Rect destRect = { startX + (i * actualDrawWidth), bottomY, actualDrawWidth, drawHeight };
+			Engine::GetInstance().render->DrawRotatedImage(texture, &destRect, &animFrame);
+		}
+	}
 }
 
 bool SpecialFloor::CleanUp()
@@ -323,8 +377,14 @@ void SpecialFloor::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shape
 
 		if (floorType == TypeFloor::BROKENFLOOR)
 		{
-			isSteppedOn = true;
-			LOG("Suelo ROMPIBLE");
+			int xP, yP, xB, yB;
+			physB->GetPosition(xP, yP);
+			pbody->GetPosition(xB, yB);
+
+			if (!isSteppedOn && !isBroken && yP <= yB ) {
+				isSteppedOn = true;		
+				LOG("Suelo ROMPIBLE pisado.");
+			}
 		}
 		else if (floorType == TypeFloor::HORIZONTALFLOOR)
 		{

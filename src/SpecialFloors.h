@@ -28,18 +28,19 @@ public:
 	bool Update(float dt);
 	bool CleanUp();
 
-	// OnCollision function for the player. 
 	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
 
 	bool Destroy();
+
 private:
 
 	void Draw(float dt);
 
 public:
+	
 	TypeFloor floorType = TypeFloor::NORMALFLOOR;
 
 	int width = 32;
@@ -74,6 +75,7 @@ public:
 
 	// Breakable Floor Variables
 	float breakTimeMax = 1000.0f; // Milliseconds = 1 second
+	float animBreakDuration = 1000.0f; // Duration of the break animation
 	float currentBreakTime = 0.0f;
 	bool isSteppedOn = false;
 

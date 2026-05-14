@@ -10,11 +10,11 @@ enum class Facing { DOWN, LEFT, UP, RIGHT };
 
 struct SDL_Texture;
 
-class SpiderEnemy : public Enemy
+class CucaferaMutant : public Enemy
 {
 public:
-    SpiderEnemy();
-    virtual ~SpiderEnemy();
+    CucaferaMutant();
+    virtual ~CucaferaMutant();
     bool Awake();
     bool Start();
     bool Update(float dt);
