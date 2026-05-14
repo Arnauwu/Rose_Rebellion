@@ -1156,6 +1156,95 @@ void Player::UnlockDash() {
 	LOG("Dash Unlocked! You can do a dash");
 }
 
+void Player::UnlockSkill(SkillTree skill, int currentForceOrbs)
+{
+	switch (skill)
+	{
+	case SkillTree::UPDOWNATTACK:
+		if (currentForceOrbs >= 1)
+		{
+			stUpDownAttack = true;
+			currentForceOrbs--;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::COMBO:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stCombo = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP1:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDmgUp1 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP2:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDmgUp2 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP3:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDmgUp3 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::FASTDASH:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stFastDash = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP1:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDefUp1 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP2:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDefUp2 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP3:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stDefUp3 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::IFRAMESUP:
+		if (currentForceOrbs >= 1)
+		{
+			currentForceOrbs--;
+			stIframesUp = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	default:
+		break;
+	}
+}
+
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
@@ -1535,57 +1624,57 @@ void Player::DevTools(float dt)
 		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
 	}
 
-	// Unlock Skills
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		if (currentForceOrbs > 0)
-		{
-			if (OffensiveSkills[2] == false)
-			{
-				LOG("Unlocking Offensive Skill:");
-				if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
-				else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
-				else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
-				currentForceOrbs--;
-			}
-			else { LOG("Offensive Tree Maxed"); }
-		}
-		else { LOG("Not Enough Skill Points"); }
-	}
+	//// Unlock Skills
+	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	//{
+	//	if (currentForceOrbs > 0)
+	//	{
+	//		if (OffensiveSkills[2] == false)
+	//		{
+	//			LOG("Unlocking Offensive Skill:");
+	//			if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
+	//			else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
+	//			else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
+	//			currentForceOrbs--;
+	//		}
+	//		else { LOG("Offensive Tree Maxed"); }
+	//	}
+	//	else { LOG("Not Enough Skill Points"); }
+	//}
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		if (currentForceOrbs > 0)
-		{
-			if (DefensiveSkills[2] == false)
-			{
-				LOG("Unlocking Defensive Skill:");
-				if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
-				else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
-				else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
-				currentForceOrbs--;
-			}
-			else { LOG("Defensive Tree Maxed"); }
-		}
-		else { LOG("Not Enough Skill Points"); }
-	}
+	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	//{
+	//	if (currentForceOrbs > 0)
+	//	{
+	//		if (DefensiveSkills[2] == false)
+	//		{
+	//			LOG("Unlocking Defensive Skill:");
+	//			if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
+	//			else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
+	//			else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
+	//			currentForceOrbs--;
+	//		}
+	//		else { LOG("Defensive Tree Maxed"); }
+	//	}
+	//	else { LOG("Not Enough Skill Points"); }
+	//}
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		if (currentForceOrbs > 0)
-		{
-			if (UtilitySkills[2] == false)
-			{
-				LOG("Unlocking Utility Skill:");
-				if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
-				else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
-				else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
-				currentForceOrbs--;
-			}
-			else { LOG("Utility Tree Maxed"); }
-		}
-		else { LOG("Not Enough Skill Points"); }
-	}
+	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	//{
+	//	if (currentForceOrbs > 0)
+	//	{
+	//		if (UtilitySkills[2] == false)
+	//		{
+	//			LOG("Unlocking Utility Skill:");
+	//			if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
+	//			else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
+	//			else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
+	//			currentForceOrbs--;
+	//		}
+	//		else { LOG("Utility Tree Maxed"); }
+	//	}
+	//	else { LOG("Not Enough Skill Points"); }
+	//}
 
 	if (godMode)
 	{
