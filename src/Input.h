@@ -23,6 +23,33 @@ enum KeyState
 	KEY_UP
 };
 
+enum GamepadButton
+{
+	GAMEPAD_A = 0,
+	GAMEPAD_B = 1,
+	GAMEPAD_X = 2,
+	GAMEPAD_Y = 3,
+	GAMEPAD_LB = 4,
+	GAMEPAD_RB = 5,
+	GAMEPAD_BACK = 6,
+	GAMEPAD_START = 7,
+	GAMEPAD_LSTICK = 8,
+	GAMEPAD_RSTICK = 9,
+	GAMEPAD_GUIDE = 10,
+	GAMEPAD_COUNT = 11
+};
+
+enum GamepadAxis
+{
+	GAMEPAD_AXIS_LSTICK_X = 0,
+	GAMEPAD_AXIS_LSTICK_Y = 1,
+	GAMEPAD_AXIS_RSTICK_X = 2,
+	GAMEPAD_AXIS_RSTICK_Y = 3,
+	GAMEPAD_AXIS_LT = 4,
+	GAMEPAD_AXIS_RT = 5,
+	GAMEPAD_AXIS_COUNT = 6
+};
+
 class Input : public Module
 {
 
@@ -58,6 +85,11 @@ public:
 
 	void ClearMouseInput();
 
+	// Gamepad input methods
+	KeyState GetGamepadButton(GamepadButton button) const;
+	float GetGamepadAxis(GamepadAxis axis) const;
+	bool IsGamepadConnected() const { return gamepadConnected; }
+
 	// Check if a certain window event happened
 	bool GetWindowEvent(EventWindow ev);
 
@@ -73,4 +105,13 @@ private:
 	int mouseMotionY;
 	int mouseX;
 	int mouseY;
+
+	// Gamepad
+	bool gamepadConnected = false;
+	SDL_Gamepad* gamepad = nullptr;
+	KeyState gamepadButtons[GAMEPAD_COUNT];
+	float gamepadAxes[GAMEPAD_AXIS_COUNT];
+
+	void UpdateGamepadState();
+	void UpdateGamepadButtons();
 };

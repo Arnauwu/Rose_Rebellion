@@ -266,43 +266,44 @@ void Player::GetPhysicsValues()
 
 void Player::Move() {
 	bool isMovingThisFrame = false;
-	// Move Left
+	float moveInput = 0.0f;
+
+	// Keyboard input
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && isDashing == false)
 	{
-		velocity.x = -speed;
-		lookingRight = false;
+		moveInput = -1.0f;
+	}
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
+	{
+		moveInput = 1.0f;
+	}
+
+	if (Engine::GetInstance().input->IsGamepadConnected())
+	{
+		float gamepadInput = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LSTICK_X);
+		if (fabs(gamepadInput) > 0.1f)
+		{
+			moveInput = gamepadInput;
+		}
+	}
+
+	if (moveInput != 0.0f && isDashing == false)
+	{
+		velocity.x = moveInput * speed;
+		lookingRight = (moveInput > 0.0f);
 		isMovingThisFrame = true;
+
 		if (currentAnimPriority == 3)
 		{
-			anims.SetCurrent("fall_left");
+			anims.SetCurrent(lookingRight ? "fall_right" : "fall_left");
 		}
 		else if (currentAnimPriority == 2)
 		{
-			anims.SetCurrent("jump_left");
+			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
 		}
 		else if (currentAnimPriority <= 1)
 		{
-			anims.SetCurrent("move_left");
-			currentAnimPriority = 1;
-		}
-	}
-	// Move Right
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && isDashing == false)
-	{
-		velocity.x = speed;
-		lookingRight = true;
-		isMovingThisFrame = true;
-		if (currentAnimPriority == 3)
-		{
-			anims.SetCurrent("fall_right");
-		}
-		else if (currentAnimPriority == 2)
-		{
-			anims.SetCurrent("jump_right");
-		}
-		if (currentAnimPriority <= 1)
-		{
-			anims.SetCurrent("move_right");
+			anims.SetCurrent(lookingRight ? "move_right" : "move_left");
 			currentAnimPriority = 1;
 		}
 	}
@@ -310,15 +311,7 @@ void Player::Move() {
 	{
 		if (!isAttacking && !isJumping && !isDashing)
 		{
-			if (lookingRight)
-			{
-				anims.SetCurrent("idle_right");
-			}
-			else
-			{
-				anims.SetCurrent("idle_left");
-			}
-
+			anims.SetCurrent(lookingRight ? "idle_right" : "idle_left");
 			currentAnimPriority = 0;
 		}
 	}
@@ -327,32 +320,26 @@ void Player::Move() {
 
 	if (isWalkingConditions)
 	{
-		// Si AHORA camina, pero en el frame anterior NO caminaba 
-		// (porque estaba parada, saltando, etc.), forzamos el sonido inmediato.
 		if (!wasWalking) {
 			stepTimer = timeBetweenSteps;
 		}
 
-		// Sumamos el tiempo
 		stepTimer += Engine::GetInstance().GetDt() / 1000.0f;
 
-		// Si llegamos a los 14.9s (o lo hemos forzado arriba), suena
 		if (stepTimer >= timeBetweenSteps)
 		{
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
-			stepTimer = 0.0f; // Reiniciamos para los próximos 15 segundos
+			stepTimer = 0.0f;
 		}
 	}
 	else
 	{
-		// Si deja de cumplir las condiciones (se para, salta, etc.), CORTAMOS.
 		if (wasWalking)
 		{
 			Engine::GetInstance().audio->StopFx(caminarPrincesa);
 		}
 	}
 
-	// Guardamos el estado para el siguiente frame
 	wasWalking = isWalkingConditions;
 }
 
@@ -429,40 +416,53 @@ void Player::RespawnFromVoid()
 
 void Player::Jump(float dt)
 {
+	bool jumpPressed = false;
+
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		// --- 1. WALL JUMP (Estilo Hollow Knight) ---
-		if (onWall == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
+		jumpPressed = true;
+	}
+
+	if (Engine::GetInstance().input->IsGamepadConnected() && 
+		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_A) == KEY_DOWN)
+	{
+		jumpPressed = true;
+	}
+
+	if (jumpPressed)
+	{
+		// WALL JUMP
+		bool wallJumpInput = false;
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
+			wallJumpInput = true;
+		if (Engine::GetInstance().input->IsGamepadConnected() &&
+			Engine::GetInstance().input->GetGamepadButton(GAMEPAD_LB) == KEY_REPEAT)
+			wallJumpInput = true;
+
+		if (onWall == true && onGround == false && wallJumpInput)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
-			onWall = false; // Nos despegamos de la pared
+			onWall = false;
 			onAir = true;
 
 			isWallJumping = true;
 			wallJumpTimer = 0.30f;
 
-
-			// Fuerza del rebote
 			float wJumpForceY = jumpForce * 1.0f;
-			// ¡Aumentamos el multiplicador a 2.5f (o más) para que el empuje sea innegable!
 			float wJumpForceX = speed * 1.0f;
 
-			// Escupir al jugador en la dirección contraria a la pared
 			if (wallDirection == 1) {
-				// Pared a la derecha -> Salto a la izquierda
 				velocity.x = -wJumpForceX;
 				lookingRight = false;
 				anims.SetCurrent("jump_left");
 			}
 			else {
-				// Pared a la izquierda -> Salto a la derecha
 				velocity.x = wJumpForceX;
 				lookingRight = true;
 				anims.SetCurrent("jump_right");
 			}
 
-			// Aplicar las fuerzas directamente al cuerpo físico AHORA MISMO
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 			Engine::GetInstance().physics->SetYVelocity(pbody, wJumpForceY);
 
@@ -470,67 +470,56 @@ void Player::Jump(float dt)
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
 
-			LOG("Wall Jump Estilo HK");
+			LOG("Wall Jump");
 		}
-		// --- 2. BASE JUMP ---
+		// BASE JUMP
 		else if (isJumping == false && onGround == true)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			//Jump Dust
 			float footY = position.getY() + (texH / 2.0f) - 10.0f;
 			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
 
-			if (lookingRight == true)
-			{
-				anims.SetCurrent("jump_right");
-			}
-			else
-			{
-				anims.SetCurrent("jump_left");
-			}
+			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
 			currentAnimPriority = 2;
 
-			//Extra Jump Force
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
 
 			LOG("Jump");
 		}
-		// Double Jump
-		else if (GameManager::GetInstance().gameState.doubleJumpUnlocked && (isJumping == true || onAir == true) && secondJumpUsed == false)
+		// DOUBLE JUMP
+		else if (GameManager::GetInstance().gameState.doubleJumpUnlocked && 
+			(isJumping == true || onAir == true) && secondJumpUsed == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			if (lookingRight == true)
-			{
-				anims.SetCurrent("jump_right");
-			}
-			else
-			{
-				anims.SetCurrent("jump_left");
-			}
+			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
 			currentAnimPriority = 2;
 
-			//Extra Jump Force
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
 
 			LOG("Double Jump");
 		}
 	}
-	// --- 4. EXTENDER SALTO MANTENIENDO EL BOTÓN ---
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
+	// HOLD JUMP FOR EXTRA FORCE
+	else if ((Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT || 
+		(Engine::GetInstance().input->IsGamepadConnected() && 
+			Engine::GetInstance().input->GetGamepadButton(GAMEPAD_A) == KEY_REPEAT)) && 
+		isJumping && isJumpKeyDown && jumpHoldTime <= maxJumpHoldTime)
 	{
-		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true); //TO DO: Adjust Value
-		jumpHoldTime += dt / 1000; //To seconds
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, jumpForce * 0.005f, true);
+		jumpHoldTime += dt / 1000.0f;
 	}
-	// --- 5. SOLTAR BOTÓN DE SALTO ---
-	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
+	// RELEASE JUMP
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP ||
+		(Engine::GetInstance().input->IsGamepadConnected() && 
+			Engine::GetInstance().input->GetGamepadButton(GAMEPAD_A) == KEY_UP))
 	{
 		isJumpKeyDown = false;
 	}
@@ -538,22 +527,47 @@ void Player::Jump(float dt)
 
 void Player::Attack(float dt)
 {
-	// 1. Iniciar el ataque 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && !isGliding && !isAttacking)
+	bool attackPressed = false;
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		attackPressed = true;
+	}
+
+	if (Engine::GetInstance().input->IsGamepadConnected() &&
+		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_X) == KEY_DOWN)
+	{
+		attackPressed = true;
+	}
+
+	// 1. Iniciar el ataque
+	if (attackPressed && !isGliding && !isAttacking)
 	{
 		if (HasItem(ItemID::WEAPON))
 		{
 			Engine::GetInstance().audio->PlayFx(attackFx);
 			isAttacking = true;
 
-			// Detectar dirección vertical mediante teclado
-			bool lookUp = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT);
-			bool lookDown = (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && !onGround);
+			bool lookUp = false;
+			bool lookDown = false;
+
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+				lookUp = true;
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && !onGround)
+				lookDown = true;
+
+			if (Engine::GetInstance().input->IsGamepadConnected())
+			{
+				float rstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_RSTICK_Y);
+				if (rstickY < -0.5f)
+					lookUp = true;
+				else if (rstickY > 0.5f && !onGround)
+					lookDown = true;
+			}
 
 			currentAttackTime = 0.0f;
 			timeSinceLastAttack = 0.0f;
 
-			// Configurar dimensiones según el combo
 			if (comboStep == 0)
 			{
 				damage = 10;
@@ -567,20 +581,16 @@ void Player::Attack(float dt)
 				currentAttackHeight = 90;
 			}
 
-
 			if (lookUp)
 			{
-				// Intercambio de dimensiones para ataque vertical
 				int temp = currentAttackWidth;
 				currentAttackWidth = currentAttackHeight;
 				currentAttackHeight = temp;
 
-				// Offset negativo = ARRIBA
 				currentAttackOffsetY = -(texH * 0.8f) - currentAttackHeight;
-				currentAttackOffsetX = 0; // Usamos 0 para identificar que no es lateral
+				currentAttackOffsetX = 0;
 
-				if (lookingRight) anims.SetCurrent("attack_right");
-				else anims.SetCurrent("attack_left");
+				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
 			}
 			else if (lookDown)
 			{
@@ -588,36 +598,23 @@ void Player::Attack(float dt)
 				currentAttackWidth = currentAttackHeight;
 				currentAttackHeight = temp;
 
-				// Offset POSITIVO = ABAJO
 				currentAttackOffsetY = (texH * 0.8f);
 				currentAttackOffsetX = 0;
 
-				if (lookingRight) anims.SetCurrent("attack_right");
-				else anims.SetCurrent("attack_left");
+				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
 			}
 			else
 			{
-				// Ataque lateral estándar
 				currentAttackOffsetX = lookingRight ? (texW / 2 + currentAttackWidth / 2) : -(texW / 2 + currentAttackWidth / 2);
 				currentAttackOffsetY = 0;
 
-				if (lookingRight)
-				{
-					anims.SetCurrent("attack_right");
-					anims.GetAnim("attack_right")->SetLoop(false);
-				}
-				else
-				{
-					anims.SetCurrent("attack_left");
-					anims.GetAnim("attack_left")->SetLoop(false);
-				}
+				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
+				anims.GetAnim(lookingRight ? "attack_right" : "attack_left")->SetLoop(false);
 			}
-
 
 			currentAnimPriority = 4;
 			comboStep = (comboStep + 1) % 2;
 
-			// Creación del sensor de ataque
 			attackCollider = Engine::GetInstance().physics->CreateRectangleSensor(
 				position.getX() + currentAttackOffsetX,
 				position.getY() + currentAttackOffsetY,
@@ -630,7 +627,6 @@ void Player::Attack(float dt)
 		}
 	}
 
-	// 2. Control del ataque activo
 	if (isAttacking)
 	{
 		currentAttackTime += dt / 1000.0f;
@@ -639,7 +635,6 @@ void Player::Attack(float dt)
 			attackCollider->SetPosition(position.getX() + currentAttackOffsetX, position.getY() + currentAttackOffsetY);
 		}
 
-		// Finalizar ataque
 		if (currentAttackTime >= attackDuration &&
 			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() ||
 				anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
@@ -657,27 +652,32 @@ void Player::Attack(float dt)
 	}
 }
 
-void Player::Glide() // Gliding
+void Player::Glide()
 {
 	if (GameManager::GetInstance().gameState.glideUnlocked)
 	{
-		if (onAir == true && onGround == false && Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+		bool glidePressed = false;
+
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+			glidePressed = true;
+
+		if (Engine::GetInstance().input->IsGamepadConnected() &&
+			Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LT) > 0.5f)
+			glidePressed = true;
+
+		if (onAir == true && onGround == false && glidePressed)
 		{
 			if (!isGliding) {
 				Engine::GetInstance().audio->PlayFx(planearPrincesa);
 			}
 			isGliding = true;
-			if (lookingRight)
-			{
-				anims.SetCurrent("glide_right");
-			}
-			else
-			{
-				anims.SetCurrent("glide_left");
-			}
+			anims.SetCurrent(lookingRight ? "glide_right" : "glide_left");
 			currentAnimPriority = 5;
 		}
-		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && isGliding || onGround)
+		else if ((Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP ||
+			(Engine::GetInstance().input->IsGamepadConnected() &&
+				Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LT) <= 0.5f)) && 
+			(isGliding || onGround))
 		{
 			isGliding = false;
 		}
@@ -686,11 +686,19 @@ void Player::Glide() // Gliding
 
 void Player::Dash()
 {
+	bool dashPressed = false;
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN)
+		dashPressed = true;
+
+	if (Engine::GetInstance().input->IsGamepadConnected() &&
+		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_RB) == KEY_DOWN)
+		dashPressed = true;
+
 	// Start Dash
-	if (GameManager::GetInstance().gameState.dashUnlocked == true
-		&& Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN
-		&& isDashing == false
-		&& dashCooldownTimer.ReadMSec() > dashCooldownMS)
+	if (GameManager::GetInstance().gameState.dashUnlocked == true &&
+		dashPressed && isDashing == false &&
+		dashCooldownTimer.ReadMSec() > dashCooldownMS)
 	{
 		if (lookingRight == true)
 		{
@@ -729,78 +737,50 @@ void Player::Dash()
 
 void Player::Interact()
 {
-	if (canInteract && interactuableBody != nullptr)
+	bool interactPressed = false;
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+		interactPressed = true;
+
+	if (Engine::GetInstance().input->IsGamepadConnected() &&
+		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_DOWN)
+		interactPressed = true;
+
+	if (canInteract && interactuableBody != nullptr && interactPressed)
 	{
-		// Asegurarse que es una puerta
+
 		if (interactuableBody->ctype == ColliderType::DOOR)
 		{
-			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
+			if (isMaintenance)
 			{
-				bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
-				if (isMaintenance)
+				Engine::GetInstance().audio->PlayFx(pickItemFx);
+				Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
+				return;
+			}
+
+			bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
+			if (isClosed)
+			{
+				Engine::GetInstance().audio->PlayFx(pickItemFx);
+				Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
+				return;
+			}
+
+			bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
+			if (requiresKey)
+			{
+				if (GameManager::GetInstance().gameState.keyCount > 0)
 				{
-					Engine::GetInstance().audio->PlayFx(pickItemFx);
-
-					Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
-					return;
-				}
-
-				bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
-				if (isClosed)
-				{
-					Engine::GetInstance().audio->PlayFx(pickItemFx);
-
-					Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
-					return;
-				}
-
-				//Pregunta si esta puerta necesita llave
-				bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
-
-				if (requiresKey)
-				{
-					// Si necesita
-					if (GameManager::GetInstance().gameState.keyCount > 0)
-					{
-						Engine::GetInstance().audio->PlayFx(openDoor);
-						//Restar una unidad cuando se usa una llave
-						GameManager::GetInstance().gameState.keyCount--;
-						LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
-
-						std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
-						if (!doorId.empty()) {
-							GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
-						}
-						isFrozen = true;
-						int cx, cy;
-						interactuableBody->GetPosition(cx, cy);
-
-					   //Door size
-						int doorW, doorH;
-						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
-
-						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
-
-						if (doorAnim != nullptr) {
-							doorAnim->zOrder = -1; //Capa hacia atras de player
-
-							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
-						}
-					}
-					else
-					{
-						Engine::GetInstance().audio->PlayFx(closedDoor);
-						LOG("Necesitas una llave para abrir, busca una ");
-						Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
-					}
-				}
-				else
-				{
-					// Si no
-					LOG("Esta puerta no necesita llave ");
 					Engine::GetInstance().audio->PlayFx(openDoor);
+					GameManager::GetInstance().gameState.keyCount--;
+					LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
 
+					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
+					if (!doorId.empty()) {
+						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
+					}
 					isFrozen = true;
 					int cx, cy;
 					interactuableBody->GetPosition(cx, cy);
@@ -813,25 +793,45 @@ void Player::Interact()
 
 					if (doorAnim != nullptr) {
 						doorAnim->zOrder = -1;
-
 						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
 					}
+				}
+				else
+				{
+					Engine::GetInstance().audio->PlayFx(closedDoor);
+					LOG("Necesitas una llave para abrir, busca una ");
+					Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
+				}
+			}
+			else
+			{
+				LOG("Esta puerta no necesita llave ");
+				Engine::GetInstance().audio->PlayFx(openDoor);
+
+				isFrozen = true;
+				int cx, cy;
+				interactuableBody->GetPosition(cx, cy);
+
+				int doorW, doorH;
+				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+				if (doorAnim != nullptr) {
+					doorAnim->zOrder = -1;
+					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
 				}
 			}
 		}
 		else if (interactuableBody->ctype == ColliderType::NPC)
 		{
-			// Asegurarse que no estabas hablando
-			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN /*&& !Engine::GetInstance().dialogueManager->IsDialogueActive()*/)
+			Npc* npc = (Npc*)interactuableBody->listener;
+			if (npc != nullptr)
 			{
-				Npc* npc = (Npc*)interactuableBody->listener;
-				// Si el npc no esta vacio comienza el dialogo
-				if (npc != nullptr)
-				{
-					Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
-					LOG("INICIO DIALOGO");
-					Engine::GetInstance().input->ClearMouseInput();
-				}
+				Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
+				LOG("INICIO DIALOGO");
+				Engine::GetInstance().input->ClearMouseInput();
 			}
 		}
 	}
@@ -1510,7 +1510,6 @@ void Player::DevTools(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
 		pbody->SetPosition(respawnPosition.getX(), respawnPosition.getY());
 		LOG("Player respawned at last save point!");
-
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f,0.0f });
 	}
