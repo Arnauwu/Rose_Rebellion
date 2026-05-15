@@ -30,7 +30,7 @@ bool Dragon::Awake() {
 }
 
 bool Dragon::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{15,"walk"},{45,"takeOff"},{60,"air"},{90,"stomp"},{105,"claw"},{135,"shoot"} };
+	std::unordered_map<int, std::string> aliases = { {0,"idle"},{15,"walk"},{45,"takeOff"},{60,"air"},{90,"stomp"},{105,"claw"},{120,"tail"} ,{135,"shoot"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dragon/Dragon.tsx", aliases);
 	anims.SetCurrent("idle");
 
@@ -595,7 +595,7 @@ void Dragon::SelectAttack()
 			attackCooldownTime = 1000.0f;
 			attackWindupTime = 750.0f;
 			attackTileRange = 3;
-			currentAttackAnim = "claw"; //TO DO CHANGE
+			currentAttackAnim = "tail";
 			break;
 		case 3: //Ground Spikes
 			damage = 30;
