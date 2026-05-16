@@ -10,7 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 
-
+#include "tracy/Tracy.hpp"
 
 ShieldKnight::ShieldKnight() : Enemy(EntityType::SHIELD_KNIGHT)
 {
@@ -89,6 +89,7 @@ bool ShieldKnight::Start()
 bool ShieldKnight::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
 	{

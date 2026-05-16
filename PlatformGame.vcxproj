@@ -164,6 +164,7 @@
     <ClCompile Include="src\NinfaBoss.cpp" />
     <ClCompile Include="src\SpecialFloors.cpp" />
     <ClCompile Include="src\ToxicBall.cpp" />
+    <ClCompile Include="src\TracyMemory.cpp" />
     <ClCompile Include="src\UIDialogueBox.cpp" />
     <ClCompile Include="src\DialogueManager.cpp" />
     <ClCompile Include="src\Demon.cpp" />

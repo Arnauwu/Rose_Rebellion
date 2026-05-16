@@ -366,6 +366,9 @@
     <ClCompile Include="src\GwellBoss.cpp">
       <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
     </ClCompile>
+    <ClCompile Include="src\TracyMemory.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">

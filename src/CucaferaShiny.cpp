@@ -10,7 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 
-
+#include "tracy/Tracy.hpp"
 
 CucaferaShiny::CucaferaShiny() : Enemy(EntityType::CUCAFERA_SHINY)
 {
@@ -80,6 +80,7 @@ bool CucaferaShiny::Start()
 bool CucaferaShiny::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
 	{

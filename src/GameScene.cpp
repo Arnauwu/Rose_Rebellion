@@ -24,7 +24,7 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-
+	ZoneScoped;
 	//Load the map. 
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	if (mapFile == "")
@@ -227,7 +227,7 @@ bool GameScene::PostUpdate() {
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
-			//Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 180, true, false); // TO DO: FIX IF NEEDED
+			Engine::GetInstance().render->DrawRectangleUnScaled(fullScreenRect, 0, 0, 0, 180, true, false);
 
 			switch (currentMenuTab) {
 			case GameMenuTab::INVENTORY:
@@ -337,7 +337,8 @@ bool GameScene::CleanUp() {
 	return true;
 }
 
-bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
+bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) 
+{
 	Engine::GetInstance().audio->PlayFx(uiClick);
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	switch (uiElement->id) {

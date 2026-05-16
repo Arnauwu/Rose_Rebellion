@@ -12,6 +12,8 @@
 #include "Audio.h"
 #include <cmath>
 
+#include "tracy/Tracy.hpp"
+
 NinfaMare::NinfaMare() : Enemy(EntityType::NINFA_MARE) // O EntityType::BOSS si tienes uno
 {
     name = "NinfaMare";
@@ -69,6 +71,7 @@ bool NinfaMare::Start()
 bool NinfaMare::Update(float dt)
 {
     if (!active) return true;
+    ZoneScoped;
 
     if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
     {

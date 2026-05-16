@@ -10,7 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 
-
+#include "tracy/Tracy.hpp"
 
 Minairon::Minairon() : Enemy(EntityType::MINAIRON)
 {
@@ -93,8 +93,8 @@ bool Minairon::Start()
 
 bool Minairon::Update(float dt)
 {
-
 	if (!active) return true;
+	ZoneScoped;
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{

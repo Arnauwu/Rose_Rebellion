@@ -10,6 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 
+#include "tracy/Tracy.hpp"
 
 CucaferaMutant::CucaferaMutant() : Enemy(EntityType::ENEMY) {
     name = "spider";
@@ -49,6 +50,7 @@ bool CucaferaMutant::Start() {
 bool CucaferaMutant::Update(float dt) {
     
     if (!active) return true;
+    ZoneScoped;
 
     if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
     {

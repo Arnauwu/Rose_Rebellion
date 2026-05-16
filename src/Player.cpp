@@ -19,6 +19,8 @@
 #include <iostream>
 #include <unordered_map>
 
+#include "tracy/Tracy.hpp"
+
 using namespace std;
 
 Player::Player() : Entity(EntityType::PLAYER)
@@ -111,6 +113,7 @@ bool Player::Start()
 
 bool Player::Update(float dt)
 {
+	ZoneScoped;
 	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 
 	if (isFrozen) 
 	{

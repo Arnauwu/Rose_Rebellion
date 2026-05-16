@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "tracy/Tracy.hpp"
+
 SpecialFloor::SpecialFloor() : Entity(EntityType::SPECIALFLOOR)
 {
 	name = "specialFloor";
@@ -97,6 +99,7 @@ bool SpecialFloor::Start() {
 bool SpecialFloor::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	Draw(dt);
 

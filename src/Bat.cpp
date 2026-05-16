@@ -13,6 +13,8 @@
 #include "ParticleManager.h"
 #include "Audio.h"
 
+#include "tracy/Tracy.hpp"
+
 Bat::Bat() : Enemy(EntityType::BAT)
 {
     name = "NBat";
@@ -85,6 +87,7 @@ bool Bat::Start()
 bool Bat::Update(float dt)
 {
     if (!active) return true;
+    ZoneScoped;
 
     // Lógica mientras está vivo
     if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)

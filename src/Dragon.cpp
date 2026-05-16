@@ -16,6 +16,8 @@
 
 #include "DragonProjectile.h"
 
+#include "tracy/Tracy.hpp"
+
 Dragon::Dragon() : Enemy(EntityType::DRAGON)
 {
 	name = "Dragon";
@@ -72,6 +74,7 @@ bool Dragon::Start() {
 bool Dragon::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{

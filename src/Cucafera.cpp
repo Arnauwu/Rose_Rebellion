@@ -11,7 +11,7 @@
 #include "ParticleManager.h"
 #include "Map.h"
 
-
+#include "tracy/Tracy.hpp"
 
 Cucafera::Cucafera() : Enemy(EntityType::CUCAFERA)
 {
@@ -79,6 +79,7 @@ bool Cucafera::Start()
 bool Cucafera::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
 	{

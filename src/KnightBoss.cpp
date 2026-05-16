@@ -12,6 +12,8 @@
 #include "Timer.h"
 #include "Physics.h"
 
+#include "tracy/Tracy.hpp"
+
 KnightBoss::KnightBoss() : Enemy(EntityType::KNIGHT_BOSS)
 {
 	name = "KnightBoss";
@@ -65,6 +67,7 @@ bool KnightBoss::Start() {
 bool KnightBoss::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{

@@ -10,6 +10,8 @@
 
 #include "Render.h"
 
+#include "tracy/Tracy.hpp"
+
 //PI
 constexpr double PI = 3.14159265358979323846;
 
@@ -58,6 +60,7 @@ bool DragonProjectile::Start()
 bool DragonProjectile::Update(float dt)
 {
     if (!active || pendingToDelete) return true;
+    ZoneScoped;
 
     // La bala se autodestruye cuando el contador llega a 4s
     if (lifeTimer.ReadMSec() >= lifeTimeMS) {

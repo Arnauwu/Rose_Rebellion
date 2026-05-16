@@ -16,6 +16,8 @@
 
 //#include "GwellBossProjectile.h"
 
+#include "tracy/Tracy.hpp"
+
 GwellBoss::GwellBoss() : Enemy(EntityType::GWELL_BOSS)
 {
 	name = "GwellBoss";
@@ -71,6 +73,7 @@ bool GwellBoss::Start() {
 bool GwellBoss::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{

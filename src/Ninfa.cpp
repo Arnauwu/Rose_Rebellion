@@ -13,6 +13,8 @@
 #include "ParticleManager.h"
 #include "Audio.h"
 
+#include "tracy/Tracy.hpp"
+
 Ninfa::Ninfa() : Enemy(EntityType::NINFA)
 {
     name = "Ninfa";
@@ -86,6 +88,7 @@ bool Ninfa::Start()
 bool Ninfa::Update(float dt)
 {
     if (!active) return true;
+    ZoneScoped;
 
     if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
     {
