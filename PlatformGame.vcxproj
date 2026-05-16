@@ -161,6 +161,7 @@
     <ClCompile Include="src\Door.cpp" />
     <ClCompile Include="src\GwellBoss.cpp" />
     <ClCompile Include="src\Minairon.cpp" />
+    <ClCompile Include="src\MiniMap.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
     <ClCompile Include="src\SpecialFloors.cpp" />
     <ClCompile Include="src\ToxicBall.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="src\Door.h" />
     <ClInclude Include="src\GwellBoss.h" />
     <ClInclude Include="src\Minairon.h" />
+    <ClInclude Include="src\Minimap.h" />
     <ClInclude Include="src\NinfaBoss.h" />
     <ClInclude Include="src\SpecialFloors.h" />
     <ClInclude Include="src\ToxicBall.h" />
