@@ -175,17 +175,6 @@ public:
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
 
-	bool stUpDownAttack;
-	bool stCombo;
-	bool stDmgUp1;
-	bool stDmgUp2;
-	bool stDmgUp3;
-	bool stFastDash;
-	bool stDefUp1;
-	bool stDefUp2;
-	bool stDefUp3;
-	bool stIframesUp;
-
 	// Interact
 	bool canInteract = false;
 	PhysBody* interactuableBody = nullptr;
