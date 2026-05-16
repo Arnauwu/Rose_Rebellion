@@ -18,8 +18,8 @@ bool IntroScene::Start() {
 bool IntroScene::Update(float dt) {
 	introTimer -= dt;
 	if (introTexture != nullptr) {
-		int screenW = Engine::GetInstance().render->camera.w;
-		int screenH = Engine::GetInstance().render->camera.h;
+		int screenW, screenH;
+		Engine::GetInstance().window->GetWindowSize(screenW,screenH);
 
 		SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 

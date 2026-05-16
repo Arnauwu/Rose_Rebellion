@@ -37,5 +37,3 @@ private:
 
 	SDL_Color currentTextColor = { 180, 180, 180, 255 };
 };
-
-#pragma once

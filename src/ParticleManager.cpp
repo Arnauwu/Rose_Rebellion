@@ -80,6 +80,8 @@ bool ParticleManager::Start() {
 bool ParticleManager::Update(float dt) {
     ZoneScoped;
 
+
+
     // Actualizamos SOLO las articulas encendidas
     for (auto& particles : pool) {
         if (particles.active) {
@@ -115,13 +117,6 @@ bool ParticleManager::PostUpdate() {
             Uint8 currentAlpha = (Uint8)(particle.color.a * lifeRatio);
 
             if (particle.texture != nullptr) {
-
-                float renderX = particle.useCamera ? particle.x + Engine::GetInstance().render->camera.x : particle.x;
-                float renderY = particle.useCamera ? particle.y + Engine::GetInstance().render->camera.y : particle.y;
-
-                SDL_FRect dstRect = { renderX, renderY, particle.size, particle.size };
-                //SDL_FRect dstRect = { renderX - (particle.size / 2.0f), renderY - (particle.size / 2.0f), particle.size, particle.size };
-
                 // Aplicar transparencia y color base a la textura temporalmente
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha);
                 SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
@@ -129,13 +124,13 @@ bool ParticleManager::PostUpdate() {
                 if (particle.isAnimated) {
                     // renderizar animaciones
                     SDL_Rect srcRect = particle.anim.GetCurrentFrame();
-                    SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
-
-                    SDL_RenderTextureRotated(renderer, particle.texture, &srcFRect, &dstRect, particle.angle, nullptr, particle.flipMode);
+                    
+                    Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, &srcRect, particle.flipMode, 1, particle.angle);
+                    
                 }
                 else {
                     // Renderizar la textura
-                    SDL_RenderTextureRotated(renderer, particle.texture, nullptr, &dstRect, particle.angle, nullptr, particle.flipMode);
+                    Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, nullptr, particle.flipMode, 1, particle.angle);
                 }
 
                 // Restaurar la textura a la normalidad

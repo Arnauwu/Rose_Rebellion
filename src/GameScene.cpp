@@ -221,12 +221,13 @@ bool GameScene::PostUpdate() {
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
-			int screenW = Engine::GetInstance().render->camera.w;
-			int screenH = Engine::GetInstance().render->camera.h;
+
+			int screenW, screenH;
+			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
-			Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 180, true, false);
+			//Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 180, true, false); // TO DO: FIX IF NEEDED
 
 			switch (currentMenuTab) {
 			case GameMenuTab::INVENTORY:
@@ -534,7 +535,7 @@ void GameScene::CreateDialogueUI() {
 		SDL_Texture* texAldeano = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/npc_portrait.png");
 
 		dBox->AddPortrait("Princesa", texPrincesa);
-		dBox->AddPortrait("Jan", texAldeano);
+		dBox->AddPortrait("Ruben", texAldeano);
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);

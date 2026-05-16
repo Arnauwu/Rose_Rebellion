@@ -7,6 +7,9 @@
 #include "Textures.h"
 #include "Audio.h"
 
+#include "Window.h"
+#include "Render.h"
+
 #include "tracy/Tracy.hpp"
 
 UIManager::UIManager() :Module()

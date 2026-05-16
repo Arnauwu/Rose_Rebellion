@@ -20,14 +20,14 @@ UIElement::UIElement(UIElementType type, int id, float anchorX, float anchorY, f
 
 void UIElement::RecalculateBounds()
 {
-	int screenW = Engine::GetInstance().render->camera.w;
-	int screenH = Engine::GetInstance().render->camera.h;
+	int screenW, screenH;
+	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
 
 	bounds.w = (int)(screenW * relW);
 	bounds.h = (int)(screenH * relH);
 
-	bounds.x = (int)(screenW * anchorX) - (int)(bounds.w * pivotX);
-	bounds.y = (int)(screenH * anchorY) - (int)(bounds.h * pivotY);
+	bounds.x = (int)((screenW * anchorX) - (int)(bounds.w * pivotX));
+	bounds.y = (int)((screenH * anchorY) - (int)(bounds.h * pivotY));
 }
 
 bool UIElement::Update(float dt)
