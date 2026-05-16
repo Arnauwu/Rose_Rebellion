@@ -72,7 +72,7 @@ public:
 	void UnlockDash();
 	void UnlockDoubleJump();
 
-	void UnlockSkill(SkillTree skill, int currentForceOrbs);
+	void UnlockSkill(SkillTree skill);
 
 
 	//Inventary Variables
@@ -116,6 +116,8 @@ private:
 
 public:
 	float speed = 10.0f;
+	int dmgbuff = 0;
+	int defbuff = 0;
 
 	// Texture
 	SDL_Texture* texture = nullptr;

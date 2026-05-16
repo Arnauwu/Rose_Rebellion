@@ -16,6 +16,17 @@ struct GameState {
     int currentHealth = 100;
     int maxHealth = 100;
 
+    bool stUpDownAttack = false;
+    bool stCombo = false;
+    bool stDmgUp1 = false;
+    bool stDmgUp2 = false;
+    bool stDmgUp3 = false;
+    bool stFastDash = false;
+    bool stDefUp1 = false;
+    bool stDefUp2 = false;
+    bool stDefUp3 = false;
+    bool stIframesUp = false;
+
     // World
     std::string currentMap = "Castle_Room_Princess.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto

@@ -570,18 +570,18 @@ void Player::Attack(float dt)
 
 			if (comboStep == 0)
 			{
-				damage = 10;
+				damage = 10 + dmgbuff;
 				currentAttackWidth = 60;
 				currentAttackHeight = 64;
 			}
 			else
 			{
-				damage = 20;
+				damage = 20 + dmgbuff;
 				currentAttackWidth = 120;
 				currentAttackHeight = 90;
 			}
 
-			if (lookUp)
+			if (lookUp && GameManager::GetInstance().gameState.stUpDownAttack)
 			{
 				int temp = currentAttackWidth;
 				currentAttackWidth = currentAttackHeight;
@@ -592,7 +592,7 @@ void Player::Attack(float dt)
 
 				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
 			}
-			else if (lookDown)
+			else if (lookDown && GameManager::GetInstance().gameState.stUpDownAttack)
 			{
 				int temp = currentAttackWidth;
 				currentAttackWidth = currentAttackHeight;
@@ -1156,91 +1156,98 @@ void Player::UnlockDash() {
 	LOG("Dash Unlocked! You can do a dash");
 }
 
-void Player::UnlockSkill(SkillTree skill, int currentForceOrbs)
+void Player::UnlockSkill(SkillTree skill)
 {
 	switch (skill)
 	{
 	case SkillTree::UPDOWNATTACK:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stUpDownAttack == false)
 		{
-			stUpDownAttack = true;
-			currentForceOrbs--;
+			GameManager::GetInstance().gameState.stUpDownAttack = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::COMBO:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stCombo == false)
 		{
-			currentForceOrbs--;
-			stCombo = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			GameManager::GetInstance().gameState.stCombo = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::DMGUP1:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDmgUp1 == false)
 		{
-			currentForceOrbs--;
-			stDmgUp1 = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			dmgbuff += 5;
+			GameManager::GetInstance().gameState.stDmgUp1 = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::DMGUP2:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDmgUp2 == false)
 		{
-			currentForceOrbs--;
-			stDmgUp2 = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			dmgbuff += 10;
+			GameManager::GetInstance().gameState.stDmgUp2 = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::DMGUP3:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDmgUp3 == false)
 		{
-			currentForceOrbs--;
-			stDmgUp3 = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			dmgbuff += 15;
+			GameManager::GetInstance().gameState.stDmgUp3 = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::FASTDASH:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stFastDash == false)
 		{
-			currentForceOrbs--;
-			stFastDash = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			GameManager::GetInstance().gameState.stFastDash = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::DEFUP1:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDefUp1 == false)
 		{
-			currentForceOrbs--;
-			stDefUp1 = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			defbuff += 5;
+			GameManager::GetInstance().gameState.stDefUp1 = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::DEFUP2:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDefUp2 == false)
 		{
-			currentForceOrbs--;
-			stDefUp2 = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			defbuff += 10;
+			GameManager::GetInstance().gameState.stDefUp2 = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::DEFUP3:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDefUp3 == false)
 		{
-			currentForceOrbs--;
-			stDefUp3 = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			defbuff += 15;
+			GameManager::GetInstance().gameState.stDefUp3 = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	case SkillTree::IFRAMESUP:
-		if (currentForceOrbs >= 1)
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stIframesUp == false)
 		{
-			currentForceOrbs--;
-			stIframesUp = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			GameManager::GetInstance().gameState.stIframesUp = true;
 		}
 		else { printf("Not enough skill points!"); }
 		break;
 	default:
+		printf("Invalid skill enum");
 		break;
 	}
 }
@@ -1444,7 +1451,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
-		currentForceOrbs++;
+		GameManager::GetInstance().gameState.currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
 
 		int spOrbX, spOrbY;
@@ -1494,7 +1501,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::ENEMY_ATTACK:
 		LOG("Hit player");
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
-		TakeDamage(physB->listener->damage);
+		TakeDamage(physB->listener->damage-defbuff);
 		//PARTICULA
 		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
 
@@ -1688,6 +1695,7 @@ void Player::DevTools(float dt)
 		GameManager::GetInstance().gameState.hasSickle = true;
 		GameManager::GetInstance().gameState.dashUnlocked = true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
+		GameManager::GetInstance().gameState.currentForceOrbs += 10;
 	}
 }
 
