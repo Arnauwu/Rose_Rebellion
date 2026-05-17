@@ -808,11 +808,22 @@ void Player::Interact()
 
 			if (requiresKey)
 			{
-				if (GameManager::GetInstance().gameState.keyCount > 0)
+				//Get Key Property
+				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
+
+				if (requiredKey == KeyType::NONE) {
+					Engine::GetInstance().audio->PlayFx(closedDoor);
+					LOG("ERROR: Esta puerta necesita llave pero no se le asignó un KeyRegion en Tiled.");
+					Engine::GetInstance().hud->ShowNotification("The door is locked. (Configuration Error)");
+					return;
+				}
+
+				if (this->HasKey(requiredKey))
 				{
 					Engine::GetInstance().audio->PlayFx(openDoor);
-					GameManager::GetInstance().gameState.keyCount--;
-					LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
+					LOG("Has usado la llave %d para abrir la puerta.", (int)requiredKey);
+
+					this->heldKeys.erase(requiredKey); 
 
 					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 					if (!doorId.empty()) {
@@ -835,14 +846,14 @@ void Player::Interact()
 				}
 				else
 				{
-					Engine::GetInstance().audio->PlayFx(closedDoor);
-					LOG("Necesitas una llave para abrir, busca una ");
-					Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
+					Engine::GetInstance().audio->PlayFx(closedDoor);	 
+					LOG("Necesitas la llave ESPECIFICA (Tipo %d) para esta región.", (int)requiredKey);
+					Engine::GetInstance().hud->ShowNotification("You need a specific region key to open this door.");
 				}
 			}
 			else
 			{
-				LOG("Esta puerta no necesita llave ");
+				LOG("Esta puerta no necesita llave");
 				Engine::GetInstance().audio->PlayFx(openDoor);
 
 				isFrozen = true;

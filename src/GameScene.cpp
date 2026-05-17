@@ -21,6 +21,7 @@ using json = nlohmann::json;
 
 
 GameScene::GameScene() : SceneBase() {
+
 }
 
 GameScene::~GameScene() {
@@ -28,7 +29,7 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-	ZoneScoped;
+	/*ZoneScoped;*/
 	//Load the map. 
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	if (mapFile == "")

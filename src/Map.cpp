@@ -1100,6 +1100,8 @@ void Map::SpawnEntities()
 							if (region == "Forest") key->SetKeyType(KeyType::FOREST);
 							else if (region == "Mountain") key->SetKeyType(KeyType::MOUNTAIN);
 							else if (region == "Catacumba") key->SetKeyType(KeyType::CATACUMBA);
+							else if (region == "Boss") key->SetKeyType(KeyType::BOSS);
+							else if (region == "Castle") key->SetKeyType(KeyType::CASTLE);
 						}
 					}
 				}

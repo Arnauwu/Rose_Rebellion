@@ -6,48 +6,25 @@
 #include "Physics.h"
 #include "Log.h"
 
-Keys::Keys():Item() {
-	name = "Key";
+Keys::Keys() :Item() {
+    name = "Key";
 }
 
 Keys::~Keys() {}
 
-bool Keys::Awake()
-{
+bool Keys::Awake() {
     return true;
 }
 
-bool Keys::Start()
-{
+bool Keys::Start() {
     if (CheckIfCollected()) return true;
-   //Textura
-    std::string texPath = "";
-    switch (keyType)
-    {
-    case KeyType::FOREST:
-        texPath = "Assets/Textures/Items/Keys/obj_llave_bosque_game.png";
-        break;
-    case KeyType::MOUNTAIN:
-        texPath = "Assets/Textures/Items/Keys/obj_llave_montaña_game.png"; 
-        break;
-    case KeyType::CATACUMBA:
-        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
-        break;
-    case KeyType::BOSS:
-        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
-        break;
-    case KeyType::CASTLE:
-        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
-        break;
-    default:
-        texPath = "Assets/Textures/Items/Keys/obj_llave_castillo_game.png";
-        break;
+
+    if (texture == nullptr) {
+        texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/castleKey.png");
     }
 
-    texture = Engine::GetInstance().textures->Load(texPath.c_str());
-
-    //Fisica
-    if (texture != nullptr) {
+    // Fisic
+    if (pbody == nullptr && texture != nullptr) {
         pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);
         pbody->listener = this;
         pbody->ctype = ColliderType::ITEM;
@@ -56,11 +33,8 @@ bool Keys::Start()
     return true;
 }
 
-bool Keys::Update(float dt)
-{
-    if (!isPicked)
-    {
-        //Posicion donde renderiza la llave
+bool Keys::Update(float dt) {
+    if (!isPicked && pbody != nullptr && texture != nullptr) {
         int x, y;
         pbody->GetPosition(x, y);
         Engine::GetInstance().render->DrawTexture(texture, x - texture->w / 2, y - texture->h / 2);
@@ -68,26 +42,22 @@ bool Keys::Update(float dt)
     return true;
 }
 
-bool Keys::CleanUp()
-{
+bool Keys::CleanUp() {
     if (texture != nullptr) {
         Engine::GetInstance().textures->UnLoad(texture);
         texture = nullptr;
-    }  
-    if (pbody != nullptr)
-    {
+    }
+    if (pbody != nullptr) {
         Engine::GetInstance().physics->DeletePhysBody(pbody);
         pbody = nullptr;
     }
     return true;
 }
 
-void Keys::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
-{
+void Keys::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
     if (physB->ctype == ColliderType::PLAYER && !isPicked) {
         SetCollected();
 
-        //KeyType
         Player* player = (Player*)physB->listener;
         if (player != nullptr) {
             player->AddKey(this->keyType);
@@ -96,8 +66,36 @@ void Keys::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Sha
     }
 }
 
+//Key texture 
 void Keys::SetKeyType(KeyType type) {
-    keyType = type;
+    this->keyType = type;
+    std::string texPath = "";
+
+    switch (type) {
+    case KeyType::FOREST:
+        texPath = "Assets/Textures/Items/Keys/forestKey.png"; 
+        break;
+    case KeyType::MOUNTAIN:
+        texPath = "Assets/Textures/Items/Keys/mountainKey.png";
+        break;
+    case KeyType::CATACUMBA:
+        texPath = "Assets/Textures/Items/Keys/catacumbsKey.png";
+        break;
+    case KeyType::BOSS:
+    case KeyType::CASTLE:
+        texPath = "Assets/Textures/Items/Keys/castleKey.png";
+        break;
+    default:
+        texPath = "Assets/Textures/Items/Keys/castleKey.png";
+        break;
+    }
+
+    //Cleanup
+    if (texture != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texture);
+    }
+    texture = Engine::GetInstance().textures->Load(texPath.c_str());
+    LOG("Textura de llave actualizada a: %s", texPath.c_str());
 }
 
 KeyType Keys::GetKeyType() const {
