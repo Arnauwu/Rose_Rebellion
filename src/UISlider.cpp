@@ -81,7 +81,7 @@ void UISlider::Draw() const {
 	}
 
 	if (!text.empty()) {
-		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y - 49, 0, 0, { 255,255,255,255 }, FontType::SPEAKER);
+		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y- 40, 0, 0, { 255,255,255,255 }, FontType::SPEAKER);
 	}
 }
 

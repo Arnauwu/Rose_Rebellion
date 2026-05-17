@@ -96,6 +96,7 @@ public:
 	SDL_Texture* buttonUI = nullptr;
 	SDL_Texture* skillFrameUI = nullptr;
 	SDL_Texture* textBgUI = nullptr;
+	SDL_Texture* sliderThumbTex = nullptr;
 
 	// Texture BG
 	SDL_Texture* texMapUI = nullptr;

@@ -19,7 +19,7 @@ private:
 	SDL_Rect thumb;
 	float value = 0.5f;
 	SDL_Texture* thumbTex = nullptr;
-	int thumbSize = 64;
+	int thumbSize = 32;
 	void UpdateBarAndThumb();
 
 	bool isDragging = false;
