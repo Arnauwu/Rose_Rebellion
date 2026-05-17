@@ -2,7 +2,7 @@
 
 CameraController::CameraController()
 	: targetX(0.0f), targetY(0.0f), currentX(0.0f), currentY(0.0f),
-	  smoothSpeed(0.50f), verticalOffset(-25.0f)
+	  smoothSpeed(0.25f), verticalOffset(-25.0f)
 {
 }
 
@@ -21,7 +21,7 @@ void CameraController::Update(float dt, Vector2D playerPos, int screenW, int scr
 	
 	// Suavizar movimiento de la camara usando interpolacion lineal
 	currentX += (targetX - currentX) * smoothSpeed;
-	currentY += (targetY - currentY) * smoothSpeed;
+	currentY += (targetY - currentY) * (smoothSpeed / 2);
 
 	ClampToMapBounds(currentX, currentY, screenW, screenH, mapWidth, mapHeight);
 }

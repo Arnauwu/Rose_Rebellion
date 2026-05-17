@@ -8,6 +8,9 @@
 #include "Audio.h"
 #include "UIItemInfoBox.h"
 
+#include "Window.h"
+#include "Render.h"
+
 #include "tracy/Tracy.hpp"
 
 UIManager::UIManager() :Module()

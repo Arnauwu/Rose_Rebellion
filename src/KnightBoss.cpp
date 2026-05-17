@@ -12,6 +12,8 @@
 #include "Timer.h"
 #include "Physics.h"
 
+#include "tracy/Tracy.hpp"
+
 KnightBoss::KnightBoss() : Enemy(EntityType::KNIGHT_BOSS)
 {
 	name = "KnightBoss";
@@ -26,7 +28,7 @@ bool KnightBoss::Awake() {
 }
 
 bool KnightBoss::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"walk"},{32,"attack"},{48,"idle"},{56,"assault"} };
+	std::unordered_map<int, std::string> aliases = { {0,"jump"},{24,"jump2"},{48,"hurt"},{72,"dead"},{84,"start_assault"},{96,"assault"},{108,"attack"},{120,"idle"},{132,"walk"} }; // TO DO: Add new_anims (0-48) & start asssault
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
 
@@ -65,6 +67,7 @@ bool KnightBoss::Start() {
 bool KnightBoss::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
@@ -293,7 +296,7 @@ void KnightBoss::SwordAttack()
 			int hY = position.getY();
 
 			// Creamos un rectángulo físico
-			swordHitbox = Engine::GetInstance().physics->CreateRectangle(hX, hY, attW, attH, bodyType::KINEMATIC);
+			swordHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
 			swordHitbox->listener = this;
 			swordHitbox->ctype = ColliderType::ENEMY_ATTACK;
 

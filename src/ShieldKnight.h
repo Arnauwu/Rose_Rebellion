@@ -41,8 +41,6 @@ public:
 	Timer attackDuration; // Hitbox Duration
 	Timer attackCooldown;
 
-	PhysBody* attackHitbox = nullptr;
-
 	int morirEscudo;
 	int atacarEscudo;
 	int caminarEscudo;

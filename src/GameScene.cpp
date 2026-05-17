@@ -28,7 +28,7 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-
+	ZoneScoped;
 	//Load the map. 
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	if (mapFile == "")
@@ -45,13 +45,13 @@ void GameScene::LoadMap(std::string mapFile)
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M鷖ica Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M煤sica Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M鷖ica Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M煤sica Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M鷖ica Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M煤sica Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
@@ -74,7 +74,7 @@ void GameScene::LoadMap(std::string mapFile)
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
-		// ASIGNAR EL MODO DE C罬ARA AQU?
+		// ASIGNAR EL MODO DE C脕MARA AQU?
 		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
@@ -93,12 +93,12 @@ void GameScene::LoadMap(std::string mapFile)
 		if (previousMap == "")
 		{
 			spawnPos = GameManager::GetInstance().gameState.playerPosition;
-			LOG("Carga inicial: Usando posici髇 del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
+			LOG("Carga inicial: Usando posici贸n del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
 		else
 		{
 			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-			LOG("Transici髇: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+			LOG("Transici贸n: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
 
 		newPlayer->SetPosition(spawnPos);
@@ -242,13 +242,22 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
-	if (input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
-		if (currentMenuTab != GameMenuTab::NONE) {
-			ToggleGameMenu(GameMenuTab::NONE);
-		}
-		else {
-			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
-		}
+	// Pause Menu - ESC o START del gamepad
+	bool pauseInput = input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
+
+	if (input->IsGamepadConnected() && 
+	    input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
+	{
+	    pauseInput = true;
+	}
+
+	if (pauseInput) {
+	    if (currentMenuTab != GameMenuTab::NONE) {
+	        ToggleGameMenu(GameMenuTab::NONE);
+	    }
+	    else {
+	        ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+	    }
 	}
 
 	if (dialogueMgr->IsDialogueActive()) {
@@ -263,12 +272,13 @@ bool GameScene::PostUpdate() {
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
-			int screenW = Engine::GetInstance().render->camera.w;
-			int screenH = Engine::GetInstance().render->camera.h;
+
+			int screenW, screenH;
+			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
-			Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 180, true, false);
+			Engine::GetInstance().render->DrawRectangleUnScaled(fullScreenRect, 0, 0, 0, 180, true, false);
 
 			switch (currentMenuTab) {
 			case GameMenuTab::INVENTORY:
@@ -393,7 +403,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	auto updateLorePanel = [&](const std::string& itemKey, bool hasItem) {
 		if (hasItem && itemsLoreDB.find(itemKey) != itemsLoreDB.end()) {
 			const auto& lore = itemsLoreDB[itemKey];
-			// Formatamos T韙ulo + Descripci髇
+			// Formatamos T铆tulo + Descripci贸n
 			descPanel->text = lore.name + "\n\n" + lore.description;
 		}
 		else {
@@ -518,7 +528,7 @@ void GameScene::CreateInventoryUI() {
 
 		}
 
-		// Si le hemos asignado una textura, se la ponemos al bot髇
+		// Si le hemos asignado una textura, se la ponemos al bot贸n
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}
@@ -638,7 +648,7 @@ void GameScene::CreateDialogueUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 
-	// Usamos el mismo patr髇 que tus otros elementos
+	// Usamos el mismo patr贸n que tus otros elementos
 	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(
 		UIElementType::DIALOGUE_BOX, 99, "", 0.5f, 0.8f, 0.7f, 0.3f, sceneObserver);
 
@@ -656,7 +666,7 @@ void GameScene::CreateDialogueUI() {
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
 
-		// A馻dir al grupo de control
+		// A帽adir al grupo de control
 		dialogueUI.push_back(rawDialogueBox);
 	}
 }

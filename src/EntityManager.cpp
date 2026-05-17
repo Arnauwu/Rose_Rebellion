@@ -20,7 +20,7 @@
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
-#include "SpiderEnemy.h"
+#include "CucaferaMutant.h"
 
 
 #include "SwordKnight.h"
@@ -29,8 +29,13 @@
 #include "Ninfa.h"
 #include "Demon.h"
 
+#include "Minairon.h"
+#include "Bat.h"
+#include "ToxicBall.h"
+
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include "GwellBoss.h"
 #include "Dragon.h"
 #include "DragonProjectile.h"
 
@@ -133,8 +138,8 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::CUCAFERA_SHINY:
 		entity = std::make_shared<CucaferaShiny>();
 		break;
-	case EntityType::SPIDER:
-		entity = std::make_shared<SpiderEnemy>();
+	case EntityType::CUCAFERA_MUTANT:
+		entity = std::make_shared<CucaferaMutant>();
 		break;
 
 	case EntityType::SWORD_KNIGHT:
@@ -150,6 +155,15 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::DEMON:
 		entity = std::make_shared<Demon>();
 		break;
+	case EntityType::MINAIRON:
+		entity = std::make_shared<Minairon>();
+		break;
+	case EntityType::BAT:
+		entity = std::make_shared<Bat>();
+		break;
+	case EntityType::TOXIC_BALL:
+		entity = std::make_shared<ToxicBall>();
+		break;
 
 		//Bosses & MiniBosses
 	case EntityType::KNIGHT_BOSS:
@@ -157,6 +171,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::NINFA_MARE:
 		entity = std::make_shared<NinfaMare>();
+		break;
+	case EntityType::GWELL_BOSS:
+		entity = std::make_shared<GwellBoss>();
 		break;
 	case EntityType::DRAGON:
 		entity = std::make_shared<Dragon>();
