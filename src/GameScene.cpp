@@ -399,7 +399,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 		else {
 			descPanel->text = "???\n\nObjeto desconocido, dicen que esta perdido por el reino.";
 		}
-	};
+		};
 	switch (uiElement->id) {
 	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
@@ -422,7 +422,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_MUSIC: Engine::GetInstance().audio->SetMusicVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
-	
+
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
 		updateLorePanel("WEAPON", p && p->HasItem(ItemID::WEAPON));
 		break;
@@ -498,7 +498,7 @@ void GameScene::CreateInventoryUI() {
 
 		// AMULETOS (Vertices)
 		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX,			centerY - offsetY ,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "DASH", centerX + offsetX ,		centerY - offsetY ,baseSize, squareH, texItemDash },
+		{ GameUI_ID::INV_ITEM_DASH, "", centerX + offsetX ,		centerY - offsetY ,baseSize, squareH, texItemDash },
 		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "", centerX - offsetX,	centerY + offsetY ,baseSize, squareH, texItemDoubleJump },
 		{ GameUI_ID::INV_ITEM_WALL_JUMP, "", centerX + offsetX,		centerY + offsetY ,baseSize, squareH, texItemWallJump },
 
@@ -512,8 +512,11 @@ void GameScene::CreateInventoryUI() {
 
 	for (const auto& slot : slots) {
 		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, slot.w, slot.h, sceneObserver);
+		if (slot.id != GameUI_ID::INV_ITEM_GLIDE && slot.id != GameUI_ID::INV_ITEM_DASH && slot.id != GameUI_ID::INV_ITEM_DOUBLE_JUMP && slot.id != GameUI_ID::INV_ITEM_WALL_JUMP)
+		{
+			btn->SetBgTexture(skillFrameUI);
 
-		btn->SetBgTexture(skillFrameUI);
+		}
 
 		// Si le hemos asignado una textura, se la ponemos al botón
 		if (slot.tex != nullptr) {
@@ -564,14 +567,14 @@ void GameScene::CreateSkillUpgradeUI() {
 		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, books_1_1 }, // Arriba derecha
 		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY,baseSize, squareH, books_1_2 }, // Arriba izquierda
 
-		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX - float(0.04), centerY, baseSize, squareH, books_2_1 }, // Medio derecha
-		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, books_2_2 }, // Medio Izquierda
+		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX - float(0.02), centerY, baseSize, squareH, books_2_1 }, // Medio izquierda
+		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, books_2_2 }, // Medio derecha
 
 		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX, centerY + offsetY,baseSize, squareH, books_3_1 }, // Abajo derecha
 		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX, centerY + offsetY,baseSize, squareH, books_3_2 }, // Abajo Izquierda 
 
 		// ITEMS
-		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.3), centerY + float(0.1),baseSize, squareH, texItemOrb } // Orbe
+		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.29), centerY + float(0.17),baseSize, squareH, texItemOrb } // Orbe
 	};
 
 	for (const auto& slot : slots) {
