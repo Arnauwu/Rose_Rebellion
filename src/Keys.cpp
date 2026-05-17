@@ -21,7 +21,7 @@ bool Keys::Start()
 {
     if (CheckIfCollected()) return true;
    //Textura
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/obj_llave_castillo_game.png");
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/castleKey.png");
 
     //Fisica
     pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);

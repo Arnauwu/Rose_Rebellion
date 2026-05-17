@@ -1,0 +1,14 @@
+{
+  "WEAPON": {
+    "name": "Hoz de la Guarda",
+    "description": "Una hoja afilada forjada en los albores del castillo. Permite abrirse paso entre la maleza y defenderse de los intrusos."
+  },
+  "GLIDE": {
+    "name": "Manto de Viento",
+    "description": "Tejido con plumas etéreas. Mantén pulsado LSHIFT en el aire para planear suavemente."
+  },
+  "STRENGTH_ORB": {
+    "name": "Orbe de Fuerza",
+    "description": "Contiene la esencia de un antiguo guerrero. Utilízalo en el árbol de habilidades para desbloquear nuevos poderes."
+  }
+}

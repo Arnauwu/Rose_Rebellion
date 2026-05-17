@@ -8,13 +8,17 @@
 #include "UIManager.h"
 #include "DialogueManager.h"
 #include "UIDialogueBox.h"
+#include "Cinematics.h"
 
 #include "window.h"
 #include "Player.h"
 #include "Log.h"
 #include "Textures.h"
+#include <fstream>
+#include <nlohmann/json.hpp>
 
-#include "tracy/Tracy.hpp"
+using json = nlohmann::json;
+
 
 GameScene::GameScene() : SceneBase() {
 }
@@ -41,13 +45,13 @@ void GameScene::LoadMap(std::string mapFile)
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M鷖ica Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M煤sica Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M鷖ica Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M煤sica Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M鷖ica Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M煤sica Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
@@ -70,7 +74,7 @@ void GameScene::LoadMap(std::string mapFile)
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
-		// ASIGNAR EL MODO DE C罬ARA AQU?
+		// ASIGNAR EL MODO DE C脕MARA AQU?
 		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
@@ -89,12 +93,12 @@ void GameScene::LoadMap(std::string mapFile)
 		if (previousMap == "")
 		{
 			spawnPos = GameManager::GetInstance().gameState.playerPosition;
-			LOG("Carga inicial: Usando posici髇 del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
+			LOG("Carga inicial: Usando posici贸n del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
 		else
 		{
 			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-			LOG("Transici髇: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+			LOG("Transici贸n: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
 
 		newPlayer->SetPosition(spawnPos);
@@ -108,7 +112,30 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().entityManager->Start();
 }
 
+void GameScene::LoadItemsLore() {
+	std::ifstream file("Assets/Dialogues/items_lore.json");
+	if (!file.is_open()) {
+		LOG("Error: No se pudo abrir dialogues.json");
+
+		return;
+	}
+
+	nlohmann::json j;
+	file >> j;
+
+	for (auto& element : j.items()) {
+		std::string key = element.key();
+		ItemLore lore;
+		lore.name = element.value()["name"].get<std::string>();
+		lore.description = element.value()["description"].get<std::string>();
+
+		itemsLoreDB[key] = lore;
+	}
+	LOG("Lore de items cargado correctamente.");
+}
 bool GameScene::Start() {
+	Engine::GetInstance().cinematics->CloseVideo();
+
 	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
 
 	auto uiManager = Engine::GetInstance().uiManager;
@@ -122,7 +149,6 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
 
 
@@ -131,21 +157,48 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texInventoryUI, "Assets/Textures/UI/GameMenu/t_inventoryUI.png");
 	LoadTextureIfNull(texSkilltreeUI, "Assets/Textures/UI/GameMenu/t_skilltreeUI.png");
 	LoadTextureIfNull(texPauseUI, "Assets/Textures/UI/GameMenu/t_pauseUI.png");
+	LoadTextureIfNull(texSkillUI, "Assets/Textures/UI/SkillUpgrade/t_skillUI.png");
 
 	//Load Items
 	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
 	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forestKeyUI.png");
+	LoadTextureIfNull(texItemKeyMountain, "Assets/Textures/UI/Items/mountainKeyUI.png");
+	LoadTextureIfNull(texItemKeyCatacumbs, "Assets/Textures/UI/Items/catacumbsKeyUI.png");
 	LoadTextureIfNull(texItemOrb, "Assets/Textures/UI/Items/forceOrbUI.png");
+
+	// Power-upsLoad
 	LoadTextureIfNull(texItemGlide, "Assets/Textures/UI/Items/glideUI.png");
+	LoadTextureIfNull(texItemDash, "Assets/Textures/UI/Items/dashUI.png");
+	LoadTextureIfNull(texItemWallJump, "Assets/Textures/UI/Items/wallJumpUI.png");
+	LoadTextureIfNull(texItemDoubleJump, "Assets/Textures/UI/Items/doubleJumpUI.png");
 	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
 
-	//Load Dialogue UI
+	// Skill upgrade Load
+	LoadTextureIfNull(books_1_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-1.png");
+	LoadTextureIfNull(books_1_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-2.png");
+	LoadTextureIfNull(books_2_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_2-1.png");
+	LoadTextureIfNull(books_2_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_2-2.png");
+	LoadTextureIfNull(books_3_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_3-1.png");
+	LoadTextureIfNull(books_3_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_3-2.png");
+	LoadTextureIfNull(orbsDisplayFrame, "Assets/Textures/UI/SkillUpgrade/SkillMenu_PointsDisplay.png");
+
+	// Dialogue UI Load
 	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
+	LoadTextureIfNull(princessPortrait, "Assets/Textures/UI/Dialogues/princess_portrait.png");
+	LoadTextureIfNull(npcPortrait, "Assets/Textures/UI/Dialogues/npc_portrait1.png");
+	//LoadTextureIfNull(npcPortrait2, "Assets/Textures/UI/Dialogues/npc_portrait2.png");
+	//LoadTextureIfNull(npcPortrait3, "Assets/Textures/UI/Dialogues/npc_portrait3.png");
+	//LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png");
 
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
 	CreateInventoryUI();
+
+	//Skill
+	CreateSkillUpgradeUI();
+	// Minimap
+	CreateMiniMapUI();
 
 	// Pause Menu
 	CreatePauseMenuUI();
@@ -158,7 +211,6 @@ bool GameScene::Start() {
 
 
 bool GameScene::Update(float dt) {
-	ZoneScoped;
 
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
@@ -215,7 +267,6 @@ bool GameScene::Update(float dt) {
 }
 
 bool GameScene::PostUpdate() {
-	ZoneScoped;
 
 	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {
@@ -237,7 +288,7 @@ bool GameScene::PostUpdate() {
 				currentTextureToDraw = texMapUI;
 				break;
 			case GameMenuTab::SKILL_TREE:
-				currentTextureToDraw = texSkilltreeUI;
+				currentTextureToDraw = texSkillUI;
 				break;
 			case GameMenuTab::PAUSE_MENU:
 			case GameMenuTab::PAUSE_OPTIONS:
@@ -289,31 +340,40 @@ bool GameScene::CleanUp() {
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
-	// UnloadTexture BG buttons
+	// Buttons and Bg
 	UnloadTexture(buttonUI);
 	UnloadTexture(skillFrameUI);
-	UnloadTexture(orbFrameUI);
-	UnloadTexture(keyFrameUI);
 	UnloadTexture(textBgUI);
 
-	//UnloadTexture
-	UnloadTexture(texInventoryUI);
+
+	// Texture Load
 	UnloadTexture(texMapUI);
+	UnloadTexture(texInventoryUI);
 	UnloadTexture(texSkilltreeUI);
 	UnloadTexture(texPauseUI);
+	UnloadTexture(texSkillUI);
 
-	//UnloadTexture Items
+	//Load Items
 	UnloadTexture(texItemKeyCastle);
-	UnloadTexture(texItemGlide);
 	UnloadTexture(texItemKeyForest);
+	UnloadTexture(texItemKeyMountain);
+	UnloadTexture(texItemKeyCatacumbs);
 	UnloadTexture(texItemOrb);
+
+	// Power-ups
+	UnloadTexture(texItemGlide);
+	UnloadTexture(texItemDash);
+	UnloadTexture(texItemWallJump);
+	UnloadTexture(texItemDoubleJump);
 	UnloadTexture(texItemWeapon);
 
-	//UnloadTexture Dialogues
+	//Load Dialogue UI
 	UnloadTexture(UIDialogueBoxTex);
-	UnloadTexture(UIDialogueBoxNpc1);
-	//UnloadTexture(UIDialogueBoxNpc2);
-	//UnloadTexture(UIDialogueBoxNpc3);
+	UnloadTexture(princessPortrait);
+	UnloadTexture(npcPortrait);
+	//UnloadTexture(npcPortrait2);
+	//UnloadTexture(npcPortrait3);
+	//UnloadTexture(npcPortrait4);
 
 
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
@@ -329,7 +389,6 @@ bool GameScene::CleanUp() {
 	deleteGroup(skillUI);
 	deleteGroup(pauseMainUI);
 	deleteGroup(pauseOptionsUI);
-	deleteGroup(dialogueBox);
 	deleteGroup(dialogueUI);
 
 	dialogueUI.clear();
@@ -337,10 +396,20 @@ bool GameScene::CleanUp() {
 	return true;
 }
 
-bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) 
-{
+bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
+
 	Engine::GetInstance().audio->PlayFx(uiClick);
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
+	auto updateLorePanel = [&](const std::string& itemKey, bool hasItem) {
+		if (hasItem && itemsLoreDB.find(itemKey) != itemsLoreDB.end()) {
+			const auto& lore = itemsLoreDB[itemKey];
+			// Formatamos T铆tulo + Descripci贸n
+			descPanel->text = lore.name + "\n\n" + lore.description;
+		}
+		else {
+			descPanel->text = "???\n\nObjeto desconocido, dicen que esta perdido por el reino.";
+		}
+		};
 	switch (uiElement->id) {
 	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
@@ -364,27 +433,17 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement)
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
 
-		// Gesti髇 texto de los objetos del inventario
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("WEAPON", p && p->HasItem(ItemID::WEAPON));
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_GLIDE:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
-		break;
-
-	case (int)GameUI_ID::INV_ITEM_KEY:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("GLIDE", p && p->HasItem(ItemID::GLIDE));
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_ORB:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("STRENGTH_ORB", p && p->HasItem(ItemID::STRENGTH_ORB));
 		break;
-
 	}
 	return true;
 }
@@ -424,11 +483,16 @@ void GameScene::CreateInventoryUI() {
 	float baseSize = 0.08f;
 	float squareH = baseSize * aspect;
 
-	float centerX = 0.38f;
-	float centerY = 0.55f;
-	float offsetX = 0.13f;
-	float offsetY = 0.20f;
+	float centerX = 0.40f;
+	float centerXKey = 0.39f;
 
+	float centerY = 0.470f;
+
+	float offsetX = 0.13f;
+	float offsetXKey = 0.15f;
+
+	float offsetY = 0.1f;
+	float offsetYKey = 0.30f;
 
 	struct InventorySlotDef {
 		GameUI_ID id;
@@ -440,25 +504,31 @@ void GameScene::CreateInventoryUI() {
 
 	std::vector<InventorySlotDef> slots = {
 		// ARMA (Centro)
-		{ GameUI_ID::INV_ITEM_WEAPON, "", centerX, centerY,baseSize + float(0.1), squareH + float(0.2), texItemWeapon},
+		{ GameUI_ID::INV_ITEM_WEAPON, "", centerX, centerY,baseSize + float(0.07), squareH + float(0.14), texItemWeapon},
 
 		// AMULETOS (Vertices)
-		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si a鷑 no tienes textura
-		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
-		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
+		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX,			centerY - offsetY ,baseSize, squareH, texItemGlide },
+		{ GameUI_ID::INV_ITEM_DASH, "", centerX + offsetX ,		centerY - offsetY ,baseSize, squareH, texItemDash },
+		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "", centerX - offsetX,	centerY + offsetY ,baseSize, squareH, texItemDoubleJump },
+		{ GameUI_ID::INV_ITEM_WALL_JUMP, "", centerX + offsetX,		centerY + offsetY ,baseSize, squareH, texItemWallJump },
 
 		// ITEMS
-		{ GameUI_ID::INV_ITEM_KEY, "", centerX - offsetX - float(0.04), centerY,baseSize, squareH, texItemKeyCastle },
-		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, texItemOrb }
+		{ GameUI_ID::INV_ITEM_KEY, "", centerXKey - offsetXKey, centerY + offsetYKey,						   baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle},
+		{ GameUI_ID::INV_ITEM_KEYCASTLE, "", centerXKey - offsetXKey + float(0.08),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle },
+		{ GameUI_ID::INV_ITEM_KEYFOREST, "", centerXKey - offsetXKey + float(0.16),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyForest },
+		{ GameUI_ID::INV_ITEM_KEYMOUNTAIN, "", centerXKey - offsetXKey + float(0.24),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyMountain },
+		{ GameUI_ID::INV_ITEM_KEYCATACUMBS, "", centerXKey - offsetXKey + float(0.32),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCatacumbs },
 	};
 
 	for (const auto& slot : slots) {
 		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, slot.w, slot.h, sceneObserver);
+		if (slot.id != GameUI_ID::INV_ITEM_GLIDE && slot.id != GameUI_ID::INV_ITEM_DASH && slot.id != GameUI_ID::INV_ITEM_DOUBLE_JUMP && slot.id != GameUI_ID::INV_ITEM_WALL_JUMP)
+		{
+			btn->SetBgTexture(skillFrameUI);
 
-		btn->SetBgTexture(skillFrameUI);
+		}
 
-		// Si le hemos asignado una textura, se la ponemos al bot髇
+		// Si le hemos asignado una textura, se la ponemos al bot贸n
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}
@@ -466,14 +536,68 @@ void GameScene::CreateInventoryUI() {
 	}
 
 	descPanel = uiManager->CreateUIElement(
-		UIElementType::BUTTON,
-		(int)GameUI_ID::INV_DESC_TEXT, "Select an item...", 0.72f, 0.55f, 0.20f, 0.60f, sceneObserver
+		UIElementType::ITEM_INFO_BOX, // Nuevo tipo dedicado
+		(int)GameUI_ID::INV_DESC_TEXT,
+		"Selecciona un objeto para ver su historia...",
+		0.72f, 0.55f, 0.20f, 0.60f,
+		sceneObserver
 	);
-	descPanel->SetBgTexture(textBgUI);
 
-	descPanel->state = UIElementState::DISABLED;
+	descPanel->SetBgTexture(textBgUI);
 	inventoryUI.push_back(descPanel);
+
 }
+
+void GameScene::CreateSkillUpgradeUI() {
+
+	auto uiManager = Engine::GetInstance().uiManager;
+	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
+
+	int sw = Engine::GetInstance().render->camera.w;
+	int sh = Engine::GetInstance().render->camera.h;
+	float aspect = (float)sw / (float)sh;
+
+	float baseSize = 0.1f;
+	float squareH = baseSize * aspect;
+
+	float centerX = 0.37f;
+	float centerY = 0.50f;
+	float offsetX = 0.07f;
+	float offsetY = 0.20f;
+
+	struct SkillSlotDef {
+		GameUI_ID id;
+		const char* name;
+		float relX, relY;
+		float w, h;
+		SDL_Texture* tex;
+	};
+
+	std::vector<SkillSlotDef> slots = {
+		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, books_1_1 }, // Arriba derecha
+		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY,baseSize, squareH, books_1_2 }, // Arriba izquierda
+
+		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX - float(0.02), centerY, baseSize, squareH, books_2_1 }, // Medio izquierda
+		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, books_2_2 }, // Medio derecha
+
+		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX, centerY + offsetY,baseSize, squareH, books_3_1 }, // Abajo derecha
+		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX, centerY + offsetY,baseSize, squareH, books_3_2 }, // Abajo Izquierda 
+
+		// ITEMS
+		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.29), centerY + float(0.17),baseSize, squareH, texItemOrb } // Orbe
+	};
+
+	for (const auto& slot : slots) {
+		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, slot.w, slot.h, sceneObserver);
+
+		if (slot.tex != nullptr) {
+			btn->SetTexture(slot.tex);
+		}
+		skillUI.push_back(btn);
+	}
+}
+
+void GameScene::CreateMiniMapUI() {}
 
 void GameScene::CreatePauseMenuUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
@@ -524,7 +648,7 @@ void GameScene::CreateDialogueUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 
-	// Usamos el mismo patr髇 que tus otros elementos
+	// Usamos el mismo patr贸n que tus otros elementos
 	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(
 		UIElementType::DIALOGUE_BOX, 99, "", 0.5f, 0.8f, 0.7f, 0.3f, sceneObserver);
 
@@ -532,16 +656,17 @@ void GameScene::CreateDialogueUI() {
 	if (dBox != nullptr) {
 		dBox->SetBackgroundTexture(UIDialogueBoxTex);
 
-		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/princess_portrait.png");
-		SDL_Texture* texAldeano = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/npc_portrait.png");
-
-		dBox->AddPortrait("Princesa", texPrincesa);
-		dBox->AddPortrait("Ruben", texAldeano);
+		dBox->AddPortrait("Princesa", princessPortrait);
+		dBox->AddPortrait("Jan", npcPortrait);
+		/*dBox->AddPortrait("Jan", npcPortrait1);
+		dBox->AddPortrait("Jan", npcPortrait2);
+		dBox->AddPortrait("Jan", npcPortrait3);
+		dBox->AddPortrait("Jan", npcPortrait4);*/
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
 
-		// A馻dir al grupo de control
+		// A帽adir al grupo de control
 		dialogueUI.push_back(rawDialogueBox);
 	}
 }
