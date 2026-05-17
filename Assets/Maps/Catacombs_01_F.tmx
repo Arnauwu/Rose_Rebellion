@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="408">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="408">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -25258,7 +25258,7 @@
   </object>
   <object id="168" x="4992" y="-256" width="1920" height="128">
    <properties>
-    <property name="TeleportTo" type="file" value="Forest_01.tmx"/>
+    <property name="TeleportTo" type="file" value="Forest_04.tmx"/>
    </properties>
   </object>
  </objectgroup>
@@ -25498,7 +25498,7 @@
   </properties>
   <object id="50" name="Player" type="Player" x="5888" y="384">
    <properties>
-    <property name="FromRoom" type="file" value="Forest_01.tmx"/>
+    <property name="FromRoom" type="file" value="Forest_04.tmx"/>
    </properties>
    <point/>
   </object>
