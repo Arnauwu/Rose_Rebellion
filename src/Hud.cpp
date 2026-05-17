@@ -161,7 +161,9 @@ void Hud::DrawNotification() {
 
         // Tamaño de pantalla
         int screenW, screenH;
-        Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+        screenW = Engine::GetInstance().window->windowWidth;
+
+        screenH = Engine::GetInstance().window->windowHeight;
 
         // Tamaño del cuadro de solicitud
         int rectW = 600;

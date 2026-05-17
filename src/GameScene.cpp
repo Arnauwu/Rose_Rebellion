@@ -28,7 +28,6 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-	ZoneScoped;
 	//Load the map. 
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	if (mapFile == "")
@@ -274,7 +273,9 @@ bool GameScene::PostUpdate() {
 			SDL_Texture* currentTextureToDraw = nullptr;
 
 			int screenW, screenH;
-			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+			screenW = Engine::GetInstance().window->windowWidth;
+
+			screenH = Engine::GetInstance().window->windowHeight;
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
@@ -307,7 +308,9 @@ bool GameScene::PostUpdate() {
 		if (currentMenuTab != GameMenuTab::NONE) {
 
 			int screenW, screenH;
-			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+			screenW = Engine::GetInstance().window->windowWidth;
+			screenH = Engine::GetInstance().window->windowHeight;
+
 			SDL_Rect bgRect = { 0, 0, screenW, screenH };
 
 			Engine::GetInstance().render->DrawRectangle(bgRect, 0, 0, 0, 180, true, false);
@@ -645,6 +648,7 @@ void GameScene::CreatePauseSettingUI() {
 }
 
 void GameScene::CreateDialogueUI() {
+	Engine::GetInstance().dialogueManager->StartDialogue("Prueba1");
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 

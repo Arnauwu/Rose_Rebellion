@@ -275,11 +275,11 @@ bool Cinematics::DecodeNextFrame()
 
 			AVFrame* aFrame = av_frame_alloc();
 			while (avcodec_receive_frame(audioCodecCtx, aFrame) >= 0) {
-				
+
 				int outSamples = swr_get_out_samples(swrCtx, aFrame->nb_samples);
 				int bufSize = outSamples * 2 * sizeof(float);
 				uint8_t* outBuf = (uint8_t*)av_malloc(bufSize);
-				
+
 				if (outBuf) {
 					int converted = swr_convert(swrCtx, &outBuf, outSamples,
 						(const uint8_t**)aFrame->data, aFrame->nb_samples);
@@ -306,7 +306,9 @@ void Cinematics::RenderFrame()
 	SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
 
 	int screenW, screenH;
-	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+	screenW = Engine::GetInstance().window->windowWidth;
+
+	screenH = Engine::GetInstance().window->windowHeight;
 
 	float videoAspect = (float)videoWidth / (float)videoHeight;
 	float windowAspect = (float)screenW / (float)screenH;

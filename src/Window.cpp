@@ -98,7 +98,7 @@ int Window::GetScale() const
 	return windowScale;
 }
 
-void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer)
+void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer) 
 {
 	// Save mouse Position
 	float mouseX, mouseY;
@@ -131,9 +131,5 @@ void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer)
 	SDL_WarpMouseInWindow(window, relX * newW, relY * newH);
 
 
-	int windowW, windowH;
-	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
-
-	SDL_SetRenderLogicalPresentation(renderer, windowW, windowH,
-		SDL_LOGICAL_PRESENTATION_LETTERBOX);
+	SDL_SetRenderLogicalPresentation(renderer, windowWidth, windowHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 }
