@@ -179,6 +179,8 @@ public:
 	bool isAttacking = false;
 	float attackDuration = 0.25f; //attack duration
 	float currentAttackTime = 0.0f;
+	Timer attackCooldownTimer;
+	int attackCooldownMS = 500;
 
 	int comboStep = 0;                 // combo
 	float timeSinceLastAttack = 0.0f;  // Temporizador
@@ -228,6 +230,17 @@ private:
 
 	AnimationSet anims;
 	int currentAnimPriority = 0;
+
+	/*
+	Idle = 0
+	Move = 1
+	Jump = 2
+	Fall = 3
+	Attack = 4
+	Gliding = 5
+
+	Death = 99
+	*/
 
 	CameraController cameraController;
 	Vector2D respawnPosition;

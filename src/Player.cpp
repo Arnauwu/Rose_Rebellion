@@ -19,6 +19,7 @@
 #include <iostream>
 #include <unordered_map>
 
+#include "tracy/Tracy.hpp"
 
 using namespace std;
 
@@ -87,7 +88,7 @@ bool Player::Start()
 	// Configuración de Físicas
 	texW = 128;
 	texH = 128;
-	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 19 / 24, texH * 3 / 2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCapsule((int)position.getX(), (int)position.getY(), texW / 3, texW * 17 / 24, texH, bodyType::DYNAMIC);
 
 	// Assign listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -102,16 +103,22 @@ bool Player::Start()
 	cameraController.SetVerticalOffset(-25.0f);
 	respawnPosition = position;
 	lastSafePosition = position;
+
+	//Timers
 	safePositionTimer.Start();
+	attackCooldownTimer.Start();
+
 	return true;
 }
 
 bool Player::Update(float dt)
 {
-	
-	if (isFrozen) {
+	ZoneScoped;
+	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 
+	if (isFrozen) 
+	{
 		GetPhysicsValues();
-		velocity = { 0, velocity.y }; 
+		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
 		ApplyPhysics();
 
 		if (lookingRight)
@@ -131,14 +138,16 @@ bool Player::Update(float dt)
 
 	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
 
-	if (isDialogueActive) {
+	if (isDialogueActive) 
+	{
 		if (!Engine::GetInstance().sceneManager->isGamePaused) {
 			velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 			velocity.x = 0.0f; 
 			ApplyPhysics();   
 			Draw(dt);        
 		}
-		else {
+		else 
+		{
 			// DORMIR
 			if (lookingRight) anims.SetCurrent("idle_right");
 			else anims.SetCurrent("idle_left");
@@ -246,6 +255,7 @@ bool Player::Update(float dt)
 
 bool Player::PostUpdate()
 {
+	// 【修改】确保没被冻结才能交互
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead && !isFrozen)
 	{
 		Interact();
@@ -308,7 +318,7 @@ void Player::Move() {
 	}
 	else
 	{
-		if (!isAttacking && !isJumping && !isDashing)
+		if (!isAttacking && !isJumping && !isDashing && currentAnimPriority != 4)
 		{
 			anims.SetCurrent(lookingRight ? "idle_right" : "idle_left");
 			currentAnimPriority = 0;
@@ -349,7 +359,7 @@ void Player::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
+		//anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
 		if (attackCollider != nullptr) {
 			Engine::GetInstance().physics->DeletePhysBody(attackCollider);
 			attackCollider = nullptr;
@@ -391,6 +401,7 @@ void Player::Respawn()
 		isdead = false;
 
 		anims.SetCurrent("idle");
+		currentAnimPriority = 0;
 	}
 }
 
@@ -409,6 +420,7 @@ void Player::RespawnFromVoid()
 	isJumping = false;
 	secondJumpUsed = false;
 	anims.SetCurrent("idle");
+	currentAnimPriority = 0;
 	Engine::GetInstance().audio->PlayFx(respawnFx);
 	LOG("Player reset to last safe position: %.2f, %.2f", lastSafePosition.getX(), lastSafePosition.getY());
 }
@@ -454,18 +466,21 @@ void Player::Jump(float dt)
 			if (wallDirection == 1) {
 				velocity.x = -wJumpForceX;
 				lookingRight = false;
-				anims.SetCurrent("jump_left");
+				anims.SetCurrent("wall_jump_left");
+				anims.GetAnim("wall_jump_left")->SetLoop(false);
 			}
 			else {
 				velocity.x = wJumpForceX;
 				lookingRight = true;
-				anims.SetCurrent("jump_right");
-			}
+				anims.SetCurrent("wall_jump_right");
+				anims.GetAnim("wall_jump_right")->SetLoop(false);
+			}			
+			currentAnimPriority = 2;
+
 
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 			Engine::GetInstance().physics->SetYVelocity(pbody, wJumpForceY);
 
-			currentAnimPriority = 2;
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
 
@@ -481,8 +496,11 @@ void Player::Jump(float dt)
 			float footY = position.getY() + (texH / 2.0f) - 10.0f;
 			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
 
-			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
-			currentAnimPriority = 2;
+			if (currentAnimPriority <= 2)
+			{
+				anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
+				currentAnimPriority = 2;
+			}
 
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
@@ -497,8 +515,12 @@ void Player::Jump(float dt)
 			secondJumpUsed = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
-			currentAnimPriority = 2;
+			if (currentAnimPriority <= 2)
+			{
+				anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
+				currentAnimPriority = 2;
+			}
+
 
 			isJumpKeyDown = true;
 			jumpHoldTime = 0.00f;
@@ -540,7 +562,7 @@ void Player::Attack(float dt)
 	}
 
 	// 1. Iniciar el ataque
-	if (attackPressed && !isGliding && !isAttacking)
+	if (attackPressed && !isGliding && !isAttacking && attackCooldownTimer.ReadMSec() >= attackCooldownMS && currentAnimPriority <= 4)
 	{
 		if (HasItem(ItemID::WEAPON))
 		{
@@ -589,7 +611,8 @@ void Player::Attack(float dt)
 				currentAttackOffsetY = -(texH * 0.8f) - currentAttackHeight;
 				currentAttackOffsetX = 0;
 
-				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
+				anims.GetAnim(lookingRight ? "attack_up_right" : "attack_up_left")->SetLoop(false);
+				anims.SetCurrent(lookingRight ? "attack_up_right" : "attack_up_left");
 			}
 			else if (lookDown)
 			{
@@ -600,15 +623,16 @@ void Player::Attack(float dt)
 				currentAttackOffsetY = (texH * 0.8f);
 				currentAttackOffsetX = 0;
 
-				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
+				anims.GetAnim(lookingRight ? "attack_down_right" : "attack_down_left")->SetLoop(false);
+				anims.SetCurrent(lookingRight ? "attack_down_right" : "attack_down_left");
 			}
 			else
 			{
 				currentAttackOffsetX = lookingRight ? (texW / 2 + currentAttackWidth / 2) : -(texW / 2 + currentAttackWidth / 2);
 				currentAttackOffsetY = 0;
 
-				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
 				anims.GetAnim(lookingRight ? "attack_right" : "attack_left")->SetLoop(false);
+				anims.SetCurrent(lookingRight ? "attack_right" : "attack_left");
 			}
 
 			currentAnimPriority = 4;
@@ -634,18 +658,24 @@ void Player::Attack(float dt)
 			attackCollider->SetPosition(position.getX() + currentAttackOffsetX, position.getY() + currentAttackOffsetY);
 		}
 
-		if (currentAttackTime >= attackDuration &&
-			(anims.GetAnim("attack_right")->HasFinishedOnce() || anims.GetAnim("attack_left")->HasFinishedOnce() ||
-				anims.GetCurrentName() != "attack_right" || anims.GetCurrentName() != "attack_left"))
+		if (currentAttackTime >= attackDuration)
 		{
-			isAttacking = false;
-			anims.SetCurrent("idle");
-			currentAnimPriority = 0;
-
-			if (attackCollider != nullptr)
+			if (
+				(anims.GetAnim(anims.GetCurrentName())->HasFinishedOnce() || 
+					anims.GetCurrentName().find("attack_") == std::string::npos)
+				)
 			{
-				Engine::GetInstance().physics->DeletePhysBody(attackCollider);
-				attackCollider = nullptr;
+
+
+				isAttacking = false;
+				currentAnimPriority = 0;
+
+				if (attackCollider != nullptr)
+				{
+					Engine::GetInstance().physics->DeletePhysBody(attackCollider);
+					attackCollider = nullptr;
+				}
+				attackCooldownTimer.Start();
 			}
 		}
 	}
@@ -670,8 +700,11 @@ void Player::Glide()
 				Engine::GetInstance().audio->PlayFx(planearPrincesa);
 			}
 			isGliding = true;
-			anims.SetCurrent(lookingRight ? "glide_right" : "glide_left");
-			currentAnimPriority = 5;
+			if (currentAnimPriority <= 5)
+			{
+				anims.SetCurrent(lookingRight ? "glide_right" : "glide_left");
+				currentAnimPriority = 5;
+			}
 		}
 		else if ((Engine::GetInstance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP ||
 			(Engine::GetInstance().input->IsGamepadConnected() &&
@@ -702,10 +735,15 @@ void Player::Dash()
 		if (lookingRight == true)
 		{
 			velocity.x = dashForce;
+			anims.SetCurrent("dash_right");
+			anims.GetAnim("dash_right")->SetLoop(false);
 		}
 		else
 		{
 			velocity.x = -dashForce;
+			anims.SetCurrent("dash_left");
+			anims.GetAnim("dash_left")->SetLoop(false);
+
 		}
 
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
@@ -766,52 +804,15 @@ void Player::Interact()
 				return;
 			}
 
-			//bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
-
-			//if (requiresKey)
-			//{
-			//	if (GameManager::GetInstance().gameState.keyCount > 0)
-			//	{
-			//		Engine::GetInstance().audio->PlayFx(openDoor);
-			//		GameManager::GetInstance().gameState.keyCount--;
-			//		LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
-
-			//		std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
-			//		if (!doorId.empty()) {
-			//			GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
-			//		}
-			//		isFrozen = true;
-			//		int cx, cy;
-			//		interactuableBody->GetPosition(cx, cy);
-
-			//		int doorW, doorH;
-			//		Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
-
-			//		auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-			//		DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
-
-			//		if (doorAnim != nullptr) {
-			//			doorAnim->zOrder = -1;
-			//			doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
-			//		}
-			//	}
-			//	else
-			//	{
-			//		Engine::GetInstance().audio->PlayFx(closedDoor);
-			//		LOG("Necesitas una llave para abrir, busca una ");
-			//		Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
-			//	}
-			//}
 			bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
 
 			if (requiresKey)
 			{
-				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
-
-				if (this->HasKey(requiredKey))
+				if (GameManager::GetInstance().gameState.keyCount > 0)
 				{
 					Engine::GetInstance().audio->PlayFx(openDoor);
-					LOG("Has usado la llave correcta para esta zona.");
+					GameManager::GetInstance().gameState.keyCount--;
+					LOG("Has usado una llave. Te quedan: %d ", GameManager::GetInstance().gameState.keyCount);
 
 					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 					if (!doorId.empty()) {
@@ -835,8 +836,8 @@ void Player::Interact()
 				else
 				{
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					LOG("Necesitas la llave ESPECIFICA de esta región para abrir.");
-					Engine::GetInstance().hud->ShowNotification("You need the specific region key to open this door.");
+					LOG("Necesitas una llave para abrir, busca una ");
+					Engine::GetInstance().hud->ShowNotification("You need a key to open this door.");
 				}
 			}
 			else
@@ -909,8 +910,15 @@ void Player::ApplyPhysics() {
 			onAir = false;
 
 			// Animación
-			if (anims.GetCurrentName() != "wall") {
-				anims.SetCurrent("wall");
+			if (anims.GetCurrentName() != "onWall_right" || anims.GetCurrentName() != "onWall_left") {
+				if (!lookingRight)
+				{
+					anims.SetCurrent("onWall_right");
+				}
+				else
+				{
+					anims.SetCurrent("onWall_left");
+				}
 				currentAnimPriority = 1;
 			}
 		}
@@ -1147,11 +1155,20 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 										 {84,"death_left" } ,
 										 {96,"idle_right"},
 										 {120,"idle_left" },
-										 {144,"attack_right" },
-										 {156,"attack_left" } ,
+										 {144,"attack_down_right" },
+										 {156,"attack_down_left" } ,
 										 {168,"glide_right"},
 										 {192,"glide_left" },
-
+										 {216,"dash_right" },
+										 {228,"dash_left" },
+										 {240,"attack_right" },
+										 {252,"attack_left" },
+										 {264,"onWall_right" },
+										 {265,"wall_jump_right" },
+										 {276,"onWall_left" },
+										 {277,"wall_jump_left" },
+										 {288,"attack_up_right" },
+										 {300,"attack_up_left" }
 		};
 	}
 	return aliases;
@@ -1166,6 +1183,7 @@ void Player::UnlockCape()
 	anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess.tsx", aliases);
 
 	anims.SetCurrent("idle_right");
+	currentAnimPriority = 0;
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Princess.png");
 	GameManager::GetInstance().gameState.glideUnlocked = true;
@@ -1270,7 +1288,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			isJumping = false;
 			secondJumpUsed = false;
 
-			if (currentAnimPriority > 1)
+			if (currentAnimPriority > 1 && currentAnimPriority != 4)
 			{
 				if (lookingRight)
 				{
@@ -1278,7 +1296,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 				}
 				else
 				{
-					anims.SetCurrent("idle_left");
+ 					anims.SetCurrent("idle_left");
 				}
 				currentAnimPriority = 0;
 			}

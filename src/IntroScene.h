@@ -8,12 +8,11 @@ public:
     IntroScene();
     virtual ~IntroScene();
 
+    bool Awake() override;
     bool Start() override;
     bool Update(float dt) override;
     bool CleanUp() override;
 
     SDL_Texture* introTexture = nullptr;
-
-private:
-    float introTimer = 0.0f;
+   
 };

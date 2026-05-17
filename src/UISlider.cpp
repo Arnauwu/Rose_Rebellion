@@ -71,13 +71,13 @@ bool UISlider::Update(float dt) {
 void UISlider::Draw() const {
     if (!visible) return;
 
-    Engine::GetInstance().render->DrawRectangle(sliderBar, 200, 200, 200, 255, true, false);
+    Engine::GetInstance().render->DrawRectangleUnScaled(sliderBar, 200, 200, 200, 255, true, false);
 
 	if (thumbTex != nullptr) {
 		Engine::GetInstance().render->DrawTextureScaled(thumbTex, thumb);
 	}
 	else {
-		Engine::GetInstance().render->DrawRectangle(thumb, 255, 0, 0, 255, true, false);
+		Engine::GetInstance().render->DrawRectangleUnScaled(thumb, 255, 0, 0, 255, true, false);
 	}
 
 	if (!text.empty()) {

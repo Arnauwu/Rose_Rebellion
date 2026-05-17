@@ -64,11 +64,9 @@ bool Cinematics::Update(float dt)
 bool Cinematics::PostUpdate()
 {
 	ZoneScoped;
-
-	if (!playing) return true;
+	if (videoTexture == nullptr) return true;
 
 	RenderFrame();
-
 	return true;
 }
 
@@ -104,9 +102,11 @@ bool Cinematics::PlayVideo(const char* path)
 void Cinematics::StopVideo()
 {
 	if (!playing) return;
-	LOG("Cinematics: stopped");
+	LOG("Cinematics: stopped playback, retaining last frame");
 	playing = false;
-	CloseVideo();
+
+	if (audioStream) { SDL_DestroyAudioStream(audioStream); audioStream = nullptr; }
+	if (audioDevice != 0) { SDL_PauseAudioDevice(audioDevice); }
 }
 
 bool Cinematics::IsPlaying() const
@@ -305,26 +305,33 @@ void Cinematics::RenderFrame()
 
 	SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
 
-	int winW = Engine::GetInstance().render->camera.w;
-	int winH = Engine::GetInstance().render->camera.h;
-	float videoAspect = (float)videoWidth / (float)videoHeight;
-	float windowAspect = (float)winW / (float)winH;
+	int screenW, screenH;
+	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
 
-	SDL_FRect dst;
-	if (videoAspect > windowAspect) {
-		dst.w = (float)winW;
-		dst.h = (float)winW / videoAspect;
-		dst.x = 0;
-		dst.y = ((float)winH - dst.h) / 2.0f;
+	float videoAspect = (float)videoWidth / (float)videoHeight;
+	float windowAspect = (float)screenW / (float)screenH;
+
+	SDL_Rect dst;
+
+	if (videoAspect > windowAspect)
+	{
+		dst.w = (float)screenW;
+		dst.h = dst.w / videoAspect;
+
+		dst.x = 0.0f;
+		dst.y = ((float)screenH - dst.h) / 2.0f;
 	}
-	else {
-		dst.h = (float)winH;
-		dst.w = (float)winH * videoAspect;
-		dst.x = ((float)winW - dst.w) / 2.0f;
-		dst.y = 0;
+	else
+	{
+		dst.h = (float)screenH;
+		dst.w = dst.h * videoAspect;
+
+		dst.x = ((float)screenW - dst.w) / 2.0f;
+		dst.y = 0.0f;
 	}
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
-	SDL_RenderTexture(renderer, videoTexture, nullptr, &dst);
+
+	Engine::GetInstance().render->DrawTextureScaled(videoTexture, dst);
 }

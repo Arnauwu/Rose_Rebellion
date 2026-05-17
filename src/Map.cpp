@@ -16,7 +16,7 @@
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
-#include "SpiderEnemy.h"
+#include "CucaferaMutant.h"
 
 
 #include "SwordKnight.h"
@@ -24,10 +24,17 @@
 
 #include "Ninfa.h"
 #include "Demon.h"
+
 #include "Dip.h"
+
+#include "Minairon.h"
+#include "Bat.h"
+#include "ToxicBall.h"
+
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include "GwellBoss.h"
 #include"Dragon.h"
 
 
@@ -1003,10 +1010,10 @@ void Map::SpawnEntities()
 					std::shared_ptr<CucaferaShiny> cucaferaShiny = std::dynamic_pointer_cast<CucaferaShiny>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_SHINY));
 					cucaferaShiny->position = Vector2D(x, y);
 				}
-				else if (entityType == std::string("Spider"))
+				else if (entityType == std::string("CucaferaMutant"))
 				{
-					std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
-					spider->position = Vector2D(x, y);
+					std::shared_ptr<CucaferaMutant> cucaferaMutant = std::dynamic_pointer_cast<CucaferaMutant>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_MUTANT));
+					cucaferaMutant->position = Vector2D(x, y);
 				}
 
 				else if (entityType == std::string("SwordKnight"))
@@ -1037,6 +1044,24 @@ void Map::SpawnEntities()
 					demon->position = Vector2D(x, y);
 				}
 
+
+				else if (entityType == std::string("Minairon"))
+				{
+					std::shared_ptr<Minairon> minairon = std::dynamic_pointer_cast<Minairon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::MINAIRON));
+					minairon->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("Bat"))
+				{
+					std::shared_ptr<Bat> bat = std::dynamic_pointer_cast<Bat>(Engine::GetInstance().entityManager->CreateEntity(EntityType::BAT));
+					bat->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("ToxicBall"))
+				{
+					std::shared_ptr<ToxicBall> toxicBall = std::dynamic_pointer_cast<ToxicBall>(Engine::GetInstance().entityManager->CreateEntity(EntityType::TOXIC_BALL));
+					toxicBall->position = Vector2D(x, y);
+				}
+
+
 				//Bosses
 				else if (entityType == std::string("KnightBoss"))
 				{
@@ -1047,6 +1072,11 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					ninfaBoss->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("GwellBoss"))
+				{
+					std::shared_ptr<GwellBoss> gwellBoss = std::dynamic_pointer_cast<GwellBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_BOSS));
+					gwellBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Dragon"))
 				{

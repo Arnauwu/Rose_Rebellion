@@ -10,7 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 
-
+#include "tracy/Tracy.hpp"
 
 SwordKnight::SwordKnight() : Enemy(EntityType::SWORD_KNIGHT)
 {
@@ -44,12 +44,12 @@ bool SwordKnight::Start()
 	morirEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
 	//atacarEspada = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
 
-	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"run"},{24,"sword_attack"},{32,"idle"}};
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/SwordKnight.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/SwordKnight.png");
 
 	//Load Audio
 
@@ -94,8 +94,14 @@ bool SwordKnight::Start()
 
 bool SwordKnight::Update(float dt)
 {
-
 	if (!active) return true;
+	ZoneScoped;
+
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		return true;
+	}
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
