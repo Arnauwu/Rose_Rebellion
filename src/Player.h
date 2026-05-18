@@ -30,16 +30,12 @@ enum class CameraMode {
 };
 
 enum class SkillTree {
-	UPDOWNATTACK,
-	COMBO,
-	DMGUP1,
-	DMGUP2,
-	DMGUP3,
-	FASTDASH,
-	DEFUP1,
-	DEFUP2,
-	DEFUP3,
-	IFRAMESUP
+	HEALTH_UP,
+	IFRAMES_UP,
+	SPEED_UP,
+	FAST_DASH,
+	UP_ATTACK,
+	DOWN_ATTACK
 };
 
 struct SDL_Texture;
@@ -74,8 +70,7 @@ public:
 	void UnlockDash();
 	void UnlockDoubleJump();
 
-	void UnlockSkill(SkillTree skill);
-
+	void UnlockSkill(SkillTree skill, int cost);
 
 	//Inventary Variables
 	std::map<ItemID, int> inventory;

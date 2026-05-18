@@ -2,6 +2,7 @@
 #include "SceneBase.h"
 #include "UIDialogueBox.h"
 #include "Textures.h"
+#include "Player.h"
 #include "Audio.h"
 #include "SpecialFloors.h"
 #include <vector>
@@ -58,8 +59,11 @@ enum class GameUI_ID {
 	SKILL_BOOK_2_1,
 	SKILL_BOOK_2_2,
 	SKILL_BOOK_3_1,
-	SKILL_BOOK_3_2
+	SKILL_BOOK_3_2,
 
+	BTN_SKILL_BUY = 250,
+	BTN_SKILL_BACK,
+	PANEL_SKILL_POPUP
 };
 
 struct ButtonDef { int id; const char* text; };
@@ -71,6 +75,12 @@ struct ItemLore {
 	std::string description;
 };
 
+struct Skillinfo {
+	std::string name;
+	std::string description;
+	int cost;
+};
+
 class GameScene : public SceneBase {
 public:
 	GameScene();
@@ -79,6 +89,8 @@ public:
 	//Load Map
 	void LoadMap(std::string mapFile);
 	void LoadItemsLore();
+	void LoadSkillsinfo();
+
 	// Scene lifecycle
 	bool Start() override;
 	bool Update(float dt) override;
@@ -127,7 +139,13 @@ public:
 	SDL_Texture* books_2_2 = nullptr;
 	SDL_Texture* books_3_1 = nullptr;
 	SDL_Texture* books_3_2 = nullptr;
-	SDL_Texture* orbsDisplayFrame = nullptr;
+
+	SDL_Texture* books_1_1_active = nullptr;
+	SDL_Texture* books_1_2_active = nullptr;
+	SDL_Texture* books_2_1_active = nullptr;
+	SDL_Texture* books_2_2_active = nullptr;
+	SDL_Texture* books_3_1_active = nullptr;
+	SDL_Texture* books_3_2_active = nullptr;
 
 	//Dialogue UI Textures 
 	SDL_Texture* UIDialogueBoxTex = nullptr;
@@ -145,6 +163,8 @@ private:
 	void CreateTopBarUI();
 	void CreateInventoryUI();
 	void CreateSkillUpgradeUI();
+	void CreateSkillPopupUI();
+
 	void CreateMiniMapUI();
 
 	void CreatePauseMenuUI();
@@ -153,6 +173,8 @@ private:
 
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
+	void UpdateSkillVisuals();
+
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
 
 	int uiClick;
@@ -171,6 +193,14 @@ private:
 	// Descriptión Panel
 	std::unordered_map<std::string, ItemLore> itemsLoreDB;
 	std::shared_ptr<UIElement> descPanel = nullptr;
+
+	// Skill Panel
+	std::unordered_map<std::string, Skillinfo> skillsLoreDB;
+
+	SkillTree selectedSkillToBuy;
+	std::string selectedSkillKey;
+	std::vector<std::shared_ptr<UIElement>> skillPopupUI;
+	std::shared_ptr<UIElement> skillPopupText;
 
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;

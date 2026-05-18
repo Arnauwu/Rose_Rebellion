@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="100" maxHealth="100" keyCount="0" currentForceOrbs="0" />
+	<PlayerStats currentHealth="100" maxHealth="100" keyCount="0" currentForceOrbs="10" />
 	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" />
 	<WorldState currentMap="Castle_Inside.tmx">
 		<Position x="2976" y="928" />
