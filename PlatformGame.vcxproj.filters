@@ -161,6 +161,9 @@
     <Filter Include="Source Files\Game\Entity\Bosses\GwellBoss">
       <UniqueIdentifier>{3f781e1f-90dd-4a9e-840c-eaca8ac149a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Dip">
+      <UniqueIdentifier>{f7ecc5db-b91f-43c4-989e-88edd0e9103e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -375,6 +378,9 @@
     <ClCompile Include="src\UIItemInfoBox.cpp">
       <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dip.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -583,6 +589,9 @@
     </ClInclude>
     <ClInclude Include="src\UIItemInfoBox.h">
       <Filter>Source Files\Utils\UI Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dip.h">
+      <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
