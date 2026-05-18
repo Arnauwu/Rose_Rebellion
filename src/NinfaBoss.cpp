@@ -34,7 +34,7 @@ bool NinfaMare::Start()
     // Animaciones (Usando el sistema de aliases de la ninfa base)[cite: 1]
     std::unordered_map<int, std::string> aliases = {
         {0, "idle"}, {20, "appear"}, {40, "attack_shot"},
-        {60, "attack_wave"}, {80, "fly"},{100, "hurt"}, {120, "dead"}
+        {60, "attack_rain"}, {60, "attack_wave"}, {80, "fly"},{100, "hurt"}, {120, "dead"}
     };
     anims.LoadFromTSX("Assets/Textures/Entities/Enemies/NinfaBoss/NinfaMadre_spritesheet.tsx", aliases);
     anims.SetCurrent("idle");
@@ -182,22 +182,26 @@ void NinfaMare::Move() {
             if (shotsFiredInCombo >= 10) {
                 shotsFiredInCombo = 0; // Reseteamos el contador para la próxima vez
 
-                if (nextSpecialIsWave) {
-                    // Toca hacer el ataque de Ola
-                    currentState = NinfaMareState::ATTACK_WAVE;
-                    anims.SetCurrent("attack_wave");
-                    if (anims.GetAnim("attack_wave") != nullptr) anims.GetAnim("attack_wave")->Reset();
-                }
-                else {
-                    // Toca hacer el ataque de Lluvia
-                    currentState = NinfaMareState::ATTACK_RAIN;
-                    anims.SetCurrent("attack_rain");
-                    if (anims.GetAnim("attack_rain") != nullptr) anims.GetAnim("attack_rain")->Reset();
-                    rainTimer.Start();
-                }
+        //        if (nextSpecialIsWave) {
+        //            // Toca hacer el ataque de Ola
+        //            currentState = NinfaMareState::ATTACK_WAVE;
+        //            anims.SetCurrent("attack_wave");
+        //            if (anims.GetAnim("attack_wave") != nullptr) anims.GetAnim("attack_wave")->Reset();
+        //        }
+                //else {
+                //    // Toca hacer el ataque de Lluvia
+                //    currentState = NinfaMareState::ATTACK_RAIN;
+                //    anims.SetCurrent("attack_rain");
+                //    if (anims.GetAnim("attack_rain") != nullptr) anims.GetAnim("attack_rain")->Reset();
+                //    rainTimer.Start();
+                //}
 
-                // Cambiamos el interruptor para que el SIGUIENTE ataque especial sea el otro
-                nextSpecialIsWave = !nextSpecialIsWave;
+            //    currentState = NinfaMareState::ATTACK_WAVE;
+            //    anims.SetCurrent("attack_wave");
+            //    if (anims.GetAnim("attack_wave") != nullptr) anims.GetAnim("attack_wave")->Reset();
+
+            //    // Cambiamos el interruptor para que el SIGUIENTE ataque especial sea el otro
+            //    nextSpecialIsWave = !nextSpecialIsWave;
             }
             else {
                 // Si aún no lleva 10 disparos, vuelve a reproducir la animación de ataque para lanzar otro
@@ -209,42 +213,42 @@ void NinfaMare::Move() {
         }
         break;
 
-    case NinfaMareState::ATTACK_WAVE:
-        velocity = { 0, 0 };
+    //case NinfaMareState::ATTACK_WAVE:
+    //    velocity = { 0, 0 };
 
-        if (stateTimer.ReadMSec() > 800 && anims.GetCurrentName() == "attack_wave") {
-            LaunchWaterWave();
-            anims.SetCurrent("fly");
-        }
+    //    if (stateTimer.ReadMSec() > 800 && anims.GetCurrentName() == "attack_wave") {
+    //        LaunchWaterWave();
+    //        anims.SetCurrent("fly");
+    //    }
 
-        if (stateTimer.ReadMSec() >= 1500) {
-            currentState = NinfaMareState::COOLDOWN; // Descanso tras completar el combo completo
-            stateTimer.Start();
-        }
-        break;
+    //    if (stateTimer.ReadMSec() >= 1500) {
+    //        currentState = NinfaMareState::COOLDOWN; // Descanso tras completar el combo completo
+    //        stateTimer.Start();
+    //    }
+    //    break;
 
-    case NinfaMareState::ATTACK_RAIN:
-        velocity = { 0, 0 }; // Se queda totalmente quieta canalizando
+    //case NinfaMareState::ATTACK_RAIN:
+    //    velocity = { 0, 0 }; // Se queda totalmente quieta canalizando
 
-        // Mantener la animación de lluvia y evitar que cambie
-        anims.SetCurrent("attack_rain");
+    //    // Mantener la animación de lluvia y evitar que cambie
+    //    anims.SetCurrent("attack_rain");
 
-        // Dejamos 1 segundo de "casteo" (preparación) antes de que empiece a caer el agua
-        if (stateTimer.ReadMSec() > 1000) {
+    //    // Dejamos 1 segundo de "casteo" (preparación) antes de que empiece a caer el agua
+    //    if (stateTimer.ReadMSec() > 1000) {
 
-            // Cada 200ms genera una nueva bala desde el cielo
-            if (rainTimer.ReadMSec() > 200) {
-                StartRainAttack();
-                rainTimer.Start(); // Resetea el contador para la siguiente bala
-            }
-        }
+    //        // Cada 200ms genera una nueva bala desde el cielo
+    //        if (rainTimer.ReadMSec() > 200) {
+    //            StartRainAttack();
+    //            rainTimer.Start(); // Resetea el contador para la siguiente bala
+    //        }
+    //    }
 
-        // El ataque dura 10 segundos + 1 segundo de preparación inicial = 11000ms
-        if (stateTimer.ReadMSec() >= 11000) {
-            currentState = NinfaMareState::COOLDOWN; // Acaba la lluvia y descansa
-            stateTimer.Start();
-        }
-        break;
+    //    // El ataque dura 10 segundos + 1 segundo de preparación inicial = 11000ms
+    //    if (stateTimer.ReadMSec() >= 11000) {
+    //        currentState = NinfaMareState::COOLDOWN; // Acaba la lluvia y descansa
+    //        stateTimer.Start();
+    //    }
+    //    break;
 
         if (stateTimer.ReadMSec() >= 1800) {
             currentState = NinfaMareState::COOLDOWN; // Descanso tras completar el combo completo
