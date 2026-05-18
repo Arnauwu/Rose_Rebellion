@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="33" nextobjectid="699">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="33" nextobjectid="701">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -1775,6 +1775,7 @@
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
   </properties>
+  <object id="700" gid="132" x="7168" y="2432" width="2944" height="3328"/>
  </objectgroup>
  <objectgroup color="#aa0000" id="19" name="Spikes">
   <properties>
