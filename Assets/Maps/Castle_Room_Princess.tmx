@@ -1758,9 +1758,6 @@
   <object id="6" name="Player" type="Player" x="2147" y="912">
    <point/>
   </object>
-  <object id="26" name="Dragon" type="Dragon" x="1410.17" y="907.761">
-   <point/>
-  </object>
  </objectgroup>
  <objectgroup id="8" name="PlayerSpawns">
   <properties>
