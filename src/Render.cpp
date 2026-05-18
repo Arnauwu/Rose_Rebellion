@@ -62,15 +62,16 @@ bool Render::Awake()
 			}
 		}
 
-		int windowW, windowH;
-		Engine::GetInstance().window->GetWindowSize(windowW, windowH);
-				
-		SDL_SetRenderLogicalPresentation(renderer, windowW, windowH,
-			SDL_LOGICAL_PRESENTATION_LETTERBOX);
+		int baseW = Engine::GetInstance().window->windowWidth;
+		int baseH = Engine::GetInstance().window->windowHeight;
 
-		// Como SDL ahora maneja el escalado internamente, la cámara solo necesita tu resolución base.
-		camera.w = windowW / zoomLevel;
-		camera.h = windowH / zoomLevel;
+		// Forzamos la presentación lógica basada exclusivamente en tus dimensiones de diseño
+		SDL_SetRenderLogicalPresentation(renderer, baseW, baseH, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+
+		// Como SDL maneja todo el escalado a pantalla completa internamente de forma automática,
+		// tu cámara lógica ahora calcula sus dimensiones basándose puramente en tu espacio virtual de diseño.
+		camera.w = baseW / zoomLevel;
+		camera.h = baseH / zoomLevel;
 		camera.x = 0;
 		camera.y = 0;
 	}
@@ -86,7 +87,7 @@ bool Render::Start() {
 	// Cargamos la misma fuente con diferentes tamaños
 	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 69);
 	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 39);
-	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 31); // Tamaño más adecuado para texto largo
+	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 31);
 	fonts[FontType::CUERPO] = TTF_OpenFont(fontPath, 25);
 
 	// Verificamos que se cargaron bien
@@ -349,10 +350,10 @@ bool Render::DrawTexture9Slice(SDL_Texture* texture, const SDL_Rect& destRect, i
 
 	SDL_FRect srcCenter = { (float)left, (float)top, texW - left - right, texH - top - bottom };
 
-	float dx = (float)destRect.x * scale * zoomLevel;
-	float dy = (float)destRect.y * scale * zoomLevel;
-	float dw = (float)destRect.w * scale * zoomLevel;
-	float dh = (float)destRect.h * scale * zoomLevel;
+	float dx = (float)destRect.x;
+	float dy = (float)destRect.y;
+	float dw = (float)destRect.w;
+	float dh = (float)destRect.h;
 
 	SDL_FRect dstTL = { dx, dy, (float)left, (float)top };
 	SDL_FRect dstTR = { dx + dw - right, dy, (float)right, (float)top };

@@ -29,6 +29,19 @@ enum class CameraMode {
 	DYNAMIC   // Para exploracin (Nuevo mtodo: 1.75f, Look down, anticipacin)
 };
 
+enum class SkillTree {
+	UPDOWNATTACK,
+	COMBO,
+	DMGUP1,
+	DMGUP2,
+	DMGUP3,
+	FASTDASH,
+	DEFUP1,
+	DEFUP2,
+	DEFUP3,
+	IFRAMESUP
+};
+
 struct SDL_Texture;
 
 class Player : public Entity
@@ -60,6 +73,8 @@ public:
 	void UnlockSickle();
 	void UnlockDash();
 	void UnlockDoubleJump();
+
+	void UnlockSkill(SkillTree skill);
 
 
 	//Inventary Variables
@@ -110,6 +125,8 @@ private:
 
 public:
 	float speed = 10.0f;
+	int dmgbuff = 0;
+	int defbuff = 0;
 
 	// Texture
 	SDL_Texture* texture = nullptr;
@@ -166,10 +183,6 @@ public:
 
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
-
-	bool OffensiveSkills[3] = { false, false, false };
-	bool DefensiveSkills[3] = { false, false, false };
-	bool UtilitySkills[3] = { false, false, false };
 
 	// Interact
 	bool canInteract = false;

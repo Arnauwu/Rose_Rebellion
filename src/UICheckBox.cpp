@@ -40,8 +40,8 @@ void UICheckBox::Draw() const {
         Engine::GetInstance().render->DrawRectangleUnScaled(inner, 0, 255, 0, 255, true, false);
     }
 
-    int textX = bounds.x + bounds.w + (int)(bounds.w * 0.5f);
-    Engine::GetInstance().render->DrawText(text.c_str(), textX, bounds.y, 0, bounds.h, { 255,255,255,255 }, FontType::MENU);
+    int textX = bounds.x + bounds.w + float(10);
+    Engine::GetInstance().render->DrawText(text.c_str(), textX, bounds.y, 0, bounds.h, { 255,255,255,255 }, FontType::SPEAKER);
 }
 
 bool UICheckBox::CleanUp() {

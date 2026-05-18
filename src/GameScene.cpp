@@ -29,7 +29,6 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-	/*ZoneScoped;*/
 	//Load the map. 
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	if (mapFile == "")
@@ -151,7 +150,8 @@ bool GameScene::Start() {
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
-
+	LoadTextureIfNull(sliderThumbTex, "Assets/Textures/UI/Buttons/pomo.png");
+	
 
 	// Texture Load
 	LoadTextureIfNull(texMapUI, "Assets/Textures/UI/GameMenu/t_MapUI.png");
@@ -275,7 +275,9 @@ bool GameScene::PostUpdate() {
 			SDL_Texture* currentTextureToDraw = nullptr;
 
 			int screenW, screenH;
-			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+			screenW = Engine::GetInstance().window->windowWidth;
+
+			screenH = Engine::GetInstance().window->windowHeight;
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
@@ -308,7 +310,9 @@ bool GameScene::PostUpdate() {
 		if (currentMenuTab != GameMenuTab::NONE) {
 
 			int screenW, screenH;
-			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+			screenW = Engine::GetInstance().window->windowWidth;
+			screenH = Engine::GetInstance().window->windowHeight;
+
 			SDL_Rect bgRect = { 0, 0, screenW, screenH };
 
 			Engine::GetInstance().render->DrawRectangle(bgRect, 0, 0, 0, 180, true, false);
@@ -345,6 +349,7 @@ bool GameScene::CleanUp() {
 	UnloadTexture(buttonUI);
 	UnloadTexture(skillFrameUI);
 	UnloadTexture(textBgUI);
+	UnloadTexture(sliderThumbTex);
 
 
 	// Texture Load
@@ -554,11 +559,12 @@ void GameScene::CreateSkillUpgradeUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 
-	int sw = Engine::GetInstance().render->camera.w;
-	int sh = Engine::GetInstance().render->camera.h;
+	int sw = Engine::GetInstance().window->windowWidth;
+	int sh = Engine::GetInstance().window->windowHeight;
+
 	float aspect = (float)sw / (float)sh;
 
-	float baseSize = 0.1f;
+	float baseSize = 0.12f;
 	float squareH = baseSize * aspect;
 
 	float centerX = 0.37f;
@@ -575,17 +581,17 @@ void GameScene::CreateSkillUpgradeUI() {
 	};
 
 	std::vector<SkillSlotDef> slots = {
-		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, books_1_1 }, // Arriba derecha
-		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY,baseSize, squareH, books_1_2 }, // Arriba izquierda
+		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX + float(0.02), centerY - offsetY - float(0.015),baseSize, squareH, books_1_1}, // Arriba derecha
+		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY - float(0.015),baseSize, squareH, books_1_2 }, // Arriba izquierda
 
-		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX - float(0.02), centerY, baseSize, squareH, books_2_1 }, // Medio izquierda
-		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, books_2_2 }, // Medio derecha
+		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX + float(0.05), centerY, baseSize, squareH, books_2_1 }, // Medio izquierda
+		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.02), centerY,baseSize, squareH, books_2_2 }, // Medio derecha
 
-		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX, centerY + offsetY,baseSize, squareH, books_3_1 }, // Abajo derecha
-		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX, centerY + offsetY,baseSize, squareH, books_3_2 }, // Abajo Izquierda 
+		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX + float(0.05) , centerY + offsetY,baseSize, squareH, books_3_1 }, // Abajo derecha
+		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX + float(0.04), centerY + offsetY,baseSize, squareH, books_3_2 }, // Abajo Izquierda 
 
 		// ITEMS
-		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.29), centerY + float(0.17),baseSize, squareH, texItemOrb } // Orbe
+		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.1525), centerY + offsetY + float(0.0225),baseSize * float(0.65), squareH * float(0.65), texItemOrb } // Orbe
 	};
 
 	for (const auto& slot : slots) {
@@ -628,24 +634,32 @@ void GameScene::CreatePauseSettingUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	float pW = 0.25f, pH = 0.08f;
-	float pY = 0.35f, pSpacing = 0.1f;
+	float pY = 0.4f, pSpacing = 0.1f;
 
 	auto sldMus = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_MUSIC, "Music", 0.5f, pY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldMus.get())) s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
+	if (auto* s = dynamic_cast<UISlider*>(sldMus.get())) {
+		s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
+		s->SetThumbTexture(sliderThumbTex);}
 	pauseOptionsUI.push_back(sldMus);
 	pY += pSpacing;
+
 	auto sldFx = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_FX, "FX", 0.5f, pY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldFx.get())) s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
+	if (auto* s = dynamic_cast<UISlider*>(sldFx.get())) {
+		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
+		s->SetThumbTexture(sliderThumbTex);}
 	pauseOptionsUI.push_back(sldFx);
 	pY += pSpacing;
+
 	auto chkFull = uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)GameUI_ID::CHK_FULLSCREEN, "Fullscreen", 0.5f, pY, 0.05f, 0.05f, sceneObserver);
 	if (auto* c = dynamic_cast<UICheckBox*>(chkFull.get())) c->isChecked = Engine::GetInstance().window->IsFullscreen();
 	pauseOptionsUI.push_back(chkFull);
 	pY += pSpacing;
+
 	pauseOptionsUI.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_OPTIONS_BACK, "BACK", 0.5f, pY, pW, pH, sceneObserver));
 }
 
 void GameScene::CreateDialogueUI() {
+	//Engine::GetInstance().dialogueManager->StartDialogue("Prueba1");
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 

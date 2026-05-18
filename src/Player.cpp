@@ -591,18 +591,18 @@ void Player::Attack(float dt)
 
 			if (comboStep == 0)
 			{
-				damage = 10;
+				damage = 10 + dmgbuff;
 				currentAttackWidth = 60;
 				currentAttackHeight = 64;
 			}
 			else
 			{
-				damage = 20;
+				damage = 20 + dmgbuff;
 				currentAttackWidth = 120;
 				currentAttackHeight = 90;
 			}
 
-			if (lookUp)
+			if (lookUp && GameManager::GetInstance().gameState.stUpDownAttack)
 			{
 				int temp = currentAttackWidth;
 				currentAttackWidth = currentAttackHeight;
@@ -614,7 +614,7 @@ void Player::Attack(float dt)
 				anims.GetAnim(lookingRight ? "attack_up_right" : "attack_up_left")->SetLoop(false);
 				anims.SetCurrent(lookingRight ? "attack_up_right" : "attack_up_left");
 			}
-			else if (lookDown)
+			else if (lookDown && GameManager::GetInstance().gameState.stUpDownAttack)
 			{
 				int temp = currentAttackWidth;
 				currentAttackWidth = currentAttackHeight;
@@ -1221,6 +1221,102 @@ void Player::UnlockDash() {
 	LOG("Dash Unlocked! You can do a dash");
 }
 
+void Player::UnlockSkill(SkillTree skill)
+{
+	switch (skill)
+	{
+	case SkillTree::UPDOWNATTACK:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stUpDownAttack == false)
+		{
+			GameManager::GetInstance().gameState.stUpDownAttack = true;
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::COMBO:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stCombo == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			GameManager::GetInstance().gameState.stCombo = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP1:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDmgUp1 == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			dmgbuff += 5;
+			GameManager::GetInstance().gameState.stDmgUp1 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP2:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDmgUp2 == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			dmgbuff += 10;
+			GameManager::GetInstance().gameState.stDmgUp2 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DMGUP3:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDmgUp3 == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			dmgbuff += 15;
+			GameManager::GetInstance().gameState.stDmgUp3 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::FASTDASH:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stFastDash == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			GameManager::GetInstance().gameState.stFastDash = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP1:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDefUp1 == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			defbuff += 5;
+			GameManager::GetInstance().gameState.stDefUp1 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP2:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDefUp2 == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			defbuff += 10;
+			GameManager::GetInstance().gameState.stDefUp2 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::DEFUP3:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stDefUp3 == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			defbuff += 15;
+			GameManager::GetInstance().gameState.stDefUp3 = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	case SkillTree::IFRAMESUP:
+		if (GameManager::GetInstance().gameState.currentForceOrbs >= 1 && GameManager::GetInstance().gameState.stIframesUp == false)
+		{
+			GameManager::GetInstance().gameState.currentForceOrbs--;
+			GameManager::GetInstance().gameState.stIframesUp = true;
+		}
+		else { printf("Not enough skill points!"); }
+		break;
+	default:
+		printf("Invalid skill enum");
+		break;
+	}
+}
+
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
@@ -1420,7 +1516,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
-		currentForceOrbs++;
+		GameManager::GetInstance().gameState.currentForceOrbs++;
 		AddItem(ItemID::STRENGTH_ORB, 1);
 
 		int spOrbX, spOrbY;
@@ -1470,7 +1566,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	case ColliderType::ENEMY_ATTACK:
 		LOG("Hit player");
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
-		TakeDamage(physB->listener->damage);
+		TakeDamage(physB->listener->damage-defbuff);
 		//PARTICULA
 		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
 
@@ -1600,57 +1696,57 @@ void Player::DevTools(float dt)
 		LOG("Skill Point Added. Current SkillPoints : %d", currentForceOrbs);
 	}
 
-	// Unlock Skills
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		if (currentForceOrbs > 0)
-		{
-			if (OffensiveSkills[2] == false)
-			{
-				LOG("Unlocking Offensive Skill:");
-				if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
-				else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
-				else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
-				currentForceOrbs--;
-			}
-			else { LOG("Offensive Tree Maxed"); }
-		}
-		else { LOG("Not Enough Skill Points"); }
-	}
+	//// Unlock Skills
+	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	//{
+	//	if (currentForceOrbs > 0)
+	//	{
+	//		if (OffensiveSkills[2] == false)
+	//		{
+	//			LOG("Unlocking Offensive Skill:");
+	//			if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
+	//			else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
+	//			else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
+	//			currentForceOrbs--;
+	//		}
+	//		else { LOG("Offensive Tree Maxed"); }
+	//	}
+	//	else { LOG("Not Enough Skill Points"); }
+	//}
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		if (currentForceOrbs > 0)
-		{
-			if (DefensiveSkills[2] == false)
-			{
-				LOG("Unlocking Defensive Skill:");
-				if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
-				else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
-				else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
-				currentForceOrbs--;
-			}
-			else { LOG("Defensive Tree Maxed"); }
-		}
-		else { LOG("Not Enough Skill Points"); }
-	}
+	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	//{
+	//	if (currentForceOrbs > 0)
+	//	{
+	//		if (DefensiveSkills[2] == false)
+	//		{
+	//			LOG("Unlocking Defensive Skill:");
+	//			if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
+	//			else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
+	//			else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
+	//			currentForceOrbs--;
+	//		}
+	//		else { LOG("Defensive Tree Maxed"); }
+	//	}
+	//	else { LOG("Not Enough Skill Points"); }
+	//}
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		if (currentForceOrbs > 0)
-		{
-			if (UtilitySkills[2] == false)
-			{
-				LOG("Unlocking Utility Skill:");
-				if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
-				else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
-				else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
-				currentForceOrbs--;
-			}
-			else { LOG("Utility Tree Maxed"); }
-		}
-		else { LOG("Not Enough Skill Points"); }
-	}
+	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	//{
+	//	if (currentForceOrbs > 0)
+	//	{
+	//		if (UtilitySkills[2] == false)
+	//		{
+	//			LOG("Unlocking Utility Skill:");
+	//			if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
+	//			else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
+	//			else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
+	//			currentForceOrbs--;
+	//		}
+	//		else { LOG("Utility Tree Maxed"); }
+	//	}
+	//	else { LOG("Not Enough Skill Points"); }
+	//}
 
 	if (godMode)
 	{
@@ -1664,6 +1760,7 @@ void Player::DevTools(float dt)
 		GameManager::GetInstance().gameState.hasSickle = true;
 		GameManager::GetInstance().gameState.dashUnlocked = true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
+		GameManager::GetInstance().gameState.currentForceOrbs += 10;
 	}
 }
 

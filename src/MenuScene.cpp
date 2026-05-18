@@ -105,11 +105,13 @@ bool MenuScene::Start() {
 }
 
 bool MenuScene::Update(float dt) {
-	int windowW ,windowH;
-	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
+	int screenW, screenH;
+	screenW = Engine::GetInstance().window->windowWidth;
+
+	screenH = Engine::GetInstance().window->windowHeight;
 
 
-	SDL_Rect fullScreenRect = { 0, 0, windowW, windowH};
+	SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
 	SDL_Texture* currentBackground = isSettingsOpen ? menuBackground_S : menuBackground; // If false = menuBackground
 
