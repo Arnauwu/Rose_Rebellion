@@ -158,6 +158,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::DIP:
 		entity = std::make_shared<Dip>();
+		break;
 	case EntityType::MINAIRON:
 		entity = std::make_shared<Minairon>();
 		break;

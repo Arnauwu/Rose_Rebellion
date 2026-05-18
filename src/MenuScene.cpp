@@ -139,7 +139,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
 			sceneManager->ChangeScene(SceneID::GAME);
 		}
 		else {
-			LOG("Error: No se ha encontrado partida o el archivo está corrupto.");
+			LOG("Error: No se ha encontrado partida o el archivo est?corrupto.");
 		}
         break;
     case (int)MenuUI_ID::BTN_SETTINGS:

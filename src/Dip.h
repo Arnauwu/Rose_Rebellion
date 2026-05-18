@@ -1,17 +1,17 @@
 #pragma once
 
 #include "Enemy.h"
+#include "Animation.h" 
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
 #include "Pathfinding.h"
-#include "Timer.h"
+#include "Timer.h" 
 
 struct SDL_Texture;
 
 class Dip : public Enemy
 {
 public:
-
 	Dip();
 	virtual ~Dip();
 	bool Awake();
@@ -28,28 +28,24 @@ private:
 	void ApplyPhysics() override;
 	void Draw(float dt);
 
-	// Ataques específicos de Dip
-	void JumpAttack();
-	void ClawAttack();
-	void HowlAttack();
-
+	void AttackPlayer();
+	void ExecuteSpecialAttack(Vector2D playerPos);
+public:
+	Timer startAttack;
+	int attackDamage = 5;
 	bool wasWalking = false;
 
-public:
+	
+	Timer attackVisualTimer;
+	bool isAttackingVisual = false;
 
-	// Parámetros del enemigo inicializados
-	bool isJumpingFwd = false;
-	bool isJumpingBack = false;
-	bool isClawing = false;
-	bool isHowling = false;
+	Timer specialAttackTimer; // Temporizador global de 6 segundos
+	Timer phaseTimer;         // Temporizador para cada fase del salto
+	bool isSpecialAttacking = false;
+	int specialPhase = 0;     // 1 = Saltar atr¨¢s, 2 = Saltar al Player, 3 = Saltar de vuelta
+	Vector2D leapStartPos;    // Posici¨®n inicial antes del ataque
+	Vector2D lockedPlayerPos; // Posici¨®n del jugador bloqueada en el momento del salto
 
-	Timer startAttack;
-	Timer actionTimer;
-
-	// Para registrar la posición inicial del salto tipo zorro de nieve
-	b2Vec2 initialJumpPos = { 0.0f, 0.0f };
-
-	// SFX
 	int morirDip = 0;
 	int caminarDip = 0;
 	int zarpazoDip = 0;

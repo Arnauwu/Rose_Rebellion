@@ -1,18 +1,21 @@
 ﻿#include "Dip.h"
 #include "Engine.h"
 #include "Textures.h"
-#include "Audio.h"
-#include "Input.h"
 #include "Render.h"
 #include "SceneManager.h"
-#include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
-#include "ParticleManager.h"
 #include "Map.h"
-#include <cmath> // Para sqrt()
+#include "Player.h" 
+#include "Log.h" 
+#include "ParticleManager.h" 
 
-Dip::Dip() : Enemy(EntityType::UNKNOWN) // Reemplaza UNKNOWN por EntityType::DIP cuando lo tengas
+#include <cmath>
+#include <cstdlib>
+
+#include "tracy/Tracy.hpp"
+
+Dip::Dip() : Enemy(EntityType::DIP)
 {
 	name = "Dip";
 }
@@ -25,46 +28,39 @@ bool Dip::Awake() {
 
 bool Dip::Start()
 {
-	// 1. Cargar las 5 animaciones reales de Ninfa para realizar las pruebas (Placeholder)
-	std::unordered_map<int, std::string> aliases = {
-		{0, "idle"},
-		{3, "walk"},
-		{13, "jumpFwd"},
-		{26, "claw"},
-		{39, "howl"} // Usado temporalmente para la animación de muerte
-	};
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.tsx", aliases);
-	anims.SetCurrent("idle");
+	// ==========================================
+	// TODO(Art): Cargar animaciones 
+	// ==========================================
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/OIP.png");
 
-	// 2. Físicas (Círculo Dinámico)
 	texW = 64;
 	texH = 64;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
 	pbody->listener = this;
 	pbody->ctype = ColliderType::ENEMY;
 
-	// 3. Inicializar Pathfinding
 	pathfinding = std::make_shared<Pathfinding>(true);
 	pathfinding->ResetPath(GetTilePos());
 	pathFindingCooldown.Start();
 
-	// 4. Estadísticas del enemigo
 	vision = 15;
 	speed = 3.0f;
 	knockbackForce = 5.0f;
 	maxHealth = 20;
 	currentHealth = 20;
-	velocity = { 0.0f, 0.0f };
+
+	attackDamage = 5;
+	startAttack.Start();
+
+	
+	attackVisualTimer.Start();
+	isAttackingVisual = false;
 
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
-
-	// Iniciar el temporizador para el cooldown de 5 segundos del ataque de salto
-	startAttack.Start();
 
 	return true;
 }
@@ -72,79 +68,29 @@ bool Dip::Start()
 bool Dip::Update(float dt)
 {
 	if (!active) return true;
+	ZoneScoped;
+
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		return true;
+	}
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
-		// Actualizar el Pathfinding cada 500ms si no está atacando
-		if (pathFindingCooldown.ReadMSec() > 500 && !isJumpingFwd && !isJumpingBack && !isClawing && !isKnockedback)
+		if (pathFindingCooldown.ReadMSec() > 500)
 		{
 			PerformPathfinding();
 			pathFindingCooldown.Start();
 		}
 
 		GetPhysicsValues();
-
-		Player* player = Engine::GetInstance().entityManager->GetPlayer();
-
-		// Lógica Principal de Acción y Distancia
-		if (player != nullptr && !isJumpingFwd && !isJumpingBack && !isClawing && !isKnockedback)
-		{
-			// ¡Cálculo de distancia EXACTA en píxeles! (Evita el bug del tipo int con los tiles)
-			float dist = sqrt(position.distanceSquared(player->GetPosition()));
-
-			// Ataque Cercano: Zarpazo (< 80 píxeles)
-			if (dist < 80.0f)
-			{
-				isClawing = true;
-				anims.SetCurrent("claw");
-			}
-			// Ataque Lejano: Salto/Embestida (Entre 80 y 250 píxeles) -> SOLO SI HAN PASADO 5 SEGUNDOS
-			else if (dist < 250.0f && startAttack.ReadSec() >= 5.0f)
-			{
-				isJumpingFwd = true;
-				initialJumpPos = { position.getX(), position.getY() }; // Guardar posición original para poder volver
-				actionTimer.Start();
-				anims.SetCurrent("jumpFwd");
-
-				// Darle un pequeño impulso inicial hacia arriba al saltar
-				velocity.y = -4.0f;
-			}
-			// Fuera de rango de ataque: Moverse hacia el jugador
-			else
-			{
-				Move();
-			}
-		}
-		// Ejecutar la acción si ya se encuentra en un estado de ataque
-		else if (player != nullptr)
-		{
-			if (isJumpingFwd || isJumpingBack) JumpAttack();
-			if (isClawing) ClawAttack();
-		}
-
-		Knockback();
+		Move();
 		ApplyPhysics();
-	}
 
-	// Lógica de Muerte Temporal (Placeholder)
-	if (isdead)
-	{
-		if (anims.GetCurrentName() != "howl")
-		{
-			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0.0f, 0.0f });
-			anims.GetAnim("howl")->SetLoop(false);
-			anims.SetCurrent("howl");
-			pbody->ctype = ColliderType::UNKNOWN;
-			isKnockedback = false;
-
-			std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
-			healthOrb->position.setX(this->position.getX());
-			healthOrb->position.setY(this->position.getY() - 100.0f);
-			healthOrb->Start();
-		}
-
-		if (anims.GetAnim("howl")->HasFinishedOnce()) {
-			pendingToDelete = true;
+		
+		if (isAttackingVisual && attackVisualTimer.ReadMSec() > 200) {
+			isAttackingVisual = false;
 		}
 	}
 
@@ -155,218 +101,313 @@ bool Dip::Update(float dt)
 void Dip::PerformPathfinding()
 {
 	pathfinding->ResetPath(GetTilePos());
+
 	Vector2D pos = GetPosition();
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-	// Limitar el cálculo pesado de A* si el jugador está demasiado lejos
-	float dist = sqrt(pos.distanceSquared(player->GetPosition())) / 128.0f;
+	if (player == nullptr) return;
+	Vector2D playerPos = player->GetPosition();
+
+	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 128.0f;
 	int iter = 0;
 
-	while (pathfinding->pathTiles.empty() && dist < vision && iter < MaxIterations)
+	while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
 	{
 		pathfinding->PropagateAStar();
 		iter++;
 	}
 }
 
-void Dip::GetPhysicsValues()
+void Dip::GetPhysicsValues() {
+	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+}
+void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 {
-	b2Vec2 vel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	velocity = { 0.0f, vel.y }; // Resetear X en cada frame, conservar la gravedad (Y)
+	Vector2D pos = GetPosition();
+
+	if (specialPhase == 1)
+	{
+		// Fase 1: Saltar lejos del jugador
+		if (phaseTimer.ReadMSec() < 400)
+		{
+			// TODO(Art): anims.SetCurrent("jumpBack");
+			velocity.x = (pos.getX() > playerPos.getX()) ? speed * 4.0f : -speed * 4.0f;
+			lookingRight = (playerPos.getX() > pos.getX()); // Mirar al jugador mientras retrocede
+		}
+		else
+		{
+			// Fin de la fase 1, grabar posiciones y saltar hacia el jugador
+			leapStartPos = GetPosition();
+			lockedPlayerPos = playerPos;
+			specialPhase = 2;
+			phaseTimer.Start();
+			Engine::GetInstance().physics->SetYVelocity(pbody, -8.0f); // Salto vertical
+		}
+	}
+	else if (specialPhase == 2)
+	{
+		// Fase 2: Saltar hacia la posición bloqueada del jugador
+		if (phaseTimer.ReadMSec() < 500)
+		{
+			// TODO(Art): anims.SetCurrent("jumpFwd");
+			velocity.x = (lockedPlayerPos.getX() > pos.getX()) ? speed * 7.0f : -speed * 7.0f;
+			lookingRight = (velocity.x > 0);
+		}
+		else
+		{
+			// Fin de la fase 2, saltar de vuelta al inicio
+			specialPhase = 3;
+			phaseTimer.Start();
+			Engine::GetInstance().physics->SetYVelocity(pbody, -8.0f);
+		}
+	}
+	else if (specialPhase == 3)
+	{
+		// Fase 3: Saltar de vuelta a la posición inicial (leapStartPos)
+		if (phaseTimer.ReadMSec() < 500)
+		{
+			// TODO(Art): anims.SetCurrent("jumpBack");
+			velocity.x = (leapStartPos.getX() > pos.getX()) ? speed * 7.0f : -speed * 7.0f;
+			lookingRight = (playerPos.getX() > pos.getX());
+		}
+		else
+		{
+			// Fin del ataque especial. Restaurar el comportamiento normal
+			isSpecialAttacking = false;
+			specialPhase = 0;
+			specialAttackTimer.Start();
+
+			this->damage = attackDamage; // Restaurar el daño normal
+			pbody->ctype = ColliderType::ENEMY;
+			velocity.x = 0;
+		}
+	}
 }
 
-void Dip::Move()
-{
-	Player* player = Engine::GetInstance().entityManager->GetPlayer();
-	if (!player) return;
+void Dip::Move() {
 
-	// 1. Si el jugador está fuera de la visión absoluta (15 tiles * 128px = 1920px), se detiene por completo
-	float dist = sqrt(position.distanceSquared(player->GetPosition()));
-	if (dist > vision * 128.0f) {
-		anims.SetCurrent("idle");
-		velocity.x = 0;
+	// Si es empujado (knockback) o está muerto, no se mueve ni ataca
+	//if (isKnockedback || isdead) return;
+	if (isKnockedback || isdead) {
+		// Cancelar ataque especial si es golpeado
+		if (isSpecialAttacking) {
+			isSpecialAttacking = false;
+			specialPhase = 0;
+			specialAttackTimer.Start();
+			this->damage = attackDamage;
+			pbody->ctype = ColliderType::ENEMY;
+		}
 		return;
 	}
 
-	if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player == nullptr) return;
 
-	// 2. CASO NORMAL: Si el Pathfinding (A*) encuentra una ruta válida, sigue los nodos
-	if (!pathfinding->pathTiles.empty())
+	Vector2D tilePos = GetTilePos();
+	Vector2D pos = GetPosition();
+	Vector2D playerPos = player->GetPosition();
+
+	if (!isSpecialAttacking && specialAttackTimer.ReadMSec() >= 6000 && playerTileDist <= vision)
 	{
-		Vector2D tilePos = GetTilePos();
+		isSpecialAttacking = true;
+		specialPhase = 1;
+		phaseTimer.Start();
 
-		// Consumir el nodo actual de la ruta si ya lo hemos alcanzado
-		if (pathfinding->pathTiles.back() == tilePos) {
-			pathfinding->pathTiles.pop_back();
-		}
+		// Configurar daño a 1 y cambiar ctype a ATAQUE para el impacto
+		this->damage = 1;
+		pbody->ctype = ColliderType::ENEMY_ATTACK;
 
-		if (!pathfinding->pathTiles.empty()) {
-			Vector2D nextTile = pathfinding->pathTiles.back();
+		Engine::GetInstance().physics->SetYVelocity(pbody, -6.0f); // Pequeño salto hacia atrás
+	}
+	if (isSpecialAttacking)
+	{
+		ExecuteSpecialAttack(playerPos);
+		return;
+	}
+	// [Corrección principal 1: Detección rectangular] Dividir la distancia en valores absolutos X e Y
+	float distX = std::abs(pos.getX() - playerPos.getX());
+	float distY = std::abs(pos.getY() - playerPos.getY());
 
-			if (nextTile.getX() > tilePos.getX()) {
+	// Si la distancia X (ej. 75) y la Y (ej. 85) son cercanas, ¡es un golpe cuerpo a cuerpo perfecto! 
+	// Ya no le afectan las pequeñas diferencias de altura
+	if (distX <= 75.0f && distY <= 85.0f)
+	{
+		velocity.x = 0; // Detenerse frente al jugador
+		lookingRight = (playerPos.getX() > pos.getX()); // Mirar fijamente al jugador
+		AttackPlayer(); // ¡Atacar con la garra!
+		return;
+	}
+
+	// 2. Manejo cuando el array de pathfinding está vacío
+	if (pathfinding->pathTiles.empty())
+	{
+		// Cuando llega al mismo tile que el jugador, el pathfinding termina (se vacía).
+		// Pero si aún no está en rango de ataque (el if de arriba no saltó), 
+		// ignora el tile y se acerca a la fuerza en el eje X.
+		if (distX <= 256.0f && distY <= 128.0f)
+		{
+			if (playerPos.getX() > pos.getX()) {
 				velocity.x = speed;
 				lookingRight = true;
 			}
-			else if (nextTile.getX() < tilePos.getX()) {
+			else {
 				velocity.x = -speed;
 				lookingRight = false;
 			}
-
-			// Compensación de velocidad para evitar quedarse atascado en rampas o bajadas
-			if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1)) {
-				velocity.x *= 5;
-			}
 		}
+		else
+		{
+			velocity.x = 0; // Se queda quieto solo si está realmente lejos y no hay ruta
+		}
+		return;
 	}
-	// 3. FIX CENTRAL (FALLBACK TRACKING): 
-	// Si el A* falla (porque el jugador saltó o superó el límite de iteraciones),
-	// el enemigo correrá agresivamente hacia la coordenada X del jugador sin dudarlo.
+
+	// 3. Movimiento normal siguiendo la ruta A*
+	// TODO(Art): anims.SetCurrent("walk");
+	if (pathfinding->pathTiles.back() == tilePos)
+	{
+		pathfinding->pathTiles.pop_back();
+		if (pathfinding->pathTiles.empty()) { return; }
+	}
+
+	Vector2D nextTile = pathfinding->pathTiles.back();
+
+	if (nextTile.getX() > tilePos.getX())
+	{
+		velocity.x = speed;
+		lookingRight = true;
+	}
+	else if (nextTile.getX() < tilePos.getX())
+	{
+		velocity.x = -speed;
+		lookingRight = false;
+	}
 	else
 	{
-		float playerX = player->GetPosition().getX();
-		float myX = position.getX();
+		velocity.x = 0;
+	}
 
-		// Margen de 10 píxeles para evitar que el sprite tiemble cuando coinciden las coordenadas
-		if (playerX > myX + 10.0f) {
-			velocity.x = speed;
-			lookingRight = true;
-		}
-		else if (playerX < myX - 10.0f) {
-			velocity.x = -speed;
-			lookingRight = false;
-		}
-		else {
-			velocity.x = 0;
-		}
+	// Anti-atascos: Acelerar al encontrar un escalón para saltar
+	if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
+	{
+		velocity.x *= 5.0f;
 	}
 }
 
-void Dip::JumpAttack()
+void Dip::AttackPlayer()
 {
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
-	float dashSpeed = 6.0f;
+	if (player == nullptr || isdead) return;
 
-	// FASE 1: Saltar y embestir hacia el jugador
-	if (isJumpingFwd)
+	// Frecuencia de ataque: cada 500 ms (2 veces por segundo)
+	if (startAttack.ReadMSec() >= 500)
 	{
-		lookingRight = (player->GetPosition().getX() > position.getX());
-		velocity.x = lookingRight ? dashSpeed : -dashSpeed;
+		// ==========================================
+		// TODO(Art): Reproducir animación
+		// ==========================================
 
-		// A los 0.4s termina la embestida, golpea y cambia a la fase de retroceso
-		if (actionTimer.ReadSec() > 0.4f)
+		// 1. Reducir la salud del jugador
+		player->currentHealth -= attackDamage;
+
+		// Si la salud es <= 0, declarar al jugador muerto inmediatamente
+		if (player->currentHealth <= 0)
 		{
-			// Empujar y repeler al jugador (Knockback)
-			float pushX = lookingRight ? 15.0f : -15.0f;
-			Engine::GetInstance().physics->SetLinearVelocity(player->pbody, { pushX, -5.0f });
-
-			isJumpingFwd = false;
-			isJumpingBack = true; // Iniciar el viaje de vuelta
-			actionTimer.Start();
+			player->isdead = true;
 		}
-	}
-	// FASE 2: Volver a la posición original
-	else if (isJumpingBack)
-	{
-		bool goRight = (initialJumpPos.x > position.getX());
-		velocity.x = goRight ? dashSpeed : -dashSpeed;
-		lookingRight = !goRight; // Mirar hacia donde ataca, no hacia donde retrocede (efecto visual)
 
-		// A los 0.4s llega a su sitio original y aterriza
-		if (actionTimer.ReadSec() > 0.4f)
-		{
-			isJumpingBack = false;
-			startAttack.Start(); // ¡REINICIAR EL COOLDOWN DE 5 SEGUNDOS AQUÍ!
-			anims.SetCurrent("idle");
-			velocity.x = 0;
-		}
-	}
-}
+		// 3. Reproducir efecto de chispas cuando el jugador es herido
+		Engine::GetInstance().particleManager->EmitHitSparks(player->position.getX(), player->position.getY(), false);
 
-void Dip::ClawAttack()
-{
-	velocity.x = 0.0f; // Quedarse quieto en el sitio para arañar
+		// 4. Activar el efecto visual rojo en sí mismo y reiniciar el temporizador
+		isAttackingVisual = true;
+		attackVisualTimer.Start();
 
-	Player* player = Engine::GetInstance().entityManager->GetPlayer();
-	if (player != nullptr) {
-		lookingRight = (player->GetPosition().getX() > position.getX());
-	}
+		LOG("【DIP ATAQUE】Daño: %d. Salud Player: %d", attackDamage, player->currentHealth);
 
-	// Cuando termine la animación, salir del estado de ataque cercano
-	if (anims.GetAnim("claw")->HasFinishedOnce()) {
-		isClawing = false;
-		anims.SetCurrent("idle");
+		startAttack.Start();
 	}
 }
 
 void Dip::Knockback()
 {
-	if (isdead) return;
-
-	if (isKnockedback)
-	{
-		isJumpingFwd = false;
-		isJumpingBack = false;
-		isClawing = false;
-
-		// No tenemos animación de daño (hurt) en este placeholder, usamos idle
-		if (anims.GetCurrentName() != "idle") anims.SetCurrent("idle");
-		velocity.x = lookingRight ? knockbackForce : -knockbackForce;
-	}
-
-	if (knockbackTime <= 0) {
-		isKnockedback = false;
-		knockbackTime = 500.0f;
-	}
-	else {
-		knockbackTime -= Engine::GetInstance().GetDt() * 1000.0f;
-	}
 }
 
-void Dip::ApplyPhysics()
-{
-	// Aplica el movimiento horizontal modificado y respeta la gravedad vertical (Box2D)
-	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+void Dip::ApplyPhysics() {
+	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+	b2Vec2 newVel;
+	newVel.x = velocity.x;
+	newVel.y = currentVel.y;
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, newVel);
 }
 
 void Dip::Draw(float dt)
 {
-	if (!Engine::GetInstance().sceneManager->isGamePaused) {
-		anims.Update(dt);
-	}
+	// ==========================================
+	// TODO(Art): anims.Update(dt);
+	// ==========================================
 
-	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-	SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+	SDL_Rect animFrame;
+	animFrame.x = 0;
+	animFrame.y = 0;
+	animFrame.w = texW;
+	animFrame.h = texH;
+
+	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+	if (!lookingRight)
+	{
+		sdlFlip = SDL_FLIP_HORIZONTAL;
+	}
 
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
 
-	if (Engine::GetInstance().physics->GetDebug()) {
-		pathfinding->DrawPath();
-	}
-
-	if (isKnockedback) {
+	if (isKnockedback || isAttackingVisual)
+	{
 		Uint8 r = 255, g = 25, b = 25;
 		Engine::GetInstance().render->SetColorMod(texture, &r, &g, &b, 255, 25, 25);
 		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
-		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, 255, 255, 255);
+
+		Uint8 defR = 255, defG = 255, defB = 255;
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, defR, defG, defB);
 	}
-	else {
+	else
+	{
 		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
 	}
 }
 
 void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
-	if (isdead) return;
-
-	// Recibir daño si choca con el ataque del jugador
-	if (physB->ctype == ColliderType::PLAYER_ATTACK) {
+	switch (physB->ctype)
+	{
+	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
-		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), false);
+		break;
+	case ColliderType::PLAYER:
+		// [Nuevo] Si toca al jugador MIENTRAS hace el ataque especial
+		if (isSpecialAttacking)
+		{
+			Player* p = (Player*)physB->listener;
+			if (p && p->pbody)
+			{
+				// Aplicar un empuje FUERTE (aproximadamente 2 casillas de distancia)
+				float pushForce = (p->position.getX() > position.getX()) ? 25.0f : -25.0f;
+				Engine::GetInstance().physics->SetLinearVelocity(p->pbody, { pushForce, -8.0f });
+
+				// Nota: El daño de 1 se aplica automáticamente porque 
+				// configuramos pbody->ctype = ColliderType::ENEMY_ATTACK
+				// y this->damage = 1 al inicio del ataque especial.
+			}
+		}
+		break;
+	default:
+		break;
 	}
 }
 
-void Dip::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {}
+void Dip::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
+{
+}
