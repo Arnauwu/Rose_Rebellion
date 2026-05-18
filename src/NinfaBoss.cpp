@@ -9,6 +9,7 @@
 #include "Render.h"
 #include "Log.h"
 #include "EntityManager.h"
+#include "HealthBarManager.h"
 #include "Audio.h"
 #include <cmath>
 
@@ -74,12 +75,23 @@ bool NinfaMare::Update(float dt)
 
     if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
     {
+        Player* player = Engine::GetInstance().entityManager->GetPlayer();
+        float distToPlayer = (player->GetPosition() - GetPosition()).magnitude();
+
+        if (distToPlayer <= attackRange) {
+            Engine::GetInstance().healthBarManager->SetBoss(this);
+        }
+        else {
+            Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+        }
+
         Move();
         Knockback();
         ApplyPhysics();
     }
 
     if (isdead) {
+        Engine::GetInstance().healthBarManager->SetBoss(nullptr);
         if (anims.GetCurrentName() != "dead") {
             Engine::GetInstance().audio->PlayFx(morirFx);
             anims.SetCurrent("dead");
@@ -328,6 +340,7 @@ void NinfaMare::GetPhysicsValues() { velocity = { 0, 0 }; }
 
 bool NinfaMare::CleanUp() {
     if (texture != nullptr) Engine::GetInstance().textures->UnLoad(texture);
+    Engine::GetInstance().healthBarManager->SetBoss(nullptr);
     return Enemy::CleanUp();
 }
 
@@ -340,6 +353,13 @@ void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
     if (physB->ctype == ColliderType::PLAYER_ATTACK) {
         // 1. Aplicar daño
         TakeDamage(physB->listener->damage);
+
+        if (currentHealth <= 0 && !isdead) {
+            isdead = true;
+            currentHealth = 0;
+            Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+            return; // Salir de la función para que no pase a estado HURT
+        }
 
         // 2. Cambiar estado inmediatamente (esto bloquea nuevas entradas aquí)
         currentState = NinfaMareState::HURT;

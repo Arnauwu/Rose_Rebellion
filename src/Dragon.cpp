@@ -11,6 +11,7 @@
 #include "Map.h"
 #include "Timer.h"
 #include "Physics.h"
+#include "HealthBarManager.h"
 
 #include <random>
 
@@ -79,6 +80,12 @@ bool Dragon::Update(float dt)
 		{
 			PerformPathfinding();
 			pathFindingCooldown.Start();
+		}
+		if (playerTileDist <= vision) {
+			Engine::GetInstance().healthBarManager->SetBoss(this);
+		}
+		else {
+			Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 		}
 		SelectAttack();
 		GetPhysicsValues();
@@ -658,6 +665,12 @@ void Dragon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		{
 			TakeDamage(physB->listener->damage);
 			isKnockedback = true;
+			if (currentHealth <= 0 && !isdead) {
+				isdead = true;
+				currentHealth = 0;
+				Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+			}
+
 			if (currentHealth <= maxHealth * 2 / 3) //Change Phase 66% //TO DO: Adjust Health Values
 			{
 				isInvincible = true;
@@ -692,5 +705,6 @@ bool Dragon::CleanUp()
 		b2DestroyBody(attackHitbox->body);
 		attackHitbox = nullptr;
 	}
+	Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 	return true;
 }

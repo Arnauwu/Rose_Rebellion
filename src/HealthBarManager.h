@@ -21,8 +21,17 @@ public:
     void SetBoss(Enemy* boss);
 
 private:
-    SDL_Texture* baseTexture = nullptr;
-    SDL_Texture* vidaTexture = nullptr;
+    SDL_Texture* knightBaseTexture = nullptr;
+    SDL_Texture* knightVidaTexture = nullptr;
+
+    // Texturas del Dragón
+    SDL_Texture* dragonBaseTexture = nullptr;
+    SDL_Texture* dragonVidaTexture = nullptr;
+    SDL_Texture* dragonExtraTexture = nullptr;
+
+    // Texturas de la Ninfa
+    SDL_Texture* ninfaBaseTexture = nullptr;
+    SDL_Texture* ninfaVidaTexture = nullptr;
 
     // Puntero al enemigo activo actualmente
     Enemy* currentBoss = nullptr;
