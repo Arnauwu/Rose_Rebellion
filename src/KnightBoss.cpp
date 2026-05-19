@@ -149,10 +149,10 @@ void KnightBoss::Move()
 
 	Vector2D tilePos = GetTilePos();
 
-	// 0. Si está descansando (3 segundos)
+	// 0. Si est?descansando (3 segundos)
 	if (isResting) {
 		velocity.x = 0; // No se mueve
-		anims.SetCurrent("idle"); // Puedes poner una animación de "cansado" aquí si la tienes
+		anims.SetCurrent("idle"); // Puedes poner una animación de "cansado" aqu?si la tienes
 
 		if (restTimer.ReadMSec() >= restDuration) {
 			isResting = false; // Termina el descanso
@@ -161,13 +161,13 @@ void KnightBoss::Move()
 		return;
 	}
 
-	// 1. Si está dando un espadazo
+	// 1. Si est?dando un espadazo
 	if (isAttacking) {
 		SwordAttack();
 		return;
 	}
 
-	// 2. Si está en medio de una embestida
+	// 2. Si est?en medio de una embestida
 	if (isDashing) {
 		ShieldDash();
 		return;
@@ -381,7 +381,7 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 	case ColliderType::MAP:
 	case ColliderType::PLAYER:
 	case ColliderType::ENEMY:
-		// Se puede frenar aquí el ataque si colisiona
+		// Se puede frenar aqu?el ataque si colisiona
 		break;
 
 	case ColliderType::PLAYER_ATTACK:

@@ -20,7 +20,7 @@ bool Keys::Start() {
     if (CheckIfCollected()) return true;
 
     std::unordered_map<int, std::string> aliases = {
-    {0, "ForestKey"}, {8, "CastleKey"}, {16, "MountainKey"},{24, "CatacumbsKey"}
+    {0, "ForestKey"}, {8, "CastleKey"}, {16, "MountainKey"},{24, "CatacumbsKey"},{32,"BossKey"}
     };
     anims.LoadFromTSX("Assets/Textures/Items/Keys/SS_obj_llaves.tsx", aliases);
     anims.SetCurrent("CastleKey");
@@ -96,6 +96,8 @@ void Keys::SetKeyType(KeyType type) {
         anims.SetCurrent("CatacumbsKey");
         break;
     case KeyType::BOSS:
+        anims.SetCurrent("BossKey");
+        break;
     case KeyType::CASTLE:
         anims.SetCurrent("CastleKey");
         break;
