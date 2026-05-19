@@ -10,6 +10,8 @@
 #include "EntityManager.h"
 #include "Map.h"
 
+#include "tracy/Tracy.hpp"
+
 Demon::Demon() : Enemy(EntityType::DEMON)
 {
 	name = "Demon";
@@ -84,8 +86,14 @@ bool Demon::Start()
 
 bool Demon::Update(float dt)
 {
-
 	if (!active) return true;
+	ZoneScoped;
+
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		return true;
+	}
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{

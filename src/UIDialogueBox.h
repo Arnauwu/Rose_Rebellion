@@ -26,6 +26,6 @@ private:
     SDL_Texture* backgroundTex = nullptr;
 
     SDL_Rect cachedNameTextRect = { 0, 0, 0, 0 };
-    SDL_Color textColor = { 255, 255, 255, 255 };    
-    SDL_Color speakerColor = { 255, 204, 0, 255 };     
+    SDL_Color textColor = { 66, 38, 0, 255 };    
+    SDL_Color speakerColor = { 0, 0, 0, 0 };     
 };

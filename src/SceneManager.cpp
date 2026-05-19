@@ -14,7 +14,7 @@
 #include "IntroCinematicScene.h"
 #include "GameOverScene.h"
 
-//#include "tracy/Tracy.hpp"
+#include "tracy/Tracy.hpp"
 
 SceneManager::SceneManager() : Module() {
     name = "scene_manager";
@@ -35,7 +35,7 @@ bool SceneManager::Start() {
 
 bool SceneManager::PreUpdate()
 {
-    //ZoneScoped;
+    ZoneScoped;
 
     if (currentScene != nullptr) {
         return currentScene->PreUpdate();
@@ -44,7 +44,7 @@ bool SceneManager::PreUpdate()
 }
 
 bool SceneManager::Update(float dt) {
-    //ZoneScoped;
+    ZoneScoped;
 
     if (isFadingOut && Engine::GetInstance().render->IsFadeComplete()) {
 
@@ -62,7 +62,7 @@ bool SceneManager::Update(float dt) {
 }
 
 bool SceneManager::PostUpdate() {
-    //ZoneScoped;
+    ZoneScoped;
 
     bool ret = true;
     if (currentScene != nullptr) {

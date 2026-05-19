@@ -1,6 +1,6 @@
 #include "UIDialogueBox.h"
 #include "Engine.h"
-#include "Render.h"
+#include "Window.h"
 #include "Textures.h"
 
 #include "LOG.h"
@@ -42,15 +42,14 @@ void UIDialogueBox::SetSpeakerName(const std::string& name) {
 void UIDialogueBox::Draw() const {
 	if (!visible || backgroundTex == nullptr) return;
 
-	int screenW = Engine::GetInstance().render->camera.w;
-	int screenH = Engine::GetInstance().render->camera.h;
+	int screenW = Engine::GetInstance().window->windowWidth;
+	int screenH = Engine::GetInstance().window->windowHeight;
 
-	// CAJA PRINCIPAL (Texto de diálogo)
 	SDL_Rect mainBox;
-	mainBox.w = 1300;
-	mainBox.h = 240;
+	mainBox.w = (int)(screenW * 0.70f);
+	mainBox.h = (int)(screenH * 0.25f);
 	mainBox.x = (screenW - mainBox.w) / 2;
-	mainBox.y = screenH - mainBox.h - 60;
+	mainBox.y = screenH - mainBox.h - (int)(screenH * 0.05f);
 
 	// Dibujamos el fondo principal
 	Engine::GetInstance().render->DrawTexture9Slice(backgroundTex, mainBox, 64, 64, 64, 64);
@@ -59,16 +58,16 @@ void UIDialogueBox::Draw() const {
 	if (!currentSpeaker.empty()) {
 
 		SDL_Rect nameBox;
-		nameBox.w = 400;
-		nameBox.h = 80;
-		nameBox.y = mainBox.y - nameBox.h;
+		nameBox.w = (int)(mainBox.w * 0.25f);
+		nameBox.h = (int)(mainBox.h * 0.30f);
+		nameBox.y = mainBox.y - nameBox.h ; 
 
-		// LÓGICA DE POSICIÓN:
+		// LÓGICA DE POSICIÓN
 		if (currentSpeaker == "Princesa") {
-			nameBox.x = mainBox.x + 50;
+			nameBox.x = mainBox.x + (int)(mainBox.w * 0.05f);
 		}
 		else {
-			nameBox.x = (mainBox.x + mainBox.w) - nameBox.w - 50;
+			nameBox.x = (mainBox.x + mainBox.w) - nameBox.w - (int)(mainBox.w * 0.05f);
 		}
 
 		// Dibujamos el fondo del nombre
@@ -77,49 +76,41 @@ void UIDialogueBox::Draw() const {
 		int nameTextX = nameBox.x + (nameBox.w - cachedNameTextRect.w) / 2;
 		int nameTextY = nameBox.y + (nameBox.h - cachedNameTextRect.h) / 2;
 
-		Engine::GetInstance().render->DrawText(currentSpeaker.c_str(), nameTextX, nameTextY, 0, 0, speakerColor, FontType::SPEAKER);
+		Engine::GetInstance().render->DrawText(currentSpeaker.c_str(), nameTextX, nameTextY, 0, 0, speakerColor, FontType::DIALOGUE);
 	}
 
 	// CAJA DEL DIÁLOGO
 	if (!currentText.empty()) {
 		int textX = 0;
-		int textY = 0;
+		int textY = mainBox.y + (int)(mainBox.h * 0.2f); 
 		int maxW = 0;
-		int maxH = 0;
+		int maxH = (int)(mainBox.h * 0.85f);
 
 		if (currentSpeaker == "Princesa") {
-			textX = mainBox.x + 200;
-			textY = mainBox.y + 50;
-
-			maxW = mainBox.w - 240;
-			maxH = mainBox.h - 100;
-
-			Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::DIALOGUE);
+			textX = mainBox.x + (int)(mainBox.w * 0.15f);
+			maxW = (int)(mainBox.w * 0.8f);
 		}
-		else{
-			textX = mainBox.x + 70;
-			textY = mainBox.y + 50;
-
-			maxW = mainBox.w - 250;
-			maxH = mainBox.h - 100;
-			Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::DIALOGUE);
+		else {
+			textX = mainBox.x + (int)(mainBox.w * 0.05f);
+			maxW = (int)(mainBox.w * 0.8f);
 		}
+
+		Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::CUERPO);
 	}
 
 	// TEXTURA PORTRAIT
 	if (currentPortrait != nullptr) {
-		int portraitSize = 512;
-		int space = 80;
+		int portraitSize = (int)(screenH * 0.5f);
+		int space = (int)(screenH * 0.05f);
 
 		int portraitY = (mainBox.y + mainBox.h) - portraitSize + space;
 		int portraitX = 0;
 
 		if (currentSpeaker == "Princesa") {
-			portraitX = mainBox.x - (portraitSize / 2);
+			portraitX = mainBox.x - (portraitSize / 1.9);
 		}
 		else {
-			portraitX = (mainBox.x + mainBox.w) - portraitSize / 2;
-
+			portraitX = (mainBox.x + mainBox.w) - (portraitSize / 2);
 		}
 
 		SDL_Rect destRect = { portraitX, portraitY, portraitSize, portraitSize };

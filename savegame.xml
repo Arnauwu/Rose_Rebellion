@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="100" maxHealth="100" keyCount="0" currentForceOrbs="0" />
+	<PlayerStats currentHealth="100" maxHealth="100" keyCount="0" currentForceOrbs="2" />
 	<Unlockables hasSickle="false" glideUnlocked="false" dashUnlocked="false" doubleJumpUnlocked="false" />
-	<WorldState currentMap="Castle_Inside.tmx">
-		<Position x="2976" y="928" />
+	<WorldState currentMap="Forest_01.tmx">
+		<Position x="11168" y="2208" />
 	</WorldState>
 	<OpenedDoors />
-	<CollectedItems />
+	<CollectedItems>
+		<Item id="Forest_01.tmx_SkillPointOrb_8384_2413" />
+	</CollectedItems>
 </SaveGame>

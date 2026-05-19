@@ -21,8 +21,10 @@ bool GameOverScene::Start() {
 }
 
 bool GameOverScene::Update(float dt) {
-    int screenW = Engine::GetInstance().render->camera.w;
-    int screenH = Engine::GetInstance().render->camera.h;
+    int screenW, screenH;
+    screenW = Engine::GetInstance().window->windowWidth;
+    screenH = Engine::GetInstance().window->windowHeight;
+
     SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
     Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 255, true, false);

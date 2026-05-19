@@ -13,6 +13,8 @@
 #include "Audio.h"
 #include <cmath>
 
+#include "tracy/Tracy.hpp"
+
 NinfaMare::NinfaMare() : Enemy(EntityType::NINFA_MARE) // O EntityType::BOSS si tienes uno
 {
     name = "NinfaMare";
@@ -43,7 +45,7 @@ bool NinfaMare::Start()
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/NinfaBoss/NinfaMadre_spritesheet.png");
 
     currentState = NinfaMareState::SPAWNING;
-    // Especificaciones fÌsicas: M·s grande (128x128 o similar)[cite: 1]
+    // Especificaciones f√≠sicas: M√°s grande (128x128 o similar)[cite: 1]
     texW = 128;
     texH = 128;
     pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW / 1.0, texH * 2.5, bodyType::DYNAMIC);
@@ -61,7 +63,7 @@ bool NinfaMare::Start()
 
     // Stats de Boss
     vision = 40;
-    speed = 1.8f; // M·s lenta pero imponente
+    speed = 1.8f; // M√°s lenta pero imponente
     maxHealth = 500;
     currentHealth = 500;
 
@@ -72,6 +74,9 @@ bool NinfaMare::Update(float dt)
 {
     if (!active) return true;
     if (damageCooldown > 0) damageCooldown -= dt;
+
+    ZoneScoped;
+
 
     if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
     {
@@ -106,7 +111,7 @@ bool NinfaMare::Update(float dt)
 }
 
 void NinfaMare::HandleSpawningLogic() {
-    // AquÌ irÌa la lÛgica de partÌculas de burbujas
+    // Aqu√≠ ir√≠a la l√≥gica de part√≠culas de burbujas
     if (stateTimer.ReadMSec() >= spawnDurationMs) {
         Engine::GetInstance().audio->PlayFx(gritoFx);
         currentState = NinfaMareState::CHASE;
@@ -131,14 +136,14 @@ void NinfaMare::Move() {
     // IA del Boss
     switch (currentState) {
     case NinfaMareState::SPAWNING: // <-- Tu estado asignado
-        velocity = { 0, 0 }; // Completamente quieta durante la presentaciÛn
+        velocity = { 0, 0 }; // Completamente quieta durante la presentaci√≥n
 
         if (!hasAppeared) {
             // Si el jugador entra en rango, el Boss "despierta"
             if (distToPlayer <= attackRange) {
                 hasAppeared = true;
-                Engine::GetInstance().audio->PlayFx(gritoFx); // Grito cinematogr·fico
-                anims.SetCurrent("appear"); // <-- Pon aquÌ el nombre exacto de tu animaciÛn en el .tsx
+                Engine::GetInstance().audio->PlayFx(gritoFx); // Grito cinematogr√°fico
+                anims.SetCurrent("appear"); // <-- Pon aqu√≠ el nombre exacto de tu animaci√≥n en el .tsx
                 if (anims.GetAnim("appear") != nullptr) anims.GetAnim("appear")->Reset();
                 stateTimer.Start();
             }
@@ -181,18 +186,18 @@ void NinfaMare::Move() {
     case NinfaMareState::ATTACK_SHOT:
         velocity = { 0, 0 }; // Se detiene para disparar
 
-        // SincronizaciÛn del disparo en la mitad de la animaciÛn
+        // Sincronizaci√≥n del disparo en la mitad de la animaci√≥n
         if (stateTimer.ReadMSec() > 600 && anims.GetCurrentName() == "attack_shot") {
             ShootHomingProjectile();
             shotsFiredInCombo++; // <--- Contamos este disparo
             anims.SetCurrent("fly");
         }
 
-        // Cuando termina la animaciÛn de este disparo individual...
+        // Cuando termina la animaci√≥n de este disparo individual...
         if (stateTimer.ReadMSec() >= 1200) {
-            // Comprobamos si ya ha completado la r·faga de 10 disparos
+            // Comprobamos si ya ha completado la r√°faga de 10 disparos
             if (shotsFiredInCombo >= 10) {
-                shotsFiredInCombo = 0; // Reseteamos el contador para la prÛxima vez
+                shotsFiredInCombo = 0; // Reseteamos el contador para la pr√≥xima vez
 
         //        if (nextSpecialIsWave) {
         //            // Toca hacer el ataque de Ola
@@ -216,7 +221,7 @@ void NinfaMare::Move() {
             //    nextSpecialIsWave = !nextSpecialIsWave;
             }
             else {
-                // Si a˙n no lleva 10 disparos, vuelve a reproducir la animaciÛn de ataque para lanzar otro
+                // Si a√∫n no lleva 10 disparos, vuelve a reproducir la animaci√≥n de ataque para lanzar otro
                 currentState = NinfaMareState::ATTACK_SHOT;
                 anims.SetCurrent("attack_shot");
                 if (anims.GetAnim("attack_shot") != nullptr) anims.GetAnim("attack_shot")->Reset();
@@ -242,10 +247,10 @@ void NinfaMare::Move() {
     //case NinfaMareState::ATTACK_RAIN:
     //    velocity = { 0, 0 }; // Se queda totalmente quieta canalizando
 
-    //    // Mantener la animaciÛn de lluvia y evitar que cambie
+    //    // Mantener la animaci√≥n de lluvia y evitar que cambie
     //    anims.SetCurrent("attack_rain");
 
-    //    // Dejamos 1 segundo de "casteo" (preparaciÛn) antes de que empiece a caer el agua
+    //    // Dejamos 1 segundo de "casteo" (preparaci√≥n) antes de que empiece a caer el agua
     //    if (stateTimer.ReadMSec() > 1000) {
 
     //        // Cada 200ms genera una nueva bala desde el cielo
@@ -255,7 +260,7 @@ void NinfaMare::Move() {
     //        }
     //    }
 
-    //    // El ataque dura 10 segundos + 1 segundo de preparaciÛn inicial = 11000ms
+    //    // El ataque dura 10 segundos + 1 segundo de preparaci√≥n inicial = 11000ms
     //    if (stateTimer.ReadMSec() >= 11000) {
     //        currentState = NinfaMareState::COOLDOWN; // Acaba la lluvia y descansa
     //        stateTimer.Start();
@@ -284,7 +289,7 @@ void NinfaMare::ShootHomingProjectile() {
     Engine::GetInstance().audio->PlayFx(atacarFx);
     Vector2D spawnPos = GetPosition();
 
-    // Proyectil un poco m·s grande que el est·ndar[cite: 1]
+    // Proyectil un poco m√°s grande que el est√°ndar[cite: 1]
     auto bullet = std::make_shared<HomingProjectile>(spawnPos);
     bullet->Start();
 
@@ -292,7 +297,7 @@ void NinfaMare::ShootHomingProjectile() {
 }
 
 void NinfaMare::LaunchWaterWave() {
-    // AquÌ instanciarÌas tu entidad de Ola que recorre el suelo
+    // Aqu√≠ instanciar√≠as tu entidad de Ola que recorre el suelo
     LOG("Ninfa Mare lanza una OLA de agua!");
 }
 
@@ -307,7 +312,7 @@ void NinfaMare::Draw(float dt) {
         Vector2D myPos = GetPosition();
         float distToPlayer = (playerPos - myPos).magnitude();
 
-        // Si el jugador est· lejos, salimos sin dibujar nada
+        // Si el jugador est√° lejos, salimos sin dibujar nada
         if (distToPlayer > attackRange) {
             return;
         }
@@ -345,32 +350,32 @@ bool NinfaMare::CleanUp() {
 }
 
 void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
-    // CONDICI”N CRÕTICA: Si ya est· en HURT, ignoramos el resto de frames del mismo golpe
+    // CONDICI√ìN CR√çTICA: Si ya est√° en HURT, ignoramos el resto de frames del mismo golpe
     if (isdead || currentState == NinfaMareState::SPAWNING || currentState == NinfaMareState::HURT) {
         return;
     }
 
     if (physB->ctype == ColliderType::PLAYER_ATTACK) {
-        // 1. Aplicar daÒo
+        // 1. Aplicar da√±o
         TakeDamage(physB->listener->damage);
 
         if (currentHealth <= 0 && !isdead) {
             isdead = true;
             currentHealth = 0;
             Engine::GetInstance().healthBarManager->SetBoss(nullptr);
-            return; // Salir de la funciÛn para que no pase a estado HURT
+            return; // Salir de la funci√≥n para que no pase a estado HURT
         }
 
-        // 2. Cambiar estado inmediatamente (esto bloquea nuevas entradas aquÌ)
+        // 2. Cambiar estado inmediatamente (esto bloquea nuevas entradas aqu√≠)
         currentState = NinfaMareState::HURT;
 
-        // 3. Resetear y poner la animaciÛn una sola vez
+        // 3. Resetear y poner la animaci√≥n una sola vez
         anims.SetCurrent("hurt");
         if (anims.GetAnim("hurt") != nullptr) {
             anims.GetAnim("hurt")->Reset();
         }
 
-        // 4. Iniciar el contador de tiempo de la animaciÛn (400ms)
+        // 4. Iniciar el contador de tiempo de la animaci√≥n (400ms)
         stateTimer.Start();
 
         // 5. Knockback opcional
@@ -383,7 +388,7 @@ void NinfaMare::StartRainAttack() {
     Player* player = Engine::GetInstance().entityManager->GetPlayer();
     Vector2D playerPos = player->GetPosition();
 
-    // 1. Calculamos la posiciÛn en el cielo
+    // 1. Calculamos la posici√≥n en el cielo
     float randomX = playerPos.getX() + (rand() % 600 - 300); // 300px a la izq o derecha
     float spawnY = playerPos.getY() - 600; // 600px en el cielo
     Vector2D spawnPos(randomX, spawnY);
@@ -394,18 +399,18 @@ void NinfaMare::StartRainAttack() {
     // 3. Dejamos que haga su Start() (el cual crea el hitbox equivocadamente dentro del boss)
     raindrop->Start();
 
-    // 4. °EL TRUCO CON TU MOTOR! 
+    // 4. ¬°EL TRUCO CON TU MOTOR! 
     // Borramos su colisionador atascado y se lo recreamos en el cielo
     if (raindrop->pbody != nullptr) {
 
         // Guardamos su tipo (ENEMY_PROJECTILE o el que sea) para no perderlo
         ColliderType oldType = raindrop->pbody->ctype;
 
-        // Eliminamos el cuerpo que se quedÛ atascado en el Boss
+        // Eliminamos el cuerpo que se qued√≥ atascado en el Boss
         Engine::GetInstance().physics->DeletePhysBody(raindrop->pbody);
 
-        // Le creamos un cÌrculo nuevo exactamente en las coordenadas del cielo
-        // (Ponemos radio 15, puedes ajustarlo si la bala es m·s grande/pequeÒa)
+        // Le creamos un c√≠rculo nuevo exactamente en las coordenadas del cielo
+        // (Ponemos radio 15, puedes ajustarlo si la bala es m√°s grande/peque√±a)
         raindrop->pbody = Engine::GetInstance().physics->CreateCircle((int)spawnPos.getX(), (int)spawnPos.getY(), 15, bodyType::DYNAMIC);
 
         // Le volvemos a conectar las colisiones y su tipo
@@ -413,9 +418,9 @@ void NinfaMare::StartRainAttack() {
         raindrop->pbody->ctype = oldType;
     }
 
-    // 5. Corregimos su posiciÛn visual
+    // 5. Corregimos su posici√≥n visual
     raindrop->position = spawnPos;
 
-    // 6. AÒadimos al juego
+    // 6. A√±adimos al juego
     Engine::GetInstance().entityManager->AddEntity(raindrop);
 }

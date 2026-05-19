@@ -1,0 +1,32 @@
+{
+  "HEALTH_UP": {
+    "name": "Aumento de Vida",
+    "description": "INFO",
+    "cost": 1
+  },
+  "IFRAMES_UP": {
+    "name": "Aumento de Iframes",
+    "description": "INFO.",
+    "cost": 1
+  },
+  "SPEED_UP": {
+    "name": "Velocidad Base",
+    "description": "INFO",
+    "cost": 1
+  },
+  "FAST_DASH": {
+    "name": "Dash Dinámico",
+    "description": "INFO",
+    "cost": 2
+  },
+  "UP_ATTACK": {
+    "name": "Corte Ascendente",
+    "description": "INFO",
+    "cost": 1
+  },
+  "DOWN_ATTACK": {
+    "name": "Corte Descendente",
+    "description": "INFO",
+    "cost": 1
+  }
+}

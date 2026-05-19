@@ -5,9 +5,9 @@
 #include "Vector2D.h" 
 
 struct GameState {
-    int keyCount= false;
-    bool hasSickle= false;
-    bool glideUnlocked= false;
+    int keyCount = 0;
+    bool hasSickle = false;
+    bool glideUnlocked = false;
     int currentForceOrbs = 0;
     bool doubleJumpUnlocked = false;
     bool dashUnlocked = false;
@@ -16,8 +16,15 @@ struct GameState {
     int currentHealth = 100;
     int maxHealth = 100;
 
+    bool stHealthUp = false;
+    bool stIframesUp = false;
+    bool stSpeedUp = false;
+    bool stFastDash = false;
+    bool stUpAttack = false;
+    bool stDownAttack = false;
+
     // World
-    std::string currentMap = "Castle_Room_Princess.tmx";
+    std::string currentMap = "Catacombs_01_M.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     std::vector<std::string> openedDoors;

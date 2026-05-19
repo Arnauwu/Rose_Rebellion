@@ -34,15 +34,15 @@ public:
 
     SDL_Texture* menuBackground = nullptr;
     SDL_Texture* menuBackground_S = nullptr;
-    SDL_Texture* frameTex = nullptr;
     SDL_Texture* sliderThumbTex = nullptr;
+    SDL_Texture* mainFrame = nullptr; 
+    SDL_Texture* mainClick = nullptr; 
 private:
     void ShowSettings(bool show);
-    bool isSettingsOpen = false;
+    bool isSettingsOpen = false; 
 
     int uiClick;
     int uiHover;
-    int lastHoveredId = -1;
 private:
     // UI Groups
     std::vector<std::shared_ptr<UIElement>> mainButtons;

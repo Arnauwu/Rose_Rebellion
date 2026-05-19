@@ -6,6 +6,8 @@
 #include "Map.h"
 #include <unordered_map>
 
+#include "tracy/Tracy.hpp"
+
 DoorEntity::DoorEntity() : Entity(EntityType::DOOR)
 {
 	name = "DoorAnim";
@@ -29,6 +31,8 @@ bool DoorEntity::Start() {
 }
 
 bool DoorEntity::Update(float dt) {
+
+	ZoneScoped;
 	if (isOpening || (anims.Has("open") && anims.GetAnim("open")->HasFinishedOnce())) {
 
 		if (isOpening) anims.Update(dt);

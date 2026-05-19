@@ -44,7 +44,7 @@ bool Window::Awake()
 		if (resizable == true)         flags |= SDL_WINDOW_RESIZABLE;
 
 		// SDL3: SDL_CreateWindow(title, w, h, flags). Set position separately.
-		window = SDL_CreateWindow("Platform Game", windowWidth, windowHeight, flags);
+		window = SDL_CreateWindow("Rose Rebellion", windowWidth, windowHeight, flags);
 
 		if (window == NULL)
 		{
@@ -98,7 +98,7 @@ int Window::GetScale() const
 	return windowScale;
 }
 
-void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer)
+void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer) 
 {
 	// Save mouse Position
 	float mouseX, mouseY;
@@ -129,4 +129,7 @@ void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer)
 	//SDL_GetWindowSizeInPixels(window, &windowWidth, &windowHeight);
 
 	SDL_WarpMouseInWindow(window, relX * newW, relY * newH);
+
+
+	SDL_SetRenderLogicalPresentation(renderer, windowWidth, windowHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 }

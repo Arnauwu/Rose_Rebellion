@@ -8,15 +8,20 @@
 #include "UIManager.h"
 #include "DialogueManager.h"
 #include "UIDialogueBox.h"
+#include "Cinematics.h"
 
 #include "window.h"
 #include "Player.h"
 #include "Log.h"
 #include "Textures.h"
+#include <fstream>
+#include <nlohmann/json.hpp>
 
-#include "tracy/Tracy.hpp"
+using json = nlohmann::json;
+
 
 GameScene::GameScene() : SceneBase() {
+
 }
 
 GameScene::~GameScene() {
@@ -24,7 +29,6 @@ GameScene::~GameScene() {
 
 void GameScene::LoadMap(std::string mapFile)
 {
-
 	//Load the map. 
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
 	if (mapFile == "")
@@ -41,13 +45,13 @@ void GameScene::LoadMap(std::string mapFile)
 	}
 
 	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M鷖ica Interior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // M煤sica Interior Castillo
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M鷖ica Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // M煤sica Exterior Castillo
 	}
 	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M鷖ica Bosque
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // M煤sica Bosque
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;
@@ -70,7 +74,7 @@ void GameScene::LoadMap(std::string mapFile)
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
-		// ASIGNAR EL MODO DE C罬ARA AQU?
+		// ASIGNAR EL MODO DE C脕MARA AQU?
 		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
@@ -89,12 +93,12 @@ void GameScene::LoadMap(std::string mapFile)
 		if (previousMap == "")
 		{
 			spawnPos = GameManager::GetInstance().gameState.playerPosition;
-			LOG("Carga inicial: Usando posici髇 del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
+			LOG("Carga inicial: Usando posici贸n del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
 		else
 		{
-			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
-			LOG("Transici髇: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap, targetSpawnID);
+			LOG("Transici贸n: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
 
 		newPlayer->SetPosition(spawnPos);
@@ -108,7 +112,53 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().entityManager->Start();
 }
 
+void GameScene::LoadItemsLore() {
+	std::ifstream file("Assets/Dialogues/items_lore.json");
+	if (!file.is_open()) {
+		LOG("Error: No se pudo abrir dialogues.json");
+
+		return;
+	}
+
+	nlohmann::json j;
+	file >> j;
+
+	for (auto& element : j.items()) {
+		std::string key = element.key();
+		ItemLore lore;
+		lore.name = element.value()["name"].get<std::string>();
+		lore.description = element.value()["description"].get<std::string>();
+
+		itemsLoreDB[key] = lore;
+	}
+	LOG("Lore de items cargado correctamente.");
+}
+void GameScene::LoadSkillsinfo() {
+	std::ifstream file("Assets/Dialogues/skills_Info.json");
+	if (!file.is_open()) {
+		LOG("Error: No se pudo abrir skills_Info.json");
+		return;
+	}
+
+	nlohmann::json j;
+	file >> j;
+
+	for (auto& element : j.items()) {
+		std::string key = element.key();
+		Skillinfo text;
+		text.name = element.value()["name"].get<std::string>();
+		text.description = element.value()["description"].get<std::string>();
+		text.cost = element.value()["cost"].get<int>();
+
+		skillsLoreDB[key] = text;
+	}
+	LOG("Lore de habilidades cargado correctamente.");
+}
+
 bool GameScene::Start() {
+	Engine::GetInstance().cinematics->CloseVideo();
+	LoadItemsLore();
+	LoadSkillsinfo();
 	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MusicaClicMenu.wav");
 
 	auto uiManager = Engine::GetInstance().uiManager;
@@ -122,8 +172,8 @@ bool GameScene::Start() {
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
-
 	LoadTextureIfNull(textBgUI, "Assets/Textures/UI/Buttons/textBgUI.png");
+	LoadTextureIfNull(sliderThumbTex, "Assets/Textures/UI/Buttons/pomo.png");
 
 
 	// Texture Load
@@ -131,21 +181,55 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texInventoryUI, "Assets/Textures/UI/GameMenu/t_inventoryUI.png");
 	LoadTextureIfNull(texSkilltreeUI, "Assets/Textures/UI/GameMenu/t_skilltreeUI.png");
 	LoadTextureIfNull(texPauseUI, "Assets/Textures/UI/GameMenu/t_pauseUI.png");
+	LoadTextureIfNull(texSkillUI, "Assets/Textures/UI/SkillUpgrade/t_skillUI.png");
 
 	//Load Items
 	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
 	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forestKeyUI.png");
+	LoadTextureIfNull(texItemKeyMountain, "Assets/Textures/UI/Items/mountainKeyUI.png");
+	LoadTextureIfNull(texItemKeyCatacumbs, "Assets/Textures/UI/Items/catacumbsKeyUI.png");
 	LoadTextureIfNull(texItemOrb, "Assets/Textures/UI/Items/forceOrbUI.png");
+
+	// Power-upsLoad
 	LoadTextureIfNull(texItemGlide, "Assets/Textures/UI/Items/glideUI.png");
+	LoadTextureIfNull(texItemDash, "Assets/Textures/UI/Items/dashUI.png");
+	LoadTextureIfNull(texItemWallJump, "Assets/Textures/UI/Items/wallJumpUI.png");
+	LoadTextureIfNull(texItemDoubleJump, "Assets/Textures/UI/Items/doubleJumpUI.png");
 	LoadTextureIfNull(texItemWeapon, "Assets/Textures/UI/Items/weaponUI.png");
 
-	//Load Dialogue UI
+	// Skill upgrade Load
+	LoadTextureIfNull(books_1_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-1.png");
+	LoadTextureIfNull(books_1_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_1-2.png");
+	LoadTextureIfNull(books_2_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_2-1.png");
+	LoadTextureIfNull(books_2_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_2-2.png");
+	LoadTextureIfNull(books_3_1, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_3-1.png");
+	LoadTextureIfNull(books_3_2, "Assets/Textures/UI/SkillUpgrade/SkillMenu_Books_3-2.png");
+	LoadTextureIfNull(books_1_1_active, "Assets/Textures/UI/SkillUpgrade/SkillMenu_cBooks_1-1.png");
+	LoadTextureIfNull(books_1_2_active, "Assets/Textures/UI/SkillUpgrade/SkillMenu_cBooks_1-2.png");
+	LoadTextureIfNull(books_2_1_active, "Assets/Textures/UI/SkillUpgrade/SkillMenu_cBooks_2-1.png");
+	LoadTextureIfNull(books_2_2_active, "Assets/Textures/UI/SkillUpgrade/SkillMenu_cBooks_2-2.png");
+	LoadTextureIfNull(books_3_1_active, "Assets/Textures/UI/SkillUpgrade/SkillMenu_cBooks_3-1.png");
+	LoadTextureIfNull(books_3_2_active, "Assets/Textures/UI/SkillUpgrade/SkillMenu_cBooks_3-2.png");
+
+	// Dialogue UI Load
 	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
+	LoadTextureIfNull(princessPortrait, "Assets/Textures/UI/Dialogues/princess_portrait.png");
+	LoadTextureIfNull(npcPortrait, "Assets/Textures/UI/Dialogues/npc_portrait1.png");
+	//LoadTextureIfNull(npcPortrait2, "Assets/Textures/UI/Dialogues/npc_portrait2.png");
+	//LoadTextureIfNull(npcPortrait3, "Assets/Textures/UI/Dialogues/npc_portrait3.png");
+	//LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png");
 
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
 	CreateInventoryUI();
+
+	//Skill
+	CreateSkillUpgradeUI();
+	CreateSkillPopupUI();
+
+	// Minimap
+	CreateMiniMapUI();
 
 	// Pause Menu
 	CreatePauseMenuUI();
@@ -158,7 +242,6 @@ bool GameScene::Start() {
 
 
 bool GameScene::Update(float dt) {
-	ZoneScoped;
 
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
@@ -193,19 +276,19 @@ bool GameScene::Update(float dt) {
 	// Pause Menu - ESC o START del gamepad
 	bool pauseInput = input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
 
-	if (input->IsGamepadConnected() && 
-	    input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
+	if (input->IsGamepadConnected() &&
+		input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
 	{
-	    pauseInput = true;
+		pauseInput = true;
 	}
 
 	if (pauseInput) {
-	    if (currentMenuTab != GameMenuTab::NONE) {
-	        ToggleGameMenu(GameMenuTab::NONE);
-	    }
-	    else {
-	        ToggleGameMenu(GameMenuTab::PAUSE_MENU);
-	    }
+		if (currentMenuTab != GameMenuTab::NONE) {
+			ToggleGameMenu(GameMenuTab::NONE);
+		}
+		else {
+			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+		}
 	}
 
 	if (dialogueMgr->IsDialogueActive()) {
@@ -215,18 +298,20 @@ bool GameScene::Update(float dt) {
 }
 
 bool GameScene::PostUpdate() {
-	ZoneScoped;
 
 	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {
 		{
 			SDL_Texture* currentTextureToDraw = nullptr;
-			int screenW = Engine::GetInstance().render->camera.w;
-			int screenH = Engine::GetInstance().render->camera.h;
+
+			int screenW, screenH;
+			screenW = Engine::GetInstance().window->windowWidth;
+
+			screenH = Engine::GetInstance().window->windowHeight;
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
-			Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 180, true, false);
+			Engine::GetInstance().render->DrawRectangleUnScaled(fullScreenRect, 0, 0, 0, 180, true, false);
 
 			switch (currentMenuTab) {
 			case GameMenuTab::INVENTORY:
@@ -236,7 +321,7 @@ bool GameScene::PostUpdate() {
 				currentTextureToDraw = texMapUI;
 				break;
 			case GameMenuTab::SKILL_TREE:
-				currentTextureToDraw = texSkilltreeUI;
+				currentTextureToDraw = texSkillUI;
 				break;
 			case GameMenuTab::PAUSE_MENU:
 			case GameMenuTab::PAUSE_OPTIONS:
@@ -255,7 +340,9 @@ bool GameScene::PostUpdate() {
 		if (currentMenuTab != GameMenuTab::NONE) {
 
 			int screenW, screenH;
-			Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+			screenW = Engine::GetInstance().window->windowWidth;
+			screenH = Engine::GetInstance().window->windowHeight;
+
 			SDL_Rect bgRect = { 0, 0, screenW, screenH };
 
 			Engine::GetInstance().render->DrawRectangle(bgRect, 0, 0, 0, 180, true, false);
@@ -270,9 +357,17 @@ bool GameScene::PostUpdate() {
 		Player* p = Engine::GetInstance().entityManager->GetPlayer();
 		if (p != nullptr && p->interactuableBody != nullptr) {
 			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
+
+			if (p->interactuableBody->ctype == ColliderType::PATH) {
+				targetSpawnID = Engine::GetInstance().map->GetPathSpawnID(p->interactuableBody);
+			}
+			else {
+				targetSpawnID = "";
+			}
 		}
 		else {
 			nextMapName = "";
+			targetSpawnID = "";
 		}
 
 		mapState = MapTransitionState::FADING_OUT;
@@ -288,32 +383,55 @@ bool GameScene::CleanUp() {
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
-	// UnloadTexture BG buttons
+	// Buttons and Bg
 	UnloadTexture(buttonUI);
 	UnloadTexture(skillFrameUI);
-	UnloadTexture(orbFrameUI);
-	UnloadTexture(keyFrameUI);
 	UnloadTexture(textBgUI);
+	UnloadTexture(sliderThumbTex);
 
-	//UnloadTexture
-	UnloadTexture(texInventoryUI);
+
+	// Texture Load
 	UnloadTexture(texMapUI);
+	UnloadTexture(texInventoryUI);
 	UnloadTexture(texSkilltreeUI);
 	UnloadTexture(texPauseUI);
+	UnloadTexture(texSkillUI);
 
-	//UnloadTexture Items
+	//Load Items
 	UnloadTexture(texItemKeyCastle);
-	UnloadTexture(texItemGlide);
 	UnloadTexture(texItemKeyForest);
+	UnloadTexture(texItemKeyMountain);
+	UnloadTexture(texItemKeyCatacumbs);
 	UnloadTexture(texItemOrb);
+
+	// Power-ups
+	UnloadTexture(texItemGlide);
+	UnloadTexture(texItemDash);
+	UnloadTexture(texItemWallJump);
+	UnloadTexture(texItemDoubleJump);
 	UnloadTexture(texItemWeapon);
 
-	//UnloadTexture Dialogues
+	//Unload Dialogue UI
 	UnloadTexture(UIDialogueBoxTex);
-	UnloadTexture(UIDialogueBoxNpc1);
-	//UnloadTexture(UIDialogueBoxNpc2);
-	//UnloadTexture(UIDialogueBoxNpc3);
+	UnloadTexture(princessPortrait);
+	UnloadTexture(npcPortrait);
+	//UnloadTexture(npcPortrait2);
+	//UnloadTexture(npcPortrait3);
+	//UnloadTexture(npcPortrait4);
 
+	// Skill upgrade Unload
+	UnloadTexture(books_1_1);
+	UnloadTexture(books_1_2);
+	UnloadTexture(books_2_1);
+	UnloadTexture(books_2_2);
+	UnloadTexture(books_3_1);
+	UnloadTexture(books_3_2);
+	UnloadTexture(books_1_1_active);
+	UnloadTexture(books_1_2_active);
+	UnloadTexture(books_2_1_active);
+	UnloadTexture(books_2_2_active);
+	UnloadTexture(books_3_1_active);
+	UnloadTexture(books_3_2_active);
 
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {
@@ -328,8 +446,8 @@ bool GameScene::CleanUp() {
 	deleteGroup(skillUI);
 	deleteGroup(pauseMainUI);
 	deleteGroup(pauseOptionsUI);
-	deleteGroup(dialogueBox);
 	deleteGroup(dialogueUI);
+	deleteGroup(skillPopupUI);
 
 	dialogueUI.clear();
 	Engine::GetInstance().dialogueManager->SetDialogueUI(nullptr);
@@ -337,8 +455,40 @@ bool GameScene::CleanUp() {
 }
 
 bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
+
 	Engine::GetInstance().audio->PlayFx(uiClick);
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
+	auto updateLorePanel = [&](const std::string& itemKey, bool hasItem)
+		{
+			if (hasItem && itemsLoreDB.find(itemKey) != itemsLoreDB.end())
+			{
+				const auto& lore = itemsLoreDB[itemKey];
+				// Formatamos T铆tulo + Descripci贸n
+				descPanel->text = lore.name + "\n\n" + lore.description;
+			}
+			else
+			{
+				descPanel->text = "???\n\nObjeto desconocido, dicen que esta perdido por el reino.";
+			}
+		};
+
+	auto updateSkillPopup = [&](const std::string& skillKey, SkillTree skillEnum)
+		{
+			selectedSkillToBuy = skillEnum;
+			selectedSkillKey = skillKey; 
+
+			if (skillsLoreDB.find(skillKey) != skillsLoreDB.end())
+			{
+				const auto& lore = skillsLoreDB[skillKey];
+				skillPopupText->text = lore.name + "\n\n" + lore.description + "\nCosto: " + std::to_string(lore.cost) + " Orbe(s)";
+			}
+			else
+			{
+				skillPopupText->text = "???\n\nHabilidad desconocida.";
+			}
+			SetUIGroupVisible(skillPopupUI, true);
+		};
+
 	switch (uiElement->id) {
 	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
 	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
@@ -362,27 +512,39 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SLD_FX: Engine::GetInstance().audio->SetSFXVolume(((UISlider*)uiElement)->GetValue()); break;
 	case (int)GameUI_ID::CHK_FULLSCREEN: Engine::GetInstance().window->SetFullscreen(((UICheckBox*)uiElement)->isChecked); break;
 
-		// Gesti髇 texto de los objetos del inventario
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("WEAPON", p && p->HasItem(ItemID::WEAPON));
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_GLIDE:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
-		break;
-
-	case (int)GameUI_ID::INV_ITEM_KEY:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("GLIDE", p && p->HasItem(ItemID::GLIDE));
 		break;
 
 	case (int)GameUI_ID::INV_ITEM_ORB:
-		if (p && p->HasItem(ItemID::WEAPON)) descPanel->text = "Weapon: LORE.";
-		else descPanel->text = "???";
+		updateLorePanel("STRENGTH_ORB", p && p->HasItem(ItemID::STRENGTH_ORB));
+		break;
+	case (int)GameUI_ID::SKILL_BOOK_1_1: updateSkillPopup("HEALTH_UP", SkillTree::HEALTH_UP); break;
+	case (int)GameUI_ID::SKILL_BOOK_1_2: updateSkillPopup("IFRAMES_UP", SkillTree::IFRAMES_UP); break;
+	case (int)GameUI_ID::SKILL_BOOK_2_1: updateSkillPopup("SPEED_UP", SkillTree::SPEED_UP); break;
+	case (int)GameUI_ID::SKILL_BOOK_2_2: updateSkillPopup("FAST_DASH", SkillTree::FAST_DASH); break;
+	case (int)GameUI_ID::SKILL_BOOK_3_1: updateSkillPopup("UP_ATTACK", SkillTree::UP_ATTACK); break;
+	case (int)GameUI_ID::SKILL_BOOK_3_2: updateSkillPopup("DOWN_ATTACK", SkillTree::DOWN_ATTACK); break;
+
+		// Acciones del Pop-Up
+	case (int)GameUI_ID::BTN_SKILL_BACK:
+		SetUIGroupVisible(skillPopupUI, false);
 		break;
 
+	case (int)GameUI_ID::BTN_SKILL_BUY:
+		if (p != nullptr && !selectedSkillKey.empty()) {
+			int cost = skillsLoreDB[selectedSkillKey].cost;
+
+			p->UnlockSkill(selectedSkillToBuy, cost);
+
+			SetUIGroupVisible(skillPopupUI, false);
+			UpdateSkillVisuals();
+		}
+		break;
 	}
 	return true;
 }
@@ -422,11 +584,16 @@ void GameScene::CreateInventoryUI() {
 	float baseSize = 0.08f;
 	float squareH = baseSize * aspect;
 
-	float centerX = 0.38f;
-	float centerY = 0.55f;
-	float offsetX = 0.13f;
-	float offsetY = 0.20f;
+	float centerX = 0.40f;
+	float centerXKey = 0.39f;
 
+	float centerY = 0.470f;
+
+	float offsetX = 0.13f;
+	float offsetXKey = 0.15f;
+
+	float offsetY = 0.1f;
+	float offsetYKey = 0.30f;
 
 	struct InventorySlotDef {
 		GameUI_ID id;
@@ -438,25 +605,31 @@ void GameScene::CreateInventoryUI() {
 
 	std::vector<InventorySlotDef> slots = {
 		// ARMA (Centro)
-		{ GameUI_ID::INV_ITEM_WEAPON, "", centerX, centerY,baseSize + float(0.1), squareH + float(0.2), texItemWeapon},
+		{ GameUI_ID::INV_ITEM_WEAPON, "", centerX, centerY,baseSize + float(0.07), squareH + float(0.14), texItemWeapon},
 
 		// AMULETOS (Vertices)
-		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX, centerY - offsetY,baseSize, squareH, texItemGlide },
-		{ GameUI_ID::INV_ITEM_DASH, "Dash", centerX + offsetX , centerY - offsetY,baseSize, squareH, nullptr }, // Pon nullptr si a鷑 no tienes textura
-		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "Double J", centerX - offsetX, centerY + offsetY,baseSize, squareH, nullptr },
-		{ GameUI_ID::INV_ITEM_WALL_JUMP, "Wall J", centerX + offsetX, centerY + offsetY,baseSize, squareH, nullptr },
+		{ GameUI_ID::INV_ITEM_GLIDE, "", centerX - offsetX,			centerY - offsetY ,baseSize, squareH, texItemGlide },
+		{ GameUI_ID::INV_ITEM_DASH, "", centerX + offsetX ,		centerY - offsetY ,baseSize, squareH, texItemDash },
+		{ GameUI_ID::INV_ITEM_DOUBLE_JUMP, "", centerX - offsetX,	centerY + offsetY ,baseSize, squareH, texItemDoubleJump },
+		{ GameUI_ID::INV_ITEM_WALL_JUMP, "", centerX + offsetX,		centerY + offsetY ,baseSize, squareH, texItemWallJump },
 
 		// ITEMS
-		{ GameUI_ID::INV_ITEM_KEY, "", centerX - offsetX - float(0.04), centerY,baseSize, squareH, texItemKeyCastle },
-		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.04), centerY,baseSize, squareH, texItemOrb }
+		{ GameUI_ID::INV_ITEM_KEY, "", centerXKey - offsetXKey, centerY + offsetYKey,						   baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle},
+		{ GameUI_ID::INV_ITEM_KEYCASTLE, "", centerXKey - offsetXKey + float(0.08),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle },
+		{ GameUI_ID::INV_ITEM_KEYFOREST, "", centerXKey - offsetXKey + float(0.16),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyForest },
+		{ GameUI_ID::INV_ITEM_KEYMOUNTAIN, "", centerXKey - offsetXKey + float(0.24),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyMountain },
+		{ GameUI_ID::INV_ITEM_KEYCATACUMBS, "", centerXKey - offsetXKey + float(0.32),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCatacumbs },
 	};
 
 	for (const auto& slot : slots) {
 		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, slot.w, slot.h, sceneObserver);
+		if (slot.id != GameUI_ID::INV_ITEM_GLIDE && slot.id != GameUI_ID::INV_ITEM_DASH && slot.id != GameUI_ID::INV_ITEM_DOUBLE_JUMP && slot.id != GameUI_ID::INV_ITEM_WALL_JUMP)
+		{
+			btn->SetBgTexture(skillFrameUI);
 
-		btn->SetBgTexture(skillFrameUI);
+		}
 
-		// Si le hemos asignado una textura, se la ponemos al bot髇
+		// Si le hemos asignado una textura, se la ponemos al bot贸n
 		if (slot.tex != nullptr) {
 			btn->SetTexture(slot.tex);
 		}
@@ -464,14 +637,95 @@ void GameScene::CreateInventoryUI() {
 	}
 
 	descPanel = uiManager->CreateUIElement(
-		UIElementType::BUTTON,
-		(int)GameUI_ID::INV_DESC_TEXT, "Select an item...", 0.72f, 0.55f, 0.20f, 0.60f, sceneObserver
+		UIElementType::ITEM_INFO_BOX, // Nuevo tipo dedicado
+		(int)GameUI_ID::INV_DESC_TEXT,
+		"Selecciona un objeto para ver su historia...",
+		0.72f, 0.55f, 0.20f, 0.60f,
+		sceneObserver
 	);
-	descPanel->SetBgTexture(textBgUI);
 
-	descPanel->state = UIElementState::DISABLED;
+	descPanel->SetBgTexture(textBgUI);
 	inventoryUI.push_back(descPanel);
+
 }
+
+void GameScene::CreateSkillUpgradeUI() {
+
+	auto uiManager = Engine::GetInstance().uiManager;
+	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
+
+	int sw = Engine::GetInstance().window->windowWidth;
+	int sh = Engine::GetInstance().window->windowHeight;
+
+	float aspect = (float)sw / (float)sh;
+
+	float baseSize = 0.12f;
+	float squareH = baseSize * aspect;
+
+	float centerX = 0.37f;
+	float centerY = 0.50f;
+	float offsetX = 0.07f;
+	float offsetY = 0.20f;
+
+	struct SkillSlotDef {
+		GameUI_ID id;
+		const char* name;
+		float relX, relY;
+		float w, h;
+		SDL_Texture* tex;
+	};
+
+	std::vector<SkillSlotDef> slots = {
+		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX + float(0.02), centerY - offsetY - float(0.015),baseSize, squareH, books_1_1}, // Arriba derecha
+		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY - float(0.015),baseSize, squareH, books_1_2 }, // Arriba izquierda
+
+		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX + float(0.05), centerY, baseSize, squareH, books_2_1 }, // Medio izquierda
+		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.02), centerY,baseSize, squareH, books_2_2 }, // Medio derecha
+
+		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX + float(0.05) , centerY + offsetY,baseSize, squareH, books_3_1 }, // Abajo derecha
+		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX + float(0.04), centerY + offsetY,baseSize, squareH, books_3_2 }, // Abajo Izquierda 
+
+		// ITEMS
+		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.1525), centerY + offsetY + float(0.0225),baseSize * float(0.65), squareH * float(0.65), texItemOrb } // Orbe
+	};
+
+	for (const auto& slot : slots) {
+		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, (int)slot.id, slot.name, slot.relX, slot.relY, slot.w, slot.h, sceneObserver);
+
+		if (slot.tex != nullptr) {
+			btn->SetTexture(slot.tex);
+		}
+		skillUI.push_back(btn);
+	}
+}
+
+void GameScene::CreateSkillPopupUI() {
+	auto uiManager = Engine::GetInstance().uiManager;
+	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
+
+	skillPopupText = uiManager->CreateUIElement(
+		UIElementType::ITEM_INFO_BOX,
+		(int)GameUI_ID::PANEL_SKILL_POPUP,
+		"",
+		0.5f, 0.4f, 0.3f, 0.4f, sceneObserver);
+
+	skillPopupText->SetBgTexture(textBgUI);
+	skillPopupUI.push_back(skillPopupText);
+
+	// Bot贸n Comprar
+	auto btnBuy = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BUY, "Desbloquear", 0.4f, 0.65f, 0.1f, 0.05f, sceneObserver);
+	btnBuy->SetBgTexture(buttonUI);
+	skillPopupUI.push_back(btnBuy);
+
+	// Bot贸n Atr谩s
+	auto btnBack = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BACK, "Cancelar", 0.6f, 0.65f, 0.1f, 0.05f, sceneObserver);
+	btnBack->SetBgTexture(buttonUI);
+	skillPopupUI.push_back(btnBack);
+
+	SetUIGroupVisible(skillPopupUI, false);
+}
+
+void GameScene::CreateMiniMapUI() {}
 
 void GameScene::CreatePauseMenuUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
@@ -501,28 +755,38 @@ void GameScene::CreatePauseSettingUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	float pW = 0.25f, pH = 0.08f;
-	float pY = 0.35f, pSpacing = 0.1f;
+	float pY = 0.4f, pSpacing = 0.1f;
 
 	auto sldMus = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_MUSIC, "Music", 0.5f, pY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldMus.get())) s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
+	if (auto* s = dynamic_cast<UISlider*>(sldMus.get())) {
+		s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
+		s->SetThumbTexture(sliderThumbTex);
+	}
 	pauseOptionsUI.push_back(sldMus);
 	pY += pSpacing;
+
 	auto sldFx = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_FX, "FX", 0.5f, pY, 0.3f, 0.05f, sceneObserver);
-	if (auto* s = dynamic_cast<UISlider*>(sldFx.get())) s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
+	if (auto* s = dynamic_cast<UISlider*>(sldFx.get())) {
+		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
+		s->SetThumbTexture(sliderThumbTex);
+	}
 	pauseOptionsUI.push_back(sldFx);
 	pY += pSpacing;
+
 	auto chkFull = uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)GameUI_ID::CHK_FULLSCREEN, "Fullscreen", 0.5f, pY, 0.05f, 0.05f, sceneObserver);
 	if (auto* c = dynamic_cast<UICheckBox*>(chkFull.get())) c->isChecked = Engine::GetInstance().window->IsFullscreen();
 	pauseOptionsUI.push_back(chkFull);
 	pY += pSpacing;
+
 	pauseOptionsUI.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_OPTIONS_BACK, "BACK", 0.5f, pY, pW, pH, sceneObserver));
 }
 
 void GameScene::CreateDialogueUI() {
+	//Engine::GetInstance().dialogueManager->StartDialogue("Prueba1");
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 
-	// Usamos el mismo patr髇 que tus otros elementos
+	// Usamos el mismo patr贸n que tus otros elementos
 	std::shared_ptr<UIElement> rawDialogueBox = uiManager->CreateUIElement(
 		UIElementType::DIALOGUE_BOX, 99, "", 0.5f, 0.8f, 0.7f, 0.3f, sceneObserver);
 
@@ -530,16 +794,17 @@ void GameScene::CreateDialogueUI() {
 	if (dBox != nullptr) {
 		dBox->SetBackgroundTexture(UIDialogueBoxTex);
 
-		SDL_Texture* texPrincesa = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/princess_portrait.png");
-		SDL_Texture* texAldeano = Engine::GetInstance().textures->Load("Assets/Textures/UI/Dialogues/npc_portrait.png");
-
-		dBox->AddPortrait("Princesa", texPrincesa);
-		dBox->AddPortrait("Jan", texAldeano);
+		dBox->AddPortrait("Princesa", princessPortrait);
+		dBox->AddPortrait("Jan", npcPortrait);
+		/*dBox->AddPortrait("Jan", npcPortrait1);
+		dBox->AddPortrait("Jan", npcPortrait2);
+		dBox->AddPortrait("Jan", npcPortrait3);
+		dBox->AddPortrait("Jan", npcPortrait4);*/
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);
 
-		// A馻dir al grupo de control
+		// A帽adir al grupo de control
 		dialogueUI.push_back(rawDialogueBox);
 	}
 }
@@ -606,6 +871,10 @@ void GameScene::RefreshMenuUI() {
 		UpdateInventoryVisuals();
 	}
 
+	else if (currentMenuTab == GameMenuTab::SKILL_TREE) {
+		UpdateSkillVisuals();
+	}
+
 	SetUIGroupVisible(inventoryUI, currentMenuTab == GameMenuTab::INVENTORY);
 	SetUIGroupVisible(mapUI, currentMenuTab == GameMenuTab::MAP);
 	SetUIGroupVisible(skillUI, currentMenuTab == GameMenuTab::SKILL_TREE);
@@ -615,6 +884,33 @@ void GameScene::RefreshMenuUI() {
 	SetUIGroupVisible(pauseOptionsUI, currentMenuTab == GameMenuTab::PAUSE_OPTIONS);
 }
 
+void GameScene::UpdateSkillVisuals() {
+	auto& gameState = GameManager::GetInstance().gameState;
+
+	for (auto& btn : skillUI) {
+		switch (btn->id) {
+		case (int)GameUI_ID::SKILL_BOOK_1_1:
+			btn->SetTexture(gameState.stHealthUp ? books_1_1_active : books_1_1);
+			break;
+		case (int)GameUI_ID::SKILL_BOOK_1_2:
+			btn->SetTexture(gameState.stIframesUp ? books_1_2_active : books_1_2);
+			break;
+		case (int)GameUI_ID::SKILL_BOOK_2_1:
+			btn->SetTexture(gameState.stSpeedUp ? books_2_1_active : books_2_1);
+			break;
+		case (int)GameUI_ID::SKILL_BOOK_2_2:
+			btn->SetTexture(gameState.stFastDash ? books_2_2_active : books_2_2);
+			break;
+		case (int)GameUI_ID::SKILL_BOOK_3_1:
+			btn->SetTexture(gameState.stUpAttack ? books_3_1_active : books_3_1);
+			break;
+		case (int)GameUI_ID::SKILL_BOOK_3_2:
+			btn->SetTexture(gameState.stDownAttack ? books_3_2_active : books_3_2);
+			break;
+		}
+	}
+}
+
 void GameScene::SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible) {
 	for (auto& elem : group) {
 		elem->visible = visible;
@@ -622,8 +918,6 @@ void GameScene::SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group
 		elem->state = visible ? UIElementState::NORMAL : UIElementState::DISABLED;
 	}
 }
-
-
 
 // ==========================================
 // Auxiliar Textures funcions

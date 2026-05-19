@@ -9,6 +9,7 @@
 #include "Animation.h"
 
 #include "Physics.h"
+#include "Keys.h"
 
 struct Properties
 {
@@ -55,9 +56,12 @@ struct Door
     std::string uniqueId;
     bool underMaintenance;
     bool DoorClose;
+    std::string spawnID;
     int width;
     int height;
     bool requiresGlide;
+
+    KeyType requiredKey = KeyType::NONE;
 };
 
 struct Path
@@ -69,6 +73,7 @@ struct Path
 struct PlayerSpawnPoint
 {
     std::string fromRoom;
+    std::string spawnID;
     Vector2D position;
 };
 
@@ -211,7 +216,7 @@ public:
     // Entities
 
     void SpawnEntities();
-    Vector2D GetPlayerSpawnPoint(const std::string& fromRoom);
+    Vector2D GetPlayerSpawnPoint(const std::string& fromRoom, const std::string& spawnID = "");
     //Door
     std::string DoorInfo(PhysBody* door);
     std::string GetDoorUniqueId(PhysBody* door);
@@ -220,10 +225,14 @@ public:
     bool DoorUnderMaintenance(PhysBody* door);
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
+    std::string GetPathSpawnID(PhysBody* path);
     void GetDoorDimensions(PhysBody* door, int& w, int& h);
+   
+    KeyType GetDoorKeyType(PhysBody* door);
 
     Vector2D GetCameraPositionInTiles();
     Vector2D GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin = {0,0});
+
 
 public: 
     std::string mapFileName;

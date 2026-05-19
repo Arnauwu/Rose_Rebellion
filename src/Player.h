@@ -9,9 +9,11 @@
 #include "CameraController.h"
 #include <iostream>
 #include <map>
+#include <set>
 #include <vector>
 #include <string>
 #include "Hud.h"
+#include "Keys.h"
 
 enum class ItemID {
 	WEAPON,
@@ -25,6 +27,15 @@ enum class ItemID {
 enum class CameraMode {
 	CLASSIC,  // Para la fortaleza (Mtodo original: 1.25f, bloqueo de salto Y)
 	DYNAMIC   // Para exploracin (Nuevo mtodo: 1.75f, Look down, anticipacin)
+};
+
+enum class SkillTree {
+	HEALTH_UP,
+	IFRAMES_UP,
+	SPEED_UP,
+	FAST_DASH,
+	UP_ATTACK,
+	DOWN_ATTACK
 };
 
 struct SDL_Texture;
@@ -59,6 +70,7 @@ public:
 	void UnlockDash();
 	void UnlockDoubleJump();
 
+	void UnlockSkill(SkillTree skill, int cost);
 
 	//Inventary Variables
 	std::map<ItemID, int> inventory;
@@ -71,6 +83,10 @@ public:
 	// Select camara follow mode
 	void SetCameraMode(CameraMode mode);
 	CameraMode GetCameraMode() const { return currentCameraMode; }
+
+	//Key
+	void AddKey(KeyType type) { heldKeys.insert(type); }
+	bool HasKey(KeyType type) const { return heldKeys.find(type) != heldKeys.end(); }
 private:
 
 	void GodModeMove(float dt);
@@ -99,8 +115,13 @@ private:
 	// DevTools / Debug
 	void DevTools(float dt);
 
+	//KeyType
+	std::set<KeyType> heldKeys;
+
 public:
 	float speed = 10.0f;
+	int dmgbuff = 0;
+	int defbuff = 0;
 
 	// Texture
 	SDL_Texture* texture = nullptr;
@@ -158,10 +179,6 @@ public:
 	/*--- PLAYER SKILL TREE --- */
 	int currentForceOrbs = 0;
 
-	bool OffensiveSkills[3] = { false, false, false };
-	bool DefensiveSkills[3] = { false, false, false };
-	bool UtilitySkills[3] = { false, false, false };
-
 	// Interact
 	bool canInteract = false;
 	PhysBody* interactuableBody = nullptr;
@@ -170,6 +187,8 @@ public:
 	bool isAttacking = false;
 	float attackDuration = 0.25f; //attack duration
 	float currentAttackTime = 0.0f;
+	Timer attackCooldownTimer;
+	int attackCooldownMS = 500;
 
 	int comboStep = 0;                 // combo
 	float timeSinceLastAttack = 0.0f;  // Temporizador
@@ -188,6 +207,13 @@ public:
 
 	// Item & states
 	bool isFrozen = false;
+
+	/*--- INVINCIBILITY (I-FRAMES) --- */
+	bool isInvincible = false;
+	Timer invincibilityTimer;
+	float invincibilityDurationMS = 1000.0f; 
+	float flashIntervalMS = 100.0f;         
+	bool isVisible = true;
 
 private:
 
@@ -219,6 +245,17 @@ private:
 
 	AnimationSet anims;
 	int currentAnimPriority = 0;
+
+	/*
+	Idle = 0
+	Move = 1
+	Jump = 2
+	Fall = 3
+	Attack = 4
+	Gliding = 5
+
+	Death = 99
+	*/
 
 	CameraController cameraController;
 	Vector2D respawnPosition;

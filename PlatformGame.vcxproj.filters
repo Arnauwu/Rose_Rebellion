@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -146,8 +146,24 @@
     <Filter Include="Source Files\Game\Entity\Door">
       <UniqueIdentifier>{b5345a9d-0db3-46b9-b931-68ea536ab439}</UniqueIdentifier>
     </Filter>
+
     <Filter Include="Source Files\Engine\HealthBarManager">
       <UniqueIdentifier>{394d9225-1231-4d49-91d8-3fb20fb2c2d2}</UniqueIdentifier>
+    <Filter Include="Source Files\Game\Entity\Enemies\Minairon">
+      <UniqueIdentifier>{8ab5b7db-9061-49bd-b37c-38cecc13b794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Bat">
+      <UniqueIdentifier>{f101241d-3a0c-4910-a365-14f20453295d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\ToxicBall">
+      <UniqueIdentifier>{cb15113c-7074-4831-ad5c-f8e806683d6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Bosses\GwellBoss">
+      <UniqueIdentifier>{3f781e1f-90dd-4a9e-840c-eaca8ac149a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Dip">
+      <UniqueIdentifier>{f7ecc5db-b91f-43c4-989e-88edd0e9103e}</UniqueIdentifier>
+
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -339,8 +355,36 @@
     <ClCompile Include="src\Door.cpp">
       <Filter>Source Files\Game\Entity\Door</Filter>
     </ClCompile>
+
     <ClCompile Include="src\HealthBarManager.cpp">
       <Filter>Source Files\Engine\HealthBarManager</Filter>
+    <ClCompile Include="src\CucaferaMutant.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Minairon.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Minairon</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Bat.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Bat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ToxicBall.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\ToxicBall</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GwellBoss.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TracyMemory.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MiniMap.cpp">
+      <Filter>Source Files\Engine\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIItemInfoBox.cpp">
+      <Filter>Source Files\Utils\UI Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dip.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
+
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -532,6 +576,29 @@
     </ClInclude>
     <ClInclude Include="src\HealthBarManager.h">
       <Filter>Source Files\Engine\HealthBarManager</Filter>
+    <ClInclude Include="src\CucaferaMutant.h">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Minairon.h">
+      <Filter>Source Files\Game\Entity\Enemies\Minairon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bat.h">
+      <Filter>Source Files\Game\Entity\Enemies\Bat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ToxicBall.h">
+      <Filter>Source Files\Game\Entity\Enemies\ToxicBall</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GwellBoss.h">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Minimap.h">
+      <Filter>Source Files\Engine\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UIItemInfoBox.h">
+      <Filter>Source Files\Utils\UI Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dip.h">
+      <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

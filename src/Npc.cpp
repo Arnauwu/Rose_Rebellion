@@ -8,6 +8,8 @@
 #include "EntityManager.h"
 #include "Log.h"
 
+#include "tracy/Tracy.hpp"
+
 Npc::Npc() : Entity(EntityType::NPC) {
     name = "Npc";
     pbody = nullptr;
@@ -37,6 +39,7 @@ bool Npc::Start() {
 
 bool Npc::Update(float dt) {
     if (!active) return true;
+    ZoneScoped;
 
     // Si el jugador está cerca y no está activo
     if (isPlayerInRange && !Engine::GetInstance().dialogueManager->IsDialogueActive()) {

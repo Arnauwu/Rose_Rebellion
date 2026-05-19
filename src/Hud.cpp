@@ -160,8 +160,10 @@ void Hud::DrawNotification() {
         }
 
         // Tamaño de pantalla
-        int screenW = Engine::GetInstance().render->camera.w;
-        int screenH = Engine::GetInstance().render->camera.h;
+        int screenW, screenH;
+        screenW = Engine::GetInstance().window->windowWidth;
+
+        screenH = Engine::GetInstance().window->windowHeight;
 
         // Tamaño del cuadro de solicitud
         int rectW = 600;
@@ -178,7 +180,7 @@ void Hud::DrawNotification() {
         };
 
         // Draw
-        Engine::GetInstance().render->DrawRectangle(bgRect, 220, 220, 220, alphaBg, true, false);
+        Engine::GetInstance().render->DrawRectangleUnScaled(bgRect, 220, 220, 220, alphaBg, true, false);
 
         // Draw txto
         SDL_Color color = { 0, 0, 0, alphaText }; // color negro

@@ -16,7 +16,7 @@
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
-#include "SpiderEnemy.h"
+#include "CucaferaMutant.h"
 
 
 #include "SwordKnight.h"
@@ -25,8 +25,16 @@
 #include "Ninfa.h"
 #include "Demon.h"
 
+#include "Dip.h"
+
+#include "Minairon.h"
+#include "Bat.h"
+#include "ToxicBall.h"
+
+
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include "GwellBoss.h"
 #include"Dragon.h"
 
 
@@ -637,7 +645,7 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
 						newDoor.width = (int)obj->width;
 						newDoor.height = (int)obj->height;
-
+						
 						//Mira si necesita una llave para abrirlo o no
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						if (needsKeyProp != nullptr)
@@ -647,6 +655,18 @@ bool Map::Load(std::string path, std::string fileName)
 						else
 						{
 							newDoor.needsKey = false;
+						}
+						newDoor.requiredKey = KeyType::NONE; // Por defecto
+						Properties::Property* keyRegionProp = obj->properties.GetProperty("KeyRegion");
+						if (keyRegionProp != nullptr)
+						{
+							std::string region = keyRegionProp->value2;
+							if (region == "Forest") newDoor.requiredKey = KeyType::FOREST;
+							else if (region == "Mountain") newDoor.requiredKey = KeyType::MOUNTAIN;
+							else if (region == "Catacumba") newDoor.requiredKey = KeyType::CATACUMBA;
+							else if (region == "Boss") newDoor.requiredKey = KeyType::BOSS;
+							else if (region == "Castle") newDoor.requiredKey = KeyType::CASTLE;
+
 						}
 
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
@@ -689,6 +709,14 @@ bool Map::Load(std::string path, std::string fileName)
 						else
 						{
 							newDoor.requiresGlide = false;
+						}
+
+						Properties::Property* spawnIDProp = obj->properties.GetProperty("SpawnID");
+						if (spawnIDProp != nullptr) {
+							newDoor.spawnID = spawnIDProp->value2;
+						}
+						else {
+							newDoor.spawnID = "";
 						}
 
 						mapData.doors.push_back(newDoor);
@@ -990,10 +1018,10 @@ void Map::SpawnEntities()
 					std::shared_ptr<CucaferaShiny> cucaferaShiny = std::dynamic_pointer_cast<CucaferaShiny>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_SHINY));
 					cucaferaShiny->position = Vector2D(x, y);
 				}
-				else if (entityType == std::string("Spider"))
+				else if (entityType == std::string("CucaferaMutant"))
 				{
-					std::shared_ptr<SpiderEnemy> spider = std::dynamic_pointer_cast<SpiderEnemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPIDER));
-					spider->position = Vector2D(x, y);
+					std::shared_ptr<CucaferaMutant> cucaferaMutant = std::dynamic_pointer_cast<CucaferaMutant>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_MUTANT));
+					cucaferaMutant->position = Vector2D(x, y);
 				}
 
 				else if (entityType == std::string("SwordKnight"))
@@ -1007,6 +1035,11 @@ void Map::SpawnEntities()
 					shieldKnight->position = Vector2D(x, y);
 				}
 
+				else if (entityType == std::string("Dip"))
+				{
+					std::shared_ptr<Dip> dip = std::dynamic_pointer_cast<Dip>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DIP));
+					dip->position = Vector2D(x, y);
+				}
 
 				else if (entityType == std::string("Ninfa"))
 				{
@@ -1019,6 +1052,24 @@ void Map::SpawnEntities()
 					demon->position = Vector2D(x, y);
 				}
 
+
+				else if (entityType == std::string("Minairon"))
+				{
+					std::shared_ptr<Minairon> minairon = std::dynamic_pointer_cast<Minairon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::MINAIRON));
+					minairon->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("Bat"))
+				{
+					std::shared_ptr<Bat> bat = std::dynamic_pointer_cast<Bat>(Engine::GetInstance().entityManager->CreateEntity(EntityType::BAT));
+					bat->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("ToxicBall"))
+				{
+					std::shared_ptr<ToxicBall> toxicBall = std::dynamic_pointer_cast<ToxicBall>(Engine::GetInstance().entityManager->CreateEntity(EntityType::TOXIC_BALL));
+					toxicBall->position = Vector2D(x, y);
+				}
+
+
 				//Bosses
 				else if (entityType == std::string("KnightBoss"))
 				{
@@ -1029,6 +1080,11 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					ninfaBoss->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("GwellBoss"))
+				{
+					std::shared_ptr<GwellBoss> gwellBoss = std::dynamic_pointer_cast<GwellBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_BOSS));
+					gwellBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Dragon"))
 				{
@@ -1042,6 +1098,19 @@ void Map::SpawnEntities()
 					std::shared_ptr<Keys> key = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
 					if (key != nullptr) {
 						key->position = Vector2D(x, y);
+
+						Properties keyProps;
+						LoadProperties(objectNode, keyProps);
+
+						if (keyProps.GetProperty("KeyRegion") != nullptr) {
+							std::string region = keyProps.GetProperty("KeyRegion")->value2;
+
+							if (region == "Forest") key->SetKeyType(KeyType::FOREST);
+							else if (region == "Mountain") key->SetKeyType(KeyType::MOUNTAIN);
+							else if (region == "Catacumba") key->SetKeyType(KeyType::CATACUMBA);
+							else if (region == "Boss") key->SetKeyType(KeyType::BOSS);
+							else if (region == "Castle") key->SetKeyType(KeyType::CASTLE);
+						}
 					}
 				}
 				else if (entityType == std::string("Manta")) {
@@ -1221,6 +1290,7 @@ void Map::SpawnEntities()
 
 				PlayerSpawnPoint newSpawn;
 				newSpawn.fromRoom = a.GetProperty("FromRoom") ? a.GetProperty("FromRoom")->value2 : "UNKNOWN";
+				newSpawn.spawnID = a.GetProperty("SpawnID") ? a.GetProperty("SpawnID")->value2 : "";
 				newSpawn.position.setX(x);
 				newSpawn.position.setY(y);
 
@@ -1272,15 +1342,23 @@ bool Map::DoorRequiresGlide(PhysBody* door)
 	return false;
 }
 
-Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
+Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom, const std::string& spawnID)
 {
 	// Buscar el spawn point que coincida con la sala de origen
 	for (const auto& spawnPoint : mapData.spawnPoints)
 	{
-		if (spawnPoint.fromRoom == fromRoom)
+		if (spawnPoint.fromRoom == fromRoom && (spawnID.empty() || spawnPoint.spawnID == spawnID))
 		{
 			LOG("Found spawn point for room '%s' at (%.0f, %.0f)",
 				fromRoom.c_str(), spawnPoint.position.getX(), spawnPoint.position.getY());
+			return spawnPoint.position;
+		}
+	}
+
+	for (const auto& spawnPoint : mapData.spawnPoints)
+	{
+		if (spawnPoint.fromRoom == fromRoom)
+		{
 			return spawnPoint.position;
 		}
 	}
@@ -1297,6 +1375,17 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 	return Vector2D(200, 200);
 }
 
+std::string Map::GetPathSpawnID(PhysBody* path)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == path)
+		{
+			return ndoor.spawnID;
+		}
+	}
+	return "";
+}
 
 std::string Map::GetDoorUniqueId(PhysBody* door)
 {
@@ -1333,7 +1422,6 @@ bool Map::DoorClosed(PhysBody* door) {
 	return false;
 }
 
-// 【新增在文件最后面】
 void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
 {
 	for (const auto& ndoor : mapData.doors)
@@ -1345,7 +1433,7 @@ void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
 			return;
 		}
 	}
-	w = 256; h = 256; // 默认防错值
+	w = 256; h = 256;
 }
 
 Vector2D Map::GetCameraPositionInTiles()
@@ -1360,4 +1448,16 @@ Vector2D Map::GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin)
 	SDL_Rect camera = Engine::GetInstance().render->camera;
 	Vector2D camLimitTile = WorldToMap(camera.w, camera.h);
 	return camPosTile + camLimitTile + margin;
+}
+
+KeyType Map::GetDoorKeyType(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door)
+		{
+			return ndoor.requiredKey;
+		}
+	}
+	return KeyType::NONE;
 }

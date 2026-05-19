@@ -14,12 +14,13 @@ enum class UIElementType
 	BUTTON,
 	CHECKBOX,
 	SLIDER,
-	DIALOGUE_BOX
+	DIALOGUE_BOX,
+	ITEM_INFO_BOX
 };
 
 enum class UIElementState
 {
-	DISABLED, NORMAL, FOCUSED, PRESSED, SELECTED
+	DISABLED, NORMAL, FOCUSED, PRESSED
 };
 
 class UIElement : public std::enable_shared_from_this<UIElement>

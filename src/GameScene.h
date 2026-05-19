@@ -2,6 +2,7 @@
 #include "SceneBase.h"
 #include "UIDialogueBox.h"
 #include "Textures.h"
+#include "Player.h"
 #include "Audio.h"
 #include "SpecialFloors.h"
 #include <vector>
@@ -44,13 +45,41 @@ enum class GameUI_ID {
 	INV_ITEM_DOUBLE_JUMP,
 	INV_ITEM_WALL_JUMP,
 	INV_ITEM_KEY,
+	INV_ITEM_KEYFOREST,
+	INV_ITEM_KEYMOUNTAIN,
+	INV_ITEM_KEYCATACUMBS,
+	INV_ITEM_KEYCASTLE,
+
 	INV_ITEM_ORB,
-	INV_DESC_TEXT
+	INV_DESC_TEXT,
+
+	// SkillUpGrade Ui
+	SKILL_BOOK_1_1 = 200,
+	SKILL_BOOK_1_2,
+	SKILL_BOOK_2_1,
+	SKILL_BOOK_2_2,
+	SKILL_BOOK_3_1,
+	SKILL_BOOK_3_2,
+
+	BTN_SKILL_BUY = 250,
+	BTN_SKILL_BACK,
+	PANEL_SKILL_POPUP
 };
 
 struct ButtonDef { int id; const char* text; };
 
 struct SDL_Texture;
+
+struct ItemLore {
+	std::string name;
+	std::string description;
+};
+
+struct Skillinfo {
+	std::string name;
+	std::string description;
+	int cost;
+};
 
 class GameScene : public SceneBase {
 public:
@@ -59,6 +88,8 @@ public:
 
 	//Load Map
 	void LoadMap(std::string mapFile);
+	void LoadItemsLore();
+	void LoadSkillsinfo();
 
 	// Scene lifecycle
 	bool Start() override;
@@ -75,42 +106,75 @@ public:
 	
 	//Buttons textures
 	SDL_Texture* buttonUI = nullptr;
-	SDL_Texture* textBgUI = nullptr;
-	SDL_Texture* keyFrameUI = nullptr;
-	SDL_Texture* orbFrameUI = nullptr;
 	SDL_Texture* skillFrameUI = nullptr;
+	SDL_Texture* textBgUI = nullptr;
+	SDL_Texture* sliderThumbTex = nullptr;
 
-	//Background textures
+	// Texture BG
 	SDL_Texture* texMapUI = nullptr;
 	SDL_Texture* texInventoryUI = nullptr;
 	SDL_Texture* texSkilltreeUI = nullptr;
 	SDL_Texture* texPauseUI = nullptr;
+	SDL_Texture* texSkillUI = nullptr;
+
 	
-	//Items textures
+	//Items Textures
 	SDL_Texture* texItemKeyCastle = nullptr;
 	SDL_Texture* texItemKeyForest = nullptr;
-
+	SDL_Texture* texItemKeyMountain = nullptr;
+	SDL_Texture* texItemKeyCatacumbs = nullptr;
 	SDL_Texture* texItemOrb = nullptr;
+	
+	// Power-ups
 	SDL_Texture* texItemGlide = nullptr;
+	SDL_Texture* texItemDash = nullptr;
+	SDL_Texture* texItemWallJump = nullptr;
+	SDL_Texture* texItemDoubleJump = nullptr;
 	SDL_Texture* texItemWeapon = nullptr;
 
-	//Dialogue Textures
+	//SkillUpgrade
+	SDL_Texture* books_1_1 = nullptr;
+	SDL_Texture* books_1_2 = nullptr;
+	SDL_Texture* books_2_1 = nullptr;
+	SDL_Texture* books_2_2 = nullptr;
+	SDL_Texture* books_3_1 = nullptr;
+	SDL_Texture* books_3_2 = nullptr;
+
+	SDL_Texture* books_1_1_active = nullptr;
+	SDL_Texture* books_1_2_active = nullptr;
+	SDL_Texture* books_2_1_active = nullptr;
+	SDL_Texture* books_2_2_active = nullptr;
+	SDL_Texture* books_3_1_active = nullptr;
+	SDL_Texture* books_3_2_active = nullptr;
+
+	//Dialogue UI Textures 
 	SDL_Texture* UIDialogueBoxTex = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc2 = nullptr;
-	//SDL_Texture* UIDialogueBoxNpc3 = nullptr;
+	SDL_Texture* princessPortrait = nullptr;
+	SDL_Texture* npcPortrait = nullptr;
+	//SDL_Texture* npcPortrait1 = nullptr;
+	//SDL_Texture* npcPortrait2 = nullptr;
+	//SDL_Texture* npcPortrait3 = nullptr;
+	//SDL_Texture* npcPortrait4 = nullptr;
 
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);
 	void CreateTopBarUI();
 	void CreateInventoryUI();
+	void CreateSkillUpgradeUI();
+	void CreateSkillPopupUI();
+
+	void CreateMiniMapUI();
+
 	void CreatePauseMenuUI();
 	void CreatePauseSettingUI() ;
 	void CreateDialogueUI();
 
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
+	void UpdateSkillVisuals();
+
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
 
 	int uiClick;
@@ -125,16 +189,26 @@ private:
 	std::vector<std::shared_ptr<UIElement>> inventoryUI;
 	std::vector<std::shared_ptr<UIElement>> mapUI;
 	std::vector<std::shared_ptr<UIElement>> skillUI;
-	std::vector<std::shared_ptr<UIElement>> dialogueBox;
 
 	// Descriptión Panel
+	std::unordered_map<std::string, ItemLore> itemsLoreDB;
 	std::shared_ptr<UIElement> descPanel = nullptr;
+
+	// Skill Panel
+	std::unordered_map<std::string, Skillinfo> skillsLoreDB;
+
+	SkillTree selectedSkillToBuy;
+	std::string selectedSkillKey;
+	std::vector<std::shared_ptr<UIElement>> skillPopupUI;
+	std::shared_ptr<UIElement> skillPopupText;
+
 	// Pause Vectos
 	std::vector<std::shared_ptr<UIElement>> pauseMainUI;
 	std::vector<std::shared_ptr<UIElement>> pauseOptionsUI;
 
 	// Dialogue UI
 	std::vector<std::shared_ptr<UIElement>> dialogueUI;
+
 	//MapChanging Variables
 	// Fade point
 	enum class MapTransitionState {
@@ -145,5 +219,6 @@ private:
 
 	MapTransitionState mapState = MapTransitionState::NONE;
 	std::string nextMapName = "";
+	std::string targetSpawnID = "";
 	float mapFadeTime = 500.0f;
 };

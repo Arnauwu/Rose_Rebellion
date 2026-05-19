@@ -6,6 +6,10 @@
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
+#include "UIItemInfoBox.h"
+
+#include "Window.h"
+#include "Render.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -39,8 +43,10 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 	case UIElementType::DIALOGUE_BOX:
 		uiElement = std::make_shared<UIDialogueBox>(id, anchorX, anchorY, wPerc, hPerc, text);
 		break;
+	case UIElementType::ITEM_INFO_BOX:
+		uiElement = std::make_shared<UIItemInfoBox>(id, anchorX, anchorY, wPerc, hPerc, text);
+		break;
 	}
-
 	if (uiElement != nullptr) {
 		uiElement->SetObserver(observer);
 		UIElementsList.push_back(uiElement);

@@ -62,19 +62,20 @@ bool Render::Awake()
 			}
 		}
 
-		int baseWidth = 1920;
-		int baseHeight = 1080;
+		int baseW = Engine::GetInstance().window->windowWidth;
+		int baseH = Engine::GetInstance().window->windowHeight;
 
-		
-		SDL_SetRenderLogicalPresentation(renderer, baseWidth, baseHeight,
-			SDL_LOGICAL_PRESENTATION_LETTERBOX);
+		// Forzamos la presentación lógica basada exclusivamente en tus dimensiones de diseño
+		SDL_SetRenderLogicalPresentation(renderer, baseW, baseH, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-		// Como SDL ahora maneja el escalado internamente, la cámara solo necesita tu resolución base.
-		camera.w = baseWidth;
-		camera.h = baseHeight;
+		// Como SDL maneja todo el escalado a pantalla completa internamente de forma automática,
+		// tu cámara lógica ahora calcula sus dimensiones basándose puramente en tu espacio virtual de diseño.
+		camera.w = baseW / zoomLevel;
+		camera.h = baseH / zoomLevel;
 		camera.x = 0;
 		camera.y = 0;
 	}
+	ResetViewPort();
 
 	return ret;
 }
@@ -86,7 +87,7 @@ bool Render::Start() {
 	// Cargamos la misma fuente con diferentes tamaños
 	fonts[FontType::MENU] = TTF_OpenFont(fontPath, 69);
 	fonts[FontType::SPEAKER] = TTF_OpenFont(fontPath, 39);
-	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 31); // Tamaño más adecuado para texto largo
+	fonts[FontType::DIALOGUE] = TTF_OpenFont(fontPath, 31);
 	fonts[FontType::CUERPO] = TTF_OpenFont(fontPath, 25);
 
 	// Verificamos que se cargaron bien
@@ -191,13 +192,13 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 
 	// SDL3 uses float rects for rendering
 	SDL_FRect rect;
-	rect.x = (float)((int)(camera.x * speed) + x * scale);
-	rect.y = (float)((int)(camera.y * speed) + y * scale);
+	rect.x = (float)((int)(camera.x * speed) + x * scale) * zoomLevel;
+	rect.y = (float)((int)(camera.y * speed) + y * scale) * zoomLevel;
 
 	if (section != NULL)
 	{
-		rect.w = (float)(section->w * scale);
-		rect.h = (float)(section->h * scale);
+		rect.w = (float)(section->w * scale) * zoomLevel;
+		rect.h = (float)(section->h * scale) * zoomLevel;
 	}
 	else
 	{
@@ -207,8 +208,8 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 			LOG("SDL_GetTextureSize failed: %s", SDL_GetError());
 			return false;
 		}
-		rect.w = tw * scale;
-		rect.h = th * scale;
+		rect.w = tw * scale * zoomLevel;
+		rect.h = th * scale * zoomLevel;
 	}
 
 	const SDL_FRect* src = NULL;
@@ -226,8 +227,8 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 	SDL_FPoint pivot;
 	if (pivotX != INT_MAX && pivotY != INT_MAX)
 	{
-		pivot.x = (float)pivotX;
-		pivot.y = (float)pivotY;
+		pivot.x = (float)pivotX * scale * zoomLevel;
+		pivot.y = (float)pivotY * scale * zoomLevel;
 		p = &pivot;
 	}
 
@@ -246,17 +247,20 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 {
 	bool ret = true;
 	float scale = Engine::GetInstance().window->GetScale();
+	
+	int cameraWidth = Engine::GetInstance().render->camera.w;
+	int cameraHeight = Engine::GetInstance().render->camera.h;
 
 
 	// SDL3 uses float rects for rendering
 	SDL_FRect rect;
-	rect.x = (float)((camera.x + x) * scale);
-	rect.y = (float)((camera.y + y) * scale);
+	rect.x = (float)((camera.x + x) * scale)* zoomLevel;
+	rect.y = (float)((camera.y + y) * scale) * zoomLevel;
 
 	if (section != NULL)
 	{
-		rect.w = (float)(section->w * scale * adjustableScale);
-		rect.h = (float)(section->h * scale * adjustableScale);
+		rect.w = (float)(section->w * scale * adjustableScale * zoomLevel);
+		rect.h = (float)(section->h * scale * adjustableScale * zoomLevel);
 	}
 	else
 	{
@@ -266,8 +270,8 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 			LOG("SDL_GetTextureSize failed: %s", SDL_GetError());
 			return false;
 		}
-		rect.w = tw * scale * adjustableScale;
-		rect.h = th * scale * adjustableScale;
+		rect.w = tw * scale * adjustableScale * zoomLevel;
+		rect.h = th * scale * adjustableScale * zoomLevel;
 	}
 
 	rect.x -= rect.w / 2;
@@ -288,8 +292,8 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 	SDL_FPoint pivot;
 	if (pivotX != INT_MAX && pivotY != INT_MAX)
 	{
-		pivot.x = (float)pivotX * scale * adjustableScale;
-		pivot.y = (float)pivotY * scale * adjustableScale;
+		pivot.x = (float)pivotX * scale * adjustableScale * zoomLevel;
+		pivot.y = (float)pivotY * scale * adjustableScale * zoomLevel;
 		p = &pivot;
 	}
 
@@ -310,6 +314,7 @@ bool Render::DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) c
 
 	// SDL3 utiliza FRect (float) para renderizar
 	SDL_FRect dstFRect;
+	
 	dstFRect.x = (float)destRect.x;
 	dstFRect.y = (float)destRect.y;
 	dstFRect.w = (float)destRect.w;
@@ -328,6 +333,7 @@ bool Render::DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) c
 bool Render::DrawTexture9Slice(SDL_Texture* texture, const SDL_Rect& destRect, int left, int right, int top, int bottom) const
 {
 	if (!texture || !renderer) return false;
+	float scale = Engine::GetInstance().window->GetScale();
 
 	float texW = 0.0f, texH = 0.0f;
 	SDL_GetTextureSize(texture, &texW, &texH);
@@ -386,10 +392,10 @@ bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const 
 
 	// SDL3 uses float rects for rendering
 	SDL_FRect rect;
-	rect.x = (float)((camera.x + dest->x) * scale);
-	rect.y = (float)((camera.y + dest->y) * scale);
-	rect.w = (float)(dest->w * scale * adjustableScale);
-	rect.h = (float)(dest->h * scale * adjustableScale);
+	rect.x = (float)((camera.x + dest->x) * scale) * zoomLevel;
+	rect.y = (float)((camera.y + dest->y) * scale) * zoomLevel;
+	rect.w = (float)(dest->w * scale * adjustableScale) * zoomLevel;
+	rect.h = (float)(dest->h * scale * adjustableScale) * zoomLevel;
 
 	rect.y -= rect.h;
 
@@ -408,8 +414,8 @@ bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const 
 	SDL_FPoint pivot;
 	if (pivotX != INT_MAX && pivotY != INT_MAX)
 	{
-		pivot.x = (float)pivotX * scale;
-		pivot.y = (float)pivotY * scale;
+		pivot.x = (float)pivotX * scale * zoomLevel;
+		pivot.y = (float)pivotY * scale * zoomLevel;
 		p = &pivot;
 	}
 
@@ -435,17 +441,17 @@ bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint
 	SDL_FRect rec;
 	if (use_camera)
 	{
-		rec.x = (float)((int)(camera.x + rect.x * scale));
-		rec.y = (float)((int)(camera.y + rect.y * scale));
-		rec.w = (float)(rect.w * scale);
-		rec.h = (float)(rect.h * scale);
+		rec.x = (float)((int)(camera.x + rect.x * scale)) * zoomLevel;
+		rec.y = (float)((int)(camera.y + rect.y * scale)) * zoomLevel;
+		rec.w = (float)(rect.w * scale) * zoomLevel;
+		rec.h = (float)(rect.h * scale) * zoomLevel;
 	}
 	else
 	{
-		rec.x = (float)(rect.x * scale);
-		rec.y = (float)(rect.y * scale);
-		rec.w = (float)(rect.w * scale);
-		rec.h = (float)(rect.h * scale);
+		rec.x = (float)(rect.x * scale) * zoomLevel;
+		rec.y = (float)(rect.y * scale) * zoomLevel;
+		rec.w = (float)(rect.w * scale) * zoomLevel;
+		rec.h = (float)(rect.h * scale) * zoomLevel;
 	}
 
 	int result = (filled ? SDL_RenderFillRect(renderer, &rec) : SDL_RenderRect(renderer, &rec)) ? 0 : -1;
@@ -459,6 +465,41 @@ bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint
 	return ret;
 }
 
+
+bool Render::DrawRectangleUnScaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
+{
+	bool ret = true;
+	int scale = Engine::GetInstance().window->GetScale();
+
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+
+	SDL_FRect rec;
+	if (use_camera)
+	{
+		rec.x = (float)((int)(camera.x + rect.x * scale)) ;
+		rec.y = (float)((int)(camera.y + rect.y * scale)) ;
+		rec.w = (float)(rect.w * scale) ;
+		rec.h = (float)(rect.h * scale) ;
+	}
+	else
+	{
+		rec.x = (float)(rect.x * scale) ;
+		rec.y = (float)(rect.y * scale) ;
+		rec.w = (float)(rect.w * scale) ;
+		rec.h = (float)(rect.h * scale) ;
+	}
+
+	int result = (filled ? SDL_RenderFillRect(renderer, &rec) : SDL_RenderRect(renderer, &rec)) ? 0 : -1;
+
+	if (result != 0)
+	{
+		LOG("Cannot draw quad to screen. SDL_RenderFillRect/SDL_RenderRect error: %s", SDL_GetError());
+		ret = false;
+	}
+
+	return ret;
+}
 bool Render::DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool use_camera) const
 {
 	bool ret = true;
@@ -471,17 +512,17 @@ bool Render::DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b,
 
 	if (use_camera)
 	{
-		X1 = (float)(camera.x + x1 * scale);
-		Y1 = (float)(camera.y + y1 * scale);
-		X2 = (float)(camera.x + x2 * scale);
-		Y2 = (float)(camera.y + y2 * scale);
+		X1 = (float)(camera.x + x1 * scale) * zoomLevel;
+		Y1 = (float)(camera.y + y1 * scale) * zoomLevel;
+		X2 = (float)(camera.x + x2 * scale) * zoomLevel;
+		Y2 = (float)(camera.y + y2 * scale) * zoomLevel;
 	}
 	else
 	{
-		X1 = (float)(x1 * scale);
-		Y1 = (float)(y1 * scale);
-		X2 = (float)(x2 * scale);
-		Y2 = (float)(y2 * scale);
+		X1 = (float)(x1 * scale) * zoomLevel;
+		Y1 = (float)(y1 * scale) * zoomLevel;
+		X2 = (float)(x2 * scale) * zoomLevel;
+		Y2 = (float)(y2 * scale) * zoomLevel;
 	}
 
 	int result = SDL_RenderLine(renderer, X1, Y1, X2, Y2) ? 0 : -1;
@@ -508,13 +549,13 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 
 	float factor = (float)M_PI / 180.0f;
 
-	float cx = (float)((use_camera ? camera.x : 0) + x * scale);
-	float cy = (float)((use_camera ? camera.y : 0) + y * scale);
+	float cx = (float)((use_camera ? camera.x : 0) + x * scale) * zoomLevel;
+	float cy = (float)((use_camera ? camera.y : 0) + y * scale) * zoomLevel;
 
 	for (int i = 0; i < 360; ++i)
 	{
-		points[i].x = cx + (float)(radius * cos(i * factor));
-		points[i].y = cy + (float)(radius * sin(i * factor));
+		points[i].x = cx + (float)(radius * cos(i * factor)) * scale * zoomLevel;
+		points[i].y = cy + (float)(radius * sin(i * factor)) * scale * zoomLevel;
 	}
 
 	result = SDL_RenderPoints(renderer, points, 360) ? 0 : -1;
@@ -531,6 +572,7 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color color, FontType fontType) const
 {
 	if (text == nullptr || text[0] == '\0') return false;
+	int scale = Engine::GetInstance().window->GetScale();
 
 	TTF_Font* selectedFont = nullptr;
 	auto it = fonts.find(fontType);
@@ -565,7 +607,11 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 		finalW = (float)surface->w * scale;
 	}
 
-	SDL_FRect dstRect = { (float)x, (float)y, finalW, finalH };
+	SDL_FRect dstRect = 
+	{ (float)x, 
+	(float)y,
+	finalW, 
+	finalH};
 
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	if (!SDL_RenderTexture(renderer, texture, nullptr, &dstRect)) {
@@ -581,6 +627,7 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color, FontType fontType) const
 {
 	if (!renderer || !text || text[0] == '\0') return false;
+	int scale = Engine::GetInstance().window->GetScale();
 
 	TTF_Font* selectedFont = nullptr;
 	auto it = fonts.find(fontType);
@@ -609,8 +656,8 @@ bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Colo
 	float finalW = (float)surface->w;
 	float finalH = (float)surface->h;
 
-	float scaleX = maxW / finalW;
-	float scaleY = maxH / finalH;
+	float scaleX = (maxW / finalW);
+	float scaleY = (maxH / finalH);
 	float finalScale = (scaleX < scaleY) ? scaleX : scaleY;
 
 	if (finalScale < 1.0f) {
@@ -618,8 +665,8 @@ bool Render::DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Colo
 		finalH *= finalScale;
 	}
 
-	float finalX = (float)bounds.x + ((float)bounds.w - finalW) / 2.0f;
-	float finalY = (float)bounds.y + ((float)bounds.h - finalH) / 2.0f;
+	float finalX = (float)(bounds.x + ((float)bounds.w - finalW) / 2.0f);
+	float finalY = (float)(bounds.y + ((float)bounds.h - finalH) / 2.0f);
 
 	SDL_FRect dstRect = { finalX, finalY, finalW, finalH };
 
@@ -682,6 +729,11 @@ SDL_Rect Render::GetTextRenderedBounds(const char* text, const SDL_Rect& bounds,
 void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;
+	int w, h;
+	Engine::GetInstance().window->GetWindowSize(w,h);
+
+	camera.w =  w / zoomLevel;
+	camera.h = h / zoomLevel;
 }
 
 //Fade Funtions

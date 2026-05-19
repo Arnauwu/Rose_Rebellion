@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.1" name="player" tilewidth="256" tileheight="256" tilecount="144" columns="12">
- <image source="Princess_Capeless.PNG" width="3072" height="3072"/>
+<tileset version="1.10" tiledversion="1.10.2" name="player" tilewidth="256" tileheight="256" tilecount="132" columns="12">
+ <image source="Princess_Capeless.PNG" width="3072" height="3071"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
@@ -27,8 +27,11 @@
  </tile>
  <tile id="24">
   <animation>
-   <frame tileid="24" duration="250"/>
-   <frame tileid="25" duration="250"/>
+   <frame tileid="36" duration="150"/>
+   <frame tileid="37" duration="150"/>
+   <frame tileid="38" duration="150"/>
+   <frame tileid="24" duration="150"/>
+   <frame tileid="25" duration="150"/>
   </animation>
  </tile>
  <tile id="36">
@@ -40,8 +43,11 @@
  </tile>
  <tile id="48">
   <animation>
-   <frame tileid="48" duration="250"/>
-   <frame tileid="49" duration="250"/>
+   <frame tileid="60" duration="150"/>
+   <frame tileid="61" duration="150"/>
+   <frame tileid="62" duration="150"/>
+   <frame tileid="48" duration="150"/>
+   <frame tileid="49" duration="150"/>
   </animation>
  </tile>
  <tile id="60">
