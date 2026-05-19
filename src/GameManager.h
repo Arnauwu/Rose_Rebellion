@@ -24,7 +24,7 @@ struct GameState {
     bool stDownAttack = false;
 
     // World
-    std::string currentMap = "Castle_Room_Princess.tmx";
+    std::string currentMap = "Catacombs_01_M.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     std::vector<std::string> openedDoors;

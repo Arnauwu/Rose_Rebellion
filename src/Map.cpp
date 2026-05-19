@@ -645,7 +645,7 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
 						newDoor.width = (int)obj->width;
 						newDoor.height = (int)obj->height;
-
+						
 						//Mira si necesita una llave para abrirlo o no
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						if (needsKeyProp != nullptr)
@@ -709,6 +709,14 @@ bool Map::Load(std::string path, std::string fileName)
 						else
 						{
 							newDoor.requiresGlide = false;
+						}
+
+						Properties::Property* spawnIDProp = obj->properties.GetProperty("SpawnID");
+						if (spawnIDProp != nullptr) {
+							newDoor.spawnID = spawnIDProp->value2;
+						}
+						else {
+							newDoor.spawnID = "";
 						}
 
 						mapData.doors.push_back(newDoor);
@@ -1282,6 +1290,7 @@ void Map::SpawnEntities()
 
 				PlayerSpawnPoint newSpawn;
 				newSpawn.fromRoom = a.GetProperty("FromRoom") ? a.GetProperty("FromRoom")->value2 : "UNKNOWN";
+				newSpawn.spawnID = a.GetProperty("SpawnID") ? a.GetProperty("SpawnID")->value2 : "";
 				newSpawn.position.setX(x);
 				newSpawn.position.setY(y);
 
@@ -1333,15 +1342,23 @@ bool Map::DoorRequiresGlide(PhysBody* door)
 	return false;
 }
 
-Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
+Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom, const std::string& spawnID)
 {
 	// Buscar el spawn point que coincida con la sala de origen
 	for (const auto& spawnPoint : mapData.spawnPoints)
 	{
-		if (spawnPoint.fromRoom == fromRoom)
+		if (spawnPoint.fromRoom == fromRoom && (spawnID.empty() || spawnPoint.spawnID == spawnID))
 		{
 			LOG("Found spawn point for room '%s' at (%.0f, %.0f)",
 				fromRoom.c_str(), spawnPoint.position.getX(), spawnPoint.position.getY());
+			return spawnPoint.position;
+		}
+	}
+
+	for (const auto& spawnPoint : mapData.spawnPoints)
+	{
+		if (spawnPoint.fromRoom == fromRoom)
+		{
 			return spawnPoint.position;
 		}
 	}
@@ -1358,6 +1375,17 @@ Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom)
 	return Vector2D(200, 200);
 }
 
+std::string Map::GetPathSpawnID(PhysBody* path)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == path)
+		{
+			return ndoor.spawnID;
+		}
+	}
+	return "";
+}
 
 std::string Map::GetDoorUniqueId(PhysBody* door)
 {

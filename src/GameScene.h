@@ -219,5 +219,6 @@ private:
 
 	MapTransitionState mapState = MapTransitionState::NONE;
 	std::string nextMapName = "";
+	std::string targetSpawnID = "";
 	float mapFadeTime = 500.0f;
 };
