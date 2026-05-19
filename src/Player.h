@@ -208,6 +208,13 @@ public:
 	// Item & states
 	bool isFrozen = false;
 
+	/*--- INVINCIBILITY (I-FRAMES) --- */
+	bool isInvincible = false;
+	Timer invincibilityTimer;
+	float invincibilityDurationMS = 1000.0f; 
+	float flashIntervalMS = 100.0f;         
+	bool isVisible = true;
+
 private:
 
 	int jumpFx;

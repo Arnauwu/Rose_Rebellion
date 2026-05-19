@@ -19,13 +19,19 @@ bool Keys::Awake() {
 bool Keys::Start() {
     if (CheckIfCollected()) return true;
 
-    if (texture == nullptr) {
-        texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/castleKey.png");
-    }
+    std::unordered_map<int, std::string> aliases = {
+    {0, "ForestKey"}, {8, "CastleKey"}, {16, "MountainKey"},{24, "CatacumbsKey"}
+    };
+    anims.LoadFromTSX("Assets/Textures/Items/Keys/SS_obj_llaves.tsx", aliases);
+    anims.SetCurrent("CastleKey");
 
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/SS_obj_llaves.png");
+   
+    const SDL_Rect& animFrame = anims.GetCurrentFrame();
+   
     // Fisic
     if (pbody == nullptr && texture != nullptr) {
-        pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);
+        pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), animFrame.w / 2, bodyType::KINEMATIC);
         pbody->listener = this;
         pbody->ctype = ColliderType::ITEM;
     }
@@ -34,10 +40,18 @@ bool Keys::Start() {
 }
 
 bool Keys::Update(float dt) {
+
     if (!isPicked && pbody != nullptr && texture != nullptr) {
+        anims.Update(dt);
+        const SDL_Rect& animFrame = anims.GetCurrentFrame();
         int x, y;
         pbody->GetPosition(x, y);
-        Engine::GetInstance().render->DrawTexture(texture, x - texture->w / 2, y - texture->h / 2);
+        Engine::GetInstance().render->DrawTexture(
+            texture,
+            x - animFrame.w / 2,
+            y - animFrame.h / 2,
+            &animFrame
+            );
     }
     return true;
 }
@@ -69,33 +83,26 @@ void Keys::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Sha
 //Key texture 
 void Keys::SetKeyType(KeyType type) {
     this->keyType = type;
-    std::string texPath = "";
+   /* std::string texPath = "";*/
 
     switch (type) {
     case KeyType::FOREST:
-        texPath = "Assets/Textures/Items/Keys/forestKey.png"; 
+        anims.SetCurrent("ForestKey");   
         break;
     case KeyType::MOUNTAIN:
-        texPath = "Assets/Textures/Items/Keys/mountainKey.png";
+        anims.SetCurrent("MountainKey");
         break;
     case KeyType::CATACUMBA:
-        texPath = "Assets/Textures/Items/Keys/catacumbsKey.png";
+        anims.SetCurrent("CatacumbsKey");
         break;
     case KeyType::BOSS:
     case KeyType::CASTLE:
-        texPath = "Assets/Textures/Items/Keys/castleKey.png";
+        anims.SetCurrent("CastleKey");
         break;
     default:
-        texPath = "Assets/Textures/Items/Keys/castleKey.png";
+        anims.SetCurrent("CastleKey");
         break;
     }
-
-    //Cleanup
-    if (texture != nullptr) {
-        Engine::GetInstance().textures->UnLoad(texture);
-    }
-    texture = Engine::GetInstance().textures->Load(texPath.c_str());
-    LOG("Textura de llave actualizada a: %s", texPath.c_str());
 }
 
 KeyType Keys::GetKeyType() const {
