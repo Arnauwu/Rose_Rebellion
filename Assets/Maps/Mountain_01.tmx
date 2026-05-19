@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< Updated upstream
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="24" nextobjectid="445">
-=======
 <map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="24" nextobjectid="472">
->>>>>>> Stashed changes
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -29074,16 +29070,12 @@
     <property name="TeleportTo" type="file" value="Mountain_02.tmx"/>
    </properties>
   </object>
-<<<<<<< Updated upstream
-  <object id="444" x="8704" y="10408" width="768" height="88">
-=======
   <object id="464" x="-512" y="9344" width="128" height="768">
    <properties>
     <property name="TeleportTo" type="file" value="Nexo.tmx"/>
    </properties>
   </object>
   <object id="465" x="8576" y="10496" width="1024" height="128">
->>>>>>> Stashed changes
    <properties>
     <property name="TeleportTo" type="file" value="Catacombs_01_M.tmx"/>
    </properties>
