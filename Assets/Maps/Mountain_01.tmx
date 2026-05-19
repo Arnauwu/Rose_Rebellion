@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="24" nextobjectid="444">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="24" nextobjectid="445">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -14457,7 +14457,7 @@
   </properties>
   <object id="426" gid="132" x="1024" y="9984" width="1156" height="264"/>
  </objectgroup>
- <objectgroup color="#000000" id="20" name="Map" visible="0">
+ <objectgroup color="#000000" id="20" name="Map">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -29043,7 +29043,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -29052,6 +29052,11 @@
   <object id="440" x="12288" y="1408" width="5760" height="128">
    <properties>
     <property name="TeleportTo" type="file" value="Mountain_02.tmx"/>
+   </properties>
+  </object>
+  <object id="444" x="8704" y="10408" width="768" height="88">
+   <properties>
+    <property name="TeleportTo" type="file" value="Catacombs_01_M.tmx"/>
    </properties>
   </object>
  </objectgroup>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="23" nextobjectid="441">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="24" nextobjectid="444">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -50460,11 +50460,13 @@
   </properties>
   <object id="435" x="-256" y="1792" width="128" height="1024">
    <properties>
+    <property name="SpawnID" value="UpPath"/>
     <property name="TeleportTo" type="file" value="Catacombs_02_M.tmx"/>
    </properties>
   </object>
   <object id="436" x="-256" y="9472" width="128" height="1024">
    <properties>
+    <property name="SpawnID" value="DownPath"/>
     <property name="TeleportTo" type="file" value="Catacombs_02_M.tmx"/>
    </properties>
   </object>
@@ -50474,7 +50476,21 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#000000" id="20" name="Map" visible="0">
+ <objectgroup color="#ff0000" id="23" name="Void">
+  <properties>
+   <property name="Danger" type="bool" value="true"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="441" x="8704" y="10112" width="1408" height="128"/>
+  <object id="442" x="11008" y="10112" width="1408" height="128"/>
+  <object id="443" x="512" y="11520" width="5632" height="128">
+   <properties>
+    <property name="Danger" type="bool" value="true"/>
+    <property name="Square" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup color="#000000" id="20" name="Map">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -50717,12 +50733,14 @@
   <object id="132" name="Player" type="Player" x="256" y="2560">
    <properties>
     <property name="FromRoom" type="file" value="Catacombs_02_M.tmx"/>
+    <property name="SpawnID" value="UpPath"/>
    </properties>
    <point/>
   </object>
   <object id="164" name="Player" type="Player" x="128" y="10240">
    <properties>
     <property name="FromRoom" type="file" value="Catacombs_02_M.tmx"/>
+    <property name="SpawnID" value="DownPath"/>
    </properties>
    <point/>
   </object>

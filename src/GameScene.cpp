@@ -97,7 +97,7 @@ void GameScene::LoadMap(std::string mapFile)
 		}
 		else
 		{
-			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
+			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap, targetSpawnID);
 			LOG("Transición: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
 		}
 
@@ -357,9 +357,17 @@ bool GameScene::PostUpdate() {
 		Player* p = Engine::GetInstance().entityManager->GetPlayer();
 		if (p != nullptr && p->interactuableBody != nullptr) {
 			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
+
+			if (p->interactuableBody->ctype == ColliderType::PATH) {
+				targetSpawnID = Engine::GetInstance().map->GetPathSpawnID(p->interactuableBody);
+			}
+			else {
+				targetSpawnID = "";
+			}
 		}
 		else {
 			nextMapName = "";
+			targetSpawnID = "";
 		}
 
 		mapState = MapTransitionState::FADING_OUT;
