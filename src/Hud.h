@@ -2,6 +2,7 @@
 #include "Module.h"
 #include "SDL3/SDL.h"
 #include "Timer.h" 
+#include <vector>
 
 #define TOTAL_LIFE_FRAMES 8
 #define TRANSITION_MS 200
@@ -29,6 +30,7 @@ private:
 private:
 
     SDL_Texture* lifeBarTexture = nullptr;
+    std::vector<SDL_Rect> lifeFrames;
 
     // Dimensiones de un solo frame de la imagen Vides_V1.png
     int sectionWidth = 100;  // Ajusta según el ancho real de tu PNG
