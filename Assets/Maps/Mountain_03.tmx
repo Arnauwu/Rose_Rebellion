@@ -15421,7 +15421,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
+ <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="446" name="SkillPointOrb" type="SkillPointOrb" x="1031.15" y="7412.12">
    <point/>
   </object>

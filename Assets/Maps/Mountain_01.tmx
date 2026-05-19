@@ -29089,7 +29089,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
+ <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="52" name="Player" type="Player" x="390.3" y="9282.3">
    <point/>
   </object>
