@@ -77,9 +77,6 @@
     <Filter Include="Source Files\Utils\Hud">
       <UniqueIdentifier>{d608546a-48dc-4f93-8b39-a7f9a8825a06}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game\Entity\Enemies\Cucafera M">
-      <UniqueIdentifier>{2a04e679-f34a-4b20-8dce-78675bbadce8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\Ninfa">
       <UniqueIdentifier>{b380b27f-3463-4b40-887d-36c719b09296}</UniqueIdentifier>
     </Filter>
@@ -149,6 +146,9 @@
     <Filter Include="Source Files\Game\Entity\Door">
       <UniqueIdentifier>{b5345a9d-0db3-46b9-b931-68ea536ab439}</UniqueIdentifier>
     </Filter>
+
+    <Filter Include="Source Files\Engine\HealthBarManager">
+      <UniqueIdentifier>{394d9225-1231-4d49-91d8-3fb20fb2c2d2}</UniqueIdentifier>
     <Filter Include="Source Files\Game\Entity\Enemies\Minairon">
       <UniqueIdentifier>{8ab5b7db-9061-49bd-b37c-38cecc13b794}</UniqueIdentifier>
     </Filter>
@@ -163,6 +163,7 @@
     </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\Dip">
       <UniqueIdentifier>{f7ecc5db-b91f-43c4-989e-88edd0e9103e}</UniqueIdentifier>
+
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -354,6 +355,9 @@
     <ClCompile Include="src\Door.cpp">
       <Filter>Source Files\Game\Entity\Door</Filter>
     </ClCompile>
+
+    <ClCompile Include="src\HealthBarManager.cpp">
+      <Filter>Source Files\Engine\HealthBarManager</Filter>
     <ClCompile Include="src\CucaferaMutant.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
     </ClCompile>
@@ -380,6 +384,7 @@
     </ClCompile>
     <ClCompile Include="src\Dip.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
+
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -569,6 +574,8 @@
     <ClInclude Include="src\Door.h">
       <Filter>Source Files\Game\Entity\Door</Filter>
     </ClInclude>
+    <ClInclude Include="src\HealthBarManager.h">
+      <Filter>Source Files\Engine\HealthBarManager</Filter>
     <ClInclude Include="src\CucaferaMutant.h">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
     </ClInclude>

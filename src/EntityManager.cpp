@@ -20,7 +20,6 @@
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
-#include "CucaferaMutant.h"
 
 
 #include "SwordKnight.h"
@@ -138,9 +137,6 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::CUCAFERA_SHINY:
 		entity = std::make_shared<CucaferaShiny>();
-		break;
-	case EntityType::CUCAFERA_MUTANT:
-		entity = std::make_shared<CucaferaMutant>();
 		break;
 
 	case EntityType::SWORD_KNIGHT:

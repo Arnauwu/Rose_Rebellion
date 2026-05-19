@@ -10,6 +10,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "Timer.h"
+#include "HealthBarManager.h"
 #include "Physics.h"
 
 #include "tracy/Tracy.hpp"
@@ -77,6 +78,17 @@ bool KnightBoss::Update(float dt)
 			pathFindingCooldown.Start();
 		}
 
+		if (playerTileDist <= vision)
+		{
+			// Si nos detecta, le pasamos este boss al manager para mostrar la barra
+			Engine::GetInstance().healthBarManager->SetBoss(this);
+		}
+		else
+		{
+			// Si el jugador se aleja, ocultamos la barra
+			Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+		}
+
 		GetPhysicsValues();
 		Move();
 		Knockback();
@@ -102,6 +114,7 @@ bool KnightBoss::Update(float dt)
 	if (anims.GetAnim("dead")->HasFinishedOnce())
 	{
 		pendingToDelete = true;
+		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 	}
 
 	Draw(dt);
@@ -401,5 +414,6 @@ bool KnightBoss::CleanUp()
 		b2DestroyBody(swordHitbox->body);
 		swordHitbox = nullptr;
 	}
+	Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 	return true;
 }

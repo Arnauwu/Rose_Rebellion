@@ -160,6 +160,7 @@
     <ClCompile Include="src\Dragon.cpp" />
     <ClCompile Include="src\DragonProjectile.cpp" />
     <ClCompile Include="src\Door.cpp" />
+    <ClCompile Include="src\HealthBarManager.cpp" />
     <ClCompile Include="src\GwellBoss.cpp" />
     <ClCompile Include="src\Minairon.cpp" />
     <ClCompile Include="src\MiniMap.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="src\Dragon.h" />
     <ClInclude Include="src\DragonProjectile.h" />
     <ClInclude Include="src\Door.h" />
+    <ClInclude Include="src\HealthBarManager.h" />
     <ClInclude Include="src\GwellBoss.h" />
     <ClInclude Include="src\Minairon.h" />
     <ClInclude Include="src\Minimap.h" />
