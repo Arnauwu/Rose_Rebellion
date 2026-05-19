@@ -30,8 +30,8 @@ bool Hud::Start() {
     float imagenAnchoReal = 6144.0f; // <--- ¡CAMBIA ESTO por el ancho real!
     float imagenAltoReal = 5109.0f;  // <--- ¡CAMBIA ESTO por el alto real!
 
-    int cols = 10;
-    int rows = 12;
+    int cols = 12;
+    int rows = 10;
 
     // 2. Ahora el cálculo será perfecto para el tamaño que de verdad tiene tu archivo
     float exactWidth = imagenAnchoReal / (float)cols;
