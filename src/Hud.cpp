@@ -23,10 +23,39 @@ bool Hud::Awake() { return true; }
 
 bool Hud::Start() {
     LOG("Loading HUD");
-    lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/Vides_V1.png");
+    lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
 
-    sectionWidth = 211;
-    sectionHeight = 108;
+    // 1. PON AQUÍ LO QUE TE DIGAN LAS PROPIEDADES DE WINDOWS
+    // (Ejemplo: si en Windows pone 1920x1080, cambia los números)
+    float imagenAnchoReal = 6144.0f; // <--- ¡CAMBIA ESTO por el ancho real!
+    float imagenAltoReal = 5109.0f;  // <--- ¡CAMBIA ESTO por el alto real!
+
+    int cols = 10;
+    int rows = 12;
+
+    // 2. Ahora el cálculo será perfecto para el tamaño que de verdad tiene tu archivo
+    float exactWidth = imagenAnchoReal / (float)cols;
+    float exactHeight = imagenAltoReal / (float)rows;
+
+    int dibujosPorFila[] = { 10, 3, 4, 4, 4, 4, 3, 10, 2, 5 };
+    lifeFrames.clear();
+
+    for (int fila = 0; fila < 10; fila++) {
+        int numDibujos = dibujosPorFila[fila];
+
+        for (int c = 0; c < numDibujos; c++) {
+            int posX = (int)(c * exactWidth);
+            int posY = (int)(fila * exactHeight);
+
+            // Quitamos un par de píxeles por si el artista apuró mucho los bordes
+            int recorteAncho = (int)exactWidth - 2;
+            int recorteAlto = (int)exactHeight;
+
+            SDL_Rect frameRect = { posX, posY, recorteAncho, recorteAlto };
+            lifeFrames.push_back(frameRect);
+        }
+    }
+
     return true;
 }
 
@@ -92,37 +121,49 @@ bool Hud::PostUpdate() {
 }
 
 void Hud::DrawPlayerHealthBar() {
-    if (lifeBarTexture == nullptr) return;
+    //if (lifeBarTexture == nullptr || lifeFrames.empty()) return;
+
+    if (lifeBarTexture == nullptr) {
+        LOG("ERROR: La textura de la vida no se ha cargado. Revisa la ruta y el .jpg");
+        return;
+    }
+    if (lifeFrames.empty()) {
+        LOG("ERROR: La lista de frames esta vacia.");
+        return;
+    }
 
     Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    if (player == nullptr) return;
 
-    // calculate current life
-    if (player != nullptr) {
-        int hp = player->currentHealth;
+    int hp = player->currentHealth;
+    int maxHp = player->maxHealth;
+    if (maxHp <= 0) return;
 
-        if (player->isdead || hp <= 0) {
-            currentVisualFrame = 9; // dead
-        }
-        else if (hp >= 100) {
-            currentVisualFrame = 0; // max life
-        }
-        else {
-            float hpPercent = (float)hp / 100.0f;
-            currentVisualFrame = 9 - (int)(hpPercent * 9.0f);
+    // 1. Calcular el porcentaje de vida
+    float hpPercent = (float)hp / (float)maxHp;
+    if (hpPercent < 0.0f) hpPercent = 0.0f;
+    if (hpPercent > 1.0f) hpPercent = 1.0f;
 
-            if (currentVisualFrame <= 0) currentVisualFrame = 1;
-            if (currentVisualFrame >= 9) currentVisualFrame = 8;
-        }
-    }
-    else {
-        currentVisualFrame = 9;
-    }
+    int totalFrames = lifeFrames.size(); // Esto será 51
 
-    // always draw
-    SDL_Rect srcRect = { 0, currentVisualFrame * sectionHeight, sectionWidth, sectionHeight };
-    float margin = 20.0f;
+    // 2. Elegir qué frame toca (invertido: si le queda 100% de vida (1.0), mostrará el frame 0. Si le queda 0%, mostrará el frame 50)
+    int frameActual = (int)((1.0f - hpPercent) * (totalFrames - 1));
 
-    Engine::GetInstance().render->DrawTexture(lifeBarTexture, margin, margin, &srcRect, 0.0f);
+    // Por seguridad, asegurarnos de que el índice no se salga de la lista
+    if (player->isdead || hp <= 0) frameActual = totalFrames - 1; // Último frame de todos
+    if (frameActual < 0) frameActual = 0;
+    if (frameActual >= totalFrames) frameActual = totalFrames - 1;
+
+    // 3. Obtener el recorte precalculado y dibujarlo
+    SDL_Rect srcRect = lifeFrames[frameActual];
+
+    // Márgenes en pantalla (Ajusta esto para mover la barra de vida donde quieras)
+    float marginX = 20.0f;
+    float marginY = -180.0f;
+
+    // Opcional: Como la imagen es muy grande (512x425), puede que necesites hacerla más pequeña en pantalla.
+    // Dibuja la barra de la princesa escalada a la mitad por ejemplo (o ajusta según te convenga en tu motor)
+    Engine::GetInstance().render->DrawTexture(lifeBarTexture, marginX, marginY, &srcRect, 0.0f);
 }
 
 void Hud::DrawDiamondCounter() {
