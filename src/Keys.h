@@ -1,7 +1,7 @@
 #pragma once
 
 #include"Item.h"
-
+#include "Animation.h"
 enum class KeyType {
 	FOREST,
 	MOUNTAIN,
@@ -29,6 +29,7 @@ public:
 public:
 	KeyType keyType = KeyType::NONE;
 private:
+	AnimationSet anims;
 	SDL_Texture* texture = nullptr;
 	PhysBody* pbody = nullptr;
 };

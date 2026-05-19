@@ -118,6 +118,13 @@ bool Player::Start()
 	respawnPosition = position;
 	lastSafePosition = position;
 
+	if (GameManager::GetInstance().gameState.stIframesUp) {
+		this->invincibilityDurationMS = 2000.0f; 
+	}
+	else {
+		this->invincibilityDurationMS = 1000.0f; 
+	}
+
 	//Timers
 	safePositionTimer.Start();
 	attackCooldownTimer.Start();
@@ -128,11 +135,11 @@ bool Player::Start()
 bool Player::Update(float dt)
 {
 	ZoneScoped;
-	// 【修改】被冻结时，截断输入，但保持物理和渲染更新 
+	
 	if (isFrozen) 
 	{
 		GetPhysicsValues();
-		velocity = { 0, velocity.y }; // 停止左右移动，但保留重力
+		velocity = { 0, velocity.y }; 
 		ApplyPhysics();
 
 		if (lookingRight)
@@ -173,6 +180,21 @@ bool Player::Update(float dt)
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		GetPhysicsValues();
+
+		if (isInvincible)
+		{
+		
+			if (invincibilityTimer.ReadMSec() >= invincibilityDurationMS)
+			{
+				isInvincible = false;
+				isVisible = true; 
+			}
+			else
+			{
+				int timePassed = invincibilityTimer.ReadMSec();
+				isVisible = (timePassed / (int)flashIntervalMS) % 2 == 0;
+			}
+		}
 
 		if (isWallJumping) {
 			wallJumpTimer -= dt / 1000.0f;
@@ -223,6 +245,9 @@ bool Player::Update(float dt)
 
 	if (isdead)
 	{
+		isVisible = true; 
+		isInvincible = false;
+
 		if (currentAnimPriority < 99)
 		{
 			currentAnimPriority = 99;
@@ -269,7 +294,6 @@ bool Player::Update(float dt)
 
 bool Player::PostUpdate()
 {
-	// 【修改】确保没被冻结才能交互
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead && !isFrozen)
 	{
 		Interact();
@@ -999,21 +1023,24 @@ void Player::Draw(float dt)
 	position.setY((float)y);
 
 	// Draw the player using the texture and the current animation frame
-	if (isKnockedback)
+	if (isVisible)
 	{
-		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
-		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
+		// Draw the player using the texture and the current animation frame
+		if (isKnockedback)
+		{
+			Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
+			Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
+			Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
 
-		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
-		delete r; delete g; delete b;
+			Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
+			delete r; delete g; delete b;
+		}
+		else
+		{
+			Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
+		}
 	}
-	else
-	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, SDL_FLIP_NONE, 1.25f);
-	}
-
 
 	if (isAttacking && attackCollider != nullptr)
 	{
@@ -1263,6 +1290,7 @@ void Player::UnlockSkill(SkillTree skill, int cost)
 			state.stIframesUp = true;
 			state.currentForceOrbs -= cost;
 			AddItem(ItemID::STRENGTH_ORB, -cost);
+			this->invincibilityDurationMS = 2000.0f;
 		}
 		break;
 
@@ -1353,12 +1381,14 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	{
 	case ColliderType::DANGER:
 		LOG("Collision with DANGER zone!");
-		if (!godMode && !isdead)
+		if (!godMode && !isdead && !isInvincible)
 		{
 			TakeDamage(10); // Environmental Damage
 			if (!isdead)
 			{
 				RespawnFromVoid();
+				isInvincible = true;
+				invincibilityTimer.Start();
 			}
 		}
 		break;
@@ -1541,29 +1571,38 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::ENEMY:
+		if (!isInvincible && !isdead)
+		{
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
 		TakeDamage(10); // Contact Damage
 		//PARTICULA
 		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
 
 		isKnockedback = true;
+		isInvincible = true;
+		invincibilityTimer.Start();
+		}
 		break;
 	case ColliderType::ENEMY_ATTACK:
 		LOG("Hit player");
-		Engine::GetInstance().audio->PlayFx(recibirDamage);
-		TakeDamage(physB->listener->damage-defbuff);
-		//PARTICULA
-		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
+		if (!isInvincible && !isdead)
+		{
+			Engine::GetInstance().audio->PlayFx(recibirDamage);
+			TakeDamage(physB->listener->damage - defbuff);
+			//PARTICULA
+			Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), true);
 
-		isKnockedback = true;
+			isKnockedback = true;
+			isInvincible = true;
+			invincibilityTimer.Start();
 
-		int enemyX, enemyY;
-		physB->GetPosition(enemyX, enemyY);
+			int enemyX, enemyY;
+			physB->GetPosition(enemyX, enemyY);
 
-		hitFromRight = (enemyX > position.getX());
-		break;
+			hitFromRight = (enemyX > position.getX());
+			break;
 
-
+		}
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
