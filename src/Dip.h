@@ -30,6 +30,10 @@ private:
 
 	void AttackPlayer();
 	void ExecuteSpecialAttack(Vector2D playerPos);
+
+	bool isTouchingPlayer = false;
+	int playerContacts = 0; // Contador para las m¨²ltiples colisiones del jugador
+	Timer patrolTimer; // Temporizador para controlar la patrulla
 public:
 	Timer startAttack;
 	int attackDamage = 5;
