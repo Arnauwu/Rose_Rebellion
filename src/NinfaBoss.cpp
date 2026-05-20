@@ -64,8 +64,8 @@ bool NinfaMare::Start()
     // Stats de Boss
     vision = 40;
     speed = 1.8f; // Más lenta pero imponente
-    maxHealth = 500;
-    currentHealth = 500;
+    maxHealth = 100;
+    currentHealth = 100;
 
     return true;
 }
@@ -98,20 +98,27 @@ bool NinfaMare::Update(float dt)
     if (isdead) {
         Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 
+        // La primera vez que entra aquí al morir
         if (anims.GetCurrentName() != "dead") {
             Engine::GetInstance().audio->PlayFx(morirFx);
             anims.SetCurrent("dead");
 
-            // BORRAMOS EL HITBOX PARA QUE NO TE MOLESTE MÁS
+            // Si quieres que caiga al suelo al morir, mantén la gravedad.
+            // Si prefieres que se quede flotando donde murió, pon el multiplicador a 0.0f.
             if (pbody != nullptr) {
-                Engine::GetInstance().physics->DeletePhysBody(pbody);
-                pbody = nullptr; // Lo ponemos a nulo para evitar problemas en Draw()
+                Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f); // Cae al morir
+                pbody->ctype = ColliderType::UNKNOWN; // Hitbox fantasma
             }
+
+            // REINICIAMOS EL TIMER para que empiece a contar desde 0 el tiempo de muerte
+            stateTimer.Start();
         }
 
-        // Si la animación de muerte ya ha terminado...
-        if (anims.GetAnim("dead")->HasFinishedOnce()) {
-            pendingToDelete = true; // El EntityManager la borrará por completo
+        // === NUEVA LÓGICA DE BORRADO DEFINITIVO ===
+        // Esperamos 1.5 segundos (1500ms) de animación y luego borramos el Boss de la escena.
+        // Esto ignora si la animación en Tiled tiene activado el "Loop" o no.
+        if (stateTimer.ReadMSec() > 500.0f) {
+            pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame
         }
     }
 
@@ -323,7 +330,6 @@ void NinfaMare::Draw(float dt) {
         Vector2D myPos = GetPosition();
         float distToPlayer = (playerPos - myPos).magnitude();
 
-        // Si el jugador está lejos, salimos sin dibujar nada
         if (distToPlayer > attackRange) {
             return;
         }
@@ -332,16 +338,24 @@ void NinfaMare::Draw(float dt) {
     if (!Engine::GetInstance().sceneManager->isGamePaused) anims.Update(dt);
 
     const SDL_Rect& animFrame = anims.GetCurrentFrame();
-    int x, y;
-    pbody->GetPosition(x, y);
 
+    // 1. Por defecto, usamos la última posición conocida de la entidad
+    int x = (int)position.getX();
+    int y = (int)position.getY();
+
+    // 2. ¡COMPROBACIÓN DE SEGURIDAD! 
+    // Solo le pedimos la posición a las físicas si el cuerpo físico sigue vivo.
     if (pbody != nullptr) {
         pbody->GetPosition(x, y);
+
+        // Guardamos esta posición en la variable 'position' para recordarla 
+        // por si en el siguiente frame el pbody se borra.
+        position.setX(x);
+        position.setY(y);
     }
 
     SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-    // Dibujar con escala mayor (1.5f para que sea imponente)[cite: 1]
     Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1.0);
 }
 
@@ -359,11 +373,16 @@ void NinfaMare::Knockback() {
 void NinfaMare::GetPhysicsValues() { velocity = { 0, 0 }; }
 
 bool NinfaMare::CleanUp() {
-    if (texture != nullptr) Engine::GetInstance().textures->UnLoad(texture);
-    Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+    if (texture != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texture);
+        texture = nullptr; // Buena práctica ponerlo a nulo tras descargarlo
+    }
+
+    // ELIMINAMOS LA LÍNEA DEL HEALTHBARMANAGER AQUÍ
+    // Engine::GetInstance().healthBarManager->SetBoss(nullptr); 
+
     return Enemy::CleanUp();
 }
-
 void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
     // CONDICIÓN CRÍTICA: Si ya está en HURT, ignoramos el resto de frames del mismo golpe
     if (isdead || currentState == NinfaMareState::SPAWNING || currentState == NinfaMareState::HURT) {

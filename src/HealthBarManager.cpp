@@ -84,7 +84,7 @@ bool HealthBarManager::PostUpdate() {
 
     // --- 1. POSICIÓN: Arriba y centrado ---
     int screenW = Engine::GetInstance().window->windowWidth;
-    int posX = ((screenW - activeWidth) / 2) + 300; // Ajusta el +300 si lo necesitas
+    int posX = ((screenW - activeWidth) / 2) + 600; 
 
     // --- 2. LÓGICA DE VIDA ---
     float hpPercent = 0.0f;
