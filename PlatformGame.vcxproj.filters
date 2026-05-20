@@ -149,7 +149,9 @@
 
     <Filter Include="Source Files\Engine\HealthBarManager">
       <UniqueIdentifier>{394d9225-1231-4d49-91d8-3fb20fb2c2d2}</UniqueIdentifier>
-    <Filter Include="Source Files\Game\Entity\Enemies\Minairon">
+	</Filter>
+
+	<Filter Include="Source Files\Game\Entity\Enemies\Minairon">
       <UniqueIdentifier>{8ab5b7db-9061-49bd-b37c-38cecc13b794}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\Bat">
@@ -358,7 +360,9 @@
 
     <ClCompile Include="src\HealthBarManager.cpp">
       <Filter>Source Files\Engine\HealthBarManager</Filter>
-    <ClCompile Include="src\CucaferaMutant.cpp">
+	</ClCompile>
+
+	<ClCompile Include="src\CucaferaMutant.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
     </ClCompile>
     <ClCompile Include="src\Minairon.cpp">
@@ -576,7 +580,9 @@
     </ClInclude>
     <ClInclude Include="src\HealthBarManager.h">
       <Filter>Source Files\Engine\HealthBarManager</Filter>
-    <ClInclude Include="src\CucaferaMutant.h">
+	</ClInclude>
+
+	<ClInclude Include="src\CucaferaMutant.h">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
     </ClInclude>
     <ClInclude Include="src\Minairon.h">
