@@ -23,11 +23,11 @@ bool SavePoint::Start() {
 	std::unordered_map<int, std::string> aliases = {
 	  {0, "Activate"} // Animaci¨®n de activaci¨®n
 	};
-	anims.LoadFromTSX("Assets/Textures/Items/SavePoint/SS_Rosa.tsx", aliases);
+	anims.LoadFromTSX("Assets/Textures/Items/SavePoint/Rosa.tsx", aliases);
 	anims.SetCurrent("Activate");
 	anims.GetAnim("Activate")->SetLoop(false);
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SS_Rosa_Noactive.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/NoActivo.png");
 
 	texH = 64;
 	texW = 64;
@@ -85,7 +85,7 @@ bool SavePoint::Update(float dt) {
 
 			// Cargar la imagen final est¨¢tica
 			Engine::GetInstance().textures->UnLoad(texture);
-			texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SavePoint.png");
+			texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/Activo.png");
 			LOG("SavePoint: Animaci¨®n terminada. Estado -> ACTIVE");
 		}
 	}
@@ -121,7 +121,7 @@ void SavePoint::Activate() {
 		}
 
 		Engine::GetInstance().textures->UnLoad(texture);
-		texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SS_Rosa.png");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/Rosa.png");
 
 		LOG("SavePoint: Activando... Estado -> ACTIVATING");
 	}
