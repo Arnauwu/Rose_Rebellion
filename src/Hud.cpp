@@ -157,13 +157,29 @@ void Hud::DrawPlayerHealthBar() {
     // 3. Obtener el recorte precalculado y dibujarlo
     SDL_Rect srcRect = lifeFrames[frameActual];
 
-    // Márgenes en pantalla (Ajusta esto para mover la barra de vida donde quieras)
-    float marginX = 20.0f;
-    float marginY = -180.0f;
+    SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
+    int scale = Engine::GetInstance().window->GetScale();
+    float zoomLevel = Engine::GetInstance().render->GetZoom();
 
-    // Opcional: Como la imagen es muy grande (512x425), puede que necesites hacerla más pequeña en pantalla.
-    // Dibuja la barra de la princesa escalada a la mitad por ejemplo (o ajusta según te convenga en tu motor)
-    Engine::GetInstance().render->DrawTexture(lifeBarTexture, marginX, marginY, &srcRect, 0.0f);
+    // Queremos que esté a 40 píxeles de margen en un espacio virtual normal.
+    // Al dividir por zoomLevel, evitamos que el zoom del motor empuje la barra hacia arriba o abajo.
+    float marginX = 30.0f;
+    float marginY = -300.0f;
+
+    // SDL3 nos obliga a pasar los rectángulos en formato float (SDL_FRect)
+    SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
+
+    SDL_FRect dstFRect;
+    // Replicamos con precisión milimétrica la fórmula de tu Render.cpp para la posición
+    dstFRect.x = (float)(marginX * scale) * zoomLevel;
+    dstFRect.y = (float)(marginY * scale) * zoomLevel;
+
+    // ¡AQUÍ ESTÁ LA MAGIA! Multiplicamos el ancho y el alto por 1.5f para agrandarla
+    dstFRect.w = (float)(srcRect.w * scale) * zoomLevel * 1.5f;
+    dstFRect.h = (float)(srcRect.h * scale) * zoomLevel * 1.5f;
+
+    // Invocamos la función nativa de SDL3 que estira la sección elegida sin rotarla
+    SDL_RenderTexture(renderer, lifeBarTexture, &srcFRect, &dstFRect);
 }
 
 void Hud::DrawDiamondCounter() {
