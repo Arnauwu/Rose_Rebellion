@@ -8,6 +8,8 @@
 #include <vector>
 #include <memory>
 
+#include "Minimap.h"
+
 class UIElement;
 
 // Different sub-menus inside the game
@@ -91,6 +93,9 @@ public:
 	void LoadItemsLore();
 	void LoadSkillsinfo();
 
+	//Minimap
+	Minimap minimap;
+
 	// Scene lifecycle
 	bool Start() override;
 	bool Update(float dt) override;
@@ -117,7 +122,6 @@ public:
 	SDL_Texture* texPauseUI = nullptr;
 	SDL_Texture* texSkillUI = nullptr;
 
-	
 	//Items Textures
 	SDL_Texture* texItemKeyCastle = nullptr;
 	SDL_Texture* texItemKeyForest = nullptr;
@@ -164,8 +168,6 @@ private:
 	void CreateInventoryUI();
 	void CreateSkillUpgradeUI();
 	void CreateSkillPopupUI();
-
-	void CreateMiniMapUI();
 
 	void CreatePauseMenuUI();
 	void CreatePauseSettingUI() ;

@@ -65,6 +65,10 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
 	Engine::GetInstance().map->SpawnEntities();
 
+	//Minimap Update
+	minimap.CreateRoom(mapFile);
+	minimap.SetCurrentRoom(mapFile);
+
 	// Camara mode
 
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
@@ -228,9 +232,6 @@ bool GameScene::Start() {
 	CreateSkillUpgradeUI();
 	CreateSkillPopupUI();
 
-	// Minimap
-	CreateMiniMapUI();
-
 	// Pause Menu
 	CreatePauseMenuUI();
 
@@ -252,6 +253,7 @@ bool GameScene::Update(float dt) {
 	}
 	// --- SUB-MENU INPUT HANDLING ---
 	// Toggle menus based on keyboard shortcuts
+	RefreshMenuUI();
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
 	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
 	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
@@ -332,6 +334,11 @@ bool GameScene::PostUpdate() {
 			}
 			if (currentTextureToDraw != nullptr) {
 				Engine::GetInstance().render->DrawTextureScaled(currentTextureToDraw, fullScreenRect);
+			}
+
+			if (currentMenuTab == GameMenuTab::MAP)
+			{
+				minimap.DrawMinimap();
 			}
 
 			return true;
@@ -725,7 +732,6 @@ void GameScene::CreateSkillPopupUI() {
 	SetUIGroupVisible(skillPopupUI, false);
 }
 
-void GameScene::CreateMiniMapUI() {}
 
 void GameScene::CreatePauseMenuUI() {
 	auto uiManager = Engine::GetInstance().uiManager;
