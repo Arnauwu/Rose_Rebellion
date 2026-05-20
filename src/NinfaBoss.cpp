@@ -119,6 +119,7 @@ bool NinfaMare::Update(float dt)
         if (stateTimer.ReadMSec() > 600.0f) {
             Vector2D dropPos = GetPosition();
 
+            dropPos.setY(dropPos.getY() + 50.0f);
             // 2. Instanciamos el Orbe de Dash
             auto orb = std::make_shared<DashObj>();
 
@@ -133,10 +134,10 @@ bool NinfaMare::Update(float dt)
 
                 // Calculamos un desplazamiento para separarlos: 
                 // i=0 (-40px), i=1 (0px, centro), i=2 (+40px)
-                float offsetX = (i - 1) * 40.0f;
+                float offsetX = (i - 1) * 80.0f;
 
                 // Los ponemos un poquito más arriba que el orbe del dash para que formen un arco
-                float offsetY = -20.0f;
+                float offsetY = 100.0f;
 
                 hOrb->position = Vector2D(dropPos.getX() + offsetX, dropPos.getY() + offsetY);
                 hOrb->Start();
