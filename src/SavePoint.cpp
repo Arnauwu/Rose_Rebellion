@@ -10,6 +10,7 @@ SavePoint::SavePoint() :Entity(EntityType::SAVEPOINT) {
 	name = "SavePoint";
 	pbody = nullptr;
 	texture = nullptr;
+	zOrder = -1;
 }
 
 SavePoint::~SavePoint() {}
@@ -29,10 +30,10 @@ bool SavePoint::Start() {
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/NoActivo.png");
 
-	texH = 64;
-	texW = 64;
+	texW = 256;
+	texH = 256;
 
-	// Crear el sensor f赤sico usando la esquina superior izquierda (Top-Left)
+	// Misma l車gica exacta que Dip
 	pbody = Engine::GetInstance().physics->CreateRectangleSensor(
 		(int)position.getX(),
 		(int)position.getY(),
@@ -48,26 +49,24 @@ bool SavePoint::Start() {
 
 	isActivated = false;
 	isActivating = false;
+
+	int x, y;
+	pbody->GetPosition(x, y);
+	position.setX((float)x);
+	position.setY((float)y);
+
 	return true;
 }
 
 bool SavePoint::Update(float dt) {
 	int x, y;
-	// 'x' e 'y' son la esquina superior izquierda de la caja amarilla (Sensor)
 	pbody->GetPosition(x, y);
+	position.setX((float)x);
+	position.setY((float)y);
 
-	// ==========================================
-	// REPARACI?N DEFINITIVA: Offset Visual
-	// ==========================================
-	// Debido a que las im芍genes PNG suelen tener p赤xeles transparentes (padding)
-	// alrededor de la flor, la imagen se dibuja desplazada.
-	// ?? INSTRUCCIONES: Cambia estos n迆meros hasta que la flor encaje en la caja.
-	int visualOffsetX = -16; // ?? Negativo mueve la imagen a la IZQUIERDA. Positivo a la DERECHA.
-	int visualOffsetY = -32; // ?? Negativo mueve la imagen hacia ARRIBA. Positivo hacia ABAJO.
-
-	// Aplicamos el offset a la posici車n de dibujo
-	int drawX = x + visualOffsetX;
-	int drawY = y + visualOffsetY;
+	// L車gica id谷ntica a Dip, sin offsets
+	int drawX = x;
+	int drawY = y;
 
 	if (isActivating)
 	{
@@ -75,7 +74,7 @@ bool SavePoint::Update(float dt) {
 		anims.Update(dt);
 		SDL_Rect animFrame = anims.GetCurrentFrame();
 
-		Engine::GetInstance().render->DrawTexture(texture, drawX, drawY, &animFrame);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, drawX, drawY, &animFrame, SDL_FLIP_NONE, 1);
 
 		// Comprobar si la animaci車n ya termin車
 		if (anims.GetAnim("Activate")->HasFinishedOnce())
@@ -91,8 +90,8 @@ bool SavePoint::Update(float dt) {
 	}
 	else
 	{
-		// Dibujamos la textura completa (NULL) en estado Inactivo o Completamente Activo
-		Engine::GetInstance().render->DrawTexture(texture, drawX, drawY, NULL);
+		
+		Engine::GetInstance().render->DrawRotatedTexture(texture, drawX, drawY, NULL, SDL_FLIP_NONE, 1);
 	}
 
 	return true;
