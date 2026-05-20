@@ -7593,6 +7593,7 @@
   </object>
   <object id="105" x="1528" y="1065" width="264" height="215">
    <properties>
+    <property name="NoAnimation" type="bool" value="true"/>
     <property name="TeleportTo" type="file" value="Catacombs_Boss_Dead.tmx"/>
    </properties>
   </object>

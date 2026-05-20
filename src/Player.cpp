@@ -867,19 +867,27 @@ void Player::Interact()
 					if (!doorId.empty()) {
 						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 					}
-					isFrozen = true;
-					int cx, cy;
-					interactuableBody->GetPosition(cx, cy);
 
-					int doorW, doorH;
-					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
+					{
+						
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+					else {
+						isFrozen = true;
+						int cx, cy;
+						interactuableBody->GetPosition(cx, cy);
 
-					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+						int doorW, doorH;
+						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
-					if (doorAnim != nullptr) {
-						doorAnim->zOrder = -1;
-						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+						if (doorAnim != nullptr) {
+							doorAnim->zOrder = -1;
+							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						}
 					}
 				}
 				else
@@ -894,19 +902,26 @@ void Player::Interact()
 				LOG("Esta puerta no necesita llave");
 				Engine::GetInstance().audio->PlayFx(openDoor);
 
-				isFrozen = true;
-				int cx, cy;
-				interactuableBody->GetPosition(cx, cy);
+				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
+				{
+					
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+				else {
+					isFrozen = true;
+					int cx, cy;
+					interactuableBody->GetPosition(cx, cy);
 
-				int doorW, doorH;
-				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					int doorW, doorH;
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
-				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 
-				if (doorAnim != nullptr) {
-					doorAnim->zOrder = -1;
-					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1;
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
 				}
 			}
 		}

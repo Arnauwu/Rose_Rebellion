@@ -692,6 +692,15 @@ bool Map::Load(std::string path, std::string fileName)
 						else {
 							newDoor.DoorClose = false;
 						}
+
+						Properties::Property* noAnimProp = obj->properties.GetProperty("NoAnimation");
+						if (noAnimProp != nullptr) {
+							newDoor.noAnimation = noAnimProp->value;
+						}
+						else {
+							newDoor.noAnimation = false; 
+						}
+
 						mapData.doors.push_back(newDoor);
 					}
 					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
@@ -1469,4 +1478,16 @@ KeyType Map::GetDoorKeyType(PhysBody* door)
 		}
 	}
 	return KeyType::NONE;
+}
+
+bool Map::DoorHasNoAnimation(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door)
+		{
+			return ndoor.noAnimation;
+		}
+	}
+	return false;
 }
