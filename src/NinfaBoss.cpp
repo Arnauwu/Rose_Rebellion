@@ -66,8 +66,8 @@ bool NinfaMare::Start()
     // Stats de Boss
     vision = 40;
     speed = 1.8f; // Más lenta pero imponente
-    maxHealth = 250;
-    currentHealth = 250;
+    maxHealth = 150;
+    currentHealth = 150;
 
     return true;
 }
