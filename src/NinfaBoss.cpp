@@ -11,6 +11,8 @@
 #include "EntityManager.h"
 #include "HealthBarManager.h"
 #include "Audio.h"
+#include "DashObj.h"
+#include "HealthOrb.h"
 #include <cmath>
 
 #include "tracy/Tracy.hpp"
@@ -114,10 +116,32 @@ bool NinfaMare::Update(float dt)
             stateTimer.Start();
         }
 
-        // === NUEVA LÓGICA DE BORRADO DEFINITIVO ===
-        // Esperamos 1.5 segundos (1500ms) de animación y luego borramos el Boss de la escena.
-        // Esto ignora si la animación en Tiled tiene activado el "Loop" o no.
-        if (stateTimer.ReadMSec() > 500.0f) {
+        if (stateTimer.ReadMSec() > 600.0f) {
+            Vector2D dropPos = GetPosition();
+
+            // 2. Instanciamos el Orbe de Dash
+            auto orb = std::make_shared<DashObj>();
+
+            // 3. Le pasamos la posición manualmente (ya que tu constructor no la pide)
+            orb->position = dropPos;
+
+            // 4. Inicializamos el orbe y lo metemos en el juego
+            orb->Start();
+            Engine::GetInstance().entityManager->AddEntity(orb);
+            for (int i = 0; i < 3; ++i) {
+                auto hOrb = std::make_shared<HealthOrb>();
+
+                // Calculamos un desplazamiento para separarlos: 
+                // i=0 (-40px), i=1 (0px, centro), i=2 (+40px)
+                float offsetX = (i - 1) * 40.0f;
+
+                // Los ponemos un poquito más arriba que el orbe del dash para que formen un arco
+                float offsetY = -20.0f;
+
+                hOrb->position = Vector2D(dropPos.getX() + offsetX, dropPos.getY() + offsetY);
+                hOrb->Start();
+                Engine::GetInstance().entityManager->AddEntity(hOrb);
+            }
             pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame
         }
     }
