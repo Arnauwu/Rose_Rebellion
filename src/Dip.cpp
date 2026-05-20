@@ -9,6 +9,7 @@
 #include "Player.h" 
 #include "Log.h" 
 #include "ParticleManager.h" 
+#include "Physics.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -31,23 +32,24 @@ bool Dip::Start()
 	// ==========================================
 	// TODO(Art): Cargar animaciones 
 	// ==========================================
-	// Initialize enemy parameters
+	// Inicializar parámetros del enemigo
 	std::unordered_map<int, std::string> aliases = { {0,"Attack"},{22,"Dead"},{44,"Hit"},{66,"Still"},{88,"Idle"},{110,"Move"},{132,"Jump"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dip/SS_Dip.tsx", aliases);
 	anims.SetCurrent("Idle");
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dip/SS_Dip.png");
 
-	texW = 64;
-	texH = 64;
-	// Parámetros: (X centro, Y centro, Ancho, Alto, Tipo)
+	// Cuerpo físico (Physbody)
+	texW = 390;
+	texH = 256;
+
 	pbody = Engine::GetInstance().physics->CreateRectangle(
-		(int)position.getX() + texW / 2,
-		(int)position.getY() + texH / 2, // Centrado perfectamente en Y
-		50, // Ancho (Width): Más largo para cubrir hocico y cola
-		30, // Alto (Height): Más bajito para el lomo del lobo
+		(int)position.getX(),
+		(int)position.getY(),
+		texW,
+		texH,
 		bodyType::DYNAMIC
-	);	
+	);
 	pbody->listener = this;
 	pbody->ctype = ColliderType::ENEMY;
 
@@ -55,7 +57,8 @@ bool Dip::Start()
 	pathfinding->ResetPath(GetTilePos());
 	pathFindingCooldown.Start();
 
-	vision = 15;
+	// MODIFICACIÓN: Rango de visión ajustado a 20 bloques
+	vision = 20;
 	speed = 8.0f;
 	knockbackForce = 5.0f;
 	maxHealth = 20;
@@ -64,9 +67,11 @@ bool Dip::Start()
 	attackDamage = 5;
 	startAttack.Start();
 
-	
 	attackVisualTimer.Start();
 	isAttackingVisual = false;
+	isTouchingPlayer = false;
+	playerContacts = 0;
+	patrolTimer.Start(); // Iniciar temporizador de patrulla
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -99,7 +104,6 @@ bool Dip::Update(float dt)
 		Move();
 		ApplyPhysics();
 
-		
 		if (isAttackingVisual && attackVisualTimer.ReadMSec() > 200) {
 			isAttackingVisual = false;
 		}
@@ -122,6 +126,8 @@ void Dip::PerformPathfinding()
 	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 128.0f;
 	int iter = 0;
 
+	// ¡ATENCIÓN!: Si el pathTiles sigue vacío en el debug, asegúrate de que tu clase Pathfinding 
+	// realmente está calculando la ruta hacia el jugador (ej. pasándole el destino a PropagateAStar).
 	while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
 	{
 		pathfinding->PropagateAStar();
@@ -132,77 +138,14 @@ void Dip::PerformPathfinding()
 void Dip::GetPhysicsValues() {
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 }
-//void Dip::ExecuteSpecialAttack(Vector2D playerPos)
-//{
-//	Vector2D pos = GetPosition();
-//
-//	if (specialPhase == 1)
-//	{
-//		// Fase 1: Saltar lejos del jugador
-//		if (phaseTimer.ReadMSec() < 400)
-//		{
-//			anims.SetCurrent("Jump");
-//			velocity.x = (pos.getX() > playerPos.getX()) ? speed * 4.0f : -speed * 4.0f;
-//			lookingRight = (playerPos.getX() > pos.getX()); // Mirar al jugador mientras retrocede
-//		}
-//		else
-//		{
-//			// Fin de la fase 1, grabar posiciones y saltar hacia el jugador
-//			leapStartPos = GetPosition();
-//			lockedPlayerPos = playerPos;
-//			specialPhase = 2;
-//			phaseTimer.Start();
-//			Engine::GetInstance().physics->SetYVelocity(pbody, -8.0f); // Salto vertical
-//		}
-//	}
-//	else if (specialPhase == 2)
-//	{
-//		// Fase 2: Saltar hacia la posición bloqueada del jugador
-//		if (phaseTimer.ReadMSec() < 500)
-//		{
-//			anims.SetCurrent("Jump");
-//			velocity.x = (lockedPlayerPos.getX() > pos.getX()) ? speed * 7.0f : -speed * 7.0f;
-//			lookingRight = (velocity.x > 0);
-//		}
-//		else
-//		{
-//			// Fin de la fase 2, saltar de vuelta al inicio
-//			specialPhase = 3;
-//			phaseTimer.Start();
-//			Engine::GetInstance().physics->SetYVelocity(pbody, -8.0f);
-//		}
-//	}
-//	else if (specialPhase == 3)
-//	{
-//		// Fase 3: Saltar de vuelta a la posición inicial (leapStartPos)
-//		if (phaseTimer.ReadMSec() < 500)
-//		{
-//			anims.SetCurrent("Jump");
-//			velocity.x = (leapStartPos.getX() > pos.getX()) ? speed * 7.0f : -speed * 7.0f;
-//			lookingRight = (playerPos.getX() > pos.getX());
-//		}
-//		else
-//		{
-//			// Fin del ataque especial. Restaurar el comportamiento normal
-//			isSpecialAttacking = false;
-//			specialPhase = 0;
-//			specialAttackTimer.Start();
-//
-//			this->damage = attackDamage; // Restaurar el daño normal
-//			pbody->ctype = ColliderType::ENEMY;
-//			velocity.x = 0;
-//		}
-//	}
-//}
+
 void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 {
 	Vector2D pos = GetPosition();
-
 	float attackOffset = 55.0f;
 
 	if (specialPhase == 1)
 	{
-	
 		if (phaseTimer.ReadMSec() < 400)
 		{
 			anims.SetCurrent("Jump");
@@ -220,7 +163,6 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 	}
 	else if (specialPhase == 2)
 	{
-		
 		if (phaseTimer.ReadMSec() < 500)
 		{
 			anims.SetCurrent("Jump");
@@ -229,10 +171,8 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 			velocity.x = jumpRight ? (speed * 4.0f) : -(speed * 4.0f);
 			lookingRight = jumpRight;
 
-			
 			float targetX = jumpRight ? (lockedPlayerPos.getX() - attackOffset) : (lockedPlayerPos.getX() + attackOffset);
 
-			
 			if ((jumpRight && pos.getX() >= targetX) ||
 				(!jumpRight && pos.getX() <= targetX))
 			{
@@ -249,7 +189,6 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 	}
 	else if (specialPhase == 3)
 	{
-		
 		if (phaseTimer.ReadMSec() < 500)
 		{
 			anims.SetCurrent("Jump");
@@ -278,7 +217,6 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 void Dip::Move() {
 
 	// Si es empujado (knockback) o está muerto, no se mueve ni ataca
-	//if (isKnockedback || isdead) return;
 	if (isKnockedback || isdead) {
 		// Cancelar ataque especial si es golpeado
 		if (isSpecialAttacking) {
@@ -298,6 +236,14 @@ void Dip::Move() {
 	Vector2D pos = GetPosition();
 	Vector2D playerPos = player->GetPosition();
 
+	if (isTouchingPlayer)
+	{
+		velocity.x = 0;
+		lookingRight = (playerPos.getX() > pos.getX());
+		AttackPlayer();
+		return;
+	}
+
 	if (!isSpecialAttacking && specialAttackTimer.ReadMSec() >= 6000 && playerTileDist <= vision)
 	{
 		isSpecialAttacking = true;
@@ -310,31 +256,20 @@ void Dip::Move() {
 
 		Engine::GetInstance().physics->SetYVelocity(pbody, -6.0f); // Pequeño salto hacia atrás
 	}
+
 	if (isSpecialAttacking)
 	{
 		ExecuteSpecialAttack(playerPos);
 		return;
 	}
-	// [Corrección principal 1: Detección rectangular] Dividir la distancia en valores absolutos X e Y
+
 	float distX = std::abs(pos.getX() - playerPos.getX());
 	float distY = std::abs(pos.getY() - playerPos.getY());
 
-	// Si la distancia X (ej. 75) y la Y (ej. 85) son cercanas, ¡es un golpe cuerpo a cuerpo perfecto! 
-	// Ya no le afectan las pequeñas diferencias de altura
-	if (distX <= 90.0f && distY <= 85.0f)
-	{
-		velocity.x = 0; // Detenerse frente al jugador
-		lookingRight = (playerPos.getX() > pos.getX()); // Mirar fijamente al jugador
-		AttackPlayer(); // ¡Atacar con la garra!
-		return;
-	}
-
-	// 2. Manejo cuando el array de pathfinding está vacío
+	// 2. Manejo cuando el array de pathfinding está vacío (Jugador lejos o no hay ruta)
 	if (pathfinding->pathTiles.empty())
 	{
-		// Cuando llega al mismo tile que el jugador, el pathfinding termina (se vacía).
-		// Pero si aún no está en rango de ataque (el if de arriba no saltó), 
-		// ignora el tile y se acerca a la fuerza en el eje X.
+		// Si está muy cerca pero el pathfinding está vacío, se acerca por fuerza bruta
 		if (distX <= 256.0f && distY <= 128.0f)
 		{
 			if (playerPos.getX() > pos.getX()) {
@@ -348,10 +283,22 @@ void Dip::Move() {
 		}
 		else
 		{
-			velocity.x = 0; // Se queda quieto solo si está realmente lejos y no hay ruta
-			anims.SetCurrent("Idle");
-	
-			lookingRight = (playerPos.getX() > pos.getX());
+			// ==========================================
+			// MODIFICACIÓN: Lógica de Patrulla Simplificada
+			// ==========================================
+			anims.SetCurrent("Move");
+
+			// Cambiar de dirección de forma estricta cada 4 segundos (4000 ms).
+			// Evitamos comprobar si la velocidad es 0 para que no se buguee si el colisionador toca el suelo.
+			if (patrolTimer.ReadMSec() > 4000)
+			{
+				lookingRight = !lookingRight; // Invertir dirección
+				patrolTimer.Start(); // Reiniciar el temporizador
+			}
+
+			// Calcular la velocidad de patrulla (caminar más lento que cuando persigue)
+			float patrolSpeed = speed * 0.4f;
+			velocity.x = lookingRight ? patrolSpeed : -patrolSpeed;
 		}
 		return;
 	}
@@ -398,7 +345,6 @@ void Dip::AttackPlayer()
 	// Frecuencia de ataque: cada 500 ms (2 veces por segundo)
 	if (startAttack.ReadMSec() >= 500)
 	{
-	
 		anims.SetCurrent("Attack");
 		// 1. Reducir la salud del jugador
 		player->currentHealth -= attackDamage;
@@ -439,38 +385,37 @@ void Dip::Draw(float dt)
 	anims.Update(dt);
 
 	SDL_Rect animFrame = anims.GetCurrentFrame();
-
-	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
-	if (lookingRight)
-	{
-		sdlFlip = SDL_FLIP_HORIZONTAL;
-	}
+	SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
 
-	// Calculamos el centro correcto
-	int drawX = x - (animFrame.w / 2);
-	int drawY = y - (animFrame.h / 2);
+	int drawX = x;
+	int drawY = y;
+
+	// ==========================================
+	///DIBUJAR DEBUG DEL PATHFINDING (F9)
+// ==========================================
+	if (Engine::GetInstance().physics->GetDebug() && pathfinding != nullptr)
+	{
+		pathfinding->DrawPath();
+	}
 
 	if (isKnockedback || isAttackingVisual)
 	{
 		Uint8 r = 255, g = 25, b = 25;
 		Engine::GetInstance().render->SetColorMod(texture, &r, &g, &b, 255, 25, 25);
-
-		
 		Engine::GetInstance().render->DrawRotatedTexture(texture, drawX, drawY, &animFrame, sdlFlip, 1);
-
-		Uint8 defR = 255, defG = 255, defB = 255;
-		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, defR, defG, defB);
+		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, 255, 255, 255);
 	}
 	else
 	{
-		
 		Engine::GetInstance().render->DrawRotatedTexture(texture, drawX, drawY, &animFrame, sdlFlip, 1);
 	}
+
+
 }
 
 void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
@@ -483,19 +428,17 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 		anims.SetCurrent("Hit");
 		break;
 	case ColliderType::PLAYER:
-		// [Nuevo] Si toca al jugador MIENTRAS hace el ataque especial
+
+		playerContacts++;
+		isTouchingPlayer = (playerContacts > 0);
+
 		if (isSpecialAttacking)
 		{
 			Player* p = (Player*)physB->listener;
 			if (p && p->pbody)
 			{
-				// Aplicar un empuje FUERTE (aproximadamente 2 casillas de distancia)
 				float pushForce = (p->position.getX() > position.getX()) ? 25.0f : -25.0f;
 				Engine::GetInstance().physics->SetLinearVelocity(p->pbody, { pushForce, -8.0f });
-
-				// Nota: El daño de 1 se aplica automáticamente porque 
-				// configuramos pbody->ctype = ColliderType::ENEMY_ATTACK
-				// y this->damage = 1 al inicio del ataque especial.
 			}
 		}
 		break;
@@ -506,4 +449,13 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 
 void Dip::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
+	if (physB->ctype == ColliderType::PLAYER)
+	{
+		playerContacts--;
+		if (playerContacts <= 0)
+		{
+			playerContacts = 0; // Por seguridad, evitamos números negativos
+			isTouchingPlayer = false;
+		}
+	}
 }
