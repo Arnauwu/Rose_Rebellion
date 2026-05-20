@@ -33,11 +33,11 @@ bool UICheckBox::Update(float dt) {
 void UICheckBox::Draw() const {
     if (!visible) return;
 
-    Engine::GetInstance().render->DrawRectangleUnScaled(bounds, 150, 150, 150, 255, false, false);
+    Engine::GetInstance().render->DrawRectangleUnscaled(bounds, 150, 150, 150, 255, false, false);
 
     if (isChecked) {
         SDL_Rect inner = { bounds.x + 4, bounds.y + 4, bounds.w - 8, bounds.h - 8 };
-        Engine::GetInstance().render->DrawRectangleUnScaled(inner, 0, 255, 0, 255, true, false);
+        Engine::GetInstance().render->DrawRectangleUnscaled(inner, 0, 255, 0, 255, true, false);
     }
 
     int textX = bounds.x + bounds.w + float(10);

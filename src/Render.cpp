@@ -466,10 +466,9 @@ bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint
 }
 
 
-bool Render::DrawRectangleUnScaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
+bool Render::DrawRectangleUnscaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
 {
 	bool ret = true;
-	int scale = Engine::GetInstance().window->GetScale();
 
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
@@ -477,17 +476,17 @@ bool Render::DrawRectangleUnScaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8
 	SDL_FRect rec;
 	if (use_camera)
 	{
-		rec.x = (float)((int)(camera.x + rect.x * scale)) ;
-		rec.y = (float)((int)(camera.y + rect.y * scale)) ;
-		rec.w = (float)(rect.w * scale) ;
-		rec.h = (float)(rect.h * scale) ;
+		rec.x = (float)((int)(camera.x + rect.x)) ;
+		rec.y = (float)((int)(camera.y + rect.y)) ;
+		rec.w = (float)(rect.w) ;
+		rec.h = (float)(rect.h) ;
 	}
 	else
 	{
-		rec.x = (float)(rect.x * scale) ;
-		rec.y = (float)(rect.y * scale) ;
-		rec.w = (float)(rect.w * scale) ;
-		rec.h = (float)(rect.h * scale) ;
+		rec.x = (float)(rect.x) ;
+		rec.y = (float)(rect.y) ;
+		rec.w = (float)(rect.w) ;
+		rec.h = (float)(rect.h) ;
 	}
 
 	int result = (filled ? SDL_RenderFillRect(renderer, &rec) : SDL_RenderRect(renderer, &rec)) ? 0 : -1;
@@ -500,6 +499,7 @@ bool Render::DrawRectangleUnScaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8
 
 	return ret;
 }
+
 bool Render::DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool use_camera) const
 {
 	bool ret = true;
@@ -536,6 +536,41 @@ bool Render::DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b,
 	return ret;
 }
 
+bool Render::DrawLineUnscaled(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool use_camera) const
+{
+	bool ret = true;
+	int scale = Engine::GetInstance().window->GetScale();
+
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+
+	float X1, Y1, X2, Y2;
+
+	if (use_camera)
+	{
+		X1 = (float)(camera.x + x1);
+		Y1 = (float)(camera.y + y1);
+		X2 = (float)(camera.x + x2);
+		Y2 = (float)(camera.y + y2);
+	}
+	else
+	{
+		X1 = (float)(x1);
+		Y1 = (float)(y1);
+		X2 = (float)(x2);
+		Y2 = (float)(y2);
+	}
+
+	int result = SDL_RenderLine(renderer, X1, Y1, X2, Y2) ? 0 : -1;
+
+	if (result != 0)
+	{
+		LOG("Cannot draw quad to screen. SDL_RenderLine error: %s", SDL_GetError());
+		ret = false;
+	}
+
+	return ret;
+}
 bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool use_camera) const
 {
 	bool ret = true;
@@ -565,6 +600,43 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 		LOG("Cannot draw quad to screen. SDL_RenderPoints error: %s", SDL_GetError());
 		ret = false;
 	}
+
+	return ret;
+}
+
+bool Render::DrawCircleUnscaled(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool use_camera) const
+{
+	bool ret = true;
+
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+
+	int result = -1;
+	SDL_FPoint points[360];
+
+	float factor = (float)M_PI / 180.0f;
+
+	float cx = (float)((use_camera ? camera.x : 0) + x);
+	float cy = (float)((use_camera ? camera.y : 0) + y);
+
+	for (int dy = -radius; dy <= radius; ++dy)
+    {
+        float fy = (float)dy;
+
+        float dx = sqrtf((float)(radius * radius) - (fy * fy));
+
+        float x1 = cx - dx;
+        float x2 = cx + dx;
+        float yy = cy + fy;
+
+        if (!SDL_RenderLine(renderer, x1, yy, x2, yy))
+        {
+            LOG("Cannot draw filled circle. SDL_RenderLine error: %s", SDL_GetError());
+            ret = false;
+            break;
+        }
+    }
+
 
 	return ret;
 }

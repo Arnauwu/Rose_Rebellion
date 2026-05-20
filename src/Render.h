@@ -50,10 +50,13 @@ public:
 
 
 	bool DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
-	bool DrawRectangleUnScaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
+	bool DrawRectangleUnscaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
+	bool DrawLineUnscaled(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
+
 	bool DrawCircle(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
-	
+	bool DrawCircleUnscaled(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
+
 	// Method DrawText to render text on screen. Uses SDL3_ttf
 	bool DrawText(const char* text, int x, int y, int w, int h, SDL_Color color, FontType fontType = FontType::MENU) const;
 	bool DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color, FontType fontType) const;

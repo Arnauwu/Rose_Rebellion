@@ -237,7 +237,7 @@ void Hud::DrawNotification() {
         };
 
         // Draw
-        Engine::GetInstance().render->DrawRectangleUnScaled(bgRect, 220, 220, 220, alphaBg, true, false);
+        Engine::GetInstance().render->DrawRectangleUnscaled(bgRect, 220, 220, 220, alphaBg, true, false);
 
         // Draw txto
         SDL_Color color = { 0, 0, 0, alphaText }; // color negro
