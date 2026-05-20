@@ -376,6 +376,12 @@ void Player::Move() {
 		if (stepTimer >= timeBetweenSteps)
 		{
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
+
+			int pX, pY;
+			pbody->GetPosition(pX, pY);
+			float footY = (float)pY + (texH / 2.0f) - 90.0f;
+			Engine::GetInstance().particleManager->EmitDust((float)pX, footY, lookingRight);
+
 			stepTimer = 0.0f;
 		}
 	}
@@ -533,8 +539,10 @@ void Player::Jump(float dt)
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			float footY = position.getY() + (texH / 2.0f) - 10.0f;
-			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+			int pX, pY;
+			pbody->GetPosition(pX, pY);
+			float footY = (float)pY + (texH / 2.0f) - 80.0f;
+			Engine::GetInstance().particleManager->EmitJumpDust((float)pX, footY, lookingRight);
 
 			if (currentAnimPriority <= 2)
 			{
@@ -1419,8 +1427,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 			// Efecto de polvo al aterrizar
 			if (!onGround) { // Solo si el jugador viene del aire 
-				float footY = position.getY() + (texH / 2.0f) - 10.0f;
-				Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+				int pX, pY;
+				pbody->GetPosition(pX, pY); 
+				float footY = (float)pY + (texH / 2.0f) - 80.0f;
+				Engine::GetInstance().particleManager->EmitJumpDust((float)pX, footY, lookingRight);
 			}
 
 			// Reset the jump flag when touching the ground

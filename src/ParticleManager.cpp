@@ -1,13 +1,14 @@
 ﻿#include "ParticleManager.h"
 #include "Engine.h"
 #include "Render.h"
-
 #include "tracy/Tracy.hpp"
 
+// Constructor
 ParticleManager::ParticleManager() : Module() {
     name = "particle_manager";
 }
 
+// Destructor
 ParticleManager::~ParticleManager() {}
 
 bool ParticleManager::Awake() {
@@ -19,73 +20,33 @@ bool ParticleManager::Awake() {
 }
 
 bool ParticleManager::Start() {
+    // 1. Cargar el SpriteSheet Unificado de Polvo (Andar, Jump, Dash)
+    dustSpriteSheet = Engine::GetInstance().textures->Load("Assets/Textures/Particles/SS_particulas_polvo.png");
 
-    //---------------------------------------------------------------------------------------//
-    // Texture
-    dustP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/dustP.png");
+    AnimationSet dustAnimSet;
+    std::unordered_map<int, std::string> dustAliases = { {0,"andar"}, {8,"jump"}, {16,"dash"} };
 
-    //Anims
-    AnimationSet tempSet;
-    std::unordered_map<int, std::string> aliases = { {0, "dust_anim"} }; 
-
-    if (tempSet.LoadFromTSX("Assets/Textures/Particles/dustP.tsx", aliases)) {
-        if (tempSet.Has("dust_anim")) {
-            animDust = *tempSet.GetAnim("dust_anim");
-        }
+    if (dustAnimSet.LoadFromTSX("Assets/Textures/Particles/SS_particulas_polvo.tsx", dustAliases)) {
+        if (dustAnimSet.Has("andar")) animWalkDust = *dustAnimSet.GetAnim("andar");
+        if (dustAnimSet.Has("jump"))  animJumpDust = *dustAnimSet.GetAnim("jump");
+        if (dustAnimSet.Has("dash"))  animDashDust = *dustAnimSet.GetAnim("dash");
     }
-    //--------------------------------------------------------------------------------------//
 
-    // 1. Carga la textura estática temporal para los impactos
+    // 2. Cargar texturas de los demás efectos (Impactos, Sangre, Pickups)
     hitP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/hitP.png");
-    // TODO: Descomentar esto cuando Arte entregue el archivo .tsx con la animación
-/* AnimationSet hitSet;
- std::unordered_map<int, std::string> hitAliases = { {0, "hit_anim"} };
- if (hitSet.LoadFromTSX("Assets/Textures/Particles/hitP.tsx", hitAliases)) {
-     if (hitSet.Has("hit_anim")) {
-         animHitSpark = *hitSet.GetAnim("hit_anim");
-     }
- }*/
-
     bloodP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/bloodP.png");
+    pickP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/pickP.png");
 
-    /* AnimationSet BloodhitSet;
-    std::unordered_map<int, std::string> BloodhitAliases = { {0, "Bloodhit_anim"} };
-    if (BloodhitSet.LoadFromTSX("Assets/Textures/Particles/bloodP.tsx", BloodhitSetAliases)) {
-      if (BloodhitSet.Has("BloodhitSet_anim")) {
-          animBloodHit = *BloodhitSet.GetAnim("BloodhitSet_anim");
-      }
-    }*/
-
-    pickP=Engine::GetInstance().textures->Load("Assets/Textures/Particles/pickP.png");
-
-    /* AnimationSet PickupSet;
-     std::unordered_map<int, std::string> PickupAliases = { {0, "pickup_anim"} };
-     if (PickupSet.LoadFromTSX("Assets/Textures/Particles/pickP.tsx", PickupAliases)) {
-     if (PickupSet.Has("hit_anim")) {
-         animHitSpark = *PickupSet.GetAnim("pickup_anim");
-     }
-    }*/
-
-    jumpDustP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/jumpDustP.png");
-    /* AnimationSet JumpDustSet;
-    std::unordered_map<int, std::string> JumpDustAliases = { {0, "JumpDust_anim"} };
-     if (JumpDustSet.LoadFromTSX("Assets/Textures/Particles/jumpDustP.tsx, JumpDustAliases)) {
-     if (JumpDustSet.Has("JumpDust_anim")) {
-       animJumpDust = *JumpDustSet.GetAnim("JumpDust_anim");
-     }
-     }*/
     return true;
 }
 
 bool ParticleManager::Update(float dt) {
     ZoneScoped;
 
-
-
     // Actualizamos SOLO las articulas encendidas
     for (auto& particles : pool) {
         if (particles.active) {
-            
+
             particles.x += particles.vx * (dt / 1000.0f);
             particles.y += particles.vy * (dt / 1000.0f);
             particles.angle += particles.angularVelocity * (dt / 1000.0f);
@@ -108,37 +69,38 @@ bool ParticleManager::Update(float dt) {
 bool ParticleManager::PostUpdate() {
     ZoneScoped;
 
-    SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
-
     for (const auto& particle : pool) {
         if (particle.active) {
 
-            float lifeRatio = particle.life / particle.maxLife;
+            float lifeRatio = 1.0f;
+            if (particle.life < particle.maxLife * 0.5f) {
+                lifeRatio = particle.life / (particle.maxLife * 0.5f);
+            }
             Uint8 currentAlpha = (Uint8)(particle.color.a * lifeRatio);
 
             if (particle.texture != nullptr) {
-                // Aplicar transparencia y color base a la textura temporalmente
-                SDL_SetTextureAlphaMod(particle.texture, currentAlpha);
-                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
 
+                SDL_Rect srcRect = { 0, 0, 0, 0 };
                 if (particle.isAnimated) {
-                    // renderizar animaciones
-                    SDL_Rect srcRect = particle.anim.GetCurrentFrame();
-                    
-                    Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, &srcRect, particle.flipMode, 1, particle.angle);
-                    
-                }
-                else {
-                    // Renderizar la textura
-                    Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, nullptr, particle.flipMode, 1, particle.angle);
+                    srcRect = particle.anim.GetCurrentFrame();
                 }
 
-                // Restaurar la textura a la normalidad
+            
+                SDL_SetTextureColorMod(particle.texture, 0, 0, 0);
+                
+                SDL_SetTextureAlphaMod(particle.texture, currentAlpha / 2);
+               
+                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x + 3.0f, particle.y + 3.0f, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, 1, particle.angle);
+                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
+                SDL_SetTextureAlphaMod(particle.texture, currentAlpha);
+
+                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, 1, particle.angle);
+
                 SDL_SetTextureAlphaMod(particle.texture, 255);
                 SDL_SetTextureColorMod(particle.texture, 255, 255, 255);
             }
             else {
-                // Dibujo sin nada
+                
                 SDL_Rect rect = { (int)particle.x, (int)particle.y, (int)particle.size, (int)particle.size };
                 Engine::GetInstance().render->DrawRectangle(rect, particle.color.r, particle.color.g, particle.color.b, currentAlpha, true, particle.useCamera);
             }
@@ -149,10 +111,14 @@ bool ParticleManager::PostUpdate() {
 
 bool ParticleManager::CleanUp() {
     pool.clear();
-    if (dustP != nullptr) {
-        Engine::GetInstance().textures->UnLoad(dustP);
-        dustP = nullptr;
+
+    // Limpiamos la nueva textura unificada
+    if (dustSpriteSheet != nullptr) {
+        Engine::GetInstance().textures->UnLoad(dustSpriteSheet);
+        dustSpriteSheet = nullptr;
     }
+
+    // Limpiamos el resto
     if (hitP != nullptr) {
         Engine::GetInstance().textures->UnLoad(hitP);
         hitP = nullptr;
@@ -165,12 +131,12 @@ bool ParticleManager::CleanUp() {
         Engine::GetInstance().textures->UnLoad(bloodP);
         bloodP = nullptr;
     }
-    if (jumpDustP != nullptr) {
-        Engine::GetInstance().textures->UnLoad(jumpDustP);
-        jumpDustP = nullptr;
-    }
     return true;
 }
+
+// ---------------------------------------------------------
+// FUNCIONES BASE DE EMISIÓN
+// ---------------------------------------------------------
 
 // Sobrecarga 1: Cuadrado sin nada
 void ParticleManager::Emit(float x, float y, float vx, float vy, float life, SDL_Color color, float size, bool useCamera) {
@@ -193,7 +159,8 @@ void ParticleManager::Emit(float x, float y, float vx, float vy, float life, SDL
 
     pool[index].active = true;
 }
-// Sobrecarga 2: Particula con textura
+
+// Sobrecarga 2: Partícula con textura
 void ParticleManager::Emit(SDL_Texture* texture, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity) {
     int index = FindNextDeadParticle();
 
@@ -215,8 +182,8 @@ void ParticleManager::Emit(SDL_Texture* texture, float x, float y, float vx, flo
     pool[index].active = true;
 }
 
-// Sobrecarga 3: Particula con Animaci髇
-void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity,SDL_FlipMode flipMode) {
+// Sobrecarga 3: Partícula con Animación
+void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity, SDL_FlipMode flipMode) {
     int index = FindNextDeadParticle();
 
     pool[index].x = x;
@@ -233,7 +200,7 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
     pool[index].angle = 0.0f;
     pool[index].angularVelocity = angularVelocity;
 
-    // Inyectar y reiniciar la animaci髇
+    // Inyectar y reiniciar la animación
     pool[index].anim = anim;
     pool[index].anim.Reset();
     pool[index].isAnimated = true;
@@ -241,6 +208,10 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
 
     pool[index].active = true;
 }
+
+// ---------------------------------------------------------
+// FUNCIONES ESPECÍFICAS
+// ---------------------------------------------------------
 
 void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
     int numParticles = 1;
@@ -253,13 +224,15 @@ void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
 
         SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-        // desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño antes de emitir.
-        float startX = x - (size / 2.0f);
+        // --- AJUSTE DE POSICIÓN: TALÓN (Heel) ---
+       
+        float offsetX = lookingRight ? 5.0f : 45.0f;
+        float startX = x - (size / 2.0f) + offsetX;
         float startY = y - (size / 2.0f);
 
-        if (dustP != nullptr && animDust.GetFrameCount() > 0) {
-            // desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño antes de emitir.
-            Emit(dustP, animDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
+        // Usamos el SpriteSheet unificado y la animación 'animWalkDust'
+        if (dustSpriteSheet != nullptr && animWalkDust.GetFrameCount() > 0) {
+            Emit(dustSpriteSheet, animWalkDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
         }
         else {
             SDL_Color color = { 200, 200, 200, 200 };
@@ -268,84 +241,25 @@ void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
     }
 }
 
-void ParticleManager::EmitHitSparks(float x, float y, bool isBlood) {
-    
+void ParticleManager::EmitJumpDust(float x, float y, bool lookingRight) {
     int numParticles = 1;
 
     for (int i = 0; i < numParticles; i++) {
-        float vx = 0.0f; // Se queda fijo en la posición del enemigo
+        float vx = 0.0f;
         float vy = 0.0f;
-        float life = 150.0f; // Desaparece rápido para dar mayor sensación de impacto
-        float size = 96.0f;  // Tamaño del efecto (ajusta este valor según el tamaño real de tu imagen)
+        float life = 400.0f;
+        float size = 64.0f;
 
-        // Desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño para centrar el impacto
-        float startX = x - (size / 2.0f);
+
+        float offsetX = lookingRight ? -20.0f : 20.0f;
+
+        float startX = x - (size / 2.0f) + offsetX+25.0f;
+        // ==========================================
+
         float startY = y - (size / 2.0f);
 
-        SDL_Texture* currentTexture = isBlood ? bloodP : hitP;
-
-        if (currentTexture != nullptr) {
-
-            // Cuando esta hecho la animacion cambiar a esa
-            // Emit(texHitSpark, animHitSpark, startX, startY, vx, vy, life, size, true, 0.0f, SDL_FLIP_NONE);
-
-            // Temporal
-            Emit(currentTexture, startX, startY, vx, vy, life, size, true, 0.0f);
-
-        }
-        else {
-            // Fallback: Si no hay textura, emite cuadrados de colores (Rojo para sangre, Amarillo para chispas)
-            SDL_Color color = isBlood ? SDL_Color{ 255, 30, 30, 255 } : SDL_Color{ 255, 200, 50, 255 };
-            Emit(startX, startY, vx, vy, life, color, 16.0f, true);
-        }
-    }
-}
-
-void ParticleManager::EmitItemPickup(float x, float y) {
-    int numParticles = 25; // Emitir múltiples partículas para crear una explosión brillante
-
-    for (int i = 0; i < numParticles; i++) {
-        // Calcular dirección circular aleatoria
-        float angle = (rand() % 360) * 3.14159f / 180.0f;
-        float speed = 80.0f + (rand() % 80);
-        float vx = cos(angle) * speed;
-        float vy = sin(angle) * speed - 50.0f; // Ligera tendencia a subir
-
-        float life = 600.0f + (rand() % 400); // Duran entre 0.6 y 1 segundo
-        float size = 5.0f + (rand() % 5);
-
-        // Centrar la partícula
-        float startX = x - (size / 2.0f);
-        float startY = y - (size / 2.0f);
-
-        // Color dorado brillante
-        SDL_Color color = { 255, 215, 0, 255 };
-        Emit(startX, startY, vx, vy, life, color, size, true);
-
-        // Cuando Arte entregue la textura de brillos (sparkles), usa esto: <---
-        // Emit(texSparkle, startX, startY, vx, vy, life, size, true, 0.0f);
-    }
-}
-
-void ParticleManager::EmitJumpDust(float x, float y) {
-    int numParticles = 1;
-
-    for (int i = 0; i < numParticles; i++) {
-        float vx = 0.0f;   // Sin movimiento horizontal, la imagen ya tiene la forma de expansión
-        float vy = -10.0f; // Flota ligeramente hacia arriba
-        float life = 300.0f; // Desaparece en 0.3 segundos
-        float size = 128.0f; // Tamaño grande para abarcar los pies del jugador
-
-        // Desplaza la coordenada hacia la izquierda y arriba por la mitad de su tamaño para centrarlo
-        float startX = x - (size / 2.0f);
-        float startY = y - (size / 2.0f);
-
-        if (jumpDustP != nullptr) {
-            // Emite la textura estática
-            Emit(jumpDustP, startX, startY, vx, vy, life, size, true, 0.0f);
-
-            // Cuando haya animación de polvo, usa esto:
-            // Emit(texJumpDust, animJumpDust, startX, startY, vx, vy, life, size, true, 0.0f, SDL_FLIP_NONE);
+        if (dustSpriteSheet != nullptr && animJumpDust.GetFrameCount() > 0) {
+            Emit(dustSpriteSheet, animJumpDust, startX, startY, vx, vy, life, size, true, 0.0f, SDL_FLIP_NONE);
         }
         else {
             SDL_Color color = { 200, 200, 200, 200 };
@@ -354,7 +268,85 @@ void ParticleManager::EmitJumpDust(float x, float y) {
     }
 }
 
-// Loica del Object Pool (Buffer Circular)
+//Si tenemos dash descomenta eso
+void ParticleManager::EmitDashDust(float x, float y, bool lookingRight) {
+      /*
+      int numParticles = 1;
+
+      for (int i = 0; i < numParticles; i++) {
+          float vx = 0.0f;
+          float vy = 0.0f;
+          float life = 400.0f;
+          float size = 64.0f;
+
+          SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+
+          // --- AJUSTE DE POSICIÓN: TALÓN (Heel) ---
+          // Al hacer dash, el polvo suele quedar un poco más atrás que al caminar
+          float offsetX = lookingRight ? -30.0f : 30.0f;
+
+          float startX = (x + offsetX) - (size / 2.0f);
+          float startY = y - (size / 2.0f);
+
+          if (dustSpriteSheet != nullptr && animDashDust.GetFrameCount() > 0) {
+              Emit(dustSpriteSheet, animDashDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
+          }
+          else {
+              SDL_Color color = { 150, 200, 255, 200 };
+              Emit(startX, startY, vx, vy, life, color, 16.0f, true);
+          }
+      }
+      */
+}
+
+void ParticleManager::EmitHitSparks(float x, float y, bool isBlood) {
+    int numParticles = 1;
+
+    for (int i = 0; i < numParticles; i++) {
+        float vx = 0.0f;
+        float vy = 0.0f;
+        float life = 150.0f;
+        float size = 96.0f;
+
+        float startX = x - (size / 2.0f);
+        float startY = y - (size / 2.0f);
+
+        SDL_Texture* currentTexture = isBlood ? bloodP : hitP;
+
+        if (currentTexture != nullptr) {
+            Emit(currentTexture, startX, startY, vx, vy, life, size, true, 0.0f);
+        }
+        else {
+            SDL_Color color = isBlood ? SDL_Color{ 255, 30, 30, 255 } : SDL_Color{ 255, 200, 50, 255 };
+            Emit(startX, startY, vx, vy, life, color, 16.0f, true);
+        }
+    }
+}
+
+void ParticleManager::EmitItemPickup(float x, float y) {
+    int numParticles = 25;
+
+    for (int i = 0; i < numParticles; i++) {
+        float angle = (rand() % 360) * 3.14159f / 180.0f;
+        float speed = 80.0f + (rand() % 80);
+        float vx = cos(angle) * speed;
+        float vy = sin(angle) * speed - 50.0f;
+
+        float life = 600.0f + (rand() % 400);
+        float size = 5.0f + (rand() % 5);
+
+        float startX = x - (size / 2.0f);
+        float startY = y - (size / 2.0f);
+
+        SDL_Color color = { 255, 215, 0, 255 };
+        Emit(startX, startY, vx, vy, life, color, size, true);
+    }
+}
+
+// ---------------------------------------------------------
+// LÓGICA DE POOL
+// ---------------------------------------------------------
+
 int ParticleManager::FindNextDeadParticle() {
     for (int i = lastUsedParticle; i < poolSize; i++) {
         if (!pool[i].active) {
