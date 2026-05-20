@@ -50,7 +50,7 @@ bool NinfaMare::Start()
     // Especificaciones físicas: Más grande (128x128 o similar)[cite: 1]
     texW = 128;
     texH = 128;
-    pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW / 1.0, texH * 2.5, bodyType::DYNAMIC);
+    pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW / 0.6, texH * 3.5, bodyType::DYNAMIC);
     //pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 4, bodyType::DYNAMIC);
     pbody->listener = this;
     pbody->ctype = ColliderType::ENEMY;
@@ -66,8 +66,8 @@ bool NinfaMare::Start()
     // Stats de Boss
     vision = 40;
     speed = 1.8f; // Más lenta pero imponente
-    maxHealth = 100;
-    currentHealth = 100;
+    maxHealth = 250;
+    currentHealth = 250;
 
     return true;
 }
