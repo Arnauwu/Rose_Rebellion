@@ -36,7 +36,7 @@ bool SkillPointOrb::Start() {
 	}
 
 	//initilize textures
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/SkillPointOrb/SkillPointOrb.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/SkillPointOrb/obj_orbe_fuerza_game.png");
 
 	// Add a physics to an item - initialize the physics body
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
