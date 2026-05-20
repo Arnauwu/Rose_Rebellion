@@ -506,14 +506,14 @@ void Player::Jump(float dt)
 				lookingRight = false;
 				anims.SetCurrent("wall_jump_left");
 				anims.GetAnim("wall_jump_left")->SetLoop(false);
-				printf("WALLJUMPLEFT");
+
 			}
 			else {
 				velocity.x = wJumpForceX;
 				lookingRight = true;
 				anims.SetCurrent("wall_jump_right");
 				anims.GetAnim("wall_jump_right")->SetLoop(false);
-				printf("WALLJUMPRIGHT");
+
 			}			
 			currentAnimPriority = 2;
 
@@ -538,7 +538,7 @@ void Player::Jump(float dt)
 
 			if (currentAnimPriority <= 2)
 			{
-				//anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
+				anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
 				currentAnimPriority = 2;
 			}
 
@@ -619,7 +619,7 @@ void Player::Attack(float dt)
 
 			if (Engine::GetInstance().input->IsGamepadConnected())
 			{
-				float rstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_RSTICK_Y);
+				float rstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
 				if (rstickY < -0.5f)
 					lookUp = true;
 				else if (rstickY > 0.5f && !onGround)
