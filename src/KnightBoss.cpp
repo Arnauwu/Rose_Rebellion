@@ -146,8 +146,42 @@ void KnightBoss::GetPhysicsValues() {
 
 void KnightBoss::Move() 
 {
-
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	Vector2D playerPos = player->GetPosition();
 	Vector2D tilePos = GetTilePos();
+
+	if (!hasAppeared) {
+		velocity.x = 0; // Se queda completamente quieto
+
+		// Si el jugador entra en rango visual, el Boss "despierta"
+		if (playerTileDist <= vision) {
+			hasAppeared = true;
+			isSpawning = true;
+			spawnTimer.Start();
+
+			anims.SetCurrent("jump2");
+			if (anims.GetAnim("jump2") != nullptr) anims.GetAnim("jump2")->Reset();
+
+			// Que mire dramáticamente hacia el jugador al despertar
+			lookingRight = (playerPos.getX() > position.getX());
+		}
+		else {
+			anims.SetCurrent("idle"); // Espera agachado o quieto
+		}
+		return; // IMPORTANTE: Evita que evalúe ataques o movimiento
+	}
+
+	// Mientras esté en plena animación de presentación...
+	if (isSpawning) {
+		velocity.x = 0;
+
+		// Ajusta los 1200ms al tiempo real que tarde tu animación 'jump2' en terminar
+		if (spawnTimer.ReadMSec() > 2000) {
+			isSpawning = false;
+			anims.SetCurrent("idle");
+		}
+		return; // Sigue bloqueando el resto de la IA
+	}
 
 	// 0. Si est?descansando (3 segundos)
 	if (isResting) {
@@ -375,6 +409,9 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 		return;
 	}
 
+	if (isSpawning || isdead) {
+		return;
+	}
 
 	switch (physB->ctype)
 	{

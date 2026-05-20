@@ -51,5 +51,9 @@ public:
 	Timer restTimer;            // Reloj para contar los 3 segundos
 	float restDuration = 3000.0f;
 
+	bool hasAppeared = false;
+	bool isSpawning = false;
+	Timer spawnTimer;
+
 	int deathSoundId;
 };
