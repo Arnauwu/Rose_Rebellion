@@ -36,7 +36,7 @@ bool HealthOrb::Start() {
 	}
 
 	//initilize textures
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/HealthOrb/HealthOrb.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Orbs/HealthOrb/obj_orbe_vida_game.png");
 
 	// Add a physics to an item - initialize the physics body
 	
