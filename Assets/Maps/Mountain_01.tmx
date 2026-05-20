@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="625">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="632">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -14632,7 +14632,7 @@
   <object id="623" gid="2147483798" x="11776" y="6912" width="512" height="512"/>
   <object id="624" gid="2147483798" x="9600" y="6912" width="512" height="512"/>
  </objectgroup>
- <objectgroup color="#000000" id="20" name="Map" visible="0">
+ <objectgroup color="#000000" id="20" name="Map">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -14813,7 +14813,7 @@
   <object id="470" x="12544" y="4736" width="256" height="128"/>
   <object id="471" x="17664" y="3328" width="128" height="128"/>
  </objectgroup>
- <objectgroup color="#aa0000" id="21" name="Spikes" visible="0">
+ <objectgroup color="#aa0000" id="21" name="Spikes">
   <properties>
    <property name="Danger" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -29275,6 +29275,27 @@
    <point/>
   </object>
   <object id="410" name="SkillPointOrb" type="SkillPointOrb" x="18608" y="2400">
+   <point/>
+  </object>
+  <object id="625" name="Dip" type="Dip" x="9184" y="9024">
+   <point/>
+  </object>
+  <object id="626" name="Dip" type="Dip" x="17536" y="9568">
+   <point/>
+  </object>
+  <object id="627" name="Dip" type="Dip" x="21616" y="7556">
+   <point/>
+  </object>
+  <object id="628" name="Dip" type="Dip" x="20860" y="6792">
+   <point/>
+  </object>
+  <object id="629" name="Dip" type="Dip" x="18672" y="3708">
+   <point/>
+  </object>
+  <object id="630" name="Dip" type="Dip" x="20260" y="3736">
+   <point/>
+  </object>
+  <object id="631" name="Dip" type="Dip" x="7736" y="3512">
    <point/>
   </object>
  </objectgroup>

@@ -11,6 +11,8 @@
 #include "EntityManager.h"
 #include "HealthBarManager.h"
 #include "Audio.h"
+#include "DashObj.h"
+#include "HealthOrb.h"
 #include <cmath>
 
 #include "tracy/Tracy.hpp"
@@ -48,7 +50,7 @@ bool NinfaMare::Start()
     // Especificaciones físicas: Más grande (128x128 o similar)[cite: 1]
     texW = 128;
     texH = 128;
-    pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW / 1.0, texH * 2.5, bodyType::DYNAMIC);
+    pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW / 0.6, texH * 3.5, bodyType::DYNAMIC);
     //pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 4, bodyType::DYNAMIC);
     pbody->listener = this;
     pbody->ctype = ColliderType::ENEMY;
@@ -64,8 +66,8 @@ bool NinfaMare::Start()
     // Stats de Boss
     vision = 40;
     speed = 1.8f; // Más lenta pero imponente
-    maxHealth = 500;
-    currentHealth = 500;
+    maxHealth = 150;
+    currentHealth = 150;
 
     return true;
 }
@@ -97,13 +99,51 @@ bool NinfaMare::Update(float dt)
 
     if (isdead) {
         Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+
+        // La primera vez que entra aquí al morir
         if (anims.GetCurrentName() != "dead") {
             Engine::GetInstance().audio->PlayFx(morirFx);
             anims.SetCurrent("dead");
-            Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f); // Cae al morir[cite: 1]
-            pbody->ctype = ColliderType::UNKNOWN;
+
+            // Si quieres que caiga al suelo al morir, mantén la gravedad.
+            // Si prefieres que se quede flotando donde murió, pon el multiplicador a 0.0f.
+            if (pbody != nullptr) {
+                Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f); // Cae al morir
+                pbody->ctype = ColliderType::UNKNOWN; // Hitbox fantasma
+            }
+
+            // REINICIAMOS EL TIMER para que empiece a contar desde 0 el tiempo de muerte
+            stateTimer.Start();
         }
-        if (anims.GetAnim("dead")->HasFinishedOnce()) pendingToDelete = true;
+
+        if (stateTimer.ReadMSec() > 600.0f) {
+            Vector2D dropPos = GetPosition();
+
+            // 2. Instanciamos el Orbe de Dash
+            auto orb = std::make_shared<DashObj>();
+
+            // 3. Le pasamos la posición manualmente (ya que tu constructor no la pide)
+            orb->position = dropPos;
+
+            // 4. Inicializamos el orbe y lo metemos en el juego
+            orb->Start();
+            Engine::GetInstance().entityManager->AddEntity(orb);
+            for (int i = 0; i < 3; ++i) {
+                auto hOrb = std::make_shared<HealthOrb>();
+
+                // Calculamos un desplazamiento para separarlos: 
+                // i=0 (-40px), i=1 (0px, centro), i=2 (+40px)
+                float offsetX = (i - 1) * 40.0f;
+
+                // Los ponemos un poquito más arriba que el orbe del dash para que formen un arco
+                float offsetY = -20.0f;
+
+                hOrb->position = Vector2D(dropPos.getX() + offsetX, dropPos.getY() + offsetY);
+                hOrb->Start();
+                Engine::GetInstance().entityManager->AddEntity(hOrb);
+            }
+            pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame
+        }
     }
 
     Draw(dt);
@@ -302,7 +342,9 @@ void NinfaMare::LaunchWaterWave() {
 }
 
 void NinfaMare::ApplyPhysics() {
-    Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+    if (pbody != nullptr) {
+        Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+    }
 }
 
 void NinfaMare::Draw(float dt) {
@@ -312,7 +354,6 @@ void NinfaMare::Draw(float dt) {
         Vector2D myPos = GetPosition();
         float distToPlayer = (playerPos - myPos).magnitude();
 
-        // Si el jugador está lejos, salimos sin dibujar nada
         if (distToPlayer > attackRange) {
             return;
         }
@@ -321,12 +362,24 @@ void NinfaMare::Draw(float dt) {
     if (!Engine::GetInstance().sceneManager->isGamePaused) anims.Update(dt);
 
     const SDL_Rect& animFrame = anims.GetCurrentFrame();
-    int x, y;
-    pbody->GetPosition(x, y);
+
+    // 1. Por defecto, usamos la última posición conocida de la entidad
+    int x = (int)position.getX();
+    int y = (int)position.getY();
+
+    // 2. ¡COMPROBACIÓN DE SEGURIDAD! 
+    // Solo le pedimos la posición a las físicas si el cuerpo físico sigue vivo.
+    if (pbody != nullptr) {
+        pbody->GetPosition(x, y);
+
+        // Guardamos esta posición en la variable 'position' para recordarla 
+        // por si en el siguiente frame el pbody se borra.
+        position.setX(x);
+        position.setY(y);
+    }
 
     SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-    // Dibujar con escala mayor (1.5f para que sea imponente)[cite: 1]
     Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1.0);
 }
 
@@ -344,11 +397,16 @@ void NinfaMare::Knockback() {
 void NinfaMare::GetPhysicsValues() { velocity = { 0, 0 }; }
 
 bool NinfaMare::CleanUp() {
-    if (texture != nullptr) Engine::GetInstance().textures->UnLoad(texture);
-    Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+    if (texture != nullptr) {
+        Engine::GetInstance().textures->UnLoad(texture);
+        texture = nullptr; // Buena práctica ponerlo a nulo tras descargarlo
+    }
+
+    // ELIMINAMOS LA LÍNEA DEL HEALTHBARMANAGER AQUÍ
+    // Engine::GetInstance().healthBarManager->SetBoss(nullptr); 
+
     return Enemy::CleanUp();
 }
-
 void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
     // CONDICIÓN CRÍTICA: Si ya está en HURT, ignoramos el resto de frames del mismo golpe
     if (isdead || currentState == NinfaMareState::SPAWNING || currentState == NinfaMareState::HURT) {
