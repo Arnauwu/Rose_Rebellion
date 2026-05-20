@@ -97,13 +97,22 @@ bool NinfaMare::Update(float dt)
 
     if (isdead) {
         Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+
         if (anims.GetCurrentName() != "dead") {
             Engine::GetInstance().audio->PlayFx(morirFx);
             anims.SetCurrent("dead");
-            Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f); // Cae al morir[cite: 1]
-            pbody->ctype = ColliderType::UNKNOWN;
+
+            // BORRAMOS EL HITBOX PARA QUE NO TE MOLESTE MÁS
+            if (pbody != nullptr) {
+                Engine::GetInstance().physics->DeletePhysBody(pbody);
+                pbody = nullptr; // Lo ponemos a nulo para evitar problemas en Draw()
+            }
         }
-        if (anims.GetAnim("dead")->HasFinishedOnce()) pendingToDelete = true;
+
+        // Si la animación de muerte ya ha terminado...
+        if (anims.GetAnim("dead")->HasFinishedOnce()) {
+            pendingToDelete = true; // El EntityManager la borrará por completo
+        }
     }
 
     Draw(dt);
@@ -302,7 +311,9 @@ void NinfaMare::LaunchWaterWave() {
 }
 
 void NinfaMare::ApplyPhysics() {
-    Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+    if (pbody != nullptr) {
+        Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+    }
 }
 
 void NinfaMare::Draw(float dt) {
@@ -323,6 +334,10 @@ void NinfaMare::Draw(float dt) {
     const SDL_Rect& animFrame = anims.GetCurrentFrame();
     int x, y;
     pbody->GetPosition(x, y);
+
+    if (pbody != nullptr) {
+        pbody->GetPosition(x, y);
+    }
 
     SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
