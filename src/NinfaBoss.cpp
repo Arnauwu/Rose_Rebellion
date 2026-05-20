@@ -34,7 +34,8 @@ bool NinfaMare::Start()
     morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Muerte.wav");
     atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Ataquefuerte.wav");
     volarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Walking.wav");
-    gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Boss_Grito.wav");
+    gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Grito.wav");
+    hurtFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
 
     // Animaciones (Usando el sistema de aliases de la ninfa base)[cite: 1]
     std::unordered_map<int, std::string> aliases = {
@@ -415,6 +416,7 @@ void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
     }
 
     if (physB->ctype == ColliderType::PLAYER_ATTACK) {
+        Engine::GetInstance().audio->PlayFx(hurtFX);
         // 1. Aplicar daño
         TakeDamage(physB->listener->damage);
 

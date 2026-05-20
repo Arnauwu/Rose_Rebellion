@@ -36,6 +36,8 @@ public:
 
 	PhysBody* swordHitbox = nullptr;
 
+	Timer stepTimer;
+
 	// Boss parameters
 	bool isAttacking = false;
 	Timer startAttack;
@@ -54,6 +56,8 @@ public:
 	bool hasAppeared = false;
 	bool isSpawning = false;
 	Timer spawnTimer;
+
+	int caminarFx, atacarFx, morirFx, gritoFx, hurtFx;
 
 	int deathSoundId;
 };

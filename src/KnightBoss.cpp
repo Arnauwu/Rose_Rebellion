@@ -36,6 +36,12 @@ bool KnightBoss::Start() {
 	// Initialize parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
+	morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	caminarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
+	atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
+	gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	hurtFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
+
 	// Añadir físicas al enemigo - hitbox más grande para un boss
 	texW = 256;
 	texH = 256;
@@ -99,6 +105,7 @@ bool KnightBoss::Update(float dt)
 	{
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
+		Engine::GetInstance().audio->PlayFx(morirFx);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 
@@ -232,13 +239,20 @@ void KnightBoss::Move()
 	// 4. Movimiento de persecución normal (si estás lejos)
 	if (pathfinding->pathTiles.empty() && isKnockedback == false)
 	{
+		if (anims.GetCurrentName() == "walk") Engine::GetInstance().audio->StopFx(caminarFx);
 		anims.SetCurrent("idle");
 		velocity.x = 0;
 		return;
 	}
 	else if (playerTileDist >= 3 && playerTileDist < vision && isKnockedback == false)
 	{
-		anims.SetCurrent("walk");
+		//Engine::GetInstance().audio->PlayFx(caminarFx);
+		//anims.SetCurrent("walk");
+
+		if (anims.GetCurrentName() != "walk") {
+			Engine::GetInstance().audio->PlayFx(caminarFx);
+			anims.SetCurrent("walk");
+		}
 
 		if (pathfinding->pathTiles.back() == tilePos) {
 			pathfinding->pathTiles.pop_back();
@@ -272,7 +286,11 @@ void KnightBoss::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt");
+		isDashing = false;
+		if (anims.GetCurrentName() != "hurt") {
+			Engine::GetInstance().audio->PlayFx(hurtFx);
+			anims.SetCurrent("hurt");
+		}
 		if (lookingRight)
 		{
 			velocity.x = knockbackForce;
@@ -344,7 +362,10 @@ void KnightBoss::Draw(float dt)
 void KnightBoss::SwordAttack()
 {
 	if (isAttacking) {
-		anims.SetCurrent("attack");
+		if (anims.GetCurrentName() != "attack") {
+			Engine::GetInstance().audio->PlayFx(atacarFx);
+			anims.SetCurrent("attack");
+		}
 		velocity.x = 0;
 		damage = 20;
 
