@@ -425,6 +425,7 @@ bool Map::CleanUp()
 
 	mapData.spawnPoints.clear();
 	mapData.doors.clear();
+	mapData.paths.clear();
 
 	// Clean up collider list
 	for (const auto& collider : colliderList)
@@ -700,6 +701,8 @@ bool Map::Load(std::string path, std::string fileName)
 						Door newDoor;
 						newDoor.body = collider;
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						newDoor.x = obj->x;
+						newDoor.y = obj->y;
 
 						Properties::Property* glideProp = obj->properties.GetProperty("RequiresGlide");
 						if (glideProp != nullptr)
@@ -720,6 +723,7 @@ bool Map::Load(std::string path, std::string fileName)
 						}
 
 						mapData.doors.push_back(newDoor);
+						mapData.paths.push_back(newDoor);
 					}
 					else
 					{
@@ -960,6 +964,11 @@ Vector2D Map::GetMapSizeInPixels()
 Vector2D Map::GetMapSizeInTiles()
 {
 	return Vector2D((float)mapData.width, (float)mapData.height);
+}
+
+std::vector<Door> Map::GetPaths()
+{
+	return mapData.paths;
 }
 
 void Map::SpawnEntities()

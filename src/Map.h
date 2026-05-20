@@ -59,6 +59,9 @@ struct Door
     std::string spawnID;
     int width;
     int height;
+    int x;
+    int y;
+    
     bool requiresGlide;
 
     KeyType requiredKey = KeyType::NONE;
@@ -164,6 +167,8 @@ struct MapData
     std::vector<Door> doors;
     std::list<MapLayer*> layers;
     std::vector<PlayerSpawnPoint> spawnPoints;
+
+    std::vector<Door> paths;
 };
 
 class Map : public Module
@@ -212,6 +217,8 @@ public:
     int GetTileWidth() { return mapData.tileWidth;  }
 
     int GetTileHeight() { return mapData.tileHeight; }
+
+    std::vector<Door> GetPaths();
 
     // Entities
 
