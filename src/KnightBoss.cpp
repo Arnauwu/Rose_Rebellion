@@ -312,7 +312,7 @@ void KnightBoss::SwordAttack()
 	if (isAttacking) {
 		anims.SetCurrent("attack");
 		velocity.x = 0;
-		damage = 20;
+		damage = 30;
 
 		// 1. CREAR HITBOX: En el momento del impacto visual (ej: a los 500ms)
 		if (startAttack.ReadMSec() > 500 && swordHitbox == nullptr) {
@@ -351,15 +351,15 @@ void KnightBoss::ShieldDash() // TO DO: MAKE IT WORK (doesnt work because pbody 
 {
 	if (isDashing) {
 		anims.SetCurrent("walk");
-		damage = 0; // Solo empuja, no hace daño
+		damage = 20; // 
 
 		// Sale disparado hacia donde mira
-		velocity.x = lookingRight ? (speed * 3.5f) : (-speed * 3.5f);
+		velocity.x = lookingRight ? (speed * 7.5f) : (-speed * 7.5f);
 
 		// Terminar embestida
 		if (dashTimer.ReadMSec() >= dashCooldown) {
 			isDashing = false;
-			damage = 10; // Restaurar el daño normal
+			damage = 30; // Restaurar el daño normal
 			anims.SetCurrent("idle");
 
 			// Al terminar la embestida, se cansa por 3 segundos

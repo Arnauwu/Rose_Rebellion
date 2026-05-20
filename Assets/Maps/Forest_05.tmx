@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="33" nextobjectid="698">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="709">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -766,6 +766,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="20"/>
+   <tile gid="21"/>
+   <tile gid="22"/>
    <tile/>
    <tile/>
    <tile/>
@@ -773,12 +776,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="20"/>
+   <tile gid="21"/>
+   <tile gid="22"/>
    <tile/>
    <tile/>
    <tile/>
@@ -803,18 +803,56 @@
    <tile gid="32"/>
    <tile gid="29"/>
    <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="2147483652"/>
+   <tile gid="2147483650"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="2"/>
+   <tile gid="4"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="28"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="32"/>
+   <tile gid="39"/>
+   <tile gid="31"/>
+   <tile gid="31"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="2147483649"/>
+   <tile gid="29"/>
    <tile gid="30"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -836,49 +874,11 @@
    <tile gid="28"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="32"/>
-   <tile gid="39"/>
-   <tile gid="31"/>
+   <tile gid="1"/>
    <tile gid="31"/>
    <tile gid="32"/>
    <tile gid="37"/>
-   <tile gid="38"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="36"/>
+   <tile gid="37"/>
    <tile gid="40"/>
    <tile gid="40"/>
    <tile gid="40"/>
@@ -891,9 +891,14 @@
    <tile gid="39"/>
    <tile gid="32"/>
    <tile gid="37"/>
-   <tile gid="39"/>
-   <tile gid="40"/>
-   <tile gid="38"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="1073741867"/>
    <tile/>
    <tile/>
    <tile/>
@@ -910,20 +915,15 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="36"/>
+   <tile gid="3221225515"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="31"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
    <tile gid="31"/>
    <tile gid="40"/>
    <tile gid="37"/>
@@ -937,7 +937,12 @@
    <tile gid="39"/>
    <tile gid="37"/>
    <tile gid="31"/>
-   <tile gid="31"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="29"/>
    <tile gid="29"/>
@@ -955,19 +960,14 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="32"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="37"/>
+   <tile gid="31"/>
+   <tile gid="37"/>
    <tile gid="39"/>
    <tile gid="32"/>
    <tile gid="32"/>
@@ -988,7 +988,7 @@
    <tile gid="32"/>
    <tile gid="32"/>
    <tile gid="37"/>
-   <tile gid="40"/>
+   <tile gid="37"/>
    <tile gid="31"/>
    <tile gid="31"/>
    <tile gid="31"/>
@@ -1036,7 +1036,7 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -1058,6 +1058,19 @@
   <object id="305" x="512" y="2048" width="384" height="640"/>
   <object id="306" x="0" y="0" width="512" height="2688"/>
   <object id="694" x="512" y="-128" width="5504" height="128"/>
+  <object id="707" x="1792" y="1920" width="384" height="74"/>
+  <object id="708" x="3072" y="1920" width="384" height="76"/>
+ </objectgroup>
+ <objectgroup id="33" name="Rampa">
+  <properties>
+   <property name="Polygon" type="bool" value="true"/>
+  </properties>
+  <object id="702" x="896" y="2432">
+   <polygon points="0,0 0,-384 256,-256 512,-256 512,-128 640,0"/>
+  </object>
+  <object id="703" x="3584" y="2432">
+   <polygon points="0,0 128,-128 128,-256 512,-256 768,-384 1024,-384 1024,0"/>
+  </object>
  </objectgroup>
  <layer id="31" name="GroundNavLayer" width="45" height="21" visible="0">
   <properties>
@@ -2966,7 +2979,7 @@
   </data>
  </layer>
  <objectgroup id="11" name="EntitiesSpawnPoints">
-  <object id="557" name="NinfaBoss " type="NinfaBoss" x="2432" y="2176">
+  <object id="557" name="NinfaBoss " type="NinfaBoss" x="2560" y="2176">
    <point/>
   </object>
   <object id="697" name="Player" type="Player" x="4992" y="1920">
