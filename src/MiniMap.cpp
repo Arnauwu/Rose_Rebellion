@@ -3,6 +3,7 @@
 #include "Render.h"
 #include "Window.h"
 #include "Map.h"
+#include "Render.h"
 
 constexpr float CELL_SIZE = 100.0f;
 
@@ -113,20 +114,23 @@ void Minimap::SetCurrentRoom(const std::string& id)
 
 void Minimap::DrawMinimap()
 {
-    int x, y;
-    Engine::GetInstance().window->GetWindowSize(x,y);
+    int x = Engine::GetInstance().window->windowWidth;
+    int y = Engine::GetInstance().window->windowHeight;
+
+    float circleRadious = 3;
+
 
     float originX = x/2;
     float originY = y/2;
 
-    SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
+    float zoom = Engine::GetInstance().render->GetZoom();
     
     for (auto it = rooms.begin(); it != rooms.end(); ++it)
     {
         std::string id = it->first;
         MinimapRoom room = it->second;
 
-        SDL_FRect rect;
+        SDL_Rect rect;
 
         rect.x = originX + room.x * CELL_SIZE;
         rect.y = originY + room.y * CELL_SIZE;
@@ -134,28 +138,25 @@ void Minimap::DrawMinimap()
         rect.w = room.w;
         rect.h = room.h;
 
-        if (id == currentRoom)
+
+        if (id == "Nexo.tmx")
         {
-            SDL_SetRenderDrawColor(
-                renderer,
-                255,
-                255,
-                255,
-                255
-            );
+            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 144, 255, 255, 255, true, false);
+            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 0, 0, 128, 255, false, false);
         }
         else
         {
-            SDL_SetRenderDrawColor(
-                renderer,
-                120,
-                120,
-                120,
-                255
-            );
+            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 252, 75, 8, 255, true, false);
+            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 199, 110, 0, 255, false, false);
         }
 
-        SDL_RenderFillRect(renderer, &rect);
+
+        if (id == currentRoom)
+        {
+            Engine::GetInstance().render->DrawCircleUnscaled(rect.x + rect.w/2, rect.y + rect.h / 2, circleRadious, 255, 255, 255, 255, false);
+        }
+
+
 
         for (auto it = room.paths.begin(); it != room.paths.end(); ++it)
         {
@@ -166,23 +167,8 @@ void Minimap::DrawMinimap()
 
             float pathY = rect.y + path.y * rect.h;
 
-            SDL_FRect pathRect;
 
-            pathRect.x = pathX;
-            pathRect.y = pathY;
-
-            pathRect.w = 3;
-            pathRect.h = 3;
-
-            SDL_SetRenderDrawColor(
-                renderer,
-                255,
-                10,
-                10,
-                255
-            );
-
-            SDL_RenderFillRect(renderer, &pathRect);
+            Engine::GetInstance().render->DrawCircleUnscaled(pathX, pathY, circleRadious, 128, 128, 128, 255, false);
 
             //Render Lines (Conections between paths)
             auto targetIt = rooms.find(path.teleportTo);
@@ -201,19 +187,13 @@ void Minimap::DrawMinimap()
 
             SDL_FRect path2Rect;
 
-            float startX = pathRect.x + pathRect.w / 2;
-            float startY = pathRect.y + pathRect.h / 2;
+            float startX = pathX + circleRadious / 2;
+            float startY = pathY + circleRadious / 2;
 
-            float endX = path2X + pathRect.w / 2;
-            float endY = path2Y + pathRect.h / 2;
+            float endX = path2X + circleRadious / 2;
+            float endY = path2Y + circleRadious / 2;
 
-            SDL_RenderLine(
-                renderer,
-                startX,
-                startY,
-                endX,
-                endY
-            );
+            Engine::GetInstance().render->DrawLineUnscaled(startX, startY, endX, endY, 128, 128, 128, 255, false);
 
         }
     }

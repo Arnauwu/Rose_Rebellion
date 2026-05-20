@@ -313,7 +313,7 @@ bool GameScene::PostUpdate() {
 
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
-			Engine::GetInstance().render->DrawRectangleUnScaled(fullScreenRect, 0, 0, 0, 180, true, false);
+			Engine::GetInstance().render->DrawRectangleUnscaled(fullScreenRect, 0, 0, 0, 180, true, false);
 
 			switch (currentMenuTab) {
 			case GameMenuTab::INVENTORY:
