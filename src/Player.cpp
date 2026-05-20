@@ -506,12 +506,14 @@ void Player::Jump(float dt)
 				lookingRight = false;
 				anims.SetCurrent("wall_jump_left");
 				anims.GetAnim("wall_jump_left")->SetLoop(false);
+				printf("WALLJUMPLEFT");
 			}
 			else {
 				velocity.x = wJumpForceX;
 				lookingRight = true;
 				anims.SetCurrent("wall_jump_right");
 				anims.GetAnim("wall_jump_right")->SetLoop(false);
+				printf("WALLJUMPRIGHT");
 			}			
 			currentAnimPriority = 2;
 
@@ -536,7 +538,7 @@ void Player::Jump(float dt)
 
 			if (currentAnimPriority <= 2)
 			{
-				anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
+				//anims.SetCurrent(lookingRight ? "jump_right" : "jump_left");
 				currentAnimPriority = 2;
 			}
 
@@ -588,7 +590,7 @@ void Player::Attack(float dt)
 {
 	bool attackPressed = false;
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
 	{
 		attackPressed = true;
 	}
@@ -756,7 +758,7 @@ void Player::Dash()
 {
 	bool dashPressed = false;
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LCTRL) == KEY_DOWN)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
 		dashPressed = true;
 
 	if (Engine::GetInstance().input->IsGamepadConnected() &&
