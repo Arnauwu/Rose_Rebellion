@@ -1,4 +1,3 @@
-
 #include "SavePoint.h"
 
 #include "Engine.h"
@@ -20,42 +19,110 @@ bool SavePoint::Awake() {
 }
 
 bool SavePoint::Start() {
-	// Savepoint sensor: Activates when the player passes through it. The physics engine sends an OnCollision / OnTrigger notification	
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SavePoint.png");
 
-	texH = 64; texW = 64;
-	pbody = Engine::GetInstance().physics->CreateRectangleSensor((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW/2,texH, bodyType::STATIC);
+	std::unordered_map<int, std::string> aliases = {
+	  {0, "Activate"} // Animaci車n de activaci車n
+	};
+	anims.LoadFromTSX("Assets/Textures/Items/SavePoint/SS_Rosa.tsx", aliases);
+	anims.SetCurrent("Activate");
+	anims.GetAnim("Activate")->SetLoop(false);
+
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SS_Rosa_Noactive.png");
+
+	texH = 64;
+	texW = 64;
+
+	// Crear el sensor f赤sico usando la esquina superior izquierda (Top-Left)
+	pbody = Engine::GetInstance().physics->CreateRectangleSensor(
+		(int)position.getX(),
+		(int)position.getY(),
+		texW,
+		texH,
+		bodyType::STATIC
+	);
 
 	Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
-	// Savepoint type
+
 	pbody->ctype = ColliderType::SAVEPOINT;
-	// Bind a listener so this object can receive and handle collision events.
 	pbody->listener = this;
 
+	isActivated = false;
+	isActivating = false;
 	return true;
 }
 
 bool SavePoint::Update(float dt) {
 	int x, y;
+	// 'x' e 'y' son la esquina superior izquierda de la caja amarilla (Sensor)
 	pbody->GetPosition(x, y);
-	// Move the pivot from the center to the top-left.
-	Engine::GetInstance().render->DrawTexture(texture, x - texW, y - texH/2, NULL);
+
+	// ==========================================
+	// REPARACI?N DEFINITIVA: Offset Visual
+	// ==========================================
+	// Debido a que las im芍genes PNG suelen tener p赤xeles transparentes (padding)
+	// alrededor de la flor, la imagen se dibuja desplazada.
+	// ?? INSTRUCCIONES: Cambia estos n迆meros hasta que la flor encaje en la caja.
+	int visualOffsetX = -16; // ?? Negativo mueve la imagen a la IZQUIERDA. Positivo a la DERECHA.
+	int visualOffsetY = -32; // ?? Negativo mueve la imagen hacia ARRIBA. Positivo hacia ABAJO.
+
+	// Aplicamos el offset a la posici車n de dibujo
+	int drawX = x + visualOffsetX;
+	int drawY = y + visualOffsetY;
+
+	if (isActivating)
+	{
+		// Si est芍 en proceso de activaci車n, actualizamos y dibujamos la animaci車n
+		anims.Update(dt);
+		SDL_Rect animFrame = anims.GetCurrentFrame();
+
+		Engine::GetInstance().render->DrawTexture(texture, drawX, drawY, &animFrame);
+
+		// Comprobar si la animaci車n ya termin車
+		if (anims.GetAnim("Activate")->HasFinishedOnce())
+		{
+			isActivating = false;
+			isActivated = true;
+
+			// Cargar la imagen final est芍tica
+			Engine::GetInstance().textures->UnLoad(texture);
+			texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SavePoint.png");
+			LOG("SavePoint: Animaci車n terminada. Estado -> ACTIVE");
+		}
+	}
+	else
+	{
+		// Dibujamos la textura completa (NULL) en estado Inactivo o Completamente Activo
+		Engine::GetInstance().render->DrawTexture(texture, drawX, drawY, NULL);
+	}
 
 	return true;
 }
 
 bool SavePoint::CleanUp()
 {
-	Engine::GetInstance().textures->UnLoad(texture);
-	Engine::GetInstance().physics->DeletePhysBody(pbody);
+	if (texture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(texture);
+		texture = nullptr;
+	}
+	if (pbody != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
 	return true;
 }
 
 void SavePoint::Activate() {
-	// Activates on pass and prevents re-activation.
-	if (!isActivated) {
-		isActivated = true;
-		LOG("SavePoint Activated");
+	if (!isActivated && !isActivating) {
+
+		isActivating = true;
+
+		if (anims.GetAnim("Activate") != nullptr) {
+			anims.GetAnim("Activate")->Reset();
+		}
+
+		Engine::GetInstance().textures->UnLoad(texture);
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/SavePoint/SS_Rosa.png");
+
+		LOG("SavePoint: Activando... Estado -> ACTIVATING");
 	}
 }
-
