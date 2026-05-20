@@ -28,9 +28,9 @@ bool Bat::Awake() {
 
 bool Bat::Start()
 {
-   //morirBat = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Bat_Muerte.wav");
-   //atacarBat = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Bat_Ataquefuerte.wav");
-   //volarBat = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Bat_Walking.wav");
+   morirBat = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+   atacarBat = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MorderDip.wav");
+   volarBat = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/VolarDragon.wav");
     //Enemigo volador sprite
     
     std::unordered_map<int, std::string> aliases = {
@@ -92,6 +92,20 @@ bool Bat::Update(float dt)
         Move();
         Knockback();
         ApplyPhysics();
+
+        if ((velocity.x != 0 || velocity.y != 0) && !isKnockedback) {
+            if (!isFlyingSoundPlaying) {
+                Engine::GetInstance().audio->PlayFx(volarBat);
+                isFlyingSoundPlaying = true;
+            }
+        }
+        else {
+            if (isFlyingSoundPlaying) {
+                Engine::GetInstance().audio->StopFx(volarBat);
+                isFlyingSoundPlaying = false;
+            }
+        }
+
     }
 
     // Lógica al morir
@@ -100,6 +114,10 @@ bool Bat::Update(float dt)
         // Se ejecuta solo una vez al morir
         if (anims.GetCurrentName() != "dead")
         {
+            if (isFlyingSoundPlaying) {
+                Engine::GetInstance().audio->StopFx(volarBat);
+                isFlyingSoundPlaying = false;
+            }
             Engine::GetInstance().audio->PlayFx(morirBat);
             anims.SetCurrent("dead");
             anims.GetAnim("dead")->SetLoop(false);
@@ -123,18 +141,6 @@ bool Bat::Update(float dt)
             pendingToDelete = true;
         }
     }
-
-    bool isWalking = (velocity.x != 0 && !isdead && !isKnockedback);
-
-    if (isWalking && !wasWalking) {
-        Engine::GetInstance().audio->PlayFx(volarBat, 99);
-    }
-
-    else if (!isWalking && wasWalking) {
-        Engine::GetInstance().audio->StopFx(volarBat);
-    }
-
-    wasWalking = isWalking;
 
     Draw(dt);
     return true;
@@ -224,6 +230,10 @@ void Bat::Knockback()
 
     if (isKnockedback)
     {
+        if (isFlyingSoundPlaying) {
+            Engine::GetInstance().audio->StopFx(volarBat);
+            isFlyingSoundPlaying = false;
+        }
         // anims.SetCurrent("hurt");
         // Retrocede una corta distancia al ser herido
         velocity.x = lookingRight ? -knockbackForce : knockbackForce;
@@ -311,6 +321,7 @@ void Bat::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 
         break;
     case ColliderType::PLAYER:
+        Engine::GetInstance().audio->PlayFx(atacarBat);
         if (currentHealth > maxHealth)
         {
             currentHealth += 20;
