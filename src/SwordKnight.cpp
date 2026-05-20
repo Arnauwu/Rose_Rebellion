@@ -57,7 +57,7 @@ bool SwordKnight::Start()
 	//Add physics to the enemy - initialize physics body
 	texW = 256;
 	texH = 256;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 3) / 5, bodyType::DYNAMIC);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -317,14 +317,14 @@ void SwordKnight::Draw(float dt)
 		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
 		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1.5f);
 
 		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
 		delete r; delete g; delete b;
 	}
 	else
 	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 9, &animFrame, sdlFlip, 1.5f);
 	}
 }
 
@@ -357,11 +357,11 @@ void SwordKnight::Attack()
 
 		if (lookingRight)
 		{
-			attackX += texW / 2;
+			attackX += texW * 2 / 3;
 		}
 		else
 		{
-			attackX -= texW / 2;
+			attackX -= texW * 2 / 3;
 		}
 
 		attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, attackW, attackH, bodyType::STATIC);

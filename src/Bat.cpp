@@ -17,17 +17,7 @@
 
 Bat::Bat() : Enemy(EntityType::BAT)
 {
-    name = "NBat";
-    currentState = BatState::IDLE;
-
-    // Distancia ideal para que el jugador pueda atacarlo
-    targetOffsetX = 120.0f; // X
-    targetOffsetY = 80.0f;  // Y
-    attackRange = 350.0f;   // Rango de ataque
-
-    // Tiempo de carga y enfriamiento (cooldown)
-    windupDurationMs = 100.0f;   // Tiempo de carga
-    cooldownDurationMs = 2000.0f; // intervalo de ataque
+    name = "Bat";
 }
 
 Bat::~Bat() {}
@@ -44,21 +34,21 @@ bool Bat::Start()
     //Enemigo volador sprite
     
     std::unordered_map<int, std::string> aliases = {
-        {0, "idle"}, {3, "fly"}, {13, "attack"},{26, "attack"}, {39, "dead"},{39, "dead"}, { 52, "bullet" }
+        {0, "sleep"}, {4, "fly"}, {8, "dead"}
     };
-    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.tsx", aliases);
-    anims.SetCurrent("idle");
+    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Bat/SS_Murcielago.tsx", aliases);
+    anims.SetCurrent("fly");
  
-
-    // Textura temporal para pruebas (testear)
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Bat/SS_Murcielago.png");
    
    // Physic Body
-    texW = 64; 
-    texH = 64;
-    pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+    texW = 256; 
+    texH = 256;
+    pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 3, bodyType::DYNAMIC);
     pbody->listener = this;
-    pbody->ctype = ColliderType::ENEMY;
+
+    pbody->ctype = ColliderType::ENEMY_ATTACK;
+    damage = 10;
 
     // Elimina la gravedad para que pueda mantenerse en el aire
     if (pbody != nullptr && !B2_IS_NULL(pbody->body)) 
@@ -75,11 +65,11 @@ bool Bat::Start()
     pathFindingCooldown.Start();
 
     //Parametros basicos del enemigo volador
-    vision = 12;
-    speed = 2.5f;
+    vision = 15;
+    speed = 5.0f;
     knockbackForce = 5.0f;
-    maxHealth = 20;
-    currentHealth = 20;
+    maxHealth = 100;
+    currentHealth = 50;
 
     return true;
 }
@@ -176,124 +166,53 @@ void Bat::PerformPathfinding()
 void Bat::Move() {
     if (isdead || isKnockedback) return;
 
-    Player* player = Engine::GetInstance().entityManager->GetPlayer();
-    Vector2D playerPos = player->GetPosition();
-    Vector2D myPos = GetPosition();
-    float distToPlayer = (playerPos - myPos).magnitude();
+    Vector2D tilePos = GetTilePos();
 
-    // Controla la dirección a la que mira el enemigo
-    lookingRight = (playerPos.getX() > myPos.getX());
 
-    // Calcula la posición objetivo (dónde debe detenerse/flotar)
-    float dirX = (playerPos.getX() < myPos.getX()) ? 1.0f : -1.0f;
-    Vector2D targetPos(playerPos.getX() + (dirX * targetOffsetX), playerPos.getY() - targetOffsetY);
-
-    // Dirección de movimiento hacia la posición objetivo
-    Vector2D moveDir = { 0.0f, 0.0f };
-    bool usePathfinding = false;
-
-    if (pathfinding != nullptr && !pathfinding->pathTiles.empty())
-    {
-       
-        float euclideanDistInTiles = distToPlayer / 32.0f;
-        int pathSize = pathfinding->pathTiles.size();
-
-        // Si la ruta de cuadros verdes es mucho más larga que la línea recta, 
-        // significa que hay una pared o un pasillo bloqueando el camino.
-        bool isBlockedByWall = (pathSize > (euclideanDistInTiles * 1.5f + 3.0f));
-
-        // Si el enemigo está atrapado en un muro, O está extremadamente lejos, usa los cuadros verdes
-        if (isBlockedByWall || pathSize > 12) {
-            usePathfinding = true;
-        }
-    }
-
-    // Navegación
-    if (usePathfinding)
-    {
-        Vector2D tilePos = GetTilePos();
-
-        // Avanza consumiendo los cuadros verdes
-        if (pathfinding->pathTiles.back() == tilePos) {
-            pathfinding->pathTiles.pop_back();
-        }
-
-        if (!pathfinding->pathTiles.empty()) {
-            Vector2D nextTile = pathfinding->pathTiles.back();
-            Vector2D nextWorldPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
-
-            // Apuntar al centro del Tile
-            nextWorldPos.setX(nextWorldPos.getX() + 16.0f);
-            nextWorldPos.setY(nextWorldPos.getY() + 16.0f);
-
-            moveDir = (nextWorldPos - myPos).normalized();
-        }
-        else {
-            moveDir = (targetPos - myPos).normalized();
-        }
+    // Move if player has been found
+    if (pathfinding->pathTiles.empty()) {
+        velocity.x = 0;
+        return;
     }
     else
     {
-        // Si no hay muros de por medio, el enemigo te tiene a la vista y vuela fluido a su zona de disparo
-        moveDir = (targetPos - myPos).normalized();
-    }
-   
-    //Estado
-    switch (currentState) {
-    case BatState::IDLE:
-    {
-        if (distToPlayer < vision * 32.0f) {
-            currentState = BatState::CHASE;
+        if (pathfinding->pathTiles.back() == tilePos)
+        {
+            pathfinding->pathTiles.pop_back();
+            if (pathfinding->pathTiles.empty()) { return; }
         }
-        break;
-    }
-    case BatState::CHASE:
-    {
-        anims.SetCurrent("fly");
-        velocity.x = moveDir.getX() * speed;
-        velocity.y = moveDir.getY() * speed;
 
-        // Cuando entra en el rango de ataque, se prepara para disparar
-        if (distToPlayer <= attackRange) {
-            currentState = BatState::WINDUP;
-            stateTimer.Start();
-        }
-        break;
-    }
-    case BatState::WINDUP:
-    {
-        // Mantiene el movimiento mientras carga el ataque
-        velocity.x = moveDir.getX() * speed;
-        velocity.y = moveDir.getY() * speed;
+        Vector2D nextTile = pathfinding->pathTiles.back();
 
-        // Finaliza el tiempo de carga
-        if (stateTimer.ReadMSec() >= windupDurationMs) {
-            currentState = BatState::ATTACK;
-            anims.SetCurrent("attack");
+        if (nextTile.getX() > tilePos.getX())
+        {
+            velocity.x = speed;
+            lookingRight = true;
         }
-        break;
-    }
-    case BatState::ATTACK:
-    {
-        Engine::GetInstance().audio->PlayFx(atacarBat);
-        ShootProjectile(); // Dispara la bala
-        currentState = BatState::COOLDOWN;
-        stateTimer.Start();
-        break;
-    }
-    case BatState::COOLDOWN:
-    {
-        // Mantiene el movimiento hacia el jugador mientras espera para el siguiente disparo
-        velocity.x = moveDir.getX() * speed;
-        velocity.y = moveDir.getY() * speed;
+        else if (nextTile.getX() < tilePos.getX())
+        {
+            velocity.x = -speed;
+            lookingRight = false;
+        }
+        else
+        {
+            velocity.x = 0;
+        }
 
-        // Termina el enfriamiento y vuelve a perseguir
-        if (stateTimer.ReadMSec() >= cooldownDurationMs) {
-            currentState = BatState::CHASE;
+        if (nextTile.getY() > tilePos.getY())
+        {
+            velocity.y = speed;
         }
-        break;
+        else if (nextTile.getY() < tilePos.getY())
+        {
+            velocity.y = -speed;
+        }
+        else
+        {
+            velocity.y = 0;
+        }
     }
-    }
+    
 }
 void Bat::ApplyPhysics() {
     Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
@@ -346,14 +265,14 @@ void Bat::Draw(float dt)
         Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
         Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-        Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 0.75);
+        Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 1);
 
         Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
         delete r; delete g; delete b;
     }
     else
     {
-        Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 0.75);
+        Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 8, &animFrame, sdlFlip, 1);
     }
 }
 
@@ -391,7 +310,12 @@ void Bat::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
         Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), false);
 
         break;
-
+    case ColliderType::PLAYER:
+        if (currentHealth > maxHealth)
+        {
+            currentHealth += 20;
+        }
+        break;
     default:
         break;
     }
