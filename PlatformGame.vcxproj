@@ -216,6 +216,7 @@
     <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="WallJump.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
@@ -289,6 +290,7 @@
     <ClInclude Include="src\UISlider.h" />
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\Window.h" />
+    <ClInclude Include="WallJump.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml" />
