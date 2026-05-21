@@ -36,6 +36,8 @@ public:
 
 	PhysBody* swordHitbox = nullptr;
 
+	Timer stepTimer;
+
 	// Boss parameters
 	bool isAttacking = false;
 	Timer startAttack;
@@ -50,6 +52,12 @@ public:
 	bool isResting = false;     // Si est?cansado
 	Timer restTimer;            // Reloj para contar los 3 segundos
 	float restDuration = 3000.0f;
+
+	bool hasAppeared = false;
+	bool isSpawning = false;
+	Timer spawnTimer;
+
+	int caminarFx, atacarFx, morirFx, gritoFx, hurtFx;
 
 	int deathSoundId;
 };

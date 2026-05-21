@@ -25,10 +25,8 @@ bool Hud::Start() {
     LOG("Loading HUD");
     lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
 
-    // 1. PON AQUÍ LO QUE TE DIGAN LAS PROPIEDADES DE WINDOWS
-    // (Ejemplo: si en Windows pone 1920x1080, cambia los números)
-    float imagenAnchoReal = 6144.0f; // <--- ¡CAMBIA ESTO por el ancho real!
-    float imagenAltoReal = 5109.0f;  // <--- ¡CAMBIA ESTO por el alto real!
+    float imagenAnchoReal = 6144.0f;
+    float imagenAltoReal = 5109.0f;
 
     int cols = 12;
     int rows = 10;
@@ -121,10 +119,8 @@ bool Hud::PostUpdate() {
 }
 
 void Hud::DrawPlayerHealthBar() {
-    //if (lifeBarTexture == nullptr || lifeFrames.empty()) return;
-
     if (lifeBarTexture == nullptr) {
-        LOG("ERROR: La textura de la vida no se ha cargado. Revisa la ruta y el .jpg");
+        LOG("ERROR: La textura de la vida no se ha cargado. Revisa la ruta y el .png");
         return;
     }
     if (lifeFrames.empty()) {
@@ -139,20 +135,35 @@ void Hud::DrawPlayerHealthBar() {
     int maxHp = player->maxHealth;
     if (maxHp <= 0) return;
 
-    // 1. Calcular el porcentaje de vida
-    float hpPercent = (float)hp / (float)maxHp;
-    if (hpPercent < 0.0f) hpPercent = 0.0f;
-    if (hpPercent > 1.0f) hpPercent = 1.0f;
-
     int totalFrames = lifeFrames.size(); // Esto será 51
+    int frameActual = 0;
 
-    // 2. Elegir qué frame toca (invertido: si le queda 100% de vida (1.0), mostrará el frame 0. Si le queda 0%, mostrará el frame 50)
-    int frameActual = (int)((1.0f - hpPercent) * (totalFrames - 1));
+    // --- NUEVA LÓGICA ESTRICTA DE VIDA ---
+    // 1. REGLA ESTRICTA: 0 Vida = Último frame (Barra vacía)
+    if (hp <= 0 || player->isdead) {
+        frameActual = totalFrames - 1;
+    }
+    // 2. REGLA ESTRICTA: 100% Vida = Primer frame (Barra llena)
+    else if (hp >= maxHp) {
+        frameActual = 0;
+    }
+    // 3. ESTADOS INTERMEDIOS (Barra bajando)
+    else {
+        float hpPercent = (float)hp / (float)maxHp;
 
-    // Por seguridad, asegurarnos de que el índice no se salga de la lista
-    if (player->isdead || hp <= 0) frameActual = totalFrames - 1; // Último frame de todos
-    if (frameActual < 0) frameActual = 0;
-    if (frameActual >= totalFrames) frameActual = totalFrames - 1;
+        // Calculamos qué frame le toca
+        frameActual = (int)((1.0f - hpPercent) * (totalFrames - 1));
+
+        // Evitamos que muestre la barra vacía si aún le queda 1 punto de vida
+        if (frameActual >= totalFrames - 1) {
+            frameActual = totalFrames - 2;
+        }
+        // Evitamos que muestre la barra llena si ya le han hecho daño
+        if (frameActual <= 0) {
+            frameActual = 1;
+        }
+    }
+    // ------------------------------------
 
     // 3. Obtener el recorte precalculado y dibujarlo
     SDL_Rect srcRect = lifeFrames[frameActual];

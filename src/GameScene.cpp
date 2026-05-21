@@ -44,14 +44,37 @@ void GameScene::LoadMap(std::string mapFile)
 		return;
 	}
 
-	if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
+	//if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
+	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
+	//}
+	//else if (mapFile == "Nexo.tmx") {
+	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
+	//}
+	//else if (mapFile.find("Forest_01") != std::string::npos) {
+	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
+	//}
+	//else if (mapFile.find("Mountain_01") != std::string::npos) {
+	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
+	//}
+
+	if (mapFile.find("Castle") != std::string::npos && mapFile != "Nexo.tmx") {
+		// Esto cubrirá todos los mapas del castillo (Inside, Kitchen, Balcony, etc.)
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
 	}
 	else if (mapFile == "Nexo.tmx") {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav");
 	}
-	else if (mapFile.find("Forest_01") != std::string::npos) {
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
+	else if (mapFile.find("Forest") != std::string::npos) {
+		// Esto cubrirá Forest, Forest_01, Forest_02...
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav");
+	}
+	else if (mapFile.find("Mountain") != std::string::npos) {
+		// Esto cubrirá Mountain_01, Mountain_02...
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav");
+	}
+	else if (mapFile.find("Catacombs") != std::string::npos) {
+		// Añade la música para tus catacumbas aquí
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav");
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;

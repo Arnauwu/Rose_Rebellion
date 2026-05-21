@@ -8,6 +8,7 @@
 #include "Map.h"
 #include "Player.h" 
 #include "Log.h" 
+#include "Audio.h"
 #include "ParticleManager.h" 
 #include "Physics.h"
 
@@ -38,6 +39,12 @@ bool Dip::Start()
 	anims.SetCurrent("Idle");
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dip/SS_Dip.png");
+
+	morirDip = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	caminarDip = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/CorrerDip.wav");
+	zarpazoDip = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MorderDip.wav");
+	//aullarDip = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/d.wav");
+	saltarDip = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SaltarDip.wav");
 
 	// Cuerpo físico (Physbody)
 	texW = 390;
@@ -115,6 +122,26 @@ bool Dip::Update(float dt)
 		}
 	}
 
+	if (isdead) {
+		if (anims.GetCurrentName() != "Dead") {
+			// Parar de correr por si murió mientras caminaba
+			Engine::GetInstance().audio->StopFx(caminarDip);
+
+			// Reproducir sonido y animación
+			Engine::GetInstance().audio->PlayFx(morirDip);
+			anims.SetCurrent("Dead");
+			if (anims.GetAnim("Dead") != nullptr) anims.GetAnim("Dead")->SetLoop(false);
+
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+			pbody->ctype = ColliderType::UNKNOWN; // Hacerlo fantasma
+		}
+
+		// Desaparecer cuando termine la animación de muerte
+		if (anims.GetAnim("Dead") != nullptr && anims.GetAnim("Dead")->HasFinishedOnce()) {
+			pendingToDelete = true;
+		}
+	}
+
 	Draw(dt);
 	return true;
 }
@@ -154,7 +181,10 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 	{
 		if (phaseTimer.ReadMSec() < 400)
 		{
-			anims.SetCurrent("Jump");
+			if (anims.GetCurrentName() != "Jump") {
+				Engine::GetInstance().audio->PlayFx(saltarDip);
+				anims.SetCurrent("Jump");
+			}
 			velocity.x = (pos.getX() > playerPos.getX()) ? speed * 2.5f : -speed * 2.5f;
 			lookingRight = (playerPos.getX() > pos.getX());
 		}
@@ -292,7 +322,10 @@ void Dip::Move() {
 			// ==========================================
 			// MODIFICACIÓN: Lógica de Patrulla Simplificada
 			// ==========================================
-			anims.SetCurrent("Move");
+			if (anims.GetCurrentName() != "Move") {
+				Engine::GetInstance().audio->PlayFx(caminarDip);
+				anims.SetCurrent("Move");
+			}
 
 			// Cambiar de dirección de forma estricta cada 4 segundos (4000 ms).
 			// Evitamos comprobar si la velocidad es 0 para que no se buguee si el colisionador toca el suelo.
@@ -310,7 +343,10 @@ void Dip::Move() {
 	}
 
 	// 3. Movimiento normal siguiendo la ruta A*
-	anims.SetCurrent("Move");
+	if (anims.GetCurrentName() != "Move") {
+		Engine::GetInstance().audio->PlayFx(caminarDip);
+		anims.SetCurrent("Move");
+	}
 	if (pathfinding->pathTiles.back() == tilePos)
 	{
 		pathfinding->pathTiles.pop_back();
@@ -332,6 +368,7 @@ void Dip::Move() {
 	else
 	{
 		velocity.x = 0;
+		if (anims.GetCurrentName() == "Move") Engine::GetInstance().audio->StopFx(caminarDip); // Parar sonido
 		anims.SetCurrent("Idle");
 		lookingRight = (playerPos.getX() > pos.getX());
 	}
@@ -355,7 +392,14 @@ void Dip::AttackPlayer()
 	// Frecuencia de ataque: cada 500 ms (2 veces por segundo)
 	if (startAttack.ReadMSec() >= 500)
 	{
+		if (anims.GetCurrentName() == "Move") Engine::GetInstance().audio->StopFx(caminarDip);
+
+		// Efecto de sonido del mordisco
+		Engine::GetInstance().audio->PlayFx(zarpazoDip);
+
 		anims.SetCurrent("Attack");
+		// Resetear animación para que se vea cada vez que muerde
+		if (anims.GetAnim("Attack") != nullptr) anims.GetAnim("Attack")->Reset();
 		// 1. Reducir la salud del jugador
 		player->currentHealth -= attackDamage;
 
@@ -453,6 +497,7 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 		LOG("Dip hit! Damage = %d", physB->listener->damage);
 		Entity::TakeDamage(physB->listener->damage);
 		isKnockedback = true;
+		if (anims.GetCurrentName() == "Move") Engine::GetInstance().audio->StopFx(caminarDip);
 		anims.SetCurrent("Hit");
 
 		if (currentHealth <= 0) {

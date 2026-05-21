@@ -70,7 +70,7 @@ public:
     bool hasAppeared = false;
 
     // Sonidos
-    int volarFx, atacarFx, morirFx, gritoFx, waveFx;
+    int volarFx, atacarFx, morirFx, gritoFx, waveFx, hurtFX;
 
     // Control de ataques
     bool canDoSpecial = true;

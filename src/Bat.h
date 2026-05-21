@@ -27,6 +27,7 @@ protected:
 private:
 	void PerformPathfinding();
 	void ShootProjectile();
+	bool isFlyingSoundPlaying = false;
 
 public:
 	int volarBat;

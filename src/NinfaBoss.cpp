@@ -34,7 +34,8 @@ bool NinfaMare::Start()
     morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Muerte.wav");
     atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Ataquefuerte.wav");
     volarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Ninfa_Walking.wav");
-    gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Boss_Grito.wav");
+    gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Grito.wav");
+    hurtFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
 
     // Animaciones (Usando el sistema de aliases de la ninfa base)[cite: 1]
     std::unordered_map<int, std::string> aliases = {
@@ -119,6 +120,7 @@ bool NinfaMare::Update(float dt)
         if (stateTimer.ReadMSec() > 600.0f) {
             Vector2D dropPos = GetPosition();
 
+            dropPos.setY(dropPos.getY() + 50.0f);
             // 2. Instanciamos el Orbe de Dash
             auto orb = std::make_shared<DashObj>();
 
@@ -133,10 +135,10 @@ bool NinfaMare::Update(float dt)
 
                 // Calculamos un desplazamiento para separarlos: 
                 // i=0 (-40px), i=1 (0px, centro), i=2 (+40px)
-                float offsetX = (i - 1) * 40.0f;
+                float offsetX = (i - 1) * 80.0f;
 
                 // Los ponemos un poquito más arriba que el orbe del dash para que formen un arco
-                float offsetY = -20.0f;
+                float offsetY = 100.0f;
 
                 hOrb->position = Vector2D(dropPos.getX() + offsetX, dropPos.getY() + offsetY);
                 hOrb->Start();
@@ -414,6 +416,7 @@ void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
     }
 
     if (physB->ctype == ColliderType::PLAYER_ATTACK) {
+        Engine::GetInstance().audio->PlayFx(hurtFX);
         // 1. Aplicar daño
         TakeDamage(physB->listener->damage);
 

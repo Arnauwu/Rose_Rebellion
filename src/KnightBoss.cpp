@@ -36,6 +36,12 @@ bool KnightBoss::Start() {
 	// Initialize parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
+	morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	caminarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
+	atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
+	gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	hurtFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
+
 	// Añadir físicas al enemigo - hitbox más grande para un boss
 	texW = 256;
 	texH = 256;
@@ -99,6 +105,7 @@ bool KnightBoss::Update(float dt)
 	{
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
+		Engine::GetInstance().audio->PlayFx(morirFx);
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 
@@ -146,8 +153,42 @@ void KnightBoss::GetPhysicsValues() {
 
 void KnightBoss::Move() 
 {
-
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	Vector2D playerPos = player->GetPosition();
 	Vector2D tilePos = GetTilePos();
+
+	if (!hasAppeared) {
+		velocity.x = 0; // Se queda completamente quieto
+
+		// Si el jugador entra en rango visual, el Boss "despierta"
+		if (playerTileDist <= vision) {
+			hasAppeared = true;
+			isSpawning = true;
+			spawnTimer.Start();
+
+			anims.SetCurrent("jump2");
+			if (anims.GetAnim("jump2") != nullptr) anims.GetAnim("jump2")->Reset();
+
+			// Que mire dramáticamente hacia el jugador al despertar
+			lookingRight = (playerPos.getX() > position.getX());
+		}
+		else {
+			anims.SetCurrent("idle"); // Espera agachado o quieto
+		}
+		return; // IMPORTANTE: Evita que evalúe ataques o movimiento
+	}
+
+	// Mientras esté en plena animación de presentación...
+	if (isSpawning) {
+		velocity.x = 0;
+
+		// Ajusta los 1200ms al tiempo real que tarde tu animación 'jump2' en terminar
+		if (spawnTimer.ReadMSec() > 2000) {
+			isSpawning = false;
+			anims.SetCurrent("idle");
+		}
+		return; // Sigue bloqueando el resto de la IA
+	}
 
 	// 0. Si est?descansando (3 segundos)
 	if (isResting) {
@@ -198,13 +239,20 @@ void KnightBoss::Move()
 	// 4. Movimiento de persecución normal (si estás lejos)
 	if (pathfinding->pathTiles.empty() && isKnockedback == false)
 	{
+		if (anims.GetCurrentName() == "walk") Engine::GetInstance().audio->StopFx(caminarFx);
 		anims.SetCurrent("idle");
 		velocity.x = 0;
 		return;
 	}
 	else if (playerTileDist >= 3 && playerTileDist < vision && isKnockedback == false)
 	{
-		anims.SetCurrent("walk");
+		//Engine::GetInstance().audio->PlayFx(caminarFx);
+		//anims.SetCurrent("walk");
+
+		if (anims.GetCurrentName() != "walk") {
+			Engine::GetInstance().audio->PlayFx(caminarFx);
+			anims.SetCurrent("walk");
+		}
 
 		if (pathfinding->pathTiles.back() == tilePos) {
 			pathfinding->pathTiles.pop_back();
@@ -238,7 +286,11 @@ void KnightBoss::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt");
+		isDashing = false;
+		if (anims.GetCurrentName() != "hurt") {
+			Engine::GetInstance().audio->PlayFx(hurtFx);
+			anims.SetCurrent("hurt");
+		}
 		if (lookingRight)
 		{
 			velocity.x = knockbackForce;
@@ -310,7 +362,10 @@ void KnightBoss::Draw(float dt)
 void KnightBoss::SwordAttack()
 {
 	if (isAttacking) {
-		anims.SetCurrent("attack");
+		if (anims.GetCurrentName() != "attack") {
+			Engine::GetInstance().audio->PlayFx(atacarFx);
+			anims.SetCurrent("attack");
+		}
 		velocity.x = 0;
 		damage = 30;
 
@@ -375,6 +430,9 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 		return;
 	}
 
+	if (isSpawning || isdead) {
+		return;
+	}
 
 	switch (physB->ctype)
 	{
