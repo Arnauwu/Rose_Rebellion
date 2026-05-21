@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="481">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="499">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -25711,7 +25711,7 @@
    <tile gid="111"/>
    <tile gid="112"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile/>
    <tile/>
    <tile/>
@@ -25849,7 +25849,7 @@
    <tile gid="111"/>
    <tile gid="112"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="2147483730"/>
    <tile/>
@@ -25987,7 +25987,7 @@
    <tile gid="105"/>
    <tile gid="111"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="2147483730"/>
    <tile/>
@@ -26126,7 +26126,7 @@
    <tile gid="112"/>
    <tile gid="113"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="2147483730"/>
    <tile/>
    <tile/>
@@ -27638,8 +27638,8 @@
    <tile/>
    <tile/>
    <tile gid="112"/>
-   <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
+   <tile gid="71"/>
    <tile gid="72"/>
    <tile gid="2147483730"/>
    <tile/>
@@ -27963,15 +27963,15 @@
    <tile gid="111"/>
    <tile gid="112"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="72"/>
    <tile gid="73"/>
    <tile gid="71"/>
    <tile gid="71"/>
    <tile gid="72"/>
-   <tile gid="2147483768"/>
-   <tile gid="2147483767"/>
+   <tile gid="71"/>
+   <tile gid="74"/>
    <tile gid="2147483760"/>
    <tile gid="2147483759"/>
    <tile gid="106"/>
@@ -28101,7 +28101,7 @@
    <tile gid="104"/>
    <tile gid="111"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="2147483730"/>
    <tile/>
@@ -28112,7 +28112,7 @@
    <tile/>
    <tile/>
    <tile gid="82"/>
-   <tile gid="2147483768"/>
+   <tile gid="74"/>
    <tile gid="2147483767"/>
    <tile gid="114"/>
    <tile/>
@@ -30206,7 +30206,7 @@
    <tile gid="111"/>
    <tile gid="112"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="72"/>
    <tile gid="73"/>
@@ -33740,7 +33740,7 @@
    <tile/>
    <tile gid="82"/>
    <tile gid="73"/>
-   <tile gid="2147483768"/>
+   <tile gid="74"/>
    <tile gid="2147483767"/>
    <tile gid="113"/>
    <tile gid="2147483760"/>
@@ -34024,7 +34024,7 @@
    <tile gid="82"/>
    <tile gid="72"/>
    <tile gid="73"/>
-   <tile gid="120"/>
+   <tile gid="74"/>
    <tile gid="2147483768"/>
    <tile gid="2147483767"/>
    <tile/>
@@ -35791,7 +35791,7 @@
    <tile/>
    <tile/>
    <tile gid="82"/>
-   <tile gid="2147483768"/>
+   <tile gid="74"/>
    <tile gid="2147483767"/>
    <tile gid="113"/>
    <tile gid="2147483760"/>
@@ -50448,6 +50448,9 @@
   </data>
  </layer>
  <layer id="29" name="Decoración" width="140" height="90">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <data>
    <tile/>
    <tile/>
@@ -75659,11 +75662,6 @@
    <tile gid="1"/>
   </data>
  </layer>
- <objectgroup color="#aaff7f" id="19" name="OrbeRef">
-  <object id="166" name="Orbe" type="Orbe" x="16512" y="1920">
-   <point/>
-  </object>
- </objectgroup>
  <objectgroup color="#aa0000" id="21" name="Spikes">
   <properties>
    <property name="Danger" type="bool" value="true"/>
@@ -75692,6 +75690,9 @@
   </object>
  </objectgroup>
  <objectgroup color="#000000" id="28" name="Stairs">
+  <properties>
+   <property name="Polygon" type="bool" value="true"/>
+  </properties>
   <object id="413" x="16256" y="7680">
    <polygon points="0,0 128,-128 128,0"/>
   </object>
@@ -76104,6 +76105,39 @@
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="403" name="Player" type="Player" x="5888" y="384">
+   <point/>
+  </object>
+  <object id="481" name="SavePoint" type="SavePoint" x="16896" y="7296">
+   <point/>
+  </object>
+  <object id="482" name="SavePoint" type="SavePoint" x="5760" y="3072">
+   <point/>
+  </object>
+  <object id="483" name="SkillPointOrb" type="SkillPointOrb" x="16512" y="1920">
+   <point/>
+  </object>
+  <object id="484" name="Ninfa" type="Ninfa" x="2816" y="1536">
+   <point/>
+  </object>
+  <object id="485" name="Ninfa" type="Ninfa" x="2688" y="3328">
+   <point/>
+  </object>
+  <object id="486" name="Ninfa" type="Ninfa" x="8192" y="6016">
+   <point/>
+  </object>
+  <object id="487" name="Ninfa" type="Ninfa" x="7040" y="2816">
+   <point/>
+  </object>
+  <object id="495" name="CucaferaShiny" type="CucaferaShiny" x="9984" y="3712">
+   <point/>
+  </object>
+  <object id="496" name="CucaferaShiny" type="CucaferaShiny" x="8448" y="2048">
+   <point/>
+  </object>
+  <object id="497" name="CucaferaShiny" type="CucaferaShiny" x="12672" y="7040">
+   <point/>
+  </object>
+  <object id="498" name="CucaferaShiny" type="CucaferaShiny" x="10496" y="9344">
    <point/>
   </object>
  </objectgroup>

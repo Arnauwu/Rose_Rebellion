@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="38" nextobjectid="539">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="38" nextobjectid="556">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -35066,6 +35066,9 @@
   </data>
  </layer>
  <layer id="33" name="ToxicWater" width="280" height="125">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <data>
    <tile/>
    <tile/>
@@ -119575,7 +119578,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="73"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="71"/>
    <tile gid="72"/>
@@ -128538,7 +128541,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="71"/>
+   <tile gid="2147483722"/>
    <tile gid="72"/>
    <tile gid="73"/>
    <tile gid="71"/>
@@ -128553,7 +128556,7 @@
    <tile gid="71"/>
    <tile gid="72"/>
    <tile gid="73"/>
-   <tile gid="71"/>
+   <tile gid="74"/>
    <tile/>
    <tile/>
    <tile/>
@@ -134645,7 +134648,7 @@
    <tile gid="71"/>
    <tile gid="72"/>
    <tile gid="73"/>
-   <tile gid="2147483768"/>
+   <tile gid="74"/>
    <tile gid="2147483767"/>
    <tile gid="2147483759"/>
    <tile gid="2147483751"/>
@@ -134914,7 +134917,7 @@
    <tile gid="111"/>
    <tile gid="112"/>
    <tile gid="119"/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="2147483730"/>
    <tile/>
@@ -134926,7 +134929,7 @@
    <tile/>
    <tile/>
    <tile gid="82"/>
-   <tile gid="2147483768"/>
+   <tile gid="74"/>
    <tile gid="2147483767"/>
    <tile gid="2147483759"/>
    <tile gid="106"/>
@@ -135207,7 +135210,7 @@
    <tile/>
    <tile/>
    <tile gid="82"/>
-   <tile gid="2147483768"/>
+   <tile gid="74"/>
    <tile gid="2147483767"/>
    <tile gid="114"/>
    <tile/>
@@ -135471,7 +135474,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="71"/>
    <tile gid="2147483730"/>
    <tile/>
@@ -136021,7 +136024,7 @@
    <tile/>
    <tile/>
    <tile gid="82"/>
-   <tile gid="121"/>
+   <tile gid="74"/>
    <tile gid="2147483768"/>
    <tile gid="2147483767"/>
    <tile gid="2147483759"/>
@@ -136612,7 +136615,7 @@
    <tile/>
    <tile/>
    <tile gid="82"/>
-   <tile gid="122"/>
+   <tile gid="74"/>
    <tile/>
    <tile/>
    <tile/>
@@ -136639,7 +136642,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="120"/>
+   <tile gid="2147483722"/>
    <tile gid="2147483730"/>
    <tile/>
    <tile/>
@@ -210114,11 +210117,6 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup color="#aaff7f" id="28" name="OrbeRef">
-  <object id="239" name="Orbe" type="Orbe" x="33536" y="12928">
-   <point/>
-  </object>
- </objectgroup>
  <objectgroup color="#00ffff" id="25" name="LlaveRef"/>
  <objectgroup color="#aa0000" id="26" name="PlataformasRefGiro">
   <object id="220" x="26368" y="9984" width="512" height="128"/>
@@ -210174,7 +210172,7 @@
   </properties>
   <object id="484" x="35968" y="6016" width="128" height="512">
    <properties>
-    <property name="TeleportTo" type="file" value="Catacombs_Boss_Alive.tmx"/>
+    <property name="TeleportTo" type="file" value="Catacombs_Boss_Dead.tmx"/>
    </properties>
   </object>
   <object id="485" x="-256" y="10752" width="128" height="1024">
@@ -210231,6 +210229,9 @@
   </object>
   <object id="538" x="6528" y="9856">
    <polygon points="0,0 0,256 -256,256"/>
+  </object>
+  <object id="555" x="18176" y="13824">
+   <polygon points="0,0 0,256 256,256"/>
   </object>
  </objectgroup>
  <objectgroup color="#000000" id="29" name="Map">
@@ -210410,9 +210411,6 @@
   <object id="486" x="3200" y="12032" width="512" height="256"/>
   <object id="487" x="2304" y="12416" width="512" height="256"/>
   <object id="488" x="1408" y="12032" width="512" height="256"/>
-  <object id="530" x="18176" y="13824">
-   <polygon points="0,0 0,256 256,256"/>
-  </object>
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="489" name="Player" type="Player" x="35584" y="6400">
@@ -210586,6 +210584,51 @@
     <property name="WaitTime" type="int" value="1000"/>
    </properties>
   </object>
+  <object id="540" name="SavePoint" type="SavePoint" x="34816" y="6400">
+   <point/>
+  </object>
+  <object id="541" name="SavePoint" type="SavePoint" x="8576" y="9728">
+   <point/>
+  </object>
+  <object id="542" name="SkillPointOrb" type="SkillPointOrb" x="33536" y="12928">
+   <point/>
+  </object>
+  <object id="543" name="Bat" type="Bat" x="2048" y="11648">
+   <point/>
+  </object>
+  <object id="544" name="Bat" type="Bat" x="2816" y="12032">
+   <point/>
+  </object>
+  <object id="545" name="Bat" type="Bat" x="1536" y="12672">
+   <point/>
+  </object>
+  <object id="546" name="Bat" type="Bat" x="8704" y="14080">
+   <point/>
+  </object>
+  <object id="547" name="Bat" type="Bat" x="14720" y="13440">
+   <point/>
+  </object>
+  <object id="548" name="Bat" type="Bat" x="18944" y="13056">
+   <point/>
+  </object>
+  <object id="549" name="Bat" type="Bat" x="26368" y="13184">
+   <point/>
+  </object>
+  <object id="550" name="Bat" type="Bat" x="20736" y="6784">
+   <point/>
+  </object>
+  <object id="551" name="Bat" type="Bat" x="23296" y="6784">
+   <point/>
+  </object>
+  <object id="552" name="Bat" type="Bat" x="30080" y="9856">
+   <point/>
+  </object>
+  <object id="553" name="Bat" type="Bat" x="32768" y="7808">
+   <point/>
+  </object>
+  <object id="554" name="Bat" type="Bat" x="31360" y="6144">
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns">
   <properties>
@@ -210593,7 +210636,7 @@
   </properties>
   <object id="50" name="Player" type="Player" x="35584" y="6400">
    <properties>
-    <property name="FromRoom" type="file" value="Catacombs_Boss_Alive.tmx"/>
+    <property name="FromRoom" type="file" value="Catacombs_Boss_Dead.tmx"/>
    </properties>
    <point/>
   </object>

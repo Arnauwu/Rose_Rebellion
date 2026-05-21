@@ -630,6 +630,8 @@ bool Map::Load(std::string path, std::string fileName)
 			{
 				for (const auto& obj : objectsGroups->objects)
 				{
+					if (obj->width <= 0 || obj->height <= 0) continue;
+
 					PhysBody* collider;
 					if (objectsGroups->properties.GetProperty("Sensor") != NULL and objectsGroups->properties.GetProperty("Sensor")->value) // Trigger
 					{
@@ -823,7 +825,7 @@ bool Map::Load(std::string path, std::string fileName)
 					colliderList.push_back(collider);
 				}
 			}
-			else if (objectsGroups->properties.GetProperty("Polygon") != NULL && objectsGroups->properties.GetProperty("Polygon")->value) // NUEVO: POLYGON
+			else if (objectsGroups->properties.GetProperty("Polygon") != NULL && objectsGroups->properties.GetProperty("Polygon")->value)
 			{
 				for (const auto& obj : objectsGroups->objects)
 				{
