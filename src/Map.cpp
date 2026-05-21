@@ -43,6 +43,7 @@
 #include "GameManager.h"
 #include "SavePoint.h"
 #include "Door.h"
+#include "CatacumbaDoor.h" 
 #include "Item.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"

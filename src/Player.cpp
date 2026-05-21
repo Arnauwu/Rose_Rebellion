@@ -8,6 +8,7 @@
 #include "GameManager.h"
 #include "ParticleManager.h"
 #include "dialogueManager.h"
+#include "CatacumbaDoor.h"
 #include "Npc.h"
 
 #include "Log.h"
@@ -890,12 +891,25 @@ void Player::Interact()
 						int doorW, doorH;
 						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
-						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+						if (requiredKey == KeyType::CATACUMBA)
+						{
+						
+							auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::CATACUMBA_DOOR);
+							CatacumbaDoorEntity* catacumbaDoorAnim = (CatacumbaDoorEntity*)newEntity.get();
 
-						if (doorAnim != nullptr) {
-							doorAnim->zOrder = -1;
-							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+							if (catacumbaDoorAnim != nullptr) {
+								catacumbaDoorAnim->zOrder = -1;
+								catacumbaDoorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+							}
+						}
+						else {
+							auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+							DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+							if (doorAnim != nullptr) {
+								doorAnim->zOrder = -1;
+								doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+							}
 						}
 					}
 				}

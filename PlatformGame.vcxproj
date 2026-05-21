@@ -151,6 +151,7 @@
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Bat.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
+    <ClCompile Include="src\CatacumbaDoor.cpp" />
     <ClCompile Include="src\Cinematics.cpp" />
     <ClCompile Include="src\Cucafera.cpp" />
     <ClCompile Include="src\CucaferaMutant.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Bat.h" />
     <ClInclude Include="src\CameraController.h" />
+    <ClInclude Include="src\CatacumbaDoor.h" />
     <ClInclude Include="src\Cinematics.h" />
     <ClInclude Include="src\Cucafera.h" />
     <ClInclude Include="src\CucaferaMutant.h" />
