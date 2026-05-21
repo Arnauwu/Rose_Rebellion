@@ -33,6 +33,16 @@ bool ParticleManager::Start() {
     }
 
     // 2. Cargar texturas de los demás efectos (Impactos, Sangre, Pickups)
+    attackSpriteSheet= Engine::GetInstance().textures->Load("Assets/Textures/Particles/SS_efectos_destello_ataque.png");
+
+    AnimationSet attackAnimSet;
+    std::unordered_map<int, std::string> attackAliases = { {0,"Attack1"}, {16,"Attack2"} };
+    if (attackAnimSet.LoadFromTSX("Assets/Textures/Particles/SS_efectos_destello_ataque.tsx", attackAliases)) {
+        if (attackAnimSet.Has("Attack1")) animAttack1 = *attackAnimSet.GetAnim("Attack1");
+        if (attackAnimSet.Has("Attack2")) animAttack2 = *attackAnimSet.GetAnim("Attack2");
+    }
+
+
     hitP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/hitP.png");
     bloodP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/bloodP.png");
     pickP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/pickP.png");
@@ -90,12 +100,10 @@ bool ParticleManager::PostUpdate() {
                 
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha / 2);
                
-                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x + 3.0f, particle.y + 3.0f, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, 1, particle.angle);
-                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
+                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x + 3.0f, particle.y + 3.0f, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha);
 
-                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, 1, particle.angle);
-
+                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);
                 SDL_SetTextureAlphaMod(particle.texture, 255);
                 SDL_SetTextureColorMod(particle.texture, 255, 255, 255);
             }
@@ -130,6 +138,10 @@ bool ParticleManager::CleanUp() {
     if (bloodP != nullptr) {
         Engine::GetInstance().textures->UnLoad(bloodP);
         bloodP = nullptr;
+    }
+    if (attackSpriteSheet != nullptr) {
+        Engine::GetInstance().textures->UnLoad(attackSpriteSheet);
+        attackSpriteSheet = nullptr;
     }
     return true;
 }
@@ -183,10 +195,10 @@ void ParticleManager::Emit(SDL_Texture* texture, float x, float y, float vx, flo
 }
 
 // Sobrecarga 3: Partícula con Animación
-void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity, SDL_FlipMode flipMode) {
+void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity, SDL_FlipMode flipMod, float scale) {
     int index = FindNextDeadParticle();
 
-    pool[index].x = x;
+    pool[index].x = x;  
     pool[index].y = y;
     pool[index].vx = vx;
     pool[index].vy = vy;
@@ -204,7 +216,8 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
     pool[index].anim = anim;
     pool[index].anim.Reset();
     pool[index].isAnimated = true;
-    pool[index].flipMode = flipMode;
+    pool[index].flipMode = flipMod;
+    pool[index].scale = scale;
 
     pool[index].active = true;
 }
@@ -362,4 +375,21 @@ int ParticleManager::FindNextDeadParticle() {
     }
     lastUsedParticle = 0;
     return 0;
+}
+
+void ParticleManager::EmitAttack(float x, float y, bool lookingRight) {
+    float life = 200.0f;
+    float scale = 2.0f;
+
+    if (attackSpriteSheet != nullptr) {
+        int randomChoice = rand() % 2;
+        Animation* selectedAnim = (randomChoice == 0) ? &animAttack1 : &animAttack2;
+        if (selectedAnim->GetFrameCount() > 0) {
+            SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+
+        
+            Emit(attackSpriteSheet, *selectedAnim, x, y, 0, 0,
+                life, 150.0f, true, 0.0f, flip, scale);
+        }
+    }
 }

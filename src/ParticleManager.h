@@ -10,6 +10,7 @@ struct Particle {
     float vx, vy;
     float life = 0.0f;
     float maxLife = 0.0f;
+    float scale = 1.0f;
     SDL_Color color = { 255, 255, 255, 255 };
     float size = 1.0f;
     bool active = false;
@@ -39,7 +40,7 @@ public:
 
     void Emit(float x, float y, float vx, float vy, float life, SDL_Color color, float size, bool useCamera = true);
     void Emit(SDL_Texture* texture, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f);
-    void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f, SDL_FlipMode flipMode = SDL_FLIP_NONE);
+    void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f, SDL_FlipMode flipMode = SDL_FLIP_NONE, float scale = 1.0f);
 
     // Nuevas funciones de emisi¨®n para el SpriteSheet unificado
     void EmitDust(float x, float y, bool lookingRight); // andar
@@ -49,6 +50,7 @@ public:
     // Otros efectos
     void EmitHitSparks(float x, float y, bool isBlood = false);
     void EmitItemPickup(float x, float y);
+    void EmitAttack(float x, float y, bool lookingRight);
     void EmitRain(float cameraX, float cameraY, int cameraW, int cameraH);
     void EmitSwordSlash(float x, float y, bool lookingRight);
 
@@ -60,6 +62,10 @@ public:
     Animation animDashDust; // "dash"
 
     // --- Otros Efectos ---
+    SDL_Texture* attackSpriteSheet = nullptr;
+    Animation animAttack1;
+    Animation animAttack2;
+
     SDL_Texture* hitP = nullptr;
     Animation animHitSpark;
 

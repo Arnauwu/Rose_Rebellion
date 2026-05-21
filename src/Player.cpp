@@ -693,6 +693,7 @@ void Player::Attack(float dt)
 
 			attackCollider->ctype = ColliderType::PLAYER_ATTACK;
 			attackCollider->listener = this;
+			
 		}
 	}
 
@@ -1390,7 +1391,15 @@ int Player::GetItemCount(ItemID id) {
 // Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
-	if (physA == attackCollider) { return; }
+	if (physA == attackCollider) {
+		if (physB->ctype == ColliderType::ENEMY) {
+			int ex, ey;
+			physB->GetPosition(ex, ey);
+			Engine::GetInstance().particleManager->EmitAttack((float)ex, (float)ey, lookingRight);
+		}
+		return;
+	}
+
 	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER) { return; }
 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
