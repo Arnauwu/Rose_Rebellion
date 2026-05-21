@@ -25,6 +25,12 @@ bool Hud::Start() {
     LOG("Loading HUD");
     lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
 
+    tutWalkTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Caminar_V1.png");
+    tutJumpTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Saltar_V1.png");
+    tutGlideTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Planear_V1.png");
+    tutDashTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Dash_V1.png");
+    tutAttackTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Atacar-V1.png");
+
     float imagenAnchoReal = 6144.0f;
     float imagenAltoReal = 5109.0f;
 
@@ -93,6 +99,14 @@ bool Hud::Update(float dt) {
         }
     }
 
+    if (tutorialTimer > 0.0f) {
+        tutorialTimer -= dt / 1000.0f;
+        if (tutorialTimer < 0.0f) {
+            tutorialTimer = 0.0f;
+            currentTutorial = TutorialType::NONE; // Lo ocultamos al acabar
+        }
+    }
+
     return true;
 }
 
@@ -114,6 +128,7 @@ bool Hud::PostUpdate() {
     DrawMineralIndicator();
     DrawDiamondCounter();
     DrawNotification();
+    DrawTutorial();
 
     return true;
 }
@@ -208,6 +223,11 @@ bool Hud::CleanUp() {
         Engine::GetInstance().textures->UnLoad(lifeBarTexture);
         lifeBarTexture = nullptr;
     }
+    if (tutWalkTex != nullptr) Engine::GetInstance().textures->UnLoad(tutWalkTex);
+    if (tutJumpTex != nullptr) Engine::GetInstance().textures->UnLoad(tutJumpTex);
+    if (tutGlideTex != nullptr) Engine::GetInstance().textures->UnLoad(tutGlideTex);
+    if (tutDashTex != nullptr) Engine::GetInstance().textures->UnLoad(tutDashTex);
+    if (tutAttackTex != nullptr) Engine::GetInstance().textures->UnLoad(tutAttackTex);
     return true;
 }
 
@@ -256,4 +276,58 @@ void Hud::DrawNotification() {
 
         Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color, FontType::MENU);
     }
+}
+
+void Hud::ShowTutorial(TutorialType type) {
+    currentTutorial = type;
+    tutorialTimer = TUTORIAL_DURATION; // Reinicia el temporizador
+}
+
+void Hud::DrawTutorial() {
+    if (currentTutorial == TutorialType::NONE || tutorialTimer <= 0.0f) return;
+
+    SDL_Texture* textureToDraw = nullptr;
+
+    switch (currentTutorial) {
+    case TutorialType::WALK:   textureToDraw = tutWalkTex; break;
+    case TutorialType::JUMP:   textureToDraw = tutJumpTex; break;
+    case TutorialType::GLIDE:  textureToDraw = tutGlideTex; break;
+    case TutorialType::DASH:   textureToDraw = tutDashTex; break;
+    case TutorialType::ATTACK: textureToDraw = tutAttackTex; break;
+    default: return;
+    }
+
+    if (textureToDraw == nullptr) return;
+
+    // Calcular el nivel de transparencia para el desvanecimiento final (el último segundo se borra poco a poco)
+    Uint8 alpha = 255;
+    if (tutorialTimer < 1.0f) {
+        alpha = (Uint8)(255.0f * tutorialTimer);
+    }
+    SDL_SetTextureAlphaMod(textureToDraw, alpha);
+
+    // Obtener dimensiones reales de la textura
+    float texW, texH;
+    SDL_GetTextureSize(textureToDraw, &texW, &texH);
+
+    // Dónde y a qué tamaño dibujarlo
+    SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
+    int screenW = Engine::GetInstance().window->windowWidth;
+    int screenH = Engine::GetInstance().window->windowHeight;
+
+    // Puedes multiplicar el texW y texH por un factor si la imagen es muy grande o pequeña
+    float scale = 0.8f;
+
+    SDL_FRect dstFRect;
+    dstFRect.w = texW * scale;
+    dstFRect.h = texH * scale;
+    // Centrado horizontal
+    dstFRect.x = (screenW - dstFRect.w) / 2.0f;
+    // Posicionado en la parte inferior de la pantalla (a 100 px del borde)
+    dstFRect.y = 60.0f;
+
+    SDL_RenderTexture(renderer, textureToDraw, nullptr, &dstFRect);
+
+    // Restaurar el alpha a 255 por seguridad
+    SDL_SetTextureAlphaMod(textureToDraw, 255);
 }
