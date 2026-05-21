@@ -237,7 +237,7 @@ private:
 
 	bool wasWalking = false;
 	float stepTimer = 0.0f;
-	float timeBetweenSteps = 0.35f;
+	float timeBetweenSteps = 15.5f;
 	float footX = 0.0f;
 	float footY = 0.0f;
 	float lookDownTimer = 0.0f;
