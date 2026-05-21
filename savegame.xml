@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="70" maxHealth="100" keyCount="0" currentForceOrbs="0" />
-	<Unlockables hasSickle="false" glideUnlocked="false" dashUnlocked="false" doubleJumpUnlocked="false" />
-	<WorldState currentMap="Forest_01.tmx">
-		<Position x="11136" y="2176" />
+	<PlayerStats currentHealth="20" maxHealth="100" keyCount="0" currentForceOrbs="11" />
+	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" />
+	<WorldState currentMap="Catacombs_Boss_Dead.tmx">
+		<Position x="5503" y="5632" />
 	</WorldState>
 	<OpenedDoors />
-	<CollectedItems />
+	<CollectedItems>
+		<Item id="Catacombs_02_F.tmx_SkillPointOrb_33536_12928" />
+	</CollectedItems>
 </SaveGame>

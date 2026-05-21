@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="481">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="491">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -16,11 +16,6 @@
  <tileset firstgid="131" name="Estalagmitas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Estalagmitas.png" width="1024" height="1024"/>
  </tileset>
- <objectgroup id="18" name="Fondo">
-  <properties>
-   <property name="Draw" type="bool" value="true"/>
-  </properties>
- </objectgroup>
  <layer id="26" name="Fondo" width="140" height="90">
   <properties>
    <property name="Draw" type="bool" value="true"/>
@@ -32230,7 +32225,7 @@
    <tile gid="2147483688"/>
    <tile gid="47"/>
    <tile gid="536870967"/>
-   <tile gid="2147483704"/>
+   <tile gid="2147483658"/>
    <tile/>
    <tile/>
    <tile/>
@@ -63057,11 +63052,6 @@
    <tile gid="1"/>
   </data>
  </layer>
- <objectgroup color="#aaff7f" id="19" name="OrbeRef">
-  <object id="165" name="Orbe" type="Orbe" x="14336" y="1920">
-   <point/>
-  </object>
- </objectgroup>
  <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
@@ -63415,6 +63405,36 @@
  </objectgroup>
  <objectgroup id="11" name="EntitiesSpawnPoints">
   <object id="439" name="Player" type="Player" x="12416" y="512">
+   <point/>
+  </object>
+  <object id="481" name="SavePoint" type="SavePoint" x="12160" y="3072">
+   <point/>
+  </object>
+  <object id="482" name="SavePoint" type="SavePoint" x="7296" y="7168">
+   <point/>
+  </object>
+  <object id="483" name="SkillPointOrb" type="SkillPointOrb" x="14336" y="1920">
+   <point/>
+  </object>
+  <object id="484" name="ShieldKnight" type="ShieldKnight" x="3712" y="3456">
+   <point/>
+  </object>
+  <object id="485" name="SwordKnight" type="SwordKnight" x="2816" y="3456">
+   <point/>
+  </object>
+  <object id="486" name="SwordKnight" type="SwordKnight" x="12928" y="7168">
+   <point/>
+  </object>
+  <object id="487" name="CucaferaShiny" type="CucaferaShiny" x="11136" y="2816">
+   <point/>
+  </object>
+  <object id="488" name="CucaferaShiny" type="CucaferaShiny" x="16000" y="4224">
+   <point/>
+  </object>
+  <object id="489" name="CucaferaShiny" type="CucaferaShiny" x="10112" y="4352">
+   <point/>
+  </object>
+  <object id="490" name="CucaferaShiny" type="CucaferaShiny" x="3328" y="8320">
    <point/>
   </object>
  </objectgroup>
