@@ -51,6 +51,7 @@
 #include "Sickle.h"
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
+#include "WallJumpObj.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -1194,6 +1195,11 @@ void Map::SpawnEntities()
 					std::shared_ptr<DoubleJumpObj> doublejumpobj = std::dynamic_pointer_cast<DoubleJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DOUBLEJUMP_OBJ));
 					doublejumpobj->position = Vector2D(x, y);
 				}
+				else if (entityType == std::string("WallJumpObj")) {
+					std::shared_ptr<WallJumpObj> walljumpobj = std::dynamic_pointer_cast<WallJumpObj>(
+						Engine::GetInstance().entityManager->CreateEntity(EntityType::WALLJUMP_OBJ));
+					walljumpobj->position = Vector2D(x, y);
+					}
 				else if (entityType == std::string("Npc"))
 				{
 					std::shared_ptr<Npc> npc = std::dynamic_pointer_cast<Npc>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NPC));

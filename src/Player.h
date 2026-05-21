@@ -21,7 +21,9 @@ enum class ItemID {
 	KEY,
 	STRENGTH_ORB,
 	DASH_OBJ,
-	DOUBLEJUMP_OBJ
+	DOUBLEJUMP_OBJ,
+	WALLJUMP_OBJ
+
 };
 
 enum class CameraMode {
@@ -69,6 +71,7 @@ public:
 	void UnlockSickle();
 	void UnlockDash();
 	void UnlockDoubleJump();
+	void UnlockWallJump();
 
 	void UnlockSkill(SkillTree skill, int cost);
 

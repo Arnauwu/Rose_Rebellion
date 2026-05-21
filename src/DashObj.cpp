@@ -18,7 +18,7 @@ bool DashObj::Awake() {
 bool DashObj::Start() {
 	if (CheckIfCollected()) return true;
 	//Textura
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Manta/obj_capa_game.png");//
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Items/dashUI.png");//
 
 	//Fisica
 	pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), texture->h / 2, bodyType::KINEMATIC);

@@ -494,7 +494,7 @@ void Player::Jump(float dt)
 			Engine::GetInstance().input->GetGamepadButton(GAMEPAD_LB) == KEY_REPEAT)
 			wallJumpInput = true;
 
-		if (onWall == true && onGround == false && wallJumpInput)
+		if (onWall == true && onGround == false && wallJumpInput && GameManager::GetInstance().gameState.wallJumpUnlocked)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
@@ -1276,14 +1276,24 @@ void Player::UnlockSickle()
 void Player::UnlockDoubleJump() {
 	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
+	Engine::GetInstance().hud->ShowNotification("You have unlocked DoubleJump!");
 	LOG("Double Jump Unlocked! You can do a double jump");
 
 }
 void Player::UnlockDash() {
 	GameManager::GetInstance().gameState.dashUnlocked = true;
 	AddItem(ItemID::DASH_OBJ, 1);
+	Engine::GetInstance().hud->ShowNotification("You have unlocked Dash!");
+
 	LOG("Dash Unlocked! You can dash");
 	LOG("Dash Unlocked! You can do a dash");
+}
+
+void Player::UnlockWallJump() {
+	GameManager::GetInstance().gameState.wallJumpUnlocked = true;
+	AddItem(ItemID::WALLJUMP_OBJ, 1);
+	Engine::GetInstance().hud->ShowNotification("You have unlocked Wall Jump!");
+	LOG("Wall Jump Unlocked! You can now wall jump");
 }
 
 void Player::UnlockSkill(SkillTree skill, int cost)

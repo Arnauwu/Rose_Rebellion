@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="29" nextobjectid="679">
+<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="29" nextobjectid="679">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -29286,7 +29286,7 @@
   <object id="166" name="Plataforma Movil" x="18624" y="5768">
    <point/>
   </object>
-  <object id="167" name="Wall Jump" type="Wall Jump" x="19408" y="3728">
+  <object id="167" name="WallJumpObj" type="WallJumpObj" x="19408" y="3728">
    <point/>
   </object>
  </objectgroup>
