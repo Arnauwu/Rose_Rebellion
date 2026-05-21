@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="703">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="703">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -7625,7 +7625,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="50" name="Player" type="Player" x="13198.6" y="2573">
+  <object id="50" name="Player" type="Player" x="13019.8" y="2569.97">
    <properties>
     <property name="FromRoom" type="file" value="Nexo.tmx"/>
    </properties>

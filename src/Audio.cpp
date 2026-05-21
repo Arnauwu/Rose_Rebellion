@@ -30,7 +30,7 @@ bool Audio::Update(float dt) {
     if (active && music_stream_ != nullptr && music_data_.buf != nullptr) {
 
         // Look if the song finish
-        if (SDL_GetAudioStreamQueued(music_stream_) == 0) {
+        if (SDL_GetAudioStreamQueued(music_stream_) < 50000 && music_data_.len > 50000) {
 
             // Repete the music
             SDL_PutAudioStreamData(music_stream_, music_data_.buf, music_data_.len);
@@ -335,4 +335,18 @@ void Audio::StopMusic() {
     currentMusicPath = "";
 
     LOG("Audio: Musica detenida.");
+}
+
+void Audio::StopAllFx() {
+    if (!active) return;
+
+    // Recorremos todos los canales de efectos de sonido
+    for (int i = 0; i < MAX_SFX_STREAMS; ++i) {
+        if (sfx_pool_[i] != nullptr) {
+            SDL_ClearAudioStream(sfx_pool_[i]); // Vacía la cola de audio al instante
+            sfx_playing_[i] = -1;               // Resetea el registro del canal
+        }
+    }
+
+    LOG("Audio: Todos los efectos de sonido (FX) han sido detenidos.");
 }
