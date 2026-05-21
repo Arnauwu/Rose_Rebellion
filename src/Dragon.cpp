@@ -34,11 +34,11 @@ bool Dragon::Awake() {
 
 bool Dragon::Start() {
 	std::unordered_map<int, std::string> aliases = { {0,"idle"},{15,"walk"},{45,"takeOff"},{60,"air"},{90,"stomp"},{105,"claw"},{120,"tail"} ,{135,"shoot"},{165,"dead"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dragon/Dragon.tsx", aliases);
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dragon/DragonH.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dragon/Dragon.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dragon/DragonH.png");
 
 	// Create Body
 	texW = 768;
@@ -58,7 +58,7 @@ bool Dragon::Start() {
 	speed = 1.5f;
 	knockbackForce = 0.0f; //Immune to knockback
 
-	maxHealth = 1200;
+	maxHealth = 500;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -99,10 +99,12 @@ bool Dragon::Update(float dt)
 
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
+		isKnockedback = false;
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false); 
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
+		Engine::GetInstance().physics->SetBodyType(pbody, bodyType::STATIC);
 	}
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())
@@ -146,7 +148,9 @@ void Dragon::Move()
 	if (isInvincible) 
 	{
 		velocity = b2Vec2_zero; // Stays Put
-		
+		startedAttacking = false;
+		nextAttackSelected = false;
+
 		if (anims.GetCurrentName() != "takeOff") //TO DO CHANGE TO PHASE CHANGE
 		{
 			anims.SetCurrent("takeOff");
@@ -424,14 +428,14 @@ void Dragon::Draw(float dt)
 		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
 		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 2, &animFrame, sdlFlip, 3);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 4, &animFrame, sdlFlip, 1);
 
 		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
 		delete r; delete g; delete b;
 	}
 	else
 	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 2, &animFrame, sdlFlip, 3);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 4, &animFrame, sdlFlip, 1);
 	}
 }
 
@@ -536,10 +540,12 @@ void Dragon::Attack()
 					for (int i = 0; i < 3; i++)
 					{
 						std::shared_ptr<DragonProjectile> projectile = std::dynamic_pointer_cast<DragonProjectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DRAGON_PROJECTILE));
-						Vector2D pos; pos.setX(lookingRight ? position.getX() + texW / 2 - 64 * (1 - i) : position.getX() - texW / 2 + 64 * (1 - i));
+						Vector2D pos; 
+						pos.setX(lookingRight ? position.getX() + texW / 2 - 64 * (1 - i) : position.getX() - texW / 2 + 64 * (1 - i));
 						pos.setY(position.getY() + 64 * (1 - i));
 						projectile->position = pos;
 						projectile->Start();
+						attackWindUp.Start(); //FailSave
 					}
 
 				}
@@ -613,9 +619,9 @@ void Dragon::SelectAttack()
 		switch (currentAttack)			// TO DO Adjust COOLDOWN / WINDUP / DAMAGE
 		{
 		case 1: // Shoot
-			damage = 0;
-			attackCooldownTime = 250.0f;
-			attackWindupTime = 100.0f;
+			damage = 10;
+			attackCooldownTime = 1500.0f;
+			attackWindupTime = 900.0f;
 			attackTileRange = 5;
 			currentAttackAnim = "shoot";
 			break;
@@ -652,7 +658,7 @@ void Dragon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
-		if (isInvincible == false)
+		if (isInvincible == false && !isdead)
 		{
 			TakeDamage(physB->listener->damage);
 			isKnockedback = true;
@@ -662,11 +668,11 @@ void Dragon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 				Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 			}
 
-			if (currentHealth <= maxHealth * 2 / 3) //Change Phase 66% //TO DO: Adjust Health Values
+			if (currentHealth <= maxHealth * 2 / 3 && currentPhase == DragonPhase::GROUND && currentHealth > maxHealth * 1 / 3) //Change Phase 66% //TO DO: Adjust Health Values
 			{
 				isInvincible = true;
 			}
-			else if (currentHealth <= maxHealth * 1 / 3) // 33%
+			else if (currentHealth < maxHealth * 1 / 3 && currentPhase == DragonPhase::AIR) // 33%
 			{
 				isInvincible = true;
 			}
