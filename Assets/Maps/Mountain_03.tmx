@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="127" height="60" tilewidth="128" tileheight="128" infinite="0" nextlayerid="27" nextobjectid="567">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="127" height="60" tilewidth="128" tileheight="128" infinite="0" nextlayerid="27" nextobjectid="567">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -2917,70 +2917,70 @@
    <tile gid="166"/>
    <tile gid="166"/>
    <tile gid="166"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
    <tile gid="166"/>
    <tile gid="166"/>
    <tile gid="166"/>
@@ -3070,44 +3070,44 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
+   <tile gid="166"/>
    <tile gid="166"/>
    <tile gid="166"/>
    <tile gid="166"/>
@@ -23085,19 +23085,7 @@
   <object id="446" name="SkillPointOrb" type="SkillPointOrb" x="1031.15" y="7412.12">
    <point/>
   </object>
-  <object id="447" name="SkillPointOrb" type="SkillPointOrb" x="12204" y="3072">
-   <point/>
-  </object>
-  <object id="448" name="SkillPointOrb" type="SkillPointOrb" x="12892" y="3024">
-   <point/>
-  </object>
-  <object id="449" name="SkillPointOrb" type="SkillPointOrb" x="12148" y="3472">
-   <point/>
-  </object>
-  <object id="450" name="SkillPointOrb" type="SkillPointOrb" x="12844" y="3428">
-   <point/>
-  </object>
-  <object id="562" name="Dragon" type="Dragon" x="11904" y="2048">
+  <object id="562" name="Dragon" type="Dragon" x="11904" y="1872.86">
    <point/>
   </object>
   <object id="566" name="Player" type="Player" x="408" y="5944">

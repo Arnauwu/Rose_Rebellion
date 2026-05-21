@@ -110,7 +110,7 @@ bool Dragon::Update(float dt)
 	if (anims.GetAnim("dead")->HasFinishedOnce())
 	{
 		pendingToDelete = true;
-		// TO DO: END SCREEN / ANIM ???
+		Engine::GetInstance().sceneManager->ChangeScene(SceneID::WIN);
 	}
 
 	Draw(dt);

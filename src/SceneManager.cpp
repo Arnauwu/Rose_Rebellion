@@ -13,6 +13,7 @@
 #include "MenuScene.h"
 #include "IntroCinematicScene.h"
 #include "GameOverScene.h"
+#include "WinScene.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -28,7 +29,7 @@ bool SceneManager::Awake() {
 }
 
 bool SceneManager::Start() {
-    nextSceneID = SceneID::GAME;
+    nextSceneID = SceneID::INTRO;
     PerformSceneChange();
     return true;
 }
@@ -137,7 +138,7 @@ void SceneManager::PerformSceneChange() {
         currentScene = new GameOverScene();
         break;
     case SceneID::WIN:
-        //currentScene = new WinScene();
+        currentScene = new WinScene();
         break;
     default:
         break;

@@ -387,6 +387,9 @@
     <ClCompile Include="src\WallJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
+    <ClCompile Include="src\WinScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -602,6 +605,9 @@
     <ClInclude Include="src\CucaferaMutant.h" />
     <ClInclude Include="src\WallJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WinScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

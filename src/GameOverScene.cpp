@@ -14,6 +14,7 @@ GameOverScene::~GameOverScene() {}
 bool GameOverScene::Start() {
     timer = 0.0f;
 
+    // Puedes mantener esto si tu LoadGame sobrescribe completamente la gameState después.
     GameManager::GetInstance().gameState.collectedItems.clear();
     GameManager::GetInstance().gameState.openedDoors.clear();
 
@@ -28,13 +29,14 @@ bool GameOverScene::Update(float dt) {
     SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
     Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 255, true, false);
-
     Engine::GetInstance().render->DrawTextCentered("GAME OVER", fullScreenRect, { 255, 0, 0, 255 }, FontType::MENU);
 
     timer += dt / 1000.0f;
 
     if (timer >= displayTime) {
-        Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU);
+        GameManager::GetInstance().LoadGame("savegame.xml");
+
+        Engine::GetInstance().sceneManager->ChangeScene(SceneID::GAME);
     }
 
     return true;
