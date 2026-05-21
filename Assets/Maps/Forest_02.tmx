@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="711">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="711">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -1853,7 +1853,7 @@
   <object id="381" x="6528" y="0" width="2560" height="256"/>
   <object id="702" x="3584" y="768" width="128" height="128"/>
  </objectgroup>
- <layer id="31" name="GroundNavLayer" width="88" height="19" visible="0">
+ <layer id="31" name="GroundNavLayer" width="88" height="19">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -2309,9 +2309,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2402,9 +2402,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2415,9 +2415,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
-   <tile gid="129"/>
    <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
@@ -2460,7 +2460,6 @@
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -2469,8 +2468,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2505,9 +2505,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="129"/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="129"/>
    <tile/>
    <tile/>
@@ -2651,8 +2651,6 @@
    <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -2674,7 +2672,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2827,8 +2827,6 @@
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -2845,7 +2843,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2928,12 +2928,12 @@
    <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3003,8 +3003,6 @@
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -3016,6 +3014,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3124,7 +3124,6 @@
    <tile/>
    <tile gid="129"/>
    <tile/>
-   <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
@@ -3146,7 +3145,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="129"/>
+   <tile/>
+   <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
@@ -3533,7 +3533,7 @@
    <tile gid="129"/>
   </data>
  </layer>
- <layer id="32" name="AirNavLayer" width="88" height="19" visible="0">
+ <layer id="32" name="AirNavLayer" width="88" height="19">
   <properties>
    <property name="Air" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -3989,9 +3989,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4082,9 +4082,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4095,9 +4095,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
-   <tile gid="129"/>
    <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
@@ -4140,7 +4140,6 @@
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -4149,8 +4148,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4185,7 +4185,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4264,6 +4263,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
@@ -4331,8 +4331,6 @@
    <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -4354,7 +4352,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4507,8 +4507,6 @@
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -4525,7 +4523,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4608,12 +4608,12 @@
    <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4683,8 +4683,6 @@
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
-   <tile/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -4696,6 +4694,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="129"/>
+   <tile gid="129"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4805,7 +4805,6 @@
    <tile gid="129"/>
    <tile/>
    <tile/>
-   <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
@@ -4826,7 +4825,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="129"/>
+   <tile/>
+   <tile/>
    <tile gid="129"/>
    <tile gid="129"/>
    <tile gid="129"/>
