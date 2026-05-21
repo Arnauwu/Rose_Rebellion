@@ -82,6 +82,8 @@ void GameScene::LoadMap(std::string mapFile)
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
 	LOG("MAPA PREVIO %s", previousMap);
 
+	Engine::GetInstance().audio->StopAllFx();
+
 	Engine::GetInstance().entityManager->CleanUp(true);
 	Engine::GetInstance().map->CleanUp();
 
@@ -134,6 +136,13 @@ void GameScene::LoadMap(std::string mapFile)
 
 		if (newPlayer->pbody != nullptr) {
 			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
+		}
+
+		if (mapFile == "Castle_Room_Princess.tmx") {
+			Engine::GetInstance().hud->ShowTutorial(TutorialType::WALK);
+		}
+		else if (mapFile == "Castle_Inside.tmx") {
+			Engine::GetInstance().hud->ShowTutorial(TutorialType::JUMP);
 		}
 	}
 	Engine::GetInstance().entityManager->Start();

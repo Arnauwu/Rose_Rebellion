@@ -1297,7 +1297,8 @@ void Player::UnlockDoubleJump() {
 void Player::UnlockDash() {
 	GameManager::GetInstance().gameState.dashUnlocked = true;
 	AddItem(ItemID::DASH_OBJ, 1);
-	Engine::GetInstance().hud->ShowNotification("You have unlocked Dash!");
+	//Engine::GetInstance().hud->ShowNotification("You have unlocked Dash!");
+	Engine::GetInstance().hud->ShowTutorial(TutorialType::DASH);
 
 	LOG("Dash Unlocked! You can dash");
 	LOG("Dash Unlocked! You can do a dash");
@@ -1553,7 +1554,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
-			Engine::GetInstance().hud->ShowNotification("You have obtained the Cape.");
+			//Engine::GetInstance().hud->ShowNotification("You have obtained the Cape.");
+			Engine::GetInstance().hud->ShowTutorial(TutorialType::GLIDE);
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
@@ -1567,7 +1569,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
-			Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle.");
+			//Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle.");
+			Engine::GetInstance().hud->ShowTutorial(TutorialType::ATTACK);
 		}
 		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();
