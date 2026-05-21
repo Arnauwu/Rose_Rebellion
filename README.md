@@ -32,19 +32,20 @@ In a world oppressed by a dragon, a princess with must fight the dragon to save 
 
 This release represents the vertical slice of the project. 
 
-### 🌟 Features
+### 🌟 New Features
 
-* **Complete UI System:** Implemented a robust GUI including Main Menu, Pause Menu, Settings (Volume Sliders, Fullscreen).
-* **HUD Integration:** Added a dynamic HUD displaying the player's health.
-* **Castle outside and inside & Forest:** Each map with their Specefic music and objects.
-* **Save & Load System:** Implemented persistence. Players can save their progress (F5) and continue from the last save point (F6), even after closing the game.
-* **Player:** Added a **Dashing Ability** **Gliding Ability** **Attack combo** **Double jump** for the player. 
-* **Rotated Tiles:** Added support for drawing tiles rotated at 90°, 180°, and 270° to create more diverse environments without duplicating assets.
-* **Audios:** Complete audios system, with fx sound to each entity and background music.
-* **Enemies:** Implementation of 3 diferrent enemies, one of them fly enemy to create more diversity, and the first boss.
-* **Follow Camera:** Creation of a camera that follow to the player.
-* **Maps:** All the rooms of the castle, the town of the kingdom and part of the forest map with a change map system.
-* **Item interaction:** Proper management of existing items in the game, to provide diversity
+* **Complete UI System:** Implemented inventory and skill tree UI and a little map UI.
+* **HUD Integration:** Added a new dynamic HUD displaying the player's health and dynamic HUD displaying diferents boss's health.
+* **New Maps And Update Old Maps:** Creation of new maps, like mountain, new forest, catacombs. Each map with their Specefic music and objects, decorations, special door with their animation and special enemies.
+* **Save & Load System:** Implemented persistence. Players can save their progress (F5) and continue from the last save point (F6), even after closing the game and with savepoint animation.
+* **Player:** Added a **Vertical attack** **Wall jump** for the player. 
+* **Audios:** New audios system, with fx sound to each entity and background music.
+* **Enemies:** Implementation of new enemies dip, bat, cucafera shiny and 2 new boss, ninfa and dragon. And update old enemies textures and animations,
+* **New Item interaction:** Proper management of existing items in the game, to provide diversity.
+* **Dialogue System** Implemented a dialogue system with the NPC's to apport life to the game and know what happends in the history.
+* **Cinematic system** Add a cinematic when enter the game to apport a principal idea for the gameplay.
+* **Controller compatibility** Posibility to play the game with controller, without keyboard.
+* **Effect particles** Implemented a particles to the player's action and enemies actions.
 
 ---
 
@@ -66,7 +67,8 @@ This release represents the vertical slice of the project.
 | Move Right | D |
 | Open door | W |
 | Jump | Space |
-| Attack | F |
+| Attack | J |
+| Wall jump | L |
 | Dash | LCtrl |
 | Glide | LShift |
 | Open inventory | I |
