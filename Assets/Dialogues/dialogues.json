@@ -1,6 +1,9 @@
 {
-  "Prueba1": [
-    { "speaker": "Jan", "text": "¡Yangfeng por favor los audios me estan matando, mis oidos ya no aguantan!! Hola quiero ver el salto de linea boleeeeee y marc trabajar!" },
-    { "speaker": "Princesa", "text": "¡Yangfeng por favor los audios me estan matando, mis oidos ya no aguantan!! Hola quiero ver el salto de linea boleeeeee y marc trabajar!" }
+  "npc_01": [
+    { "speaker": "Pep", "text": "Qui serà la següent donzella? Bé, tampoc m’afecta." },
+    { "speaker": "Rose", "text": "Què vols dir que no t’afecta?" },
+{ "speaker": "Pep", "text": "Veus que sigui una donzella? El meu nom no sortirà pas. El drac no se’m cruspirà hahaha." },
+{ "speaker": "Rose", "text": "... A costa de la mort de moltíssimes donzelles. Quan ja no quedi ningú que faràs?" },
+{ "speaker": "Pep", "text": "El nostre rei ja pensarà alguna cosa tal i com va fer l’últim cop. No és problema meu." }
   ]
 }

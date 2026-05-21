@@ -44,8 +44,8 @@ bool Npc::Update(float dt) {
     // Si el jugador está cerca y no está activo
     if (isPlayerInRange && !Engine::GetInstance().dialogueManager->IsDialogueActive()) {
 
-        // Si el jugador pulsa 'W' 
-        if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+        // Si el jugador pulsa 'E' 
+        if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
             Engine::GetInstance().dialogueManager->StartDialogue(dialogueID);
             Engine::GetInstance().input->ClearMouseInput(); // Limpiar inputs residuales
         }

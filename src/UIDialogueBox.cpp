@@ -63,7 +63,7 @@ void UIDialogueBox::Draw() const {
 		nameBox.y = mainBox.y - nameBox.h ; 
 
 		// LÓGICA DE POSICIÓN
-		if (currentSpeaker == "Princesa") {
+		if (currentSpeaker == "Rose") {
 			nameBox.x = mainBox.x + (int)(mainBox.w * 0.05f);
 		}
 		else {
@@ -86,7 +86,7 @@ void UIDialogueBox::Draw() const {
 		int maxW = 0;
 		int maxH = (int)(mainBox.h * 0.85f);
 
-		if (currentSpeaker == "Princesa") {
+		if (currentSpeaker == "Rose") {
 			textX = mainBox.x + (int)(mainBox.w * 0.15f);
 			maxW = (int)(mainBox.w * 0.8f);
 		}
@@ -106,7 +106,7 @@ void UIDialogueBox::Draw() const {
 		int portraitY = (mainBox.y + mainBox.h) - portraitSize + space;
 		int portraitX = 0;
 
-		if (currentSpeaker == "Princesa") {
+		if (currentSpeaker == "Rose") {
 			portraitX = mainBox.x - (portraitSize / 1.9);
 		}
 		else {
