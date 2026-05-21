@@ -367,7 +367,7 @@ void SwordKnight::Attack()
 		attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(attackX, attackY, attackW, attackH, bodyType::STATIC);
 		attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
 		attackHitbox->listener = this;
-		damage = 30;
+		damage = 20;
 
 		attackDuration.Start();
 	}

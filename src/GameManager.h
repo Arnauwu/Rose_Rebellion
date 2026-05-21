@@ -11,7 +11,8 @@ struct GameState {
     int currentForceOrbs = 0;
     bool doubleJumpUnlocked = false;
     bool dashUnlocked = false;
-   
+    bool wallJumpUnlocked = false;
+
     // Player stats
     int currentHealth = 100;
     int maxHealth = 100;

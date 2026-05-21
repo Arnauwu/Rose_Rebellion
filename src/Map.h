@@ -61,10 +61,13 @@ struct Door
     int height;
     int x;
     int y;
-    
+    bool noAnimation = false;
     bool requiresGlide;
 
     KeyType requiredKey = KeyType::NONE;
+    
+
+
 };
 
 struct Path
@@ -239,7 +242,7 @@ public:
 
     Vector2D GetCameraPositionInTiles();
     Vector2D GetCameraLimitsInTiles(Vector2D camPosTile, Vector2D margin = {0,0});
-
+    bool DoorHasNoAnimation(PhysBody* door);
 
 public: 
     std::string mapFileName;

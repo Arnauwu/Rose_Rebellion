@@ -14,6 +14,7 @@
 #include "SkillPointOrb.h"
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
+#include "WallJumpObj.h"
 
 #include "SavePoint.h"
 #include "Door.h"
@@ -206,6 +207,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::DOUBLEJUMP_OBJ:
 		entity = std::make_shared<DoubleJumpObj>();
+		break;
+	case EntityType::WALLJUMP_OBJ:
+		entity = std::make_shared<WallJumpObj>();
 		break;
 	default:
 		break;

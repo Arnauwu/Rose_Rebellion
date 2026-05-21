@@ -8,7 +8,7 @@
 
 struct SDL_Texture;
 
-enum DragonPhase { GROUND, AIR, MIXED };
+enum DragonPhase { GROUND, AIR};
 
 class Dragon : public Enemy
 {

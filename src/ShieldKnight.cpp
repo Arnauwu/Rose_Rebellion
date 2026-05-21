@@ -330,7 +330,7 @@ void ShieldKnight::Attack()
 	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && pbody->ctype == ColliderType::ENEMY && !isKnockedback)
 	{
 		anims.SetCurrent("assault"); //Attack
-		damage = 20;
+		damage = 10;
 
 		pbody->ctype = ColliderType::ENEMY_ATTACK;
 

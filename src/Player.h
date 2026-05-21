@@ -21,7 +21,9 @@ enum class ItemID {
 	KEY,
 	STRENGTH_ORB,
 	DASH_OBJ,
-	DOUBLEJUMP_OBJ
+	DOUBLEJUMP_OBJ,
+	WALLJUMP_OBJ
+
 };
 
 enum class CameraMode {
@@ -69,6 +71,7 @@ public:
 	void UnlockSickle();
 	void UnlockDash();
 	void UnlockDoubleJump();
+	void UnlockWallJump();
 
 	void UnlockSkill(SkillTree skill, int cost);
 
@@ -234,7 +237,7 @@ private:
 
 	bool wasWalking = false;
 	float stepTimer = 0.0f;
-	float timeBetweenSteps = 14.9f;
+	float timeBetweenSteps = 0.35f;
 	float footX = 0.0f;
 	float footY = 0.0f;
 	float lookDownTimer = 0.0f;

@@ -395,8 +395,6 @@ void Ninfa::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Sh
         TakeDamage(physB->listener->damage);
         isKnockedback = true;
         knockbackTime = 500.0f;
-        Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), false);
-
         break;
 
     default:
