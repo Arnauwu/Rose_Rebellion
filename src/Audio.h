@@ -45,6 +45,7 @@ public:
 
     void StopFx(int id);
     void StopMusic();
+    void StopAllFx();
 
 private:
 

@@ -82,6 +82,8 @@ void GameScene::LoadMap(std::string mapFile)
 	std::string previousMap = Engine::GetInstance().map->mapFileName;
 	LOG("MAPA PREVIO %s", previousMap);
 
+	Engine::GetInstance().audio->StopAllFx();
+
 	Engine::GetInstance().entityManager->CleanUp(true);
 	Engine::GetInstance().map->CleanUp();
 
