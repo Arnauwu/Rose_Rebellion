@@ -9,6 +9,15 @@
 
 class Player;
 
+enum class TutorialType {
+    NONE,
+    WALK,
+    JUMP,
+    GLIDE,
+    DASH,
+    ATTACK
+};
+
 class Hud : public Module
 {
 public:
@@ -22,15 +31,28 @@ public:
     bool CleanUp() override;
 
     void ShowNotification(const std::string& message);
+
+    void ShowTutorial(TutorialType type);
 private:
     void DrawPlayerHealthBar();
     void DrawDiamondCounter();
     void DrawMineralIndicator();
     void DrawNotification();
+    void DrawTutorial();
 private:
 
     SDL_Texture* lifeBarTexture = nullptr;
     std::vector<SDL_Rect> lifeFrames;
+
+    SDL_Texture* tutWalkTex = nullptr;
+    SDL_Texture* tutJumpTex = nullptr;
+    SDL_Texture* tutGlideTex = nullptr;
+    SDL_Texture* tutDashTex = nullptr;
+    SDL_Texture* tutAttackTex = nullptr;
+
+    TutorialType currentTutorial = TutorialType::NONE;
+    float tutorialTimer = 0.0f;
+    const float TUTORIAL_DURATION = 4.0f;
 
     // Dimensiones de un solo frame de la imagen Vides_V1.png
     int sectionWidth = 100;  // Ajusta según el ancho real de tu PNG
