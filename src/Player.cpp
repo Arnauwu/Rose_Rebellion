@@ -833,20 +833,17 @@ void Player::Interact()
 
 	if (canInteract && interactuableBody != nullptr && interactPressed)
 	{
-
-		if (interactuableBody->ctype == ColliderType::DOOR)
+		if (interactuableBody->ctype == ColliderType::DOOR || interactuableBody->ctype == ColliderType::CATACUMBA_DOOR)
 		{
 			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
-			if (isMaintenance)
-			{
+			if (isMaintenance) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
 				Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
 				return;
 			}
 
 			bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
-			if (isClosed)
-			{
+			if (isClosed) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
 				Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
 				return;
@@ -856,7 +853,6 @@ void Player::Interact()
 
 			if (requiresKey)
 			{
-				//Get Key Property
 				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
 
 				if (requiredKey == KeyType::NONE) {
@@ -871,38 +867,36 @@ void Player::Interact()
 					Engine::GetInstance().audio->PlayFx(openDoor);
 					LOG("Has usado la llave %d para abrir la puerta.", (int)requiredKey);
 
-					this->heldKeys.erase(requiredKey); 
+					this->heldKeys.erase(requiredKey);
 
 					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 					if (!doorId.empty()) {
 						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 					}
 
-					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
-					{
-						
+					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
 						Engine::GetInstance().sceneManager->setNewMap = true;
 					}
 					else {
 						isFrozen = true;
-						int cx, cy;
-						interactuableBody->GetPosition(cx, cy);
 
-						int doorW, doorH;
-						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
-
-						if (requiredKey == KeyType::CATACUMBA)
-						{
-						
-							auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::CATACUMBA_DOOR);
-							CatacumbaDoorEntity* catacumbaDoorAnim = (CatacumbaDoorEntity*)newEntity.get();
-
-							if (catacumbaDoorAnim != nullptr) {
-								catacumbaDoorAnim->zOrder = -1;
-								catacumbaDoorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						// 🌟 独立动画播放
+						if (interactuableBody->ctype == ColliderType::CATACUMBA_DOOR) {
+							CatacumbaDoorEntity* catDoor = (CatacumbaDoorEntity*)interactuableBody->listener;
+							if (catDoor != nullptr) {
+								catDoor->OpenDoorAt(Vector2D(0, 0), 0, 0);
+							}
+							else {
+								isFrozen = false;
+								Engine::GetInstance().sceneManager->setNewMap = true;
 							}
 						}
+						// 普通门：依旧动态生成
 						else {
+							int cx, cy, doorW, doorH;
+							interactuableBody->GetPosition(cx, cy);
+							Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
 							auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
 							DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 
@@ -915,27 +909,28 @@ void Player::Interact()
 				}
 				else
 				{
-					Engine::GetInstance().audio->PlayFx(closedDoor);	 
+					Engine::GetInstance().audio->PlayFx(closedDoor);
 					LOG("Necesitas la llave ESPECIFICA (Tipo %d) para esta región.", (int)requiredKey);
 					Engine::GetInstance().hud->ShowNotification("You need a specific region key to open this door.");
 				}
 			}
 			else
 			{
-				LOG("Esta puerta no necesita llave");
+				LOG("Esta puerta no necesita llave o ya estaba abierta");
 				Engine::GetInstance().audio->PlayFx(openDoor);
 
-				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
+				// 🌟 墓穴门且不需要钥匙（说明已经永久打开了），直接进门，不播多余的动画
+				if (interactuableBody->ctype == ColliderType::CATACUMBA_DOOR) {
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+				else if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
 				{
-					
 					Engine::GetInstance().sceneManager->setNewMap = true;
 				}
 				else {
 					isFrozen = true;
-					int cx, cy;
+					int cx, cy, doorW, doorH;
 					interactuableBody->GetPosition(cx, cy);
-
-					int doorW, doorH;
 					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
 					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
@@ -1513,6 +1508,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		canInteract = true;
 		interactuableBody = physB;
 		break;
+	case ColliderType::CATACUMBA_DOOR:
+		canInteract = true;
+		interactuableBody = physB;
+		break;
 	case ColliderType::PATH:
 	{
 		bool requiresGlide = Engine::GetInstance().map->DoorRequiresGlide(physB);
@@ -1716,6 +1715,10 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;
+	case ColliderType::CATACUMBA_DOOR:
+		canInteract = false;
+		interactuableBody = nullptr;
+		break;
 	case ColliderType::NPC:
 		canInteract = false;
 		interactuableBody = nullptr;
@@ -1726,6 +1729,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	default:
 		break;
 	}
+
 }
 
 Vector2D Player::GetPosition()

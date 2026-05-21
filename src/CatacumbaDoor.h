@@ -16,17 +16,19 @@ public:
     bool Update(float dt) override;
     bool CleanUp() override;
 
-    // 交互时的开门动作
+    // ???? OpenDoorAt
     void OpenDoorAt(Vector2D pos, int width, int height);
 
-    // ?? 新加：地图刚加载时的静默初始化
+    // ???? 4 ???? InitializeStatic
     void InitializeStatic(Vector2D pos, int width, int height, bool opened);
+
+    bool IsAlreadyOpened() const { return isAlreadyOpened; }
 
 private:
     SDL_Texture* animTexture = nullptr;
     AnimationSet anims;
     bool isOpening = false;
-    bool isAlreadyOpened = false; // ?? 新加：记录门是否已处于常开状态
+    bool isAlreadyOpened = false;
 
     int doorW = 0;
     int doorH = 0;

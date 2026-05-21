@@ -672,8 +672,6 @@ bool Map::Load(std::string path, std::string fileName)
 					{
 						collider->ctype = ColliderType::DOOR;
 
-						// TODO: Assign Listener
-
 						Door newDoor;
 						newDoor.body = collider;
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
@@ -681,28 +679,24 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
 						newDoor.width = (int)obj->width;
 						newDoor.height = (int)obj->height;
-						
-						//Mira si necesita una llave para abrirlo o no
+
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
-						if (needsKeyProp != nullptr)
-						{
+						if (needsKeyProp != nullptr) {
 							newDoor.needsKey = needsKeyProp->value;
 						}
-						else
-						{
+						else {
 							newDoor.needsKey = false;
 						}
+
 						newDoor.requiredKey = KeyType::NONE; // Por defecto
 						Properties::Property* keyRegionProp = obj->properties.GetProperty("KeyRegion");
-						if (keyRegionProp != nullptr)
-						{
+						if (keyRegionProp != nullptr) {
 							std::string region = keyRegionProp->value2;
 							if (region == "Forest") newDoor.requiredKey = KeyType::FOREST;
 							else if (region == "Mountain") newDoor.requiredKey = KeyType::MOUNTAIN;
 							else if (region == "Catacumba") newDoor.requiredKey = KeyType::CATACUMBA;
 							else if (region == "Boss") newDoor.requiredKey = KeyType::BOSS;
 							else if (region == "Castle") newDoor.requiredKey = KeyType::CASTLE;
-
 						}
 
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
@@ -733,11 +727,26 @@ bool Map::Load(std::string path, std::string fileName)
 							newDoor.noAnimation = noAnimProp->value;
 						}
 						else {
-							newDoor.noAnimation = false; 
+							newDoor.noAnimation = false;
 						}
 
 						mapData.doors.push_back(newDoor);
-					}
+
+						if (newDoor.requiredKey == KeyType::CATACUMBA)
+						{
+							collider->ctype = ColliderType::CATACUMBA_DOOR;
+							auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::CATACUMBA_DOOR);
+							CatacumbaDoorEntity* catDoor = (CatacumbaDoorEntity*)newEntity.get();
+
+							if (catDoor != nullptr) {
+								catDoor->zOrder = -1;
+								bool isAlreadyOpened = !newDoor.needsKey;
+								catDoor->InitializeStatic(Vector2D(obj->x + obj->width / 2, obj->y + obj->height / 2), obj->width, obj->height, isAlreadyOpened);
+								collider->listener = catDoor;
+							}
+						}
+					} 
+				
 					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
 					{
 						collider->ctype = ColliderType::PATH;
