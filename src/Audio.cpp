@@ -30,7 +30,7 @@ bool Audio::Update(float dt) {
     if (active && music_stream_ != nullptr && music_data_.buf != nullptr) {
 
         // Look if the song finish
-        if (SDL_GetAudioStreamQueued(music_stream_) == 0) {
+        if (SDL_GetAudioStreamQueued(music_stream_) < 50000 && music_data_.len > 50000) {
 
             // Repete the music
             SDL_PutAudioStreamData(music_stream_, music_data_.buf, music_data_.len);
