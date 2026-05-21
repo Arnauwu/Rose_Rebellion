@@ -146,12 +146,10 @@
     <Filter Include="Source Files\Game\Entity\Door">
       <UniqueIdentifier>{b5345a9d-0db3-46b9-b931-68ea536ab439}</UniqueIdentifier>
     </Filter>
-
     <Filter Include="Source Files\Engine\HealthBarManager">
       <UniqueIdentifier>{394d9225-1231-4d49-91d8-3fb20fb2c2d2}</UniqueIdentifier>
-	</Filter>
-
-	<Filter Include="Source Files\Game\Entity\Enemies\Minairon">
+    </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Minairon">
       <UniqueIdentifier>{8ab5b7db-9061-49bd-b37c-38cecc13b794}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\Bat">
@@ -165,7 +163,6 @@
     </Filter>
     <Filter Include="Source Files\Game\Entity\Enemies\Dip">
       <UniqueIdentifier>{f7ecc5db-b91f-43c4-989e-88edd0e9103e}</UniqueIdentifier>
-
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -357,13 +354,8 @@
     <ClCompile Include="src\Door.cpp">
       <Filter>Source Files\Game\Entity\Door</Filter>
     </ClCompile>
-
     <ClCompile Include="src\HealthBarManager.cpp">
       <Filter>Source Files\Engine\HealthBarManager</Filter>
-	</ClCompile>
-
-	<ClCompile Include="src\CucaferaMutant.cpp">
-      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
     </ClCompile>
     <ClCompile Include="src\Minairon.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Minairon</Filter>
@@ -388,7 +380,12 @@
     </ClCompile>
     <ClCompile Include="src\Dip.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
-
+    </ClCompile>
+    <ClCompile Include="src\CucaferaMutant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WallJumpObj.cpp">
+      <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -580,10 +577,6 @@
     </ClInclude>
     <ClInclude Include="src\HealthBarManager.h">
       <Filter>Source Files\Engine\HealthBarManager</Filter>
-	</ClInclude>
-
-	<ClInclude Include="src\CucaferaMutant.h">
-      <Filter>Source Files\Game\Entity\Enemies\Cucafera M</Filter>
     </ClInclude>
     <ClInclude Include="src\Minairon.h">
       <Filter>Source Files\Game\Entity\Enemies\Minairon</Filter>
@@ -605,6 +598,10 @@
     </ClInclude>
     <ClInclude Include="src\Dip.h">
       <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CucaferaMutant.h" />
+    <ClInclude Include="src\WallJumpObj.h">
+      <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

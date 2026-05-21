@@ -17,10 +17,13 @@ public:
 	void Activate();
 
 private:
-	bool isActivated = false;
+
 	SDL_Texture* texture = nullptr;
 	PhysBody* pbody;
 	int texW, texH;
 	AnimationSet anims;
+
+	bool isActivated = false;
+	bool isActivating = false;
 };
 

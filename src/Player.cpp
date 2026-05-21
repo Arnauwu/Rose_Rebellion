@@ -376,6 +376,12 @@ void Player::Move() {
 		if (stepTimer >= timeBetweenSteps)
 		{
 			Engine::GetInstance().audio->PlayFx(caminarPrincesa, 0);
+
+			int pX, pY;
+			pbody->GetPosition(pX, pY);
+			float footY = (float)pY + (texH / 2.0f) - 90.0f;
+			Engine::GetInstance().particleManager->EmitDust((float)pX, footY, lookingRight);
+
 			stepTimer = 0.0f;
 		}
 	}
@@ -488,7 +494,7 @@ void Player::Jump(float dt)
 			Engine::GetInstance().input->GetGamepadButton(GAMEPAD_LB) == KEY_REPEAT)
 			wallJumpInput = true;
 
-		if (onWall == true && onGround == false && wallJumpInput)
+		if (onWall == true && onGround == false && wallJumpInput && GameManager::GetInstance().gameState.wallJumpUnlocked)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
@@ -533,8 +539,10 @@ void Player::Jump(float dt)
 			isJumping = true;
 			Engine::GetInstance().physics->SetYVelocity(pbody, jumpForce);
 
-			float footY = position.getY() + (texH / 2.0f) - 10.0f;
-			Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+			int pX, pY;
+			pbody->GetPosition(pX, pY);
+			float footY = (float)pY + (texH / 2.0f) - 80.0f;
+			Engine::GetInstance().particleManager->EmitJumpDust((float)pX, footY, lookingRight);
 
 			if (currentAnimPriority <= 2)
 			{
@@ -685,6 +693,7 @@ void Player::Attack(float dt)
 
 			attackCollider->ctype = ColliderType::PLAYER_ATTACK;
 			attackCollider->listener = this;
+			
 		}
 	}
 
@@ -867,19 +876,27 @@ void Player::Interact()
 					if (!doorId.empty()) {
 						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 					}
-					isFrozen = true;
-					int cx, cy;
-					interactuableBody->GetPosition(cx, cy);
 
-					int doorW, doorH;
-					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
+					{
+						
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+					else {
+						isFrozen = true;
+						int cx, cy;
+						interactuableBody->GetPosition(cx, cy);
 
-					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+						int doorW, doorH;
+						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
-					if (doorAnim != nullptr) {
-						doorAnim->zOrder = -1;
-						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+
+						if (doorAnim != nullptr) {
+							doorAnim->zOrder = -1;
+							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						}
 					}
 				}
 				else
@@ -894,19 +911,26 @@ void Player::Interact()
 				LOG("Esta puerta no necesita llave");
 				Engine::GetInstance().audio->PlayFx(openDoor);
 
-				isFrozen = true;
-				int cx, cy;
-				interactuableBody->GetPosition(cx, cy);
+				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
+				{
+					
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+				else {
+					isFrozen = true;
+					int cx, cy;
+					interactuableBody->GetPosition(cx, cy);
 
-				int doorW, doorH;
-				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					int doorW, doorH;
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
-				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 
-				if (doorAnim != nullptr) {
-					doorAnim->zOrder = -1;
-					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1;
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
 				}
 			}
 		}
@@ -1252,14 +1276,24 @@ void Player::UnlockSickle()
 void Player::UnlockDoubleJump() {
 	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
+	Engine::GetInstance().hud->ShowNotification("You have unlocked DoubleJump!");
 	LOG("Double Jump Unlocked! You can do a double jump");
 
 }
 void Player::UnlockDash() {
 	GameManager::GetInstance().gameState.dashUnlocked = true;
 	AddItem(ItemID::DASH_OBJ, 1);
+	Engine::GetInstance().hud->ShowNotification("You have unlocked Dash!");
+
 	LOG("Dash Unlocked! You can dash");
 	LOG("Dash Unlocked! You can do a dash");
+}
+
+void Player::UnlockWallJump() {
+	GameManager::GetInstance().gameState.wallJumpUnlocked = true;
+	AddItem(ItemID::WALLJUMP_OBJ, 1);
+	Engine::GetInstance().hud->ShowNotification("You have unlocked Wall Jump!");
+	LOG("Wall Jump Unlocked! You can now wall jump");
 }
 
 void Player::UnlockSkill(SkillTree skill, int cost)
@@ -1367,7 +1401,15 @@ int Player::GetItemCount(ItemID id) {
 // Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
-	if (physA == attackCollider) { return; }
+	if (physA == attackCollider) {
+		if (physB->ctype == ColliderType::ENEMY) {
+			int ex, ey;
+			physB->GetPosition(ex, ey);
+			Engine::GetInstance().particleManager->EmitAttack((float)ex, (float)ey, lookingRight);
+		}
+		return;
+	}
+
 	if (physA->ctype == ColliderType::PLAYER && physB->ctype == ColliderType::PLAYER) { return; }
 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
@@ -1404,8 +1446,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 			// Efecto de polvo al aterrizar
 			if (!onGround) { // Solo si el jugador viene del aire 
-				float footY = position.getY() + (texH / 2.0f) - 10.0f;
-				Engine::GetInstance().particleManager->EmitJumpDust(position.getX(), footY);
+				int pX, pY;
+				pbody->GetPosition(pX, pY); 
+				float footY = (float)pY + (texH / 2.0f) - 80.0f;
+				Engine::GetInstance().particleManager->EmitJumpDust((float)pX, footY, lookingRight);
 			}
 
 			// Reset the jump flag when touching the ground

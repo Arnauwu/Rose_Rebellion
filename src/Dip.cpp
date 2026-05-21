@@ -99,7 +99,13 @@ bool Dip::Update(float dt)
 		return true;
 	}
 
-	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
+	if (isdead)
+	{
+		Draw(dt);
+		return true;
+	}
+
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
 	{
 		if (pathFindingCooldown.ReadMSec() > 500)
 		{
@@ -379,6 +385,10 @@ void Dip::AttackPlayer()
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player == nullptr || isdead) return;
 
+	if (player->godMode || player->isInvincible) {
+		return;
+	}
+
 	// Frecuencia de ataque: cada 500 ms (2 veces por segundo)
 	if (startAttack.ReadMSec() >= 500)
 	{
@@ -426,6 +436,23 @@ void Dip::ApplyPhysics() {
 
 void Dip::Draw(float dt)
 {
+	if (isdead)
+	{
+	
+		if (anims.GetCurrentName() != "Dead")
+		{
+			anims.SetCurrent("Dead");
+			anims.GetAnim("Dead")->SetLoop(false);  
+		}
+		
+		if (anims.GetAnim("Dead")->HasFinishedOnce())
+		{
+			
+			pendingToDelete = true;
+			active = false;
+		}
+	}
+
 	anims.Update(dt);
 
 	SDL_Rect animFrame = anims.GetCurrentFrame();
@@ -467,10 +494,16 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
-		TakeDamage(physB->listener->damage);
+		LOG("Dip hit! Damage = %d", physB->listener->damage);
+		Entity::TakeDamage(physB->listener->damage);
 		isKnockedback = true;
 		if (anims.GetCurrentName() == "Move") Engine::GetInstance().audio->StopFx(caminarDip);
 		anims.SetCurrent("Hit");
+
+		if (currentHealth <= 0) {
+			isdead = true;
+			currentHealth = 0;
+		}
 		break;
 	case ColliderType::PLAYER:
 

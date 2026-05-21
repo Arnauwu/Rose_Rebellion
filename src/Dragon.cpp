@@ -33,7 +33,7 @@ bool Dragon::Awake() {
 }
 
 bool Dragon::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{15,"walk"},{45,"takeOff"},{60,"air"},{90,"stomp"},{105,"claw"},{120,"tail"} ,{135,"shoot"} };
+	std::unordered_map<int, std::string> aliases = { {0,"idle"},{15,"walk"},{45,"takeOff"},{60,"air"},{90,"stomp"},{105,"claw"},{120,"tail"} ,{135,"shoot"},{165,"dead"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dragon/Dragon.tsx", aliases);
 	anims.SetCurrent("idle");
 
@@ -97,19 +97,19 @@ bool Dragon::Update(float dt)
 		ApplyPhysics();
 	}
 
-	//if (isdead && anims.GetCurrentName() != "dead") //TO DO UNCOMENT
-	//{
-	//	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-	//	anims.GetAnim("dead")->SetLoop(false); 
-	//	anims.SetCurrent("dead");
-	//	pbody->ctype = ColliderType::UNKNOWN;
-	//}
+	if (isdead && anims.GetCurrentName() != "dead")
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+		anims.GetAnim("dead")->SetLoop(false); 
+		anims.SetCurrent("dead");
+		pbody->ctype = ColliderType::UNKNOWN;
+	}
 
-	//if (anims.GetAnim("dead")->HasFinishedOnce()) //TO DO UNCOMENT
-	//{
-	//	pendingToDelete = true;
-	//	// TO DO: END SCREEN / ANIM ???
-	//}
+	if (anims.GetAnim("dead")->HasFinishedOnce())
+	{
+		pendingToDelete = true;
+		// TO DO: END SCREEN / ANIM ???
+	}
 
 	Draw(dt);
 
@@ -293,7 +293,6 @@ void Dragon::Move()
 		}
 
 
-
 		//Horitzontal
 		if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && startedAttacking == false)
 		{
@@ -349,8 +348,6 @@ void Dragon::Move()
 		}
 
 		break;
-	case MIXED:
-		break;
 	}
 }
 
@@ -393,10 +390,7 @@ void Dragon::ApplyPhysics() {
 	case AIR:
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
 		break;
-	case MIXED:
-		break;
 	}
-
 }
 
 void Dragon::Draw(float dt)
@@ -575,9 +569,6 @@ void Dragon::Attack()
 			}
 		}
 		break;
-	case DragonPhase::MIXED:
-
-		break;
 	}
 }
 
@@ -610,7 +601,7 @@ void Dragon::SelectAttack()
 		case 3: //Ground Spikes
 			damage = 30;
 			attackCooldownTime = 2000.0f;
-			attackWindupTime = 1800.0f;
+			attackWindupTime = 1200.0f;
 			attackTileRange = 5;
 			currentAttackAnim = "stomp";
 			break;
@@ -636,9 +627,6 @@ void Dragon::SelectAttack()
 			currentAttackAnim = "claw"; // TOOD CHANGE
 			break;
 		}
-		break;
-	case DragonPhase::MIXED:
-
 		break;
 	}
 	nextAttackSelected = true;

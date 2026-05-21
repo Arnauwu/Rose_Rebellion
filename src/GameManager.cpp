@@ -30,6 +30,8 @@ bool GameManager::SaveGame(const std::string& filename) {
     unlocks.append_attribute("glideUnlocked").set_value(gameState.glideUnlocked);
     unlocks.append_attribute("dashUnlocked").set_value(gameState.dashUnlocked);
     unlocks.append_attribute("doubleJumpUnlocked").set_value(gameState.doubleJumpUnlocked);
+    unlocks.append_attribute("wallJumpUnlocked").set_value(gameState.wallJumpUnlocked);
+
 
     // World Status and Position
     pugi::xml_node world = root.append_child("WorldState");
@@ -102,6 +104,7 @@ bool GameManager::LoadGame(const std::string& filename) {
         tempState.glideUnlocked = unlocks.attribute("glideUnlocked").as_bool(false);
         tempState.dashUnlocked = unlocks.attribute("dashUnlocked").as_bool(false);
         tempState.doubleJumpUnlocked = unlocks.attribute("doubleJumpUnlocked").as_bool(false);
+        tempState.wallJumpUnlocked = unlocks.attribute("wallJumpUnlocked").as_bool(false);
     }
 
     // Load World State and Position

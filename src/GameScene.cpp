@@ -823,8 +823,8 @@ void GameScene::CreateDialogueUI() {
 	if (dBox != nullptr) {
 		dBox->SetBackgroundTexture(UIDialogueBoxTex);
 
-		dBox->AddPortrait("Princesa", princessPortrait);
-		dBox->AddPortrait("Jan", npcPortrait);
+		dBox->AddPortrait("Rose", princessPortrait);
+		dBox->AddPortrait("Pep", npcPortrait);
 		/*dBox->AddPortrait("Jan", npcPortrait1);
 		dBox->AddPortrait("Jan", npcPortrait2);
 		dBox->AddPortrait("Jan", npcPortrait3);

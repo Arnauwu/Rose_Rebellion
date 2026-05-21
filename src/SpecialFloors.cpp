@@ -30,12 +30,20 @@ bool SpecialFloor::Start() {
 	texH = height;
 
 	// Initialize animation
-	std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"}, {2,"reconstruct"} };
-	anims.LoadFromTSX("Assets/Maps/Catacombs/SpecialFloor_Broken.tsx", aliases);
-	anims.SetCurrent("normal");
-
 	if (floorType == TypeFloor::BROKENFLOOR) {
+		std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"broken"}, {2,"reconstruct"} };
+		anims.LoadFromTSX("Assets/Maps/Catacombs/SpecialFloor_Broken.tsx", aliases);
+		anims.SetCurrent("normal");
+
 		texture = Engine::GetInstance().textures->Load("Assets/Maps/Catacombs/SpecialFloor_Broken.png");
+	}
+
+	if (floorType == TypeFloor::HORIZONTALFLOOR || floorType == TypeFloor::VERTICALFLOOR || floorType == TypeFloor::CIRCULARFLOOR) {
+		std::unordered_map<int, std::string> aliases = { {0,"normal"},{1,"move"} };
+		anims.LoadFromTSX("Assets/Maps/Catacombs/SpecialFloor_Move.tsx", aliases);
+		anims.SetCurrent("move");
+
+		texture = Engine::GetInstance().textures->Load("Assets/Maps/Catacombs/SpecialFloor_Move.png");
 	}
 
 	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW, texH, bodyType::KINEMATIC);
