@@ -162,6 +162,7 @@
     <ClCompile Include="src\Door.cpp" />
     <ClCompile Include="src\HealthBarManager.cpp" />
     <ClCompile Include="src\GwellBoss.cpp" />
+    <ClCompile Include="src\LoadingScene.cpp" />
     <ClCompile Include="src\Minairon.cpp" />
     <ClCompile Include="src\MiniMap.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="src\Door.h" />
     <ClInclude Include="src\HealthBarManager.h" />
     <ClInclude Include="src\GwellBoss.h" />
+    <ClInclude Include="src\LoadingScene.h" />
     <ClInclude Include="src\Minairon.h" />
     <ClInclude Include="src\Minimap.h" />
     <ClInclude Include="src\NinfaBoss.h" />
