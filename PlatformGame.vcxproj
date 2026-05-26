@@ -165,6 +165,7 @@
     <ClCompile Include="src\Minairon.cpp" />
     <ClCompile Include="src\MiniMap.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
+    <ClCompile Include="src\Projectile.cpp" />
     <ClCompile Include="src\SpecialFloors.cpp" />
     <ClCompile Include="src\ToxicBall.cpp" />
     <ClCompile Include="src\TracyMemory.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="src\Minairon.h" />
     <ClInclude Include="src\Minimap.h" />
     <ClInclude Include="src\NinfaBoss.h" />
+    <ClInclude Include="src\Projectile.h" />
     <ClInclude Include="src\SpecialFloors.h" />
     <ClInclude Include="src\ToxicBall.h" />
     <ClInclude Include="src\UIDialogueBox.h" />

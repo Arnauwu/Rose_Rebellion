@@ -101,6 +101,7 @@ private:
 	void RespawnFromVoid();
 	void Jump(float dt);
 	void Attack(float dt);
+	void RangedAttack(float dt);
 	void Glide();
 	void Dash();
 

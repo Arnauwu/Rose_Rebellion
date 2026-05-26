@@ -390,6 +390,9 @@
     <ClCompile Include="src\WinScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\Projectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -609,6 +612,8 @@
     <ClInclude Include="src\WinScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="src\Projectile.h" />
+    <ClCompile Include="src\Projectile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">

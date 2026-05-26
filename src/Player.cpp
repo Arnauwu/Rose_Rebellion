@@ -10,6 +10,7 @@
 #include "dialogueManager.h"
 #include "Npc.h"
 
+#include "Projectile.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -217,6 +218,8 @@ bool Player::Update(float dt)
 			Jump(dt);
 
 			Attack(dt);
+
+			RangedAttack(dt);
 
 			Glide();
 
@@ -726,6 +729,63 @@ void Player::Attack(float dt)
 			}
 		}
 	}
+}
+
+void Player::RangedAttack(float dt)
+{
+	bool rangedPressed = false;
+
+	// Keyboard H
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+		rangedPressed = true;
+
+	// Gamepad - B button (círculo)
+	if (Engine::GetInstance().input->IsGamepadConnected() &&
+		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_B) == KEY_DOWN)
+		rangedPressed = true;
+
+	if (!rangedPressed || isGliding) return;
+
+	// Determinar dirección
+	float dirX = lookingRight ? 1.0f : -1.0f;
+	float dirY = 0.0f;
+
+	// Detectar si hay entrada hacia arriba
+	bool lookUp = Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT;
+	if (Engine::GetInstance().input->IsGamepadConnected())
+	{
+		float lstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
+		if (lstickY < -0.5f) lookUp = true;
+	}
+
+	if (lookUp)
+	{
+		dirX = 0.0f;
+		dirY = -1.0f;
+	}
+
+	// Crear projectile
+	auto projectile = Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE);
+	Projectile* proj = dynamic_cast<Projectile*>(projectile.get());
+
+	if (proj != nullptr)
+	{
+		int launchX = (int)(position.getX() + dirX * 70);
+		int launchY = (int)(position.getY() + dirY * 70);
+		
+		// Establecer posición ANTES de llamar a Start()
+		proj->position.setX((float)launchX);
+		proj->position.setY((float)launchY);
+		
+		// Llamar a Awake() y Start() manualmente
+		proj->Awake();
+		proj->Start();
+		
+		// Ahora sí lanzar el projectile
+		proj->Launch((float)launchX, (float)launchY, dirX, dirY);
+	}
+
+	LOG("Ranged Attack launched!");
 }
 
 void Player::Glide()
