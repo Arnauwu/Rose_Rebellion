@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <SaveGame>
 	<PlayerStats currentHealth="20" maxHealth="100" keyCount="0" currentForceOrbs="11" />
-	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" />
+	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="false" />
 	<WorldState currentMap="Catacombs_Boss_Dead.tmx">
 		<Position x="5503" y="5632" />
 	</WorldState>

@@ -218,6 +218,7 @@
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\WallJumpObj.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\WinScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
@@ -293,6 +294,7 @@
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\WallJumpObj.h" />
     <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\WinScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml" />
