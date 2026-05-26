@@ -29,12 +29,12 @@ void Minimap::CreateRoom(const std::string& id)
     }
     else if (id == "Forest_03.tmx")
     {
-        newRoom.x = -2.5;
+        newRoom.x = -3;
         newRoom.y = -0.5f;
     }
     else if (id == "Forest_04.tmx")
     {
-        newRoom.x = -3;
+        newRoom.x = -3.5;
         newRoom.y = 0;
     }
     else if (id == "Forest_05.tmx")
@@ -50,7 +50,7 @@ void Minimap::CreateRoom(const std::string& id)
     else if (id == "Mountain_02.tmx")
     {
         newRoom.x = 1;
-        newRoom.y = -0.5f;
+        newRoom.y = -1;
     }
     else if (id == "Mountain_03.tmx")
     {
@@ -64,7 +64,7 @@ void Minimap::CreateRoom(const std::string& id)
     }
     else if (id == "Catacombs_02_F.tmx")
     {
-        newRoom.x = -2;
+        newRoom.x = -2.5;
         newRoom.y = 1;
     }
     else if (id == "Catacombs_01_M.tmx")
@@ -79,8 +79,8 @@ void Minimap::CreateRoom(const std::string& id)
     }
     else if (id == "Catacombs_Boss_Dead.tmx" || id == "Catacombs_Boss_Alive.tmx")
     {
-        newRoom.x = 0;
-        newRoom.y = 1;
+        newRoom.x = -0.1f;
+        newRoom.y = 0.5;
     }
     else
     {
@@ -89,8 +89,8 @@ void Minimap::CreateRoom(const std::string& id)
 
     int mapW = Engine::GetInstance().map->GetMapSizeInPixels().getX();
     int mapH = Engine::GetInstance().map->GetMapSizeInPixels().getY();
-    newRoom.w =  mapW / 200;
-    newRoom.h =  mapH / 200;
+    newRoom.w =  mapW / 150;
+    newRoom.h =  mapH / 150;
 
     std::vector<Door> paths = Engine::GetInstance().map->GetPaths();
 
@@ -144,19 +144,34 @@ void Minimap::DrawMinimap()
             Engine::GetInstance().render->DrawRectangleUnscaled(rect, 144, 255, 255, 255, true, false);
             Engine::GetInstance().render->DrawRectangleUnscaled(rect, 0, 0, 128, 255, false, false);
         }
-        else
+        else if (id.find("Forest") != std::string::npos)
         {
-            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 252, 75, 8, 255, true, false);
+            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 70, 255, 70, 255, true, false);
+            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 0, 128, 0, 255, false, false);
+        }
+        else if (id.find("Catacombs") != std::string::npos)
+        {
+            Engine::GetInstance().render->DrawRectangleUnscaled(rect, 255, 150, 28, 255, true, false);
             Engine::GetInstance().render->DrawRectangleUnscaled(rect, 199, 110, 0, 255, false, false);
         }
-
+        else if (id.find("Mountain") != std::string::npos)
+        {
+            if (id == "Mountain_03.tmx")
+            {
+                Engine::GetInstance().render->DrawRectangleUnscaled(rect, 255, 70, 70, 255, true, false);
+                Engine::GetInstance().render->DrawRectangleUnscaled(rect, 255, 0, 0, 255, false, false);
+            }
+            else
+            {
+                Engine::GetInstance().render->DrawRectangleUnscaled(rect, 28, 150, 255, 255, true, false);
+                Engine::GetInstance().render->DrawRectangleUnscaled(rect, 0, 0, 255, 255, false, false);
+            }
+        }
 
         if (id == currentRoom)
         {
             Engine::GetInstance().render->DrawCircleUnscaled(rect.x + rect.w/2, rect.y + rect.h / 2, circleRadious, 255, 255, 255, 255, false);
         }
-
-
 
         for (auto it = room.paths.begin(); it != room.paths.end(); ++it)
         {

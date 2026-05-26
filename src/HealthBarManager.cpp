@@ -34,9 +34,8 @@ bool HealthBarManager::Start() {
     return true;
 }
 
-bool HealthBarManager::Update(float dt) { return true; }
-
-bool HealthBarManager::PostUpdate() {
+bool HealthBarManager::Update(float dt)
+{
     ZoneScoped;
 
     if (currentBoss == nullptr || currentBoss->isdead) {
@@ -84,7 +83,7 @@ bool HealthBarManager::PostUpdate() {
 
     // --- 1. POSICIÓN: Arriba y centrado ---
     int screenW = Engine::GetInstance().window->windowWidth;
-    int posX = ((screenW - activeWidth) / 2) + 650; 
+    int posX = ((screenW - activeWidth) / 2) + 650;
 
     // --- 2. LÓGICA DE VIDA ---
     float hpPercent = 0.0f;
@@ -127,6 +126,8 @@ bool HealthBarManager::CleanUp() {
     if (ninfaVidaTexture) Engine::GetInstance().textures->UnLoad(ninfaVidaTexture);
     return true;
 }
+
+bool HealthBarManager::PostUpdate() { return true; }
 
 void HealthBarManager::SetBoss(Enemy* boss) {
     currentBoss = boss;
