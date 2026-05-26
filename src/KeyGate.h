@@ -6,6 +6,7 @@
 #include <string>
 
 struct SDL_Texture;
+class PhysBody;
 
 enum class GateState {
     CLOSED,
@@ -24,9 +25,10 @@ public:
     bool Update(float dt) override;
     bool CleanUp() override;
 
-    
+
     void Initialize(Vector2D pos, int width, int height, KeyType key, std::string id);
-    void OpenGate(); 
+    void SetCollider(PhysBody* collider);
+    void OpenGate();
 
     KeyType requiredKey = KeyType::NONE;
     std::string gateID = "";
@@ -41,5 +43,6 @@ private:
 
     int gateW = 0;
     int gateH = 0;
+    PhysBody* gateCollider = nullptr;
     bool animationFinished = false;
 };

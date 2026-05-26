@@ -49,6 +49,49 @@
 
 #include "tracy/Tracy.hpp"
 
+#include <algorithm>
+#include <cctype>
+
+namespace
+{
+	std::string NormalizeKeyRegion(std::string region)
+	{
+		region.erase(std::remove_if(region.begin(), region.end(), [](unsigned char c) {
+			return std::isspace(c) || c == '_' || c == '-';
+			}), region.end());
+
+		std::transform(region.begin(), region.end(), region.begin(), [](unsigned char c) {
+			return (char)std::tolower(c);
+			});
+
+		return region;
+	}
+
+	KeyType KeyTypeFromRegion(const std::string& region)
+	{
+		std::string normalizedRegion = NormalizeKeyRegion(region);
+
+		if (normalizedRegion == "forest") return KeyType::FOREST;
+		if (normalizedRegion == "mountain") return KeyType::MOUNTAIN;
+		if (normalizedRegion == "catacumba" || normalizedRegion == "catacumbs" || normalizedRegion == "catacombs") return KeyType::CATACUMBA;
+		if (normalizedRegion == "boss") return KeyType::BOSS;
+		if (normalizedRegion == "castle") return KeyType::CASTLE;
+
+		return KeyType::NONE;
+	}
+
+	KeyType ReadKeyType(Properties& objectProperties, Properties* groupProperties = nullptr)
+	{
+		Properties::Property* keyRegionProp = objectProperties.GetProperty("KeyRegion");
+		if (keyRegionProp == nullptr && groupProperties != nullptr)
+		{
+			keyRegionProp = groupProperties->GetProperty("KeyRegion");
+		}
+
+		return keyRegionProp != nullptr ? KeyTypeFromRegion(keyRegionProp->value2) : KeyType::NONE;
+	}
+}
+
 Map::Map() : Module(), mapLoaded(false)
 {
 	name = "map";
@@ -629,16 +672,7 @@ bool Map::Load(std::string path, std::string fileName)
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						newDoor.needsKey = (needsKeyProp != nullptr) ? needsKeyProp->value : false;
 
-						newDoor.requiredKey = KeyType::NONE;
-						Properties::Property* keyRegionProp = obj->properties.GetProperty("KeyRegion");
-						if (keyRegionProp != nullptr) {
-							std::string region = keyRegionProp->value2;
-							if (region == "Forest") newDoor.requiredKey = KeyType::FOREST;
-							else if (region == "Mountain") newDoor.requiredKey = KeyType::MOUNTAIN;
-							else if (region == "Catacumba") newDoor.requiredKey = KeyType::CATACUMBA;
-							else if (region == "Boss") newDoor.requiredKey = KeyType::BOSS;
-							else if (region == "Castle") newDoor.requiredKey = KeyType::CASTLE;
-						}
+						newDoor.requiredKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
 							if (unlockedId == newDoor.uniqueId) {
@@ -657,24 +691,16 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.noAnimation = (noAnimProp != nullptr) ? noAnimProp->value : false;
 
 						mapData.doors.push_back(newDoor);
-					}else if (objectsGroups->properties.GetProperty("KeyGate") != NULL && objectsGroups->properties.GetProperty("KeyGate")->value)
+					}
+					else if (objectsGroups->properties.GetProperty("KeyGate") != NULL && objectsGroups->properties.GetProperty("KeyGate")->value)
 					{
-						
+
 						collider->ctype = ColliderType::KEY_GATE;
 
 						std::string uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
 
-						
-						KeyType reqKey = KeyType::NONE;
-						Properties::Property* keyRegionProp = obj->properties.GetProperty("KeyRegion");
-						if (keyRegionProp != nullptr) {
-							std::string region = keyRegionProp->value2;
-							if (region == "Forest") reqKey = KeyType::FOREST;
-							else if (region == "Mountain") reqKey = KeyType::MOUNTAIN;
-							else if (region == "Catacumba") reqKey = KeyType::CATACUMBA;
-							else if (region == "Boss") reqKey = KeyType::BOSS;
-							else if (region == "Castle") reqKey = KeyType::CASTLE;
-						}
+
+						KeyType reqKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
 						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY_GATE);
 						mapDynamicEntities.push_back(newEntity);
@@ -682,8 +708,9 @@ bool Map::Load(std::string path, std::string fileName)
 
 						if (gate != nullptr) {
 							gate->zOrder = -1;
-							
+
 							gate->Initialize(Vector2D(obj->x + obj->width / 2, obj->y + obj->height / 2), obj->width, obj->height, reqKey, uniqueId);
+							gate->SetCollider(collider);
 							collider->listener = gate;
 						}
 					}
@@ -906,6 +933,9 @@ void Map::SpawnEntities()
 	{
 		if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
 		{
+			Properties objectGroupProps;
+			LoadProperties(objectGroupNode, objectGroupProps);
+
 			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
 			{
 				std::string entityType = objectNode.attribute("type").as_string();
@@ -1014,15 +1044,7 @@ void Map::SpawnEntities()
 						Properties keyProps;
 						LoadProperties(objectNode, keyProps);
 
-						if (keyProps.GetProperty("KeyRegion") != nullptr) {
-							std::string region = keyProps.GetProperty("KeyRegion")->value2;
-
-							if (region == "Forest") key->SetKeyType(KeyType::FOREST);
-							else if (region == "Mountain") key->SetKeyType(KeyType::MOUNTAIN);
-							else if (region == "Catacumba") key->SetKeyType(KeyType::CATACUMBA);
-							else if (region == "Boss") key->SetKeyType(KeyType::BOSS);
-							else if (region == "Castle") key->SetKeyType(KeyType::CASTLE);
-						}
+						key->SetKeyType(ReadKeyType(keyProps, &objectGroupProps));
 					}
 				}
 				else if (entityType == std::string("Manta")) {

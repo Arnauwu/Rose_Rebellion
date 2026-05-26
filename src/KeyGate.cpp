@@ -37,6 +37,9 @@ bool KeyGate::Start()
         auto& opened = GameManager::GetInstance().gameState.openedDoors;
         if (std::find(opened.begin(), opened.end(), gateID) != opened.end()) {
             state = GateState::OPEN;
+            if (gateCollider != nullptr) {
+                gateCollider->SetCollisionsActive(false);
+            }
         }
     }
 
@@ -45,19 +48,24 @@ bool KeyGate::Start()
 
 void KeyGate::Initialize(Vector2D pos, int width, int height, KeyType key, std::string id)
 {
-    position = pos;  
+    position = pos;
     gateW = width;
     gateH = height;
     requiredKey = key;
     gateID = id;
 }
 
+void KeyGate::SetCollider(PhysBody* collider)
+{
+    gateCollider = collider;
+}
+
 void KeyGate::OpenGate()
 {
-    
+
     if (state != GateState::CLOSED) return;
     animationFinished = false;
-    
+
     state = GateState::OPENING;
     if (anims.Has("open")) {
         anims.SetCurrent("open");
@@ -92,6 +100,9 @@ bool KeyGate::Update(float dt)
             animationFinished = true;
 
             state = GateState::OPEN;
+            if (gateCollider != nullptr) {
+                gateCollider->SetCollisionsActive(false);
+            }
 
             auto player = Engine::GetInstance().entityManager->GetPlayer();
             if (player) player->isFrozen = false;
