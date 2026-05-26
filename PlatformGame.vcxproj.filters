@@ -164,6 +164,9 @@
     <Filter Include="Source Files\Game\Entity\Enemies\Dip">
       <UniqueIdentifier>{f7ecc5db-b91f-43c4-989e-88edd0e9103e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Cucafera Mutant">
+      <UniqueIdentifier>{340b8289-ab99-453a-8bc2-bf3a80079553}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -381,9 +384,6 @@
     <ClCompile Include="src\Dip.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
     </ClCompile>
-    <ClCompile Include="src\CucaferaMutant.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\WallJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
@@ -392,6 +392,9 @@
 	</ClCompile>
     <ClCompile Include="src\WinScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CucaferaMutant.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera Mutant</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -605,7 +608,6 @@
     <ClInclude Include="src\Dip.h">
       <Filter>Source Files\Game\Entity\Enemies\Dip</Filter>
     </ClInclude>
-    <ClInclude Include="src\CucaferaMutant.h" />
     <ClInclude Include="src\WallJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClInclude>
@@ -614,6 +616,9 @@
 	</ClInclude>
     <ClInclude Include="src\WinScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CucaferaMutant.h">
+      <Filter>Source Files\Game\Entity\Enemies\Cucafera Mutant</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

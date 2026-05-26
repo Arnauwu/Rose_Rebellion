@@ -204,15 +204,14 @@ bool Player::Update(float dt)
 			}
 		}
 
-		Move();
-
 		Knockback();
 
 		timeSinceLastAttack += dt / 1000.0f; // Convert dt to seconds
 		if (timeSinceLastAttack >= comboResetTime) {
 			comboStep = 0; // Reset combo
 		}
-		if (!isKnockedback) {
+		if (!isKnockedback) 
+		{
 			Move();
 
 			Jump(dt);
@@ -1853,6 +1852,7 @@ void Player::DevTools(float dt)
 		GameManager::GetInstance().gameState.hasSickle = true;
 		GameManager::GetInstance().gameState.dashUnlocked = true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
+		GameManager::GetInstance().gameState.wallJumpUnlocked = true;
 		GameManager::GetInstance().gameState.currentForceOrbs += 10;
 	}
 }
