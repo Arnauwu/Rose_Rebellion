@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="39" nextobjectid="556">
+<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="39" nextobjectid="558">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -245119,13 +245119,16 @@
   <object id="520" x="22016" y="14759.4" width="11776" height="88.6061"/>
   <object id="521" x="9856" y="14760" width="9600" height="88"/>
  </objectgroup>
- <objectgroup color="#00ffff" id="24" name="PuertaBloqRef">
-  <object id="240" name="Door" type="Door" x="28672" y="9856" width="128" height="384"/>
-  <object id="241" name="Catacombs_Key" type="Catacombs_Key" x="27264" y="5888">
-   <point/>
+ <objectgroup color="#00ffff" id="25" name="KeyGate">
+  <object id="556" x="28672" y="9860" width="132" height="380">
+   <properties>
+    <property name="KeyGate" type="bool" value="true"/>
+    <property name="KeyRegion" value="Catacumba"/>
+    <property name="Sensor" type="bool" value="false"/>
+    <property name="Square" type="bool" value="true"/>
+   </properties>
   </object>
  </objectgroup>
- <objectgroup color="#00ffff" id="25" name="LlaveRef"/>
  <objectgroup color="#aa0000" id="26" name="PlataformasRefGiro">
   <object id="220" x="26368" y="9984" width="512" height="128"/>
   <object id="221" x="25088" y="9984" width="512" height="128"/>
@@ -245635,6 +245638,12 @@
    <point/>
   </object>
   <object id="554" name="Bat" type="Bat" x="31360" y="6144">
+   <point/>
+  </object>
+  <object id="557" name="Key" type="Key" x="27100" y="5960">
+   <properties>
+    <property name="KeyRegion" value="Catacumba"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
