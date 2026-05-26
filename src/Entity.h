@@ -44,6 +44,7 @@ enum class EntityType
 
 	SAVEPOINT,
 	DOOR,
+	KEY_GATE,
 
 	SPECIALFLOOR,
 

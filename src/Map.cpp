@@ -10,84 +10,115 @@
 #include <math.h>
 
 #include "SceneManager.h"
-
 #include "EntityManager.h"
-
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
 #include "CucaferaMutant.h"
-
 
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
 
 #include "Ninfa.h"
 #include "Demon.h"
-
 #include "Dip.h"
 
 #include "Minairon.h"
 #include "Bat.h"
 #include "ToxicBall.h"
 
-
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
 #include "GwellBoss.h"
 #include"Dragon.h"
 
-
 #include "SpecialFloors.h"
-
 #include "GameManager.h"
 #include "SavePoint.h"
 #include "Door.h"
+#include "KeyGate.h" 
 #include "Item.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
 #include "Keys.h"
 #include "Manta.h"
-#include "Sickle.h"
+#include "Sickle.h"	
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
 #include "WallJumpObj.h"
 
 #include "tracy/Tracy.hpp"
 
-Map::Map() : Module(), mapLoaded(false)      
+#include <algorithm>
+#include <cctype>
+
+namespace
+{
+	std::string NormalizeKeyRegion(std::string region)
+	{
+		region.erase(std::remove_if(region.begin(), region.end(), [](unsigned char c) {
+			return std::isspace(c) || c == '_' || c == '-';
+			}), region.end());
+
+		std::transform(region.begin(), region.end(), region.begin(), [](unsigned char c) {
+			return (char)std::tolower(c);
+			});
+
+		return region;
+	}
+
+	KeyType KeyTypeFromRegion(const std::string& region)
+	{
+		std::string normalizedRegion = NormalizeKeyRegion(region);
+
+		if (normalizedRegion == "forest") return KeyType::FOREST;
+		if (normalizedRegion == "mountain") return KeyType::MOUNTAIN;
+		if (normalizedRegion == "catacumba" || normalizedRegion == "catacumbs" || normalizedRegion == "catacombs") return KeyType::CATACUMBA;
+		if (normalizedRegion == "boss") return KeyType::BOSS;
+		if (normalizedRegion == "castle") return KeyType::CASTLE;
+
+		return KeyType::NONE;
+	}
+
+	KeyType ReadKeyType(Properties& objectProperties, Properties* groupProperties = nullptr)
+	{
+		Properties::Property* keyRegionProp = objectProperties.GetProperty("KeyRegion");
+		if (keyRegionProp == nullptr && groupProperties != nullptr)
+		{
+			keyRegionProp = groupProperties->GetProperty("KeyRegion");
+		}
+
+		return keyRegionProp != nullptr ? KeyTypeFromRegion(keyRegionProp->value2) : KeyType::NONE;
+	}
+}
+
+Map::Map() : Module(), mapLoaded(false)
 {
 	name = "map";
 }
 
-// Destructor
 Map::~Map()
 {
 }
 
-// Called before render is available
 bool Map::Awake()
 {
 	name = "map";
 	LOG("Loading Map Parser");
-
 	return true;
 }
 
 bool Map::Start() {
-
 	return true;
 }
 
 bool Map::Update(float dt)
 {
 	ZoneScoped;
-
 	bool ret = true;
 
 	if (mapLoaded)
 	{
-		// Loop to draw all images (Object Groups)
 		for (const auto& objectGroup : mapData.objectGroups)
 		{
 			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
@@ -146,7 +177,6 @@ bool Map::Update(float dt)
 			}
 		}
 
-		// Update all Animated Tiles (SOLO UNA VEZ POR FRAME)
 		for (auto& tileset : mapData.tilesets)
 		{
 			for (auto it = tileset->animations.begin(); it != tileset->animations.end(); ++it)
@@ -155,7 +185,6 @@ bool Map::Update(float dt)
 			}
 		}
 
-		// Loop to draw all tiles in a layer
 		for (const auto& mapLayer : mapData.layers)
 		{
 			if (mapLayer->tiles.empty()) continue;
@@ -163,7 +192,6 @@ bool Map::Update(float dt)
 			bool shouldDraw = mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true;
 			bool isFront = mapLayer->properties.GetProperty("Front") != NULL && mapLayer->properties.GetProperty("Front")->value == true;
 
-			// En el Update normal, NO dibujamos las capas Frontales
 			if (shouldDraw && !isFront)
 			{
 				Vector2D camPosTile = GetCameraPositionInTiles();
@@ -213,11 +241,10 @@ bool Map::Update(float dt)
 							if (tileSet != nullptr)
 							{
 								SDL_Rect tileRect;
-								int localId = tileId - tileSet->firstGid; // CORRECCIÓN DEL ID LOCAL
+								int localId = tileId - tileSet->firstGid;
 
 								if (tileSet->animations.count(localId))
 								{
-									// Animated Tile
 									tileRect.x = tileSet->animations[localId].GetCurrentFrame().x;
 									tileRect.y = tileSet->animations[localId].GetCurrentFrame().y;
 									tileRect.w = tileSet->animations[localId].GetCurrentFrame().w;
@@ -225,7 +252,6 @@ bool Map::Update(float dt)
 								}
 								else
 								{
-									// Static Tile
 									tileRect.x = tileSet->GetRect(tileId).x;
 									tileRect.y = tileSet->GetRect(tileId).y;
 									tileRect.w = tileSet->GetRect(tileId).w;
@@ -256,12 +282,10 @@ bool Map::Update(float dt)
 bool Map::PostUpdate()
 {
 	ZoneScoped;
-
 	bool ret = true;
 
 	if (mapLoaded)
 	{
-		// 1. Loop to draw all Object Groups marked as Front
 		for (const auto& objectGroup : mapData.objectGroups)
 		{
 			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
@@ -320,7 +344,6 @@ bool Map::PostUpdate()
 			}
 		}
 
-		// 2. Loop to draw all Map Layers marked as Front
 		for (const auto& mapLayer : mapData.layers)
 		{
 			if (mapLayer->tiles.empty()) continue;
@@ -377,11 +400,10 @@ bool Map::PostUpdate()
 							if (tileSet != nullptr)
 							{
 								SDL_Rect tileRect;
-								int localId = tileId - tileSet->firstGid; // CORRECCIÓN DEL ID LOCAL
+								int localId = tileId - tileSet->firstGid;
 
 								if (tileSet->animations.count(localId))
 								{
-									// Animated Tile
 									tileRect.x = tileSet->animations[localId].GetCurrentFrame().x;
 									tileRect.y = tileSet->animations[localId].GetCurrentFrame().y;
 									tileRect.w = tileSet->animations[localId].GetCurrentFrame().w;
@@ -389,7 +411,6 @@ bool Map::PostUpdate()
 								}
 								else
 								{
-									// Static Tile
 									tileRect.x = tileSet->GetRect(tileId).x;
 									tileRect.y = tileSet->GetRect(tileId).y;
 									tileRect.w = tileSet->GetRect(tileId).w;
@@ -416,7 +437,6 @@ bool Map::PostUpdate()
 	return ret;
 }
 
-// Implement function to the Tileset based on a tile id
 TileSet* Map::GetTilesetFromTileId(int gid) const
 {
 	TileSet* set = nullptr;
@@ -429,27 +449,33 @@ TileSet* Map::GetTilesetFromTileId(int gid) const
 	return set;
 }
 
-// Called before quitting
 bool Map::CleanUp()
 {
 	LOG("Unloading map");
+
+	for (auto& entity : mapDynamicEntities)
+	{
+		if (entity != nullptr)
+		{
+			Engine::GetInstance().entityManager->DestroyEntity(entity);
+		}
+	}
+	mapDynamicEntities.clear();
+
 	mapFileName = "";
 	mapPath = "";
 
-	// Clean up any memory allocated from tilesets/map
 	for (const auto& tileset : mapData.tilesets) {
 		delete tileset;
 	}
 	mapData.tilesets.clear();
 
-	// Clean up all layer data
 	for (const auto& layer : mapData.layers)
 	{
 		delete layer;
 	}
 	mapData.layers.clear();
 
-	//Clean up object groups
 	for (const auto& objectGroup : mapData.objectGroups) {
 		objectGroup->objects.clear();
 	}
@@ -459,7 +485,6 @@ bool Map::CleanUp()
 	mapData.doors.clear();
 	mapData.paths.clear();
 
-	// Clean up collider list
 	for (const auto& collider : colliderList)
 	{
 		Engine::GetInstance().physics->DeletePhysBody(collider);
@@ -469,12 +494,10 @@ bool Map::CleanUp()
 	return true;
 }
 
-// Load new map
 bool Map::Load(std::string path, std::string fileName)
 {
 	bool ret = false;
 
-	// Assigns the name of the map file and the path
 	mapFileName = fileName;
 	mapPath = path;
 	std::string mapPathName = mapPath + mapFileName;
@@ -488,17 +511,13 @@ bool Map::Load(std::string path, std::string fileName)
 	}
 	else
 	{
-		// Load the map properties
-		// retrieve the paremeters of the <map> node and store the into the mapData struct
 		mapData.width = mapFileXML.child("map").attribute("width").as_int();
 		mapData.height = mapFileXML.child("map").attribute("height").as_int();
 		mapData.tileWidth = mapFileXML.child("map").attribute("tilewidth").as_int();
 		mapData.tileHeight = mapFileXML.child("map").attribute("tileheight").as_int();
 
-		//Iterate the Tileset
 		for (pugi::xml_node tilesetNode = mapFileXML.child("map").child("tileset"); tilesetNode != NULL; tilesetNode = tilesetNode.next_sibling("tileset"))
 		{
-			//Load Tileset attributes
 			TileSet* tileSet = new TileSet();
 			tileSet->firstGid = tilesetNode.attribute("firstgid").as_int();
 			tileSet->name = tilesetNode.attribute("name").as_string();
@@ -509,11 +528,9 @@ bool Map::Load(std::string path, std::string fileName)
 			tileSet->tileCount = tilesetNode.attribute("tilecount").as_int();
 			tileSet->columns = tilesetNode.attribute("columns").as_int();
 
-			//Load the tileset image
 			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
 			tileSet->texture = Engine::GetInstance().textures->Load((mapPath + imgName).c_str());
 
-			// Load animation
 			for (pugi::xml_node tileNode = tilesetNode.child("tile"); tileNode; tileNode = tileNode.next_sibling("tile"))
 			{
 				int tileId = tileNode.attribute("id").as_int();
@@ -522,8 +539,6 @@ bool Map::Load(std::string path, std::string fileName)
 				if (animNode)
 				{
 					Animation anim;
-
-					//Iterate all Animation Frames
 					for (pugi::xml_node frameNode = animNode.child("frame"); frameNode; frameNode = frameNode.next_sibling("frame"))
 					{
 						int frameTileId = frameNode.attribute("tileid").as_int();
@@ -532,51 +547,37 @@ bool Map::Load(std::string path, std::string fileName)
 						SDL_Rect rect = tileSet->GetRect(tileSet->firstGid + frameTileId);
 						anim.AddFrame(rect, duration);
 					}
-
 					anim.Reset();
-					tileSet->animations[tileId] = anim; //Save Animation
+					tileSet->animations[tileId] = anim;
 				}
 			}
-
 			mapData.tilesets.push_back(tileSet);
 		}
 
-		// Iterate all layers in the TMX and load each of them
 		for (pugi::xml_node layerNode = mapFileXML.child("map").child("layer"); layerNode != NULL; layerNode = layerNode.next_sibling("layer")) {
-
-			//Load the attributes and saved in a new MapLayer
 			MapLayer* mapLayer = new MapLayer();
 			mapLayer->id = layerNode.attribute("id").as_int();
 			mapLayer->name = layerNode.attribute("name").as_string();
 			mapLayer->width = layerNode.attribute("width").as_int();
 			mapLayer->height = layerNode.attribute("height").as_int();
 
-			// Call Load Layer Properties
 			LoadProperties(layerNode, mapLayer->properties);
 
-			// Iterate over all the tiles and assign the values in the data array
 			for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile"))
 			{
 				mapLayer->tiles.push_back(tileNode.attribute("gid").as_uint());
 			}
-
-			// Add the layer to the map
 			mapData.layers.push_back(mapLayer);
 		}
 
-		// Load Object Group
 		for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
 		{
 			ObjectGroup* objectgroup = new ObjectGroup();
-
-			// Load Object Layer Properties
 			LoadProperties(objectGroupNode, objectgroup->properties);
 
 			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
 			{
 				ObjectGroup::Object* o = new ObjectGroup::Object;
-
-				// Save all Object attributes
 				o->id = objectNode.attribute("id").as_int();
 				o->x = objectNode.attribute("x").as_float();
 				o->y = objectNode.attribute("y").as_float();
@@ -606,20 +607,13 @@ bool Map::Load(std::string path, std::string fileName)
 							b2Vec2 pointPos = { stoi(pair.substr(0, comma)) + o->x,  stoi(pair.substr(comma + 1)) + o->y };
 							o->points.push_back(pointPos);
 						}
-
 						start = end + 1;
 					}
 				}
 
-				// Load Individual Object Properties
 				LoadProperties(objectNode, o->properties);
-
 				objectgroup->objects.push_back(o);
 			}
-
-
-
-			//Add the layer to the map
 			mapData.objectGroups.push_back(objectgroup);
 		}
 
@@ -633,7 +627,7 @@ bool Map::Load(std::string path, std::string fileName)
 					if (obj->width <= 0 || obj->height <= 0) continue;
 
 					PhysBody* collider;
-					if (objectsGroups->properties.GetProperty("Sensor") != NULL and objectsGroups->properties.GetProperty("Sensor")->value) // Trigger
+					if (objectsGroups->properties.GetProperty("Sensor") != NULL and objectsGroups->properties.GetProperty("Sensor")->value)
 					{
 						collider = Engine::GetInstance().physics.get()->CreateRectangleSensor(obj->x + obj->width / 2, obj->y + obj->height / 2, obj->width, obj->height, STATIC);
 					}
@@ -646,13 +640,10 @@ bool Map::Load(std::string path, std::string fileName)
 					{
 						collider->ctype = ColliderType::DANGER;
 					}
-
 					else if (objectsGroups->properties.GetProperty("Map") != NULL and objectsGroups->properties.GetProperty("Map")->value)
 					{
 						collider->ctype = ColliderType::MAP;
 					}
-
-					//TO DO: DELETE //RetroCompatibility with old system
 					else if (objectsGroups->properties.GetProperty("Ground") != NULL and objectsGroups->properties.GetProperty("Ground")->value)
 					{
 						collider->ctype = ColliderType::MAP;
@@ -665,44 +656,23 @@ bool Map::Load(std::string path, std::string fileName)
 					{
 						collider->ctype = ColliderType::MAP;
 					}
-
-
-					else if (objectsGroups->properties.GetProperty("Door") != NULL and objectsGroups->properties.GetProperty("Door")->value)
+					else if ((objectsGroups->properties.GetProperty("Door") != NULL && objectsGroups->properties.GetProperty("Door")->value) ||
+						(objectsGroups->properties.GetProperty("CatacumbaDoor") != NULL && objectsGroups->properties.GetProperty("CatacumbaDoor")->value))
 					{
 						collider->ctype = ColliderType::DOOR;
 
-						// TODO: Assign Listener
-
 						Door newDoor;
 						newDoor.body = collider;
-						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo") ? obj->properties.GetProperty("TeleportTo")->value2 : "";
 
 						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
 						newDoor.width = (int)obj->width;
 						newDoor.height = (int)obj->height;
-						
-						//Mira si necesita una llave para abrirlo o no
-						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
-						if (needsKeyProp != nullptr)
-						{
-							newDoor.needsKey = needsKeyProp->value;
-						}
-						else
-						{
-							newDoor.needsKey = false;
-						}
-						newDoor.requiredKey = KeyType::NONE; // Por defecto
-						Properties::Property* keyRegionProp = obj->properties.GetProperty("KeyRegion");
-						if (keyRegionProp != nullptr)
-						{
-							std::string region = keyRegionProp->value2;
-							if (region == "Forest") newDoor.requiredKey = KeyType::FOREST;
-							else if (region == "Mountain") newDoor.requiredKey = KeyType::MOUNTAIN;
-							else if (region == "Catacumba") newDoor.requiredKey = KeyType::CATACUMBA;
-							else if (region == "Boss") newDoor.requiredKey = KeyType::BOSS;
-							else if (region == "Castle") newDoor.requiredKey = KeyType::CASTLE;
 
-						}
+						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
+						newDoor.needsKey = (needsKeyProp != nullptr) ? needsKeyProp->value : false;
+
+						newDoor.requiredKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
 							if (unlockedId == newDoor.uniqueId) {
@@ -712,30 +682,37 @@ bool Map::Load(std::string path, std::string fileName)
 						}
 
 						Properties::Property* maintenanceProp = obj->properties.GetProperty("UnderMaintenance");
-						if (maintenanceProp != nullptr) {
-							newDoor.underMaintenance = maintenanceProp->value;
-						}
-						else {
-							newDoor.underMaintenance = false;
-						}
+						newDoor.underMaintenance = (maintenanceProp != nullptr) ? maintenanceProp->value : false;
 
 						Properties::Property* closedProp = obj->properties.GetProperty("DoorClosed");
-						if (closedProp != nullptr) {
-							newDoor.DoorClose = closedProp->value;
-						}
-						else {
-							newDoor.DoorClose = false;
-						}
+						newDoor.DoorClose = (closedProp != nullptr) ? closedProp->value : false;
 
 						Properties::Property* noAnimProp = obj->properties.GetProperty("NoAnimation");
-						if (noAnimProp != nullptr) {
-							newDoor.noAnimation = noAnimProp->value;
-						}
-						else {
-							newDoor.noAnimation = false; 
-						}
+						newDoor.noAnimation = (noAnimProp != nullptr) ? noAnimProp->value : false;
 
 						mapData.doors.push_back(newDoor);
+					}
+					else if (objectsGroups->properties.GetProperty("KeyGate") != NULL && objectsGroups->properties.GetProperty("KeyGate")->value)
+					{
+
+						collider->ctype = ColliderType::KEY_GATE;
+
+						std::string uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+
+
+						KeyType reqKey = ReadKeyType(obj->properties, &objectsGroups->properties);
+
+						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY_GATE);
+						mapDynamicEntities.push_back(newEntity);
+						KeyGate* gate = (KeyGate*)newEntity.get();
+
+						if (gate != nullptr) {
+							gate->zOrder = -1;
+
+							gate->Initialize(Vector2D(obj->x + obj->width / 2, obj->y + obj->height / 2), obj->width, obj->height, reqKey, uniqueId);
+							gate->SetCollider(collider);
+							collider->listener = gate;
+						}
 					}
 					else if (objectsGroups->properties.GetProperty("Path") != NULL and objectsGroups->properties.GetProperty("Path")->value)
 					{
@@ -743,27 +720,15 @@ bool Map::Load(std::string path, std::string fileName)
 
 						Door newDoor;
 						newDoor.body = collider;
-						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo")->value2;
+						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo") ? obj->properties.GetProperty("TeleportTo")->value2 : "";
 						newDoor.x = obj->x;
 						newDoor.y = obj->y;
 
 						Properties::Property* glideProp = obj->properties.GetProperty("RequiresGlide");
-						if (glideProp != nullptr)
-						{
-							newDoor.requiresGlide = glideProp->value;
-						}
-						else
-						{
-							newDoor.requiresGlide = false;
-						}
+						newDoor.requiresGlide = (glideProp != nullptr) ? glideProp->value : false;
 
 						Properties::Property* spawnIDProp = obj->properties.GetProperty("SpawnID");
-						if (spawnIDProp != nullptr) {
-							newDoor.spawnID = spawnIDProp->value2;
-						}
-						else {
-							newDoor.spawnID = "";
-						}
+						newDoor.spawnID = (spawnIDProp != nullptr) ? spawnIDProp->value2 : "";
 
 						mapData.doors.push_back(newDoor);
 						mapData.paths.push_back(newDoor);
@@ -854,47 +819,11 @@ bool Map::Load(std::string path, std::string fileName)
 			}
 		}
 
-
 		ret = true;
 
-		// LOG all the data loaded iterate all tilesetsand LOG everything
 		if (ret == true)
 		{
 			LOG("Successfully parsed map XML file :%s", fileName.c_str());
-			LOG("width : %d height : %d", mapData.width, mapData.height);
-			LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
-			LOG("Tilesets----");
-
-			//iterate the tilesets
-			for (const auto& tileset : mapData.tilesets) {
-				LOG("name : %s firstgid : %d", tileset->name.c_str(), tileset->firstGid);
-				LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
-				LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
-			}
-
-			LOG("Layers----");
-
-			for (const auto& layer : mapData.layers) {
-				LOG("id : %d name : %s", layer->id, layer->name.c_str());
-				LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
-			}
-
-			LOG("Objects----");
-
-			for (const auto& objGroups : mapData.objectGroups) {
-				LOG("Properties: ");
-				for (const auto& ogproperties : objGroups->properties.propertyList)
-				{
-					LOG("name : %s  value : %d ", ogproperties->name.c_str(), ogproperties->value);
-				}
-				LOG("Objects");
-				for (const auto& ogobjects : objGroups->objects)
-				{
-					LOG("id : %d  points : %d ", ogobjects->id, ogobjects->points);
-					LOG("x : %d  y : %d ", ogobjects->x, ogobjects->y);
-					LOG("width : %d  height : %d ", ogobjects->width, ogobjects->height);
-				}
-			}
 		}
 		else
 		{
@@ -906,28 +835,22 @@ bool Map::Load(std::string path, std::string fileName)
 	return ret;
 }
 
-// Method that translates x,y coordinates from map positions to world positions
 Vector2D Map::MapToWorld(int x, int y) const
 {
 	Vector2D ret;
-
 	ret.setX((float)(x * mapData.tileWidth));
 	ret.setY((float)(y * mapData.tileHeight));
-
 	return ret;
 }
 
 Vector2D Map::WorldToMap(int x, int y)
 {
 	Vector2D ret(0, 0);
-
 	ret.setX(floor((float)(x / mapData.tileWidth)));
 	ret.setY(floor((float)(y / mapData.tileHeight)));
-
 	return ret;
 }
 
-// Load a group of properties from a node and fill a list with it
 bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
 	bool ret = false;
@@ -945,10 +868,6 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		{
 			p->value = propertieNode.attribute("value").as_int();
 		}
-		else if (propertieNode.attribute("type").as_string() == std::string("file"))
-		{
-			p->value2 = propertieNode.attribute("value").as_string();
-		}
 		else if (propertieNode.attribute("type").as_string() == std::string("file") ||
 			propertieNode.attribute("type").as_string() == std::string("string") ||
 			propertieNode.attribute("type").empty())
@@ -963,7 +882,6 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 
 MapLayer* Map::GetNavigationLayer(bool ground, int* blockedGID, int* highGID)
 {
-
 	for (const auto& tileset : mapData.tilesets)
 	{
 		if (tileset->name == "MapMetadata")
@@ -978,21 +896,16 @@ MapLayer* Map::GetNavigationLayer(bool ground, int* blockedGID, int* highGID)
 		if (layer->properties.GetProperty("Navigation") != NULL &&
 			layer->properties.GetProperty("Navigation")->value)
 		{
-			if (ground &&
-				layer->properties.GetProperty("Ground") != NULL &&
-				layer->properties.GetProperty("Ground")->value)
+			if (ground && layer->properties.GetProperty("Ground") != NULL && layer->properties.GetProperty("Ground")->value)
 			{
 				return layer;
 			}
-			else  if (!ground &&
-				layer->properties.GetProperty("Air") != NULL &&
-				layer->properties.GetProperty("Air")->value)
+			else  if (!ground && layer->properties.GetProperty("Air") != NULL && layer->properties.GetProperty("Air")->value)
 			{
 				return layer;
 			}
 		}
 	}
-
 	return nullptr;
 }
 
@@ -1016,14 +929,13 @@ std::vector<Door> Map::GetPaths()
 
 void Map::SpawnEntities()
 {
-	int brokenFloorIndex = 0;
-	int verticalFloorIndex = 0;
-	int horizontalFloorIndex = 0;
-
 	for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
 	{
 		if (objectGroupNode.attribute("name").as_string() == std::string("EntitiesSpawnPoints"))
 		{
+			Properties objectGroupProps;
+			LoadProperties(objectGroupNode, objectGroupProps);
+
 			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
 			{
 				std::string entityType = objectNode.attribute("type").as_string();
@@ -1032,119 +944,97 @@ void Map::SpawnEntities()
 				float w = objectNode.attribute("width").as_float();
 				float h = objectNode.attribute("height").as_float();
 
-				//Player
 				if (entityType == std::string("Player") && objectNode.attribute("OriginMap").as_string())
 				{
 					Player* player = Engine::GetInstance().entityManager->GetPlayer();
-
 					if (player == nullptr)
 					{
 						std::shared_ptr<Player> newPlayerPtr = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
-
 						player = newPlayerPtr.get();
-
 						player->position = Vector2D(x, y);
-					}
-					else
-					{
 					}
 					Engine::GetInstance().entityManager->SetPlayer(player);
 				}
-
 				else if (entityType == std::string("SavePoint"))
 				{
 					std::shared_ptr<SavePoint> sp = std::dynamic_pointer_cast<SavePoint>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SAVEPOINT));
-					if (sp != nullptr) {
-						sp->position = Vector2D(x, y);
-					}
+					if (sp != nullptr) sp->position = Vector2D(x, y);
 				}
-
-				//Enemiess
 				else if (entityType == std::string("Cucafera"))
 				{
 					std::shared_ptr<Cucafera> cucafera = std::dynamic_pointer_cast<Cucafera>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA));
-					cucafera->position = Vector2D(x, y);
+					if (cucafera != nullptr) cucafera->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("CucaferaShiny"))
 				{
 					std::shared_ptr<CucaferaShiny> cucaferaShiny = std::dynamic_pointer_cast<CucaferaShiny>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_SHINY));
-					cucaferaShiny->position = Vector2D(x, y);
+					if (cucaferaShiny != nullptr) cucaferaShiny->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("CucaferaMutant"))
 				{
 					std::shared_ptr<CucaferaMutant> cucaferaMutant = std::dynamic_pointer_cast<CucaferaMutant>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_MUTANT));
-					cucaferaMutant->position = Vector2D(x, y);
+					if (cucaferaMutant != nullptr) cucaferaMutant->position = Vector2D(x, y);
 				}
-
 				else if (entityType == std::string("SwordKnight"))
 				{
 					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
-					swordKnight->position = Vector2D(x, y);
+					if (swordKnight != nullptr) swordKnight->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("ShieldKnight"))
 				{
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
-					shieldKnight->position = Vector2D(x, y);
+					if (shieldKnight != nullptr) shieldKnight->position = Vector2D(x, y);
 				}
-
 				else if (entityType == std::string("Dip"))
 				{
 					std::shared_ptr<Dip> dip = std::dynamic_pointer_cast<Dip>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DIP));
-					dip->position = Vector2D(x, y);
+					if (dip != nullptr) dip->position = Vector2D(x, y);
 				}
-
 				else if (entityType == std::string("Ninfa"))
 				{
 					std::shared_ptr<Ninfa> ninfa = std::dynamic_pointer_cast<Ninfa>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA));
-					ninfa->position = Vector2D(x, y);
+					if (ninfa != nullptr) ninfa->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Demon"))
 				{
 					std::shared_ptr<Demon> demon = std::dynamic_pointer_cast<Demon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DEMON));
-					demon->position = Vector2D(x, y);
+					if (demon != nullptr) demon->position = Vector2D(x, y);
 				}
-
-
 				else if (entityType == std::string("Minairon"))
 				{
 					std::shared_ptr<Minairon> minairon = std::dynamic_pointer_cast<Minairon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::MINAIRON));
-					minairon->position = Vector2D(x, y);
+					if (minairon != nullptr) minairon->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Bat"))
 				{
 					std::shared_ptr<Bat> bat = std::dynamic_pointer_cast<Bat>(Engine::GetInstance().entityManager->CreateEntity(EntityType::BAT));
-					bat->position = Vector2D(x, y);
+					if (bat != nullptr) bat->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("ToxicBall"))
 				{
 					std::shared_ptr<ToxicBall> toxicBall = std::dynamic_pointer_cast<ToxicBall>(Engine::GetInstance().entityManager->CreateEntity(EntityType::TOXIC_BALL));
-					toxicBall->position = Vector2D(x, y);
+					if (toxicBall != nullptr) toxicBall->position = Vector2D(x, y);
 				}
-
-
-				//Bosses
 				else if (entityType == std::string("KnightBoss"))
 				{
 					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
-					knightBoss->position = Vector2D(x, y);
+					if (knightBoss != nullptr) knightBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("NinfaBoss"))
 				{
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
-					ninfaBoss->position = Vector2D(x, y);
+					if (ninfaBoss != nullptr) ninfaBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("GwellBoss"))
 				{
 					std::shared_ptr<GwellBoss> gwellBoss = std::dynamic_pointer_cast<GwellBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_BOSS));
-					gwellBoss->position = Vector2D(x, y);
+					if (gwellBoss != nullptr) gwellBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Dragon"))
 				{
 					std::shared_ptr<Dragon> dragon = std::dynamic_pointer_cast<Dragon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DRAGON));
-					dragon->position = Vector2D(x, y);
+					if (dragon != nullptr) dragon->position = Vector2D(x, y);
 				}
-
-				//Items
 				else if (entityType == std::string("Key"))
 				{
 					std::shared_ptr<Keys> key = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
@@ -1154,79 +1044,57 @@ void Map::SpawnEntities()
 						Properties keyProps;
 						LoadProperties(objectNode, keyProps);
 
-						if (keyProps.GetProperty("KeyRegion") != nullptr) {
-							std::string region = keyProps.GetProperty("KeyRegion")->value2;
-
-							if (region == "Forest") key->SetKeyType(KeyType::FOREST);
-							else if (region == "Mountain") key->SetKeyType(KeyType::MOUNTAIN);
-							else if (region == "Catacumba") key->SetKeyType(KeyType::CATACUMBA);
-							else if (region == "Boss") key->SetKeyType(KeyType::BOSS);
-							else if (region == "Castle") key->SetKeyType(KeyType::CASTLE);
-						}
+						key->SetKeyType(ReadKeyType(keyProps, &objectGroupProps));
 					}
 				}
 				else if (entityType == std::string("Manta")) {
 					std::shared_ptr<Manta> manta = std::dynamic_pointer_cast<Manta>(Engine::GetInstance().entityManager->CreateEntity(EntityType::MANTA));
-					if (manta != nullptr) {
-						manta->position = Vector2D(x, y);
-					}
+					if (manta != nullptr) manta->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Sickle")) {
 					std::shared_ptr<Sickle> sickle = std::dynamic_pointer_cast<Sickle>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SICKLE));
-					if (sickle != nullptr) {
-						sickle->position = Vector2D(x, y);
-					}
+					if (sickle != nullptr) sickle->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("HealthOrb"))
 				{
 					std::shared_ptr<HealthOrb> healthOrb = std::dynamic_pointer_cast<HealthOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB));
-					healthOrb->position = Vector2D(x, y);
+					if (healthOrb != nullptr) healthOrb->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("SkillPointOrb"))
 				{
 					std::shared_ptr<SkillPointOrb> skillPointOrb = std::dynamic_pointer_cast<SkillPointOrb>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SKILL_POINT_ORB));
-					skillPointOrb->position = Vector2D(x, y);
+					if (skillPointOrb != nullptr) skillPointOrb->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("DashObj"))
 				{
 					std::shared_ptr<DashObj> dashobj = std::dynamic_pointer_cast<DashObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DASH_OBJ));
-					dashobj->position = Vector2D(x, y);
+					if (dashobj != nullptr) dashobj->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("DoubleJumpObj"))
 				{
 					std::shared_ptr<DoubleJumpObj> doublejumpobj = std::dynamic_pointer_cast<DoubleJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DOUBLEJUMP_OBJ));
-					doublejumpobj->position = Vector2D(x, y);
+					if (doublejumpobj != nullptr) doublejumpobj->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("WallJumpObj")) {
-					std::shared_ptr<WallJumpObj> walljumpobj = std::dynamic_pointer_cast<WallJumpObj>(
-						Engine::GetInstance().entityManager->CreateEntity(EntityType::WALLJUMP_OBJ));
-					walljumpobj->position = Vector2D(x, y);
-					}
+					std::shared_ptr<WallJumpObj> walljumpobj = std::dynamic_pointer_cast<WallJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::WALLJUMP_OBJ));
+					if (walljumpobj != nullptr) walljumpobj->position = Vector2D(x, y);
+				}
 				else if (entityType == std::string("Npc"))
 				{
 					std::shared_ptr<Npc> npc = std::dynamic_pointer_cast<Npc>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NPC));
 					if (npc != nullptr)
 					{
 						npc->position = Vector2D(x, y);
-
-						// Leemos las Custom Properties de Tiled para este NPC en concreto
 						Properties npcProps;
 						LoadProperties(objectNode, npcProps);
 
 						if (npcProps.GetProperty("DialogueID") != nullptr)
 						{
 							std::string idLeido = npcProps.GetProperty("DialogueID")->value2;
-							LOG("Exito: Tiled leyo el DialogueID: '[%s]'", idLeido.c_str());
 							npc->SetDialogueID(idLeido);
-						}
-						else
-						{
-							LOG("Warning: NPC en la posicion (%.0f, %.0f) no tiene un DialogueID asignado en Tiled.", x, y);
 						}
 					}
 				}
-
-				//Special Platforms
 				else if (entityType == std::string("HorizontalFloor"))
 				{
 					std::shared_ptr<SpecialFloor> horizontalFloor = std::dynamic_pointer_cast<SpecialFloor>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SPECIALFLOOR));
@@ -1235,25 +1103,14 @@ void Map::SpawnEntities()
 					horizontalFloor->width = (int)w;
 					horizontalFloor->height = (int)h;
 
-					// Custom Properties
 					Properties floorProps;
 					LoadProperties(objectNode, floorProps);
 
-					if (floorProps.GetProperty("Distance") != nullptr) {
-						horizontalFloor->distance = floorProps.GetProperty("Distance")->value;
-					}
-					if (floorProps.GetProperty("Speed") != nullptr) {
-						horizontalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
-					}
-					if (floorProps.GetProperty("Direction") != nullptr) {
-						horizontalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
-					}
-					if (floorProps.GetProperty("WaitTime") != nullptr) {
-						horizontalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
-					}
-					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
-						horizontalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
-					}
+					if (floorProps.GetProperty("Distance") != nullptr) horizontalFloor->distance = floorProps.GetProperty("Distance")->value;
+					if (floorProps.GetProperty("Speed") != nullptr) horizontalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					if (floorProps.GetProperty("Direction") != nullptr) horizontalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					if (floorProps.GetProperty("WaitTime") != nullptr) horizontalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) horizontalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
 				}
 				else if (entityType == std::string("VerticalFloor"))
 				{
@@ -1263,25 +1120,14 @@ void Map::SpawnEntities()
 					verticalFloor->width = (int)w;
 					verticalFloor->height = (int)h;
 
-					// Custom Properties
 					Properties floorProps;
 					LoadProperties(objectNode, floorProps);
 
-					if (floorProps.GetProperty("Distance") != nullptr) {
-						verticalFloor->distance = floorProps.GetProperty("Distance")->value;
-					}
-					if (floorProps.GetProperty("Speed") != nullptr) {
-						verticalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
-					}
-					if (floorProps.GetProperty("Direction") != nullptr) {
-						verticalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
-					}
-					if (floorProps.GetProperty("WaitTime") != nullptr) {
-						verticalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
-					}
-					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
-						verticalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
-					}
+					if (floorProps.GetProperty("Distance") != nullptr) verticalFloor->distance = floorProps.GetProperty("Distance")->value;
+					if (floorProps.GetProperty("Speed") != nullptr) verticalFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					if (floorProps.GetProperty("Direction") != nullptr) verticalFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					if (floorProps.GetProperty("WaitTime") != nullptr) verticalFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) verticalFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
 				}
 				else if (entityType == std::string("BrokenFloor"))
 				{
@@ -1298,9 +1144,7 @@ void Map::SpawnEntities()
 						brokenFloor->breakTimeMax = (float)floorProps.GetProperty("BreakTime")->value;
 						brokenFloor->currentBreakTime = brokenFloor->breakTimeMax;
 					}
-					if (floorProps.GetProperty("RespawnTime") != nullptr) {
-						brokenFloor->respawnTimeMax = (float)floorProps.GetProperty("RespawnTime")->value;
-					}
+					if (floorProps.GetProperty("RespawnTime") != nullptr) brokenFloor->respawnTimeMax = (float)floorProps.GetProperty("RespawnTime")->value;
 				}
 				else if (entityType == std::string("CircularFloor"))
 				{
@@ -1313,32 +1157,19 @@ void Map::SpawnEntities()
 					Properties floorProps;
 					LoadProperties(objectNode, floorProps);
 
-					if (floorProps.GetProperty("Distance") != nullptr) {
-						circularFloor->distance = floorProps.GetProperty("Distance")->value;
-					}
-					if (floorProps.GetProperty("Speed") != nullptr) {
-						circularFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
-					}
-					if (floorProps.GetProperty("Direction") != nullptr) {
-						circularFloor->moveDirection = floorProps.GetProperty("Direction")->value;
-					}
-					if (floorProps.GetProperty("WaitTime") != nullptr) {
-						circularFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
-					}
-					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) {
-						circularFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
-					}
-					}
+					if (floorProps.GetProperty("Distance") != nullptr) circularFloor->distance = floorProps.GetProperty("Distance")->value;
+					if (floorProps.GetProperty("Speed") != nullptr) circularFloor->moveSpeed = floorProps.GetProperty("Speed")->value;
+					if (floorProps.GetProperty("Direction") != nullptr) circularFloor->moveDirection = floorProps.GetProperty("Direction")->value;
+					if (floorProps.GetProperty("WaitTime") != nullptr) circularFloor->waitTimeMax = (float)floorProps.GetProperty("WaitTime")->value;
+					if (floorProps.GetProperty("ActivationOnTouch") != nullptr) circularFloor->activationOnTouch = floorProps.GetProperty("ActivationOnTouch")->value;
+				}
 			}
 		}
 
-
 		if (objectGroupNode.attribute("name").as_string() == std::string("PlayerSpawns"))
 		{
-
 			for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object"))
 			{
-				std::string entityType = objectNode.attribute("type").as_string();
 				float x = objectNode.attribute("x").as_float();
 				float y = objectNode.attribute("y").as_float();
 
@@ -1351,9 +1182,6 @@ void Map::SpawnEntities()
 				newSpawn.position.setX(x);
 				newSpawn.position.setY(y);
 
-				LOG("Loaded spawn point - FromRoom: '%s', Position: (%.0f, %.0f)",
-					newSpawn.fromRoom.c_str(), x, y);
-
 				mapData.spawnPoints.push_back(newSpawn);
 			}
 		}
@@ -1362,15 +1190,11 @@ void Map::SpawnEntities()
 	Engine::GetInstance().entityManager->AwakeEntities();
 }
 
-
 std::string Map::DoorInfo(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.teleportTo;
-		}
+		if (ndoor.body == door) return ndoor.teleportTo;
 	}
 	return std::string();
 }
@@ -1379,56 +1203,37 @@ bool Map::DoorNeedsKey(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.needsKey;
-		}
+		if (ndoor.body == door) return ndoor.needsKey;
 	}
 	return false;
 }
+
 bool Map::DoorRequiresGlide(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.requiresGlide;
-		}
+		if (ndoor.body == door) return ndoor.requiresGlide;
 	}
-	
 	return false;
 }
 
 Vector2D Map::GetPlayerSpawnPoint(const std::string& fromRoom, const std::string& spawnID)
 {
-	// Buscar el spawn point que coincida con la sala de origen
 	for (const auto& spawnPoint : mapData.spawnPoints)
 	{
 		if (spawnPoint.fromRoom == fromRoom && (spawnID.empty() || spawnPoint.spawnID == spawnID))
 		{
-			LOG("Found spawn point for room '%s' at (%.0f, %.0f)",
-				fromRoom.c_str(), spawnPoint.position.getX(), spawnPoint.position.getY());
 			return spawnPoint.position;
 		}
 	}
 
 	for (const auto& spawnPoint : mapData.spawnPoints)
 	{
-		if (spawnPoint.fromRoom == fromRoom)
-		{
-			return spawnPoint.position;
-		}
+		if (spawnPoint.fromRoom == fromRoom) return spawnPoint.position;
 	}
 
-	// Si no encuentra el spawn point específico, usa el primero disponible
-	if (!mapData.spawnPoints.empty())
-	{
-		LOG("WARNING: Spawn point from room '%s' not found. Using first available spawn point.", fromRoom.c_str());
-		return mapData.spawnPoints.front().position;
-	}
+	if (!mapData.spawnPoints.empty()) return mapData.spawnPoints.front().position;
 
-	// Fallback: posición por defecto (solo si no hay spawn points en absoluto)
-	LOG("ERROR: No spawn points found in map for room '%s'. Using default position (200, 200)", fromRoom.c_str());
 	return Vector2D(200, 200);
 }
 
@@ -1436,10 +1241,7 @@ std::string Map::GetPathSpawnID(PhysBody* path)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == path)
-		{
-			return ndoor.spawnID;
-		}
+		if (ndoor.body == path) return ndoor.spawnID;
 	}
 	return "";
 }
@@ -1448,10 +1250,7 @@ std::string Map::GetDoorUniqueId(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.uniqueId;
-		}
+		if (ndoor.body == door) return ndoor.uniqueId;
 	}
 	return "";
 }
@@ -1460,10 +1259,7 @@ bool Map::DoorUnderMaintenance(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.underMaintenance;
-		}
+		if (ndoor.body == door) return ndoor.underMaintenance;
 	}
 	return false;
 }
@@ -1471,10 +1267,7 @@ bool Map::DoorUnderMaintenance(PhysBody* door)
 bool Map::DoorClosed(PhysBody* door) {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.DoorClose;
-		}
+		if (ndoor.body == door) return ndoor.DoorClose;
 	}
 	return false;
 }
@@ -1496,7 +1289,7 @@ void Map::GetDoorDimensions(PhysBody* door, int& w, int& h)
 Vector2D Map::GetCameraPositionInTiles()
 {
 	SDL_Rect camera = Engine::GetInstance().render->camera;
-	Vector2D camPosTile = WorldToMap(-camera.x, -camera.y); //Inverted numbers
+	Vector2D camPosTile = WorldToMap(-camera.x, -camera.y);
 	return camPosTile;
 }
 
@@ -1511,10 +1304,7 @@ KeyType Map::GetDoorKeyType(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.requiredKey;
-		}
+		if (ndoor.body == door) return ndoor.requiredKey;
 	}
 	return KeyType::NONE;
 }
@@ -1523,10 +1313,7 @@ bool Map::DoorHasNoAnimation(PhysBody* door)
 {
 	for (const auto& ndoor : mapData.doors)
 	{
-		if (ndoor.body == door)
-		{
-			return ndoor.noAnimation;
-		}
+		if (ndoor.body == door) return ndoor.noAnimation;
 	}
 	return false;
 }

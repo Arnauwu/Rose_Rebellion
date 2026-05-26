@@ -18,6 +18,7 @@
 
 #include "SavePoint.h"
 #include "Door.h"
+#include "KeyGate.h"
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
@@ -130,6 +131,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 	case EntityType::DOOR:
 		entity = std::make_shared<DoorEntity>(); 
+		break;
+	case EntityType::KEY_GATE:
+		entity = std::make_shared<KeyGate>();
 		break;
 		//Enemies
 

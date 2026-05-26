@@ -387,6 +387,9 @@
     <ClCompile Include="src\WallJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
+    <ClCompile Include="src\KeyGate.cpp">
+      <Filter>Source Files\Game\Entity\Door</Filter>
+    </ClCompile>
     <ClCompile Include="src\WinScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
@@ -607,6 +610,9 @@
     </ClInclude>
     <ClInclude Include="src\WallJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyGate.h">
+      <Filter>Source Files\Game\Entity\Door</Filter>
     </ClInclude>
     <ClInclude Include="src\WinScene.h">
       <Filter>Source Files\Game\Scenes</Filter>

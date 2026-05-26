@@ -253,4 +253,5 @@ private:
     MapData mapData;
     pugi::xml_document mapFileXML;
     std::list<PhysBody*> colliderList;
+    std::vector<std::shared_ptr<Entity>> mapDynamicEntities;
 };

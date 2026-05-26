@@ -6,6 +6,27 @@
 #include "Physics.h"
 #include "Log.h"
 
+namespace
+{
+    const char* GetKeyAnimationName(KeyType type)
+    {
+        switch (type) {
+        case KeyType::FOREST:
+            return "ForestKey";
+        case KeyType::MOUNTAIN:
+            return "MountainKey";
+        case KeyType::CATACUMBA:
+            return "CatacumbsKey";
+        case KeyType::BOSS:
+            return "BossKey";
+        case KeyType::CASTLE:
+        case KeyType::NONE:
+        default:
+            return "CastleKey";
+        }
+    }
+}
+
 Keys::Keys() :Item() {
     name = "Key";
 }
@@ -23,12 +44,12 @@ bool Keys::Start() {
     {0, "ForestKey"}, {8, "CastleKey"}, {16, "MountainKey"},{24, "CatacumbsKey"},{32,"BossKey"}
     };
     anims.LoadFromTSX("Assets/Textures/Items/Keys/SS_obj_llaves.tsx", aliases);
-    anims.SetCurrent("CastleKey");
+    anims.SetCurrent(GetKeyAnimationName(keyType));
 
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Items/Keys/SS_obj_llaves.png");
-   
+
     const SDL_Rect& animFrame = anims.GetCurrentFrame();
-   
+
     // Fisic
     if (pbody == nullptr && texture != nullptr) {
         pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX(), (int)position.getY(), animFrame.w / 2, bodyType::KINEMATIC);
@@ -51,7 +72,7 @@ bool Keys::Update(float dt) {
             x - animFrame.w / 2,
             y - animFrame.h / 2,
             &animFrame
-            );
+        );
     }
     return true;
 }
@@ -83,27 +104,9 @@ void Keys::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Sha
 //Key texture 
 void Keys::SetKeyType(KeyType type) {
     this->keyType = type;
-   /* std::string texPath = "";*/
 
-    switch (type) {
-    case KeyType::FOREST:
-        anims.SetCurrent("ForestKey");   
-        break;
-    case KeyType::MOUNTAIN:
-        anims.SetCurrent("MountainKey");
-        break;
-    case KeyType::CATACUMBA:
-        anims.SetCurrent("CatacumbsKey");
-        break;
-    case KeyType::BOSS:
-        anims.SetCurrent("BossKey");
-        break;
-    case KeyType::CASTLE:
-        anims.SetCurrent("CastleKey");
-        break;
-    default:
-        anims.SetCurrent("CastleKey");
-        break;
+    if (texture != nullptr) {
+        anims.SetCurrent(GetKeyAnimationName(keyType));
     }
 }
 
