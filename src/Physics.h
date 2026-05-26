@@ -60,7 +60,7 @@ enum class ColliderType {
     //Movement between maps
     PATH,
     DOOR,
-    CATACUMBA_DOOR,
+    KEY_GATE,
     
     //Special Floors
     SPECIALFLOOR,

@@ -44,7 +44,7 @@ enum class EntityType
 
 	SAVEPOINT,
 	DOOR,
-	CATACUMBA_DOOR,
+	KEY_GATE,
 
 	SPECIALFLOOR,
 
