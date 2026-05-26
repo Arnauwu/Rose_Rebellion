@@ -41,7 +41,7 @@ bool Projectile::Update(float dt)
 {
 	if (hasHit || lifeTimer.ReadSec() >= lifeTime)
 	{
-		Destroy();
+		pendingToDelete = true;
 		return true;
 	}
 
@@ -80,20 +80,15 @@ void Projectile::Launch(float startX, float startY, float dirX, float dirY)
 
 void Projectile::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
-	// No colisionar con el player que disparó
 	if (physB->ctype == ColliderType::PLAYER)
 	{
 		return;
 	}
 
-	// Destruir al golpear cualquier cosa (enemigo o pared)
-	if (physB->ctype == ColliderType::ENEMY || 
-		physB->ctype == ColliderType::MAP ||
-		physB->ctype == ColliderType::SPECIALFLOOR)
+	if (physB->ctype == ColliderType::ENEMY || physB->ctype == ColliderType::MAP || physB->ctype == ColliderType::SPECIALFLOOR)
 	{
 		hasHit = true;
 		
-		// Emitir partícula de impacto
 		int ex, ey;
 		physB->GetPosition(ex, ey);
 		Engine::GetInstance().particleManager->EmitAttack((float)ex, (float)ey, true);

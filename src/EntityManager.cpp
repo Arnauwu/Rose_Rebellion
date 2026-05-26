@@ -213,7 +213,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<WallJumpObj>();
 		break;
 	case EntityType::PROJECTILE:
-		return std::make_shared<Projectile>();
+		entity = std::make_shared<Projectile>();
 	default:
 		break;
 	}
