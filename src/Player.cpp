@@ -858,6 +858,33 @@ void Player::Interact()
 		}
 		else if (interactuableBody->ctype == ColliderType::DOOR)
 		{
+			auto openDoorAndTransition = [&]()
+			{
+				Engine::GetInstance().audio->PlayFx(openDoor);
+
+				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
+					Engine::GetInstance().sceneManager->setNewMap = true;
+					return;
+				}
+
+				isFrozen = true;
+
+				int cx, cy, doorW, doorH;
+				interactuableBody->GetPosition(cx, cy);
+				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+				if (doorAnim != nullptr) {
+					doorAnim->zOrder = -1;
+					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+				}
+				else {
+					isFrozen = false;
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+			};
+
 			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
 			if (isMaintenance) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
@@ -876,12 +903,22 @@ void Player::Interact()
 			if (requiresKey)
 			{
 				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
+				if (requiredKey == KeyType::NONE) {
+					Engine::GetInstance().audio->PlayFx(closedDoor);
+					Engine::GetInstance().hud->ShowNotification("The door is locked. (Configuration Error)");
+					return;
+				}
+
 				if (this->HasKey(requiredKey))
 				{
-					Engine::GetInstance().audio->PlayFx(openDoor);
 					this->heldKeys.erase(requiredKey);
-				
-					Engine::GetInstance().sceneManager->setNewMap = true;
+
+					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
+					if (!doorId.empty()) {
+						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
+					}
+
+					openDoorAndTransition();
 				}
 				else
 				{
@@ -891,8 +928,7 @@ void Player::Interact()
 			}
 			else
 			{
-				
-				Engine::GetInstance().sceneManager->setNewMap = true;
+				openDoorAndTransition();
 			}
 		}
 		

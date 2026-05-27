@@ -10,6 +10,44 @@
 #include "tracy/Tracy.hpp"
 #include <algorithm>
 
+namespace
+{
+    struct GateVisualAssets
+    {
+        const char* closedTexture;
+        const char* openTexture;
+        const char* animationTexture;
+        const char* animationData;
+    };
+
+    GateVisualAssets GetGateVisualAssets(KeyType keyType)
+    {
+        switch (keyType) {
+        case KeyType::FOREST:
+            return {
+                "Assets/Textures/Animation/Door/puertaBOSQUE1.png",
+                "Assets/Textures/Animation/Door/puertaBOSQUEf.png",
+                "Assets/Textures/Animation/Door/SS_puerta_bosque.png",
+                "Assets/Textures/Animation/Door/SS_puerta_bosque.tsx"
+            };
+        case KeyType::MOUNTAIN:
+            return {
+                "Assets/Textures/Animation/Door/puertamonta\xC3\xB1" "a1.png",
+                "Assets/Textures/Animation/Door/puertamonta\xC3\xB1" "aF.png",
+                "Assets/Textures/Animation/Door/SS_puerta_monta\xC3\xB1" "a.png",
+                "Assets/Textures/Animation/Door/SS_puerta_monta\xC3\xB1" "a.tsx"
+            };
+        default:
+            return {
+                "Assets/Textures/Animation/Door/SS_puerta_catacumbas_primero.png",
+                "Assets/Textures/Animation/Door/SS_puerta_catacumbas_final.png",
+                "Assets/Textures/Animation/Door/SS_puerta_catacumbas.png",
+                "Assets/Textures/Animation/Door/SS_puerta_catacumbas.tsx"
+            };
+        }
+    }
+}
+
 KeyGate::KeyGate() : Entity(EntityType::KEY_GATE)
 {
     name = "KeyGate";
@@ -22,13 +60,14 @@ bool KeyGate::Awake() { return true; }
 bool KeyGate::Start()
 {
     auto textures = Engine::GetInstance().textures;
+    GateVisualAssets assets = GetGateVisualAssets(requiredKey);
 
-    closedTexture = textures->Load("Assets/Textures/Animation/Door/SS_puerta_catacumbas_primero.png");
-    openTexture = textures->Load("Assets/Textures/Animation/Door/SS_puerta_catacumbas_final.png");
-    animTexture = textures->Load("Assets/Textures/Animation/Door/SS_puerta_catacumbas.png");
+    closedTexture = textures->Load(assets.closedTexture);
+    openTexture = textures->Load(assets.openTexture);
+    animTexture = textures->Load(assets.animationTexture);
 
     std::unordered_map<int, std::string> aliases = { {0, "open"} };
-    bool loadOK = anims.LoadFromTSX("Assets/Textures/Animation/Door/SS_puerta_catacumbas.tsx", aliases);
+    bool loadOK = anims.LoadFromTSX(assets.animationData, aliases);
 
     if (loadOK && anims.Has("open")) {
         anims.GetAnim("open")->SetLoop(false);
