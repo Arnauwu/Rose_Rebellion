@@ -158,6 +158,12 @@ bool Player::Update(float dt)
 	if (pbody == nullptr) return true;
 	Engine::GetInstance().entityManager->SetPlayer(this);
 
+	// Actualizar regeneración de mana AQUÍ - antes de cualquier otro check
+	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
+	{
+		UpdateManaRegen(dt);
+	}
+
 	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
 
 	if (isDialogueActive) 
@@ -293,6 +299,19 @@ bool Player::Update(float dt)
 	DevTools(dt);
 
 	return true;
+}
+
+// Método para actualizar la regeneración de mana
+void Player::UpdateManaRegen(float dt)
+{
+	if (currentMana < maxMana)
+	{
+		currentMana += (int)(manaRegenAmount * (dt / 1000.0f)); // dt está en milisegundos
+		if (currentMana > maxMana)
+		{
+			currentMana = maxMana;
+		}
+	}
 }
 
 bool Player::PostUpdate()
@@ -746,6 +765,22 @@ void Player::RangedAttack(float dt)
 
 	if (!rangedPressed || isGliding) return;
 
+	// Verificar si hay cooldown activo o mana insuficiente
+	if (rangedAttackCooldownTimer.ReadMSec() < rangedAttackCooldownMS)
+	{
+		LOG("Ranged attack on cooldown or insufficient mana!");
+		return;
+	}
+
+	if (currentMana < manaCostPerShot)
+	{
+		LOG("Insufficient mana! Current: %d, Required: %d", currentMana, manaCostPerShot);
+		return;
+	}
+
+	// Gastar mana
+	currentMana -= manaCostPerShot;
+
 	// Determinar dirección
 	float dirX = lookingRight ? 1.0f : -1.0f;
 	float dirY = 0.0f;
@@ -785,7 +820,10 @@ void Player::RangedAttack(float dt)
 		proj->Launch((float)launchX, (float)launchY, dirX, dirY);
 	}
 
-	LOG("Ranged Attack launched!");
+	// Iniciar cooldown
+	rangedAttackCooldownTimer.Start();
+
+	LOG("Ranged Attack launched! Mana remaining: %d/%d", currentMana, maxMana);
 }
 
 void Player::Glide()
@@ -1729,7 +1767,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
 	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
 
-	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temportal? Fix
+	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temporal? Fix
 	{
 		// TO DO: Con el rectangulo (Middle) se guarda correctamente en typeA, con ambos circulos se guarda en typeB porque los detecta en shapeB
 		typeA = typeB;
