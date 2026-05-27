@@ -24,6 +24,28 @@
 
 using namespace std;
 
+namespace
+{
+	const char* GetRequiredKeyMessage(KeyType keyType)
+	{
+		switch (keyType) {
+		case KeyType::FOREST:
+			return "You need to find the Forest Key.";
+		case KeyType::MOUNTAIN:
+			return "You need to find the Mountain Key.";
+		case KeyType::CATACUMBA:
+			return "You need to find the Catacombs Key.";
+		case KeyType::BOSS:
+			return "You need to find the Boss Key.";
+		case KeyType::CASTLE:
+			return "You need to find the Castle Key.";
+		case KeyType::NONE:
+		default:
+			return "You need to find the key for this door.";
+		}
+	}
+}
+
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -852,7 +874,7 @@ void Player::Interact()
 				else
 				{
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					Engine::GetInstance().hud->ShowNotification("You need a specific key for this gate.");
+					Engine::GetInstance().hud->ShowNotification(GetRequiredKeyMessage(gate->requiredKey));
 				}
 			}
 		}
@@ -923,7 +945,7 @@ void Player::Interact()
 				else
 				{
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					Engine::GetInstance().hud->ShowNotification("You need a specific key for this door.");
+					Engine::GetInstance().hud->ShowNotification(GetRequiredKeyMessage(requiredKey));
 				}
 			}
 			else
