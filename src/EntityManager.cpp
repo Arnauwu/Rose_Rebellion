@@ -37,6 +37,7 @@
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include "WaveProjectile.h"
 #include "GwellBoss.h"
 #include "Dragon.h"
 #include "DragonProjectile.h"
@@ -176,6 +177,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::NINFA_MARE:
 		entity = std::make_shared<NinfaMare>();
+		break;
+	case EntityType::WAVE:
+		entity = std::make_shared<WaveProjectile>();
 		break;
 	case EntityType::GWELL_BOSS:
 		entity = std::make_shared<GwellBoss>();

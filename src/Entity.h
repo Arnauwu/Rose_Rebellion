@@ -38,6 +38,7 @@ enum class EntityType
 
 	KNIGHT_BOSS,
 	NINFA_MARE,
+	WAVE,
 	GWELL_BOSS,
 	DRAGON,
 	DRAGON_PROJECTILE,
