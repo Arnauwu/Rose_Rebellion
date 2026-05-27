@@ -32,10 +32,10 @@ namespace
             };
         case KeyType::MOUNTAIN:
             return {
-                "Assets/Textures/Animation/Door/puertamonta\xC3\xB1" "a1.png",
-                "Assets/Textures/Animation/Door/puertamonta\xC3\xB1" "aF.png",
-                "Assets/Textures/Animation/Door/SS_puerta_monta\xC3\xB1" "a.png",
-                "Assets/Textures/Animation/Door/SS_puerta_monta\xC3\xB1" "a.tsx"
+                "Assets/Textures/Animation/Door/puertamontana1.png",
+                "Assets/Textures/Animation/Door/puertamontanaF.png",
+                "Assets/Textures/Animation/Door/SS_puerta_montana.png",
+                "Assets/Textures/Animation/Door/SS_puerta_montana.tsx"
             };
         default:
             return {

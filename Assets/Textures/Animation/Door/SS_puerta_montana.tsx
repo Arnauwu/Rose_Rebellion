@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.0" name="SS_puerta_montaña" tilewidth="256" tileheight="386" tilecount="10" columns="5">
- <image source="SS_puerta_montaña.png" width="1298" height="1027"/>
+<tileset version="1.10" tiledversion="1.12.0" name="SS_puerta_montana" tilewidth="256" tileheight="386" tilecount="10" columns="5">
+ <image source="SS_puerta_montana.png" width="1298" height="1027"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
