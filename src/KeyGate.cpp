@@ -6,6 +6,7 @@
 #include "EntityManager.h"
 #include "GameManager.h"
 #include "Log.h"
+#include "Physics.h"
 #include "tracy/Tracy.hpp"
 #include <algorithm>
 
@@ -58,6 +59,9 @@ void KeyGate::Initialize(Vector2D pos, int width, int height, KeyType key, std::
 void KeyGate::SetCollider(PhysBody* collider)
 {
     gateCollider = collider;
+    if (gateCollider != nullptr && state == GateState::OPEN) {
+        gateCollider->SetCollisionsActive(false);
+    }
 }
 
 void KeyGate::OpenGate()
