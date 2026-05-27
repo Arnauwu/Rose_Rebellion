@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="153" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="725">
+<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="153" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="35" nextobjectid="726">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -48,6 +48,15 @@
   <object id="619" gid="131" x="5376" y="2432" width="3456" height="2166"/>
   <object id="620" gid="131" x="768" y="2432" width="4608" height="2560"/>
   <object id="626" gid="131" x="-2816" y="1792" width="3712" height="2048"/>
+ </objectgroup>
+ <objectgroup id="34" name="KeyGate">
+  <properties>
+   <property name="KeyGate" type="bool" value="true"/>
+   <property name="KeyRegion" value="Bosque"/>
+   <property name="Sensor" type="bool" value="false"/>
+   <property name="Square" type="bool" value="true"/>
+  </properties>
+  <object id="725" x="4220" y="1268" width="308" height="532"/>
  </objectgroup>
  <objectgroup id="20" name="Fondo2">
   <properties>

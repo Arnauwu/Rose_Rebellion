@@ -24,6 +24,28 @@
 
 using namespace std;
 
+namespace
+{
+	const char* GetRequiredKeyMessage(KeyType keyType)
+	{
+		switch (keyType) {
+		case KeyType::FOREST:
+			return "You need to find the Forest Key.";
+		case KeyType::MOUNTAIN:
+			return "You need to find the Mountain Key.";
+		case KeyType::CATACUMBA:
+			return "You need to find the Catacombs Key.";
+		case KeyType::BOSS:
+			return "You need to find the Boss Key.";
+		case KeyType::CASTLE:
+			return "You need to find the Castle Key.";
+		case KeyType::NONE:
+		default:
+			return "You need to find the key for this door.";
+		}
+	}
+}
+
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -852,12 +874,39 @@ void Player::Interact()
 				else
 				{
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					Engine::GetInstance().hud->ShowNotification("You need a specific key for this gate.");
+					Engine::GetInstance().hud->ShowNotification(GetRequiredKeyMessage(gate->requiredKey));
 				}
 			}
 		}
 		else if (interactuableBody->ctype == ColliderType::DOOR)
 		{
+			auto openDoorAndTransition = [&]()
+			{
+				Engine::GetInstance().audio->PlayFx(openDoor);
+
+				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
+					Engine::GetInstance().sceneManager->setNewMap = true;
+					return;
+				}
+
+				isFrozen = true;
+
+				int cx, cy, doorW, doorH;
+				interactuableBody->GetPosition(cx, cy);
+				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+				if (doorAnim != nullptr) {
+					doorAnim->zOrder = -1;
+					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+				}
+				else {
+					isFrozen = false;
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+			};
+
 			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
 			if (isMaintenance) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
@@ -876,23 +925,32 @@ void Player::Interact()
 			if (requiresKey)
 			{
 				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
+				if (requiredKey == KeyType::NONE) {
+					Engine::GetInstance().audio->PlayFx(closedDoor);
+					Engine::GetInstance().hud->ShowNotification("The door is locked. (Configuration Error)");
+					return;
+				}
+
 				if (this->HasKey(requiredKey))
 				{
-					Engine::GetInstance().audio->PlayFx(openDoor);
 					this->heldKeys.erase(requiredKey);
-				
-					Engine::GetInstance().sceneManager->setNewMap = true;
+
+					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
+					if (!doorId.empty()) {
+						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
+					}
+
+					openDoorAndTransition();
 				}
 				else
 				{
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					Engine::GetInstance().hud->ShowNotification("You need a specific key for this door.");
+					Engine::GetInstance().hud->ShowNotification(GetRequiredKeyMessage(requiredKey));
 				}
 			}
 			else
 			{
-				
-				Engine::GetInstance().sceneManager->setNewMap = true;
+				openDoorAndTransition();
 			}
 		}
 		
