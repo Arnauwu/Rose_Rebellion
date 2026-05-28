@@ -3,9 +3,12 @@
 #include "Render.h"
 #include "Window.h"
 #include "Map.h"
-#include "Render.h"
+#include "EntityManager.h"
+#include "Player.h"
 
+#define escaleDivide 150.0f
 constexpr float CELL_SIZE = 100.0f;
+
 
 void Minimap::CreateRoom(const std::string& id)
 {
@@ -89,8 +92,8 @@ void Minimap::CreateRoom(const std::string& id)
 
     int mapW = Engine::GetInstance().map->GetMapSizeInPixels().getX();
     int mapH = Engine::GetInstance().map->GetMapSizeInPixels().getY();
-    newRoom.w =  mapW / 150;
-    newRoom.h =  mapH / 150;
+    newRoom.w =  mapW / escaleDivide;
+    newRoom.h =  mapH / escaleDivide;
 
     std::vector<Door> paths = Engine::GetInstance().map->GetPaths();
 
@@ -168,14 +171,9 @@ void Minimap::DrawMinimap()
             }
         }
 
-        if (id == currentRoom)
-        {
-            Engine::GetInstance().render->DrawCircleUnscaled(rect.x + rect.w/2, rect.y + rect.h / 2, circleRadious, 255, 255, 255, 255, false);
-        }
-
+        //Draw Paths
         for (auto it = room.paths.begin(); it != room.paths.end(); ++it)
         {
-            //Render Path
             const MM_Path& path = it->second;
 
             float pathX = rect.x + path.x * rect.w;
@@ -211,5 +209,13 @@ void Minimap::DrawMinimap()
             Engine::GetInstance().render->DrawLineUnscaled(startX, startY, endX, endY, 128, 128, 128, 255, false);
 
         }
+
+        //Draw Player
+        if (id == currentRoom)
+        {
+            Player* player = Engine::GetInstance().entityManager->GetPlayer();
+            Engine::GetInstance().render->DrawCircleUnscaled(rect.x + player->GetPosition().getX() / escaleDivide, rect.y + player->GetPosition().getY() / escaleDivide, circleRadious, 255, 255, 255, 255, false);
+        }
+
     }
 }
