@@ -45,12 +45,25 @@ bool Textures::CleanUp()
 SDL_Texture* const Textures::Load(const char* path)
 {
 	SDL_Texture* texture = NULL;
-	SDL_Surface* surface = LoadSurfaceToRAM(path);
+	std::string sPath = path;
 
+	if (surfaceCache.find(sPath) != surfaceCache.end())
+	{
+		SDL_Surface* surface = surfaceCache[sPath];
+
+		texture = LoadSurface(surface); 
+
+		SDL_DestroySurface(surface);
+		surfaceCache.erase(sPath); 
+
+		return texture;
+	}
+
+	SDL_Surface* surface = IMG_Load(path);
 	if (surface != NULL)
 	{
-		texture = CreateTextureFromRAM(surface);
-		SDL_DestroySurface(surface); // SDL3: free con SDL_DestroySurface
+		texture = LoadSurface(surface);
+		SDL_DestroySurface(surface);
 	}
 
 	return texture;
@@ -119,4 +132,17 @@ SDL_Texture* Textures::CreateTextureFromRAM(SDL_Surface* surface)
 	}
 
 	return texture;
+}
+
+void Textures::PreloadToRAM(const std::string& path)
+{
+	SDL_Surface* surface = IMG_Load(path.c_str());
+	if (surface != NULL)
+	{
+		surfaceCache[path] = surface; // Lo guardamos en la caché temporal
+	}
+	else
+	{
+		LOG("Error precargando textura pesada: %s", SDL_GetError());
+	}
 }

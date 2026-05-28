@@ -514,6 +514,9 @@ bool Map::Load(std::string path, std::string fileName)
 			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
 			tileSet->surfaceTemp = Engine::GetInstance().textures->LoadSurfaceToRAM((mapPath + imgName).c_str());
 			tileSet->texture = nullptr;
+
+			std::this_thread::yield();
+
 			// Load animation
 			for (pugi::xml_node tileNode = tilesetNode.child("tile"); tileNode; tileNode = tileNode.next_sibling("tile"))
 			{
@@ -541,7 +544,7 @@ bool Map::Load(std::string path, std::string fileName)
 
 			mapData.tilesets.push_back(tileSet);
 		}
-
+		std::this_thread::yield();
 		// Iterate all layers in the TMX and load each of them
 		for (pugi::xml_node layerNode = mapFileXML.child("map").child("layer"); layerNode != NULL; layerNode = layerNode.next_sibling("layer")) {
 
@@ -564,7 +567,7 @@ bool Map::Load(std::string path, std::string fileName)
 			// Add the layer to the map
 			mapData.layers.push_back(mapLayer);
 		}
-
+		std::this_thread::yield();
 		// Load Object Group
 		for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
 		{
@@ -623,7 +626,7 @@ bool Map::Load(std::string path, std::string fileName)
 			//Add the layer to the map
 			mapData.objectGroups.push_back(objectgroup);
 		}
-
+		std::this_thread::yield();
 		// Creation of colliders and assign their type
 		for (const auto& objectsGroups : mapData.objectGroups)
 		{
@@ -862,40 +865,40 @@ bool Map::Load(std::string path, std::string fileName)
 		if (ret == true)
 		{
 			LOG("Successfully parsed map XML file :%s", fileName.c_str());
-			LOG("width : %d height : %d", mapData.width, mapData.height);
-			LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
-			LOG("Tilesets----");
+			//LOG("width : %d height : %d", mapData.width, mapData.height);
+			//LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
+			//LOG("Tilesets----");
 
-			//iterate the tilesets
-			for (const auto& tileset : mapData.tilesets) {
-				LOG("name : %s firstgid : %d", tileset->name.c_str(), tileset->firstGid);
-				LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
-				LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
-			}
+			////iterate the tilesets
+			//for (const auto& tileset : mapData.tilesets) {
+			//	LOG("name : %s firstgid : %d", tileset->name.c_str(), tileset->firstGid);
+			//	LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
+			//	LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
+			//}
 
-			LOG("Layers----");
+			//LOG("Layers----");
 
-			for (const auto& layer : mapData.layers) {
-				LOG("id : %d name : %s", layer->id, layer->name.c_str());
-				LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
-			}
+			//for (const auto& layer : mapData.layers) {
+			//	LOG("id : %d name : %s", layer->id, layer->name.c_str());
+			//	LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
+			//}
 
-			LOG("Objects----");
+			//LOG("Objects----");
 
-			for (const auto& objGroups : mapData.objectGroups) {
-				LOG("Properties: ");
-				for (const auto& ogproperties : objGroups->properties.propertyList)
-				{
-					LOG("name : %s  value : %d ", ogproperties->name.c_str(), ogproperties->value);
-				}
-				LOG("Objects");
-				for (const auto& ogobjects : objGroups->objects)
-				{
-					LOG("id : %d  points : %d ", ogobjects->id, ogobjects->points);
-					LOG("x : %d  y : %d ", ogobjects->x, ogobjects->y);
-					LOG("width : %d  height : %d ", ogobjects->width, ogobjects->height);
-				}
-			}
+			//for (const auto& objGroups : mapData.objectGroups) {
+			//	LOG("Properties: ");
+			//	for (const auto& ogproperties : objGroups->properties.propertyList)
+			//	{
+			//		LOG("name : %s  value : %d ", ogproperties->name.c_str(), ogproperties->value);
+			//	}
+			//	LOG("Objects");
+			//	for (const auto& ogobjects : objGroups->objects)
+			//	{
+			//		LOG("id : %d  points : %d ", ogobjects->id, ogobjects->points);
+			//		LOG("x : %d  y : %d ", ogobjects->x, ogobjects->y);
+			//		LOG("width : %d  height : %d ", ogobjects->width, ogobjects->height);
+			//	}
+			//}
 		}
 		else
 		{

@@ -4,6 +4,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <list>
+#include <unordered_map>
+#include <string>
 
 class Textures : public Module
 {
@@ -35,7 +37,10 @@ public:
 	// Sube los píxeles de la RAM a la VRAM de la GPU (SOLO ejecutable en el hilo principal)
 	SDL_Texture* CreateTextureFromRAM(SDL_Surface* surface);
 
+	void PreloadToRAM(const std::string& path);
 public:
 	std::list<SDL_Texture*> textures;
+private:
 
+	std::unordered_map<std::string, SDL_Surface*> surfaceCache;
 };

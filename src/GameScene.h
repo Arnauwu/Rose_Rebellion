@@ -235,10 +235,11 @@ private:
 	std::atomic<bool> isLoadFinished{ false };
 	bool isAsyncLoading = false;
 	bool isDataInitialized = false;
-	float spinnerAngle = 0.0f;
 	std::string asyncMapFile = "";
 	std::string asyncPreviousMap = "";
 	
+	//Dots de carga
+	float loadingDotsTimer = 0.0f;
 	// Level intro
 	float levelIntroTimer = 0.0f;
 	std::string levelIntroText = "";

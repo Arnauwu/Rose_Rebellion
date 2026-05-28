@@ -75,24 +75,44 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().map->CleanUp();
 
 	// Player Pause
-	Player* pLoad = Engine::GetInstance().entityManager->GetPlayer();
+	/*Player* pLoad = Engine::GetInstance().entityManager->GetPlayer();
 	if (pLoad != nullptr) {
 		pLoad->isFrozen = true;
 		if (pLoad->pbody != nullptr) {
 			Engine::GetInstance().physics->SetLinearVelocity(pLoad->pbody, { 0.0f, 0.0f });
 		}
-	}
+	}*/
 
 	isLoadFinished = false;
 	isAsyncLoading = true;
 	isDataInitialized = false;
-	spinnerAngle = 0.0f;
+	loadingDotsTimer = 0.0f;
+
 	Engine::GetInstance().hud->isHidden = true;
+	Engine::GetInstance().physics->pausePhysics = true;
 	this->asyncMapFile = mapFile;
 	this->asyncPreviousMap = previousMap;
 
-	// Lanza la tarea pesada de RAM/disco a un segundo plano sin congelar el juego
+	// PRECARGAR TEXTURAS -- PRINCESA CON CAPA / BOSSES
 	loadingThread = std::thread([this]() {
+		Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Items/SavePoint/Rosa.png");
+
+		if (this->asyncMapFile.find("Castle_Room_Storage") != std::string::npos) {
+			Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Princess/Princess.png");
+		}
+	/*	if (this->asyncMapFile.find("Forest_01") != std::string::npos 
+			|| this->asyncMapFile.find("Forest_02") != std::string::npos 
+			|| this->asyncMapFile.find("Forest_03") != std::string::npos 
+			|| this->asyncMapFile.find("Forest_04") != std::string::npos) {
+			Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Enemies//png");
+		}*/
+		else if (this->asyncMapFile.find("Mountain_01") != std::string::npos) {
+			Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Enemies/Dip/SS_Dip.png");
+		}
+		else if (this->asyncMapFile.find("Mountain_03") != std::string::npos) {
+			Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Enemies/Dragon/DragonH.png");
+		}
+
 		Engine::GetInstance().map->Load("Assets/Maps/", this->asyncMapFile);
 		isLoadFinished = true;
 		});
@@ -160,6 +180,7 @@ void GameScene::FinishMapLoad()
 		}
 	}
 	Engine::GetInstance().entityManager->Start();
+	Engine::GetInstance().physics->pausePhysics = false;
 	Engine::GetInstance().hud->isHidden = false;
 }
 
@@ -295,11 +316,10 @@ bool GameScene::Update(float dt) {
 
 	
 	if (isAsyncLoading) {
-		spinnerAngle += 240.0f * dt;
-		if (spinnerAngle >= 360.0f) spinnerAngle -= 360.0f;
 
+		loadingDotsTimer += dt / 1000.0f;
 		// Si el hilo de fondo ha terminado el trabajo pesado
-		if (isLoadFinished && !isDataInitialized) {
+		if (isLoadFinished && !isDataInitialized && loadingDotsTimer > 1.5f) {
 			isDataInitialized = true;
 
 			// Unimos el hilo de forma segura para liberar recursos del sistema
@@ -344,19 +364,32 @@ bool GameScene::Update(float dt) {
 	else if (mapState == MapTransitionState::FADING_IN) {
 		if (render->IsFadeComplete()) {
 
+			bool showIntro = false;
 			// Comprobar si el mapa cargado requiere presentación
-			if (asyncMapFile.find("Forest_01") != std::string::npos ||
-				asyncMapFile.find("Mountain_01") != std::string::npos ||
-				asyncMapFile.find("Catacombs_01_M") != std::string::npos ||
-				asyncMapFile.find("Catacombs_01_F") != std::string::npos)
+			if (asyncMapFile.find("Forest_01") != std::string::npos &&
+				asyncPreviousMap.find("Forest_02") == std::string::npos)
+			{
+				showIntro = true;
+				levelIntroText = "BOSQUE";
+			}
+			// 2. Mostrar intro de MONTAÑA solo si NO venimos de otra zona de la montaña
+			else if (asyncMapFile.find("Mountain_01") != std::string::npos &&
+				asyncPreviousMap.find("Mountain_02") == std::string::npos)
+			{
+				showIntro = true;
+				levelIntroText = "MONTAÑA";
+			}
+			// 3. Mostrar intro de CATACUMBAS solo si NO venimos de otras catacumbas
+			else if ((asyncMapFile.find("Catacombs_01_M") != std::string::npos && asyncPreviousMap.find("Catacombs_02_M") == std::string::npos || asyncMapFile.find("Catacombs_01_F") != std::string::npos) &&
+				asyncPreviousMap.find("Catacombs_02_F") == std::string::npos )
+			{
+				showIntro = true;
+				levelIntroText = "CATACUMBAS";
+			}
+			if (showIntro)
 			{
 				mapState = MapTransitionState::LEVEL_INTRO;
 				levelIntroTimer = 4.0f; // Duración
-
-				// Asignar el texto
-				if (asyncMapFile.find("Forest_01") != std::string::npos) levelIntroText = "BOSQUE";
-				else if (asyncMapFile.find("Mountain_01") != std::string::npos) levelIntroText = "MONTAÑA";
-				else levelIntroText = "CATACUMBAS";
 			}
 			else {
 				mapState = MapTransitionState::NONE;
@@ -417,11 +450,19 @@ bool GameScene::PostUpdate() {
 		Engine::GetInstance().render->DrawRectangleUnscaled(fullScreenRect, 0, 0, 0, 255, true, false);
 
 	// DIBUJAR EN MITAD DE PANTALLA
-		if (Rose_Sleep != nullptr) {
-			// Lo centramos en pantalla
-			SDL_Rect spinnerRect = { (screenW ) - 32, (screenH / 2) - 32, 64, 64 };
-			Engine::GetInstance().render->DrawTextureScaled(Rose_Sleep, spinnerRect);
+		int dotCount = (int)(loadingDotsTimer * 3.0f) % 4;
+
+		std::string loadingText = "Carregant";
+		for (int i = 0; i < dotCount; ++i) {
+			loadingText += ".";
 		}
+
+		SDL_Color textColor = { 255, 255, 255, 255 };
+
+		SDL_Rect textRect = { screenW - 320, screenH - 120, 220, 55 };
+
+		// Dibujamos el texto
+		Engine::GetInstance().render->DrawTextCentered(loadingText.c_str(), textRect, textColor, FontType::MENU);
 
 		return true;
 	}
