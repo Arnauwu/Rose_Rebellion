@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="20" maxHealth="100" keyCount="0" currentForceOrbs="11" />
-	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="false" />
+	<PlayerStats currentHealth="80" maxHealth="100" keyCount="0" currentForceOrbs="10" />
+	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="true" />
 	<WorldState currentMap="Catacombs_Boss_Dead.tmx">
 		<Position x="5503" y="5632" />
 	</WorldState>
 	<OpenedDoors />
 	<CollectedItems>
-		<Item id="Catacombs_02_F.tmx_SkillPointOrb_33536_12928" />
+		<Item id="Nexo.tmx_Sickle_3876_1118" />
 	</CollectedItems>
 </SaveGame>

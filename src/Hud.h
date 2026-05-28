@@ -33,6 +33,7 @@ public:
     void ShowNotification(const std::string& message);
 
     void ShowTutorial(TutorialType type);
+    bool isHidden = false;
 private:
     void DrawPlayerHealthBar();
     void DrawDiamondCounter();

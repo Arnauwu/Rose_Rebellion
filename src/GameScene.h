@@ -8,6 +8,9 @@
 #include <vector>
 #include <memory>
 
+#include <thread>
+#include <atomic>
+
 #include "Minimap.h"
 
 class UIElement;
@@ -93,7 +96,9 @@ public:
 	void LoadItemsLore();
 	void LoadSkillsinfo();
 
-	//Minimap
+	void FinishMapLoad();
+
+		//Minimap
 	Minimap minimap;
 
 	// Scene lifecycle
@@ -108,13 +113,13 @@ public:
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
-	
+
 	//Buttons textures
 	SDL_Texture* buttonUI = nullptr;
 	SDL_Texture* skillFrameUI = nullptr;
 	SDL_Texture* textBgUI = nullptr;
 	SDL_Texture* sliderThumbTex = nullptr;
-
+	SDL_Texture* Rose_Sleep = nullptr;
 	// Texture BG
 	SDL_Texture* texMapUI = nullptr;
 	SDL_Texture* texInventoryUI = nullptr;
@@ -128,7 +133,7 @@ public:
 	SDL_Texture* texItemKeyMountain = nullptr;
 	SDL_Texture* texItemKeyCatacumbs = nullptr;
 	SDL_Texture* texItemOrb = nullptr;
-	
+
 	// Power-ups
 	SDL_Texture* texItemGlide = nullptr;
 	SDL_Texture* texItemDash = nullptr;
@@ -170,7 +175,7 @@ private:
 	void CreateSkillPopupUI();
 
 	void CreatePauseMenuUI();
-	void CreatePauseSettingUI() ;
+	void CreatePauseSettingUI();
 	void CreateDialogueUI();
 
 	void UpdateInventoryVisuals();
@@ -216,11 +221,25 @@ private:
 	enum class MapTransitionState {
 		NONE,
 		FADING_OUT,
-		FADING_IN
+		FADING_IN,
+		LEVEL_INTRO
 	};
 
 	MapTransitionState mapState = MapTransitionState::NONE;
 	std::string nextMapName = "";
 	std::string targetSpawnID = "";
 	float mapFadeTime = 500.0f;
+
+	//Threads 
+	std::thread loadingThread;
+	std::atomic<bool> isLoadFinished{ false };
+	bool isAsyncLoading = false;
+	bool isDataInitialized = false;
+	float spinnerAngle = 0.0f;
+	std::string asyncMapFile = "";
+	std::string asyncPreviousMap = "";
+	
+	// Level intro
+	float levelIntroTimer = 0.0f;
+	std::string levelIntroText = "";
 };

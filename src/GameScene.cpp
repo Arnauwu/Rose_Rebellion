@@ -44,19 +44,6 @@ void GameScene::LoadMap(std::string mapFile)
 		return;
 	}
 
-	//if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx") {
-	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav"); // Música Interior Castillo
-	//}
-	//else if (mapFile == "Nexo.tmx") {
-	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaExteriorCastilloNeutra.wav"); // Música Exterior Castillo
-	//}
-	//else if (mapFile.find("Forest_01") != std::string::npos) {
-	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
-	//}
-	//else if (mapFile.find("Mountain_01") != std::string::npos) {
-	//	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav"); // Música Bosque
-	//}
-
 	if (mapFile.find("Castle") != std::string::npos && mapFile != "Nexo.tmx") {
 		// Esto cubrirá todos los mapas del castillo (Inside, Kitchen, Balcony, etc.)
 		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
@@ -87,24 +74,51 @@ void GameScene::LoadMap(std::string mapFile)
 	Engine::GetInstance().entityManager->CleanUp(true);
 	Engine::GetInstance().map->CleanUp();
 
-	Engine::GetInstance().map->Load("Assets/Maps/", mapFile);
+	// Player Pause
+	Player* pLoad = Engine::GetInstance().entityManager->GetPlayer();
+	if (pLoad != nullptr) {
+		pLoad->isFrozen = true;
+		if (pLoad->pbody != nullptr) {
+			Engine::GetInstance().physics->SetLinearVelocity(pLoad->pbody, { 0.0f, 0.0f });
+		}
+	}
+
+	isLoadFinished = false;
+	isAsyncLoading = true;
+	isDataInitialized = false;
+	spinnerAngle = 0.0f;
+	Engine::GetInstance().hud->isHidden = true;
+	this->asyncMapFile = mapFile;
+	this->asyncPreviousMap = previousMap;
+
+	// Lanza la tarea pesada de RAM/disco a un segundo plano sin congelar el juego
+	loadingThread = std::thread([this]() {
+		Engine::GetInstance().map->Load("Assets/Maps/", this->asyncMapFile);
+		isLoadFinished = true;
+		});
+}
+
+void GameScene::FinishMapLoad()
+{
+	// Sincronización con la GPU
+	Engine::GetInstance().map->FinishVRAMUpload();
+
 	Engine::GetInstance().map->SpawnEntities();
 
 	//Minimap Update
-	minimap.CreateRoom(mapFile);
-	minimap.SetCurrentRoom(mapFile);
+	minimap.CreateRoom(asyncMapFile);
+	minimap.SetCurrentRoom(asyncMapFile);
 
 	// Camara mode
-
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr)
 	{
-		Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap);
+		Vector2D spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(asyncPreviousMap);
 		player->position = spawnPos;
 		printf("Player spawned at: (%.2f, %.2f)\n", spawnPos.getX(), spawnPos.getY());
 
 		// ASIGNAR EL MODO DE CÁMARA AQU?
-		if (mapFile == "Castle_Room_Princess.tmx" || mapFile == "Castle_Inside.tmx" || mapFile == "Castle_Room_Kitchen.tmx" || mapFile == "Castle_Room_Storage.tmx") {
+		if (asyncMapFile == "Castle_Room_Princess.tmx" || asyncMapFile == "Castle_Inside.tmx" || asyncMapFile == "Castle_Room_Kitchen.tmx" || asyncMapFile == "Castle_Room_Storage.tmx") {
 			player->SetCameraMode(CameraMode::CLASSIC);
 			LOG("Camera Mode set to CLASSIC");
 		}
@@ -119,15 +133,15 @@ void GameScene::LoadMap(std::string mapFile)
 	{
 		Vector2D spawnPos;
 
-		if (previousMap == "")
+		if (asyncPreviousMap == "")
 		{
 			spawnPos = GameManager::GetInstance().gameState.playerPosition;
 			LOG("Carga inicial: Usando posición del GameManager: (%.2f, %.2f)", spawnPos.getX(), spawnPos.getY());
 		}
 		else
 		{
-			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(previousMap, targetSpawnID);
-			LOG("Transición: Buscando spawn point para el mapa previo: %s", previousMap.c_str());
+			spawnPos = Engine::GetInstance().map->GetPlayerSpawnPoint(asyncPreviousMap, targetSpawnID);
+			LOG("Transición: Buscando spawn point para el mapa previo: %s", asyncPreviousMap.c_str());
 		}
 
 		newPlayer->SetPosition(spawnPos);
@@ -138,14 +152,15 @@ void GameScene::LoadMap(std::string mapFile)
 			Engine::GetInstance().physics->SetLinearVelocity(newPlayer->pbody, { 0.0f, 0.0f });
 		}
 
-		if (mapFile == "Castle_Room_Princess.tmx") {
+		if (asyncMapFile == "Castle_Room_Princess.tmx") {
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::WALK);
 		}
-		else if (mapFile == "Castle_Inside.tmx") {
+		else if (asyncMapFile == "Castle_Inside.tmx") {
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::JUMP);
 		}
 	}
 	Engine::GetInstance().entityManager->Start();
+	Engine::GetInstance().hud->isHidden = false;
 }
 
 void GameScene::LoadItemsLore() {
@@ -215,7 +230,6 @@ bool GameScene::Start() {
 	// Texture Load
 	LoadTextureIfNull(texMapUI, "Assets/Textures/UI/GameMenu/t_MapUI.png");
 	LoadTextureIfNull(texInventoryUI, "Assets/Textures/UI/GameMenu/t_inventoryUI.png");
-	LoadTextureIfNull(texSkilltreeUI, "Assets/Textures/UI/GameMenu/t_skilltreeUI.png");
 	LoadTextureIfNull(texPauseUI, "Assets/Textures/UI/GameMenu/t_pauseUI.png");
 	LoadTextureIfNull(texSkillUI, "Assets/Textures/UI/SkillUpgrade/t_skillUI.png");
 
@@ -255,6 +269,9 @@ bool GameScene::Start() {
 	//LoadTextureIfNull(npcPortrait3, "Assets/Textures/UI/Dialogues/npc_portrait3.png");
 	//LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png");
 
+	// Load Loading Screen
+	LoadTextureIfNull(Rose_Sleep, "Assets/Textures/UI/LoadingScreen/Rose_Sleep.png");
+
 	//Top Bar
 	CreateTopBarUI();
 	//Inventario
@@ -276,6 +293,29 @@ bool GameScene::Start() {
 
 bool GameScene::Update(float dt) {
 
+	
+	if (isAsyncLoading) {
+		spinnerAngle += 240.0f * dt;
+		if (spinnerAngle >= 360.0f) spinnerAngle -= 360.0f;
+
+		// Si el hilo de fondo ha terminado el trabajo pesado
+		if (isLoadFinished && !isDataInitialized) {
+			isDataInitialized = true;
+
+			// Unimos el hilo de forma segura para liberar recursos del sistema
+		if (loadingThread.joinable()) {
+				loadingThread.join();
+			}
+
+			FinishMapLoad();
+			isAsyncLoading = false; 
+
+			mapState = MapTransitionState::FADING_IN;
+			Engine::GetInstance().render->StartFade(FadeDirection::FADE_IN, mapFadeTime);
+		}
+		return true; 
+	}
+	
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
 	auto dialogueMgr = Engine::GetInstance().dialogueManager;
@@ -303,7 +343,43 @@ bool GameScene::Update(float dt) {
 	}
 	else if (mapState == MapTransitionState::FADING_IN) {
 		if (render->IsFadeComplete()) {
+
+			// Comprobar si el mapa cargado requiere presentación
+			if (asyncMapFile.find("Forest_01") != std::string::npos ||
+				asyncMapFile.find("Mountain_01") != std::string::npos ||
+				asyncMapFile.find("Catacombs_01_M") != std::string::npos ||
+				asyncMapFile.find("Catacombs_01_F") != std::string::npos)
+			{
+				mapState = MapTransitionState::LEVEL_INTRO;
+				levelIntroTimer = 4.0f; // Duración
+
+				// Asignar el texto
+				if (asyncMapFile.find("Forest_01") != std::string::npos) levelIntroText = "BOSQUE";
+				else if (asyncMapFile.find("Mountain_01") != std::string::npos) levelIntroText = "MONTAÑA";
+				else levelIntroText = "CATACUMBAS";
+			}
+			else {
+				mapState = MapTransitionState::NONE;
+				Engine::GetInstance().hud->isHidden = false;
+				Player* p = Engine::GetInstance().entityManager->GetPlayer();
+				if (p != nullptr) p->isFrozen = false;
+			}
+		}
+	}
+	//ESTADO DE INTRO
+	else if (mapState == MapTransitionState::LEVEL_INTRO) {
+
+		levelIntroTimer -= dt / 1000.0f;
+		Engine::GetInstance().hud->isHidden = true;
+
+		if (levelIntroTimer <= 0.0f) {
 			mapState = MapTransitionState::NONE;
+
+			// Devolvemos el control y mostramos el HUD
+			Engine::GetInstance().hud->isHidden = false;
+			Player* p = Engine::GetInstance().entityManager->GetPlayer();
+			if (p != nullptr) p->isFrozen = false;
+
 		}
 	}
 
@@ -332,6 +408,23 @@ bool GameScene::Update(float dt) {
 }
 
 bool GameScene::PostUpdate() {
+	if (isAsyncLoading) {
+		int screenW = Engine::GetInstance().window->windowWidth;
+		int screenH = Engine::GetInstance().window->windowHeight;
+		SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
+
+		// Dibujar un fondo negro completamente opaco (Alpha a 255)
+		Engine::GetInstance().render->DrawRectangleUnscaled(fullScreenRect, 0, 0, 0, 255, true, false);
+
+	// DIBUJAR EN MITAD DE PANTALLA
+		if (Rose_Sleep != nullptr) {
+			// Lo centramos en pantalla
+			SDL_Rect spinnerRect = { (screenW ) - 32, (screenH / 2) - 32, 64, 64 };
+			Engine::GetInstance().render->DrawTextureScaled(Rose_Sleep, spinnerRect);
+		}
+
+		return true;
+	}
 
 	auto sceneManager = Engine::GetInstance().sceneManager;
 	if (currentMenuTab != GameMenuTab::NONE) {
@@ -413,12 +506,42 @@ bool GameScene::PostUpdate() {
 		Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, mapFadeTime);
 	}
 
+	if (mapState == MapTransitionState::LEVEL_INTRO) {
+		int screenW = Engine::GetInstance().window->windowWidth;
+		int screenH = Engine::GetInstance().window->windowHeight;
+
+		// Barras - cinemáticas
+		SDL_Rect topBar = { 0, 0, screenW, screenH / 7 };
+		SDL_Rect bottomBar = { 0, screenH - (screenH / 7), screenW, screenH / 7 };
+		Engine::GetInstance().render->DrawRectangleUnscaled(topBar, 0, 0, 0, 255, true, false);
+		Engine::GetInstance().render->DrawRectangleUnscaled(bottomBar, 0, 0, 0, 255, true, false);
+
+		Uint8 textAlpha = 255;
+		if (levelIntroTimer > 3.0f) {
+			// Aparece suavemente durante el primer segundo
+			textAlpha = (Uint8)(255.0f * (4.0f - levelIntroTimer));
+		}
+		else if (levelIntroTimer < 1.0f) {
+			// Desaparece suavemente durante el último segundo
+			textAlpha = (Uint8)(255.0f * levelIntroTimer);
+		}
+
+		// Dibujar el título de la zona
+		SDL_Color textColor = { 255, 255, 255, textAlpha };
+		SDL_Rect textRect = { 0, (screenH / 2) - 50, screenW, 100 };
+
+		Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
+	}
+
 	return true;
 }
 bool GameScene::CleanUp() {
 	LOG("Freeing Game Scene");
 
-	// Clean up map and entities
+	if (loadingThread.joinable()) {
+		loadingThread.join();
+	}
+		// Clean up map and entities
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
@@ -514,7 +637,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	auto updateSkillPopup = [&](const std::string& skillKey, SkillTree skillEnum)
 		{
 			selectedSkillToBuy = skillEnum;
-			selectedSkillKey = skillKey; 
+			selectedSkillKey = skillKey;
 
 			if (skillsLoreDB.find(skillKey) != skillsLoreDB.end())
 			{

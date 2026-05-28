@@ -433,6 +433,7 @@ TileSet* Map::GetTilesetFromTileId(int gid) const
 bool Map::CleanUp()
 {
 	LOG("Unloading map");
+	mapLoaded = false;
 	mapFileName = "";
 	mapPath = "";
 
@@ -511,8 +512,8 @@ bool Map::Load(std::string path, std::string fileName)
 
 			//Load the tileset image
 			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
-			tileSet->texture = Engine::GetInstance().textures->Load((mapPath + imgName).c_str());
-
+			tileSet->surfaceTemp = Engine::GetInstance().textures->LoadSurfaceToRAM((mapPath + imgName).c_str());
+			tileSet->texture = nullptr;
 			// Load animation
 			for (pugi::xml_node tileNode = tilesetNode.child("tile"); tileNode; tileNode = tileNode.next_sibling("tile"))
 			{
@@ -902,7 +903,6 @@ bool Map::Load(std::string path, std::string fileName)
 		}
 	}
 
-	mapLoaded = ret;
 	return ret;
 }
 
@@ -1529,4 +1529,22 @@ bool Map::DoorHasNoAnimation(PhysBody* door)
 		}
 	}
 	return false;
+}
+void Map::FinishVRAMUpload()
+{
+	LOG("Uploading map tileset surfaces to VRAM from Main Thread...");
+
+	for (const auto& tileSet : mapData.tilesets)
+	{
+		if (tileSet->surfaceTemp != nullptr)
+		{
+			// Subida controlada en el hilo principal a la memoria de la GPU
+			tileSet->texture = Engine::GetInstance().textures->CreateTextureFromRAM(tileSet->surfaceTemp);
+
+			// Una vez subida a la tarjeta de video, liberamos inmediatamente el espacio en RAM
+			SDL_DestroySurface(tileSet->surfaceTemp);
+			tileSet->surfaceTemp = nullptr;
+		}
+	}
+	mapLoaded = true;
 }

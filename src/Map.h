@@ -66,8 +66,6 @@ struct Door
 
     KeyType requiredKey = KeyType::NONE;
     
-
-
 };
 
 struct Path
@@ -141,6 +139,7 @@ struct TileSet
     int tileCount;
     int columns;
     SDL_Texture* texture;
+    SDL_Surface* surfaceTemp = nullptr;
 
     std::unordered_map<int, Animation> animations; // tileId -> Animation
 
@@ -198,6 +197,8 @@ public:
 
     // Load new map
     bool Load(std::string path, std::string mapFileName);
+
+    void FinishVRAMUpload();
 
     // Method that translates x,y coordinates from map positions to world positions
     Vector2D MapToWorld(int i, int j) const;

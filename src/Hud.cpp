@@ -120,7 +120,7 @@ bool Hud::PostUpdate() {
         return true;
     }
 
-    if (sceneManager->IsGamePaused()) {
+    if (sceneManager->IsGamePaused() || isHidden) {
         return true;
     }
     
