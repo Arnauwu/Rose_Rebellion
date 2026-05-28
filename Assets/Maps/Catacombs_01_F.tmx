@@ -75664,7 +75664,7 @@
  </layer>
  <layer id="30" name="AirNavLayer" width="140" height="90" visible="0">
   <properties>
-   <property name="Ground" type="bool" value="true"/>
+   <property name="Air" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
   </properties>
   <data>
