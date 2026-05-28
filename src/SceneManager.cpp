@@ -14,7 +14,6 @@
 #include "IntroCinematicScene.h"
 #include "GameOverScene.h"
 #include "WinScene.h"
-#include "LoadingScene.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -140,9 +139,6 @@ void SceneManager::PerformSceneChange() {
         break;
     case SceneID::WIN:
         currentScene = new WinScene();
-        break;
-    case SceneID::LOADING:                
-        currentScene = new LoadingScene();
         break;
     default:
         break;

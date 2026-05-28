@@ -393,9 +393,6 @@
     <ClCompile Include="src\CucaferaMutant.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Mutant</Filter>
     </ClCompile>
-    <ClCompile Include="src\LoadingScene.cpp">
-      <Filter>Source Files\Game\Scenes</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -616,9 +613,6 @@
     </ClInclude>
     <ClInclude Include="src\CucaferaMutant.h">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Mutant</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LoadingScene.h">
-      <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

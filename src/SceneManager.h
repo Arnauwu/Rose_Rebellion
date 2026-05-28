@@ -17,7 +17,6 @@ enum class SceneID
     GAME,
     GAMEOVER,
     WIN,
-    LOADING,
     NONE
 };
 
