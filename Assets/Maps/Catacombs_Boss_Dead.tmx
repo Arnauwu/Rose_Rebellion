@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="363">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="90" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="365">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -58,10 +58,10 @@
  <tileset firstgid="259" name="Estalagmitas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Estalagmitas.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="323" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="80" columns="8">
+ <tileset firstgid="323" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Atlas_plataformaMovil.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="403" name="Atlas_cat_Boss" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+ <tileset firstgid="387" name="Atlas_cat_Boss" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Atlas_cat_Boss.png" width="1024" height="1024"/>
  </tileset>
  <layer id="27" name="Fondo" width="62" height="90">
@@ -44985,6 +44985,18 @@
    <point/>
   </object>
   <object id="362" name="Bat" type="Bat" x="3328" y="4864">
+   <point/>
+  </object>
+  <object id="363" name="ToxicBall" type="ToxicBall" x="6200" y="11264">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="364" name="ToxicBall" type="ToxicBall" x="1700" y="11252">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

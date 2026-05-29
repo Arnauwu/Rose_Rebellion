@@ -1014,6 +1014,11 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<ToxicBall> toxicBall = std::dynamic_pointer_cast<ToxicBall>(Engine::GetInstance().entityManager->CreateEntity(EntityType::TOXIC_BALL));
 					if (toxicBall != nullptr) toxicBall->position = Vector2D(x, y);
+
+					Properties toxicBallProps;
+					LoadProperties(objectNode, toxicBallProps);
+
+					if (toxicBallProps.GetProperty("Jump") != nullptr) toxicBall->jumpDistanceTiles = toxicBallProps.GetProperty("Jump")->value;
 				}
 				else if (entityType == std::string("KnightBoss"))
 				{

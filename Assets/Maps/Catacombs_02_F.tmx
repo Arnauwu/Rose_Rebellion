@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="40" nextobjectid="570">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="40" nextobjectid="598">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -58,10 +58,10 @@
  <tileset firstgid="259" name="Atlas_cat_tiles_Extras" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Atlas_cat_tiles_Extras.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="323" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="80" columns="8">
+ <tileset firstgid="323" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Atlas_plataformaMovil.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="403" name="Atlas_cat_Boss" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+ <tileset firstgid="387" name="Atlas_cat_Boss" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Atlas_cat_Boss.png" width="1024" height="1024"/>
  </tileset>
  <layer id="32" name="Fondo" width="280" height="125">
@@ -194311,7 +194311,7 @@
    <tile gid="332"/>
    <tile gid="332"/>
    <tile gid="332"/>
-   <tile gid="332"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -280688,6 +280688,174 @@
    <point/>
   </object>
   <object id="568" name="Minairon" type="Minairon" x="4608" y="12928">
+   <point/>
+  </object>
+  <object id="570" name="ToxicBall" type="ToxicBall" x="11648" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="6"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="571" name="ToxicBall" type="ToxicBall" x="12706.1" y="14975.8">
+   <properties>
+    <property name="Jump" type="int" value="7"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="572" name="ToxicBall" type="ToxicBall" x="14720" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="11"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="573" name="ToxicBall" type="ToxicBall" x="18048" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="5"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="574" name="ToxicBall" type="ToxicBall" x="23168" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="6"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="575" name="ToxicBall" type="ToxicBall" x="23808" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="6"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="576" name="ToxicBall" type="ToxicBall" x="24448" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="6"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="577" name="ToxicBall" type="ToxicBall" x="28160" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="14"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="578" name="ToxicBall" type="ToxicBall" x="28928" y="14976">
+   <properties>
+    <property name="Jump" type="int" value="14"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="579" name="ToxicBall" type="ToxicBall" x="30894.2" y="14973">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="580" name="ToxicBall" type="ToxicBall" x="31788" y="14980">
+   <properties>
+    <property name="Jump" type="int" value="13"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="581" name="ToxicBall" type="ToxicBall" x="11136" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="582" name="ToxicBall" type="ToxicBall" x="12416" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="583" name="ToxicBall" type="ToxicBall" x="13568" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="584" name="ToxicBall" type="ToxicBall" x="14208" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="585" name="ToxicBall" type="ToxicBall" x="14848" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="586" name="ToxicBall" type="ToxicBall" x="16512" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="14"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="587" name="ToxicBall" type="ToxicBall" x="16768" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="14"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="588" name="ToxicBall" type="ToxicBall" x="17024" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="14"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="589" name="ToxicBall" type="ToxicBall" x="19456" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="20"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="590" name="ToxicBall" type="ToxicBall" x="22068" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="30"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="591" name="ToxicBall" type="ToxicBall" x="24704" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="20"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="592" name="ToxicBall" type="ToxicBall" x="25984" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="40"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="593" name="ToxicBall" type="ToxicBall" x="20736" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="25"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="594" name="ToxicBall" type="ToxicBall" x="23424" y="10880">
+   <properties>
+    <property name="Jump" type="int" value="25"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="595" name="ToxicBall" type="ToxicBall" x="32896" y="10752">
+   <properties>
+    <property name="Jump" type="int" value="40"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="596" name="ToxicBall" type="ToxicBall" x="32000" y="10752">
+   <properties>
+    <property name="Jump" type="int" value="40"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="597" name="ToxicBall" type="ToxicBall" x="30848" y="10752">
+   <properties>
+    <property name="Jump" type="int" value="40"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
