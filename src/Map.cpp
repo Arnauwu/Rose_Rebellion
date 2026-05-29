@@ -16,6 +16,8 @@
 #include "CucaferaShiny.h"
 #include "CucaferaMutant.h"
 
+#include "Correfoc.h"
+
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
 
@@ -975,6 +977,11 @@ void Map::SpawnEntities()
 					std::shared_ptr<CucaferaMutant> cucaferaMutant = std::dynamic_pointer_cast<CucaferaMutant>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CUCAFERA_MUTANT));
 					if (cucaferaMutant != nullptr) cucaferaMutant->position = Vector2D(x, y);
 				}
+				else if (entityType == std::string("Correfoc"))
+				{
+					std::shared_ptr<Correfoc> correfoc = std::dynamic_pointer_cast<Correfoc>(Engine::GetInstance().entityManager->CreateEntity(EntityType::CORREFOC));
+					if (correfoc != nullptr) correfoc->position = Vector2D(x, y);
+				}
 				else if (entityType == std::string("SwordKnight"))
 				{
 					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
@@ -1014,6 +1021,11 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<ToxicBall> toxicBall = std::dynamic_pointer_cast<ToxicBall>(Engine::GetInstance().entityManager->CreateEntity(EntityType::TOXIC_BALL));
 					if (toxicBall != nullptr) toxicBall->position = Vector2D(x, y);
+
+					Properties toxicBallProps;
+					LoadProperties(objectNode, toxicBallProps);
+
+					if (toxicBallProps.GetProperty("Jump") != nullptr) toxicBall->jumpDistanceTiles = toxicBallProps.GetProperty("Jump")->value;
 				}
 				else if (entityType == std::string("KnightBoss"))
 				{

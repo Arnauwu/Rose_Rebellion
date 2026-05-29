@@ -28,70 +28,51 @@ bool ToxicBall::Start()
 	//TO DO: CHANGE SOUNDS & TEXTURES
 
 	// Initialize enemy parameters
-	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
-	anims.SetCurrent("idle");
+	std::unordered_map<int, std::string> aliases = { {0,"Up"} };
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases); //TO DO: Poner la animación de la pelota
+	anims.SetCurrent("Up");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png"); //TO DO: Poner la textura de la pelota
 
 	//Load Audio
 	chocarToxicBall = Engine::GetInstance().audio->LoadFx("");
 
 	//Add physics to the enemy - initialize physics body
-	texW = 64;
-	texH = 64;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
+	texW = 96;
+	texH = 96;
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::KINEMATIC);
 
-	//No Gravity
 	Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 
-	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
 
 	//ssign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
-	// Initialize pathfinding
-	pathfinding = std::make_shared<Pathfinding>(true); //Considered Floating, not capable to fly, so Ground NavLayer
-
-	//Reset pathfinding
-	pathfinding->ResetPath(GetTilePos());
-
-	pathFindingCooldown.Start();
-
-	//Stats
-	vision = 20;
-	speed = 3.0f;
-	knockbackForce = 7.5f;
-
-	maxHealth = 60;
-	currentHealth = 60;
-
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
+	initialX = position.getX();
+	initialY = position.getY();
 
+	float tileSize = 128.0f;
 
+	float heightInPixels = jumpDistanceTiles * tileSize;
 
-	hoverTimer.Start();
-	hoverCooldown.Start();
+	float heightInMeters = PIXEL_TO_METERS(heightInPixels);
+
+	jumpForce = -sqrtf(2.0f * ballGravity * heightInMeters);
+
 	return true;
 }
 
 bool ToxicBall::Update(float dt)
 {
-
 	if (!active) return true;
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
-		if (pathFindingCooldown.ReadMSec() > 500)
-		{
-			PerformPathfinding();
-			pathFindingCooldown.Start();
-		}
-
 		GetPhysicsValues();
 		Move();
 		ApplyPhysics();
@@ -102,106 +83,38 @@ bool ToxicBall::Update(float dt)
 	return true;
 }
 
-void ToxicBall::PerformPathfinding()
-{
-	//Reset path
-	pathfinding->ResetPath(GetTilePos());
-
-	//Get the position of the enemy
-	Vector2D pos = GetPosition();
-
-	//Get the position of the player
-
-	Player* player = Engine::GetInstance().entityManager->GetPlayer();
-	Vector2D playerPos = player->GetPosition();
-
-	playerTileDist = sqrt(pos.distanceSquared(playerPos)) / 128;
-	int iter = 0;
-
-	while (pathfinding->pathTiles.empty() && playerTileDist < vision && iter < MaxIterations)
-	{
-		pathfinding->PropagateAStar();
-		iter++;
-	}
-}
-
 void ToxicBall::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	velocity = { 0, velocity.y };
 }
 
 void ToxicBall::Move() {
-	Vector2D tilePos = GetTilePos();
 
-	//Vertical
-	if (hoverCooldown.ReadMSec() >= 250)
-	{
-		int posY = Engine::GetInstance().map->MapToWorld(tilePos.getX(), tilePos.getY()).getY();
-	
-		float baseY;
+	velocity.x = 0; // Don't move in X
 
-		if (pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
-		{
-			// Get world Y of the tile BELOW the demon
-			baseY = posY + Engine::GetInstance().map->GetTileHeight(); // 1 tile down
+	if (position.getY() >= initialY && velocity.y >= 0) {
+
+		velocity.y = 0;
+		jumpTimer += 16.0f;
+
+		if (jumpTimer >= waitTime) {
+			velocity.y = jumpForce;
+			jumpTimer = 0.0f;
 		}
-		else
-		{
-			// Get world Y of the tile OVER the demon
-			baseY = posY - Engine::GetInstance().map->GetTileHeight(); // 1 tile above
-		}
-	
-		// Floating offset
-		float offset = sin(hoverTimer.ReadSec() * hoverSpeed) * hoverAmplitude;
-
-		// Final target
-		float targetY = baseY + offset;
-
-
-		int x, y;
-		pbody->GetPosition(x, y);
-
-		// Smoothly move toward target 
-		velocity.y += (targetY - y) * 0.1f;
-		velocity.y = SDL_clamp(velocity.y, -3.0f, 3.0f);
-
-		hoverCooldown.Start();
 	}
-	return;
+	else {
+		velocity.y += ballGravity * 0.016f;
+	}
 }
 
-void ToxicBall::Knockback()
-{
-	if (isdead) return;
+void ToxicBall::Knockback() {
 
-	if (isKnockedback)
-	{
-		anims.SetCurrent("hurt"); // TO DO : Hurt effect
-		if (lookingRight)
-		{
-			velocity.x = knockbackForce;
-		}
-		else
-		{
-			velocity.x = -knockbackForce;
-		}
-	}
-	if (knockbackTime <= 0)
-	{
-		isKnockedback = false;
-		knockbackTime = 500.0f;
-	}
-	else
-	{
-		knockbackTime -= Engine::GetInstance().GetDt();
-	}
 }
 
 void ToxicBall::ApplyPhysics() {
 
 	// Apply velocity via helper
-	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, velocity.y });
 }
 
 void ToxicBall::Draw(float dt)
@@ -225,12 +138,6 @@ void ToxicBall::Draw(float dt)
 	position.setX((float)x);
 	position.setY((float)y);
 
-	// Draw pathfinding debug
-	if (Engine::GetInstance().physics->GetDebug())
-	{
-		pathfinding->DrawPath();
-	}
-
 	Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
 	Engine::GetInstance().render->SetColorMod(texture, r, g, b, 0, 0, 0);
 
@@ -241,13 +148,26 @@ void ToxicBall::Draw(float dt)
 
 }
 
+bool ToxicBall::CleanUp()
+{
+	LOG("Cleanup ToxicBall");
+	active = false;
+	Engine::GetInstance().textures->UnLoad(texture);
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
+	return true;
+}
+
 //Define OnCollision function for the enemy. 
 void ToxicBall::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
 
+	case ColliderType::PLAYER_ATTACK:
+
+		TakeDamage(physB->listener->damage);
+		break;
+
 	default:
-		pbody->ctype = ColliderType::ENEMY;
 		break;
 	}
 }

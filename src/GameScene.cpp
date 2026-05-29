@@ -95,7 +95,6 @@ void GameScene::LoadMap(std::string mapFile)
 	minimap.SetCurrentRoom(mapFile);
 
 	// Camara mode
-
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr)
 	{
@@ -372,6 +371,12 @@ bool GameScene::PostUpdate() {
 			{
 				minimap.DrawMinimap();
 			}
+			else if (currentMenuTab == GameMenuTab::SKILL_TREE) //Show how much orb the player has
+			{
+				int currentForceOrbs = GameManager::GetInstance().gameState.currentForceOrbs;
+				SDL_Color color = { 255,255,255,255 };
+				Engine::GetInstance().render->DrawText(std::to_string(currentForceOrbs).c_str(), 850, 475, 100, 100, color);
+			}
 
 			return true;
 		}
@@ -526,6 +531,7 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 				skillPopupText->text = "???\n\nHabilidad desconocida.";
 			}
 			SetUIGroupVisible(skillPopupUI, true);
+			inSkillPopUp = true;
 		};
 
 	switch (uiElement->id) {
@@ -562,16 +568,52 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::INV_ITEM_ORB:
 		updateLorePanel("STRENGTH_ORB", p && p->HasItem(ItemID::STRENGTH_ORB));
 		break;
-	case (int)GameUI_ID::SKILL_BOOK_1_1: updateSkillPopup("HEALTH_UP", SkillTree::HEALTH_UP); break;
-	case (int)GameUI_ID::SKILL_BOOK_1_2: updateSkillPopup("IFRAMES_UP", SkillTree::IFRAMES_UP); break;
-	case (int)GameUI_ID::SKILL_BOOK_2_1: updateSkillPopup("SPEED_UP", SkillTree::SPEED_UP); break;
-	case (int)GameUI_ID::SKILL_BOOK_2_2: updateSkillPopup("FAST_DASH", SkillTree::FAST_DASH); break;
-	case (int)GameUI_ID::SKILL_BOOK_3_1: updateSkillPopup("UP_ATTACK", SkillTree::UP_ATTACK); break;
-	case (int)GameUI_ID::SKILL_BOOK_3_2: updateSkillPopup("DOWN_ATTACK", SkillTree::DOWN_ATTACK); break;
+	case (int)GameUI_ID::SKILL_BOOK_1_1: 
+		if (!inSkillPopUp)
+		{
+			updateSkillPopup("HEALTH_UP", SkillTree::HEALTH_UP); 
+		}
+		break;
+
+	case (int)GameUI_ID::SKILL_BOOK_1_2: 
+		if (!inSkillPopUp)
+		{
+			updateSkillPopup("IFRAMES_UP", SkillTree::IFRAMES_UP); 
+		}
+		break;
+
+	case (int)GameUI_ID::SKILL_BOOK_2_1:
+		if (!inSkillPopUp)
+		{
+			updateSkillPopup("SPEED_UP", SkillTree::SPEED_UP); 
+		}
+		break;
+
+	case (int)GameUI_ID::SKILL_BOOK_2_2: 
+		if (!inSkillPopUp)
+		{
+			updateSkillPopup("FAST_DASH", SkillTree::FAST_DASH);
+		}		
+		break;
+
+	case (int)GameUI_ID::SKILL_BOOK_3_1: 
+		if (!inSkillPopUp)
+		{
+			updateSkillPopup("UP_ATTACK", SkillTree::UP_ATTACK); 
+		}
+		break;
+
+	case (int)GameUI_ID::SKILL_BOOK_3_2:
+		if (!inSkillPopUp)
+		{
+			updateSkillPopup("DOWN_ATTACK", SkillTree::DOWN_ATTACK); 
+		}
+		break;
 
 		// Acciones del Pop-Up
 	case (int)GameUI_ID::BTN_SKILL_BACK:
 		SetUIGroupVisible(skillPopupUI, false);
+		inSkillPopUp = false;
 		break;
 
 	case (int)GameUI_ID::BTN_SKILL_BUY:
@@ -579,8 +621,6 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 			int cost = skillsLoreDB[selectedSkillKey].cost;
 
 			p->UnlockSkill(selectedSkillToBuy, cost);
-
-			SetUIGroupVisible(skillPopupUI, false);
 			UpdateSkillVisuals();
 		}
 		break;
@@ -834,10 +874,6 @@ void GameScene::CreateDialogueUI() {
 
 		dBox->AddPortrait("Rose", princessPortrait);
 		dBox->AddPortrait("Pep", npcPortrait);
-		/*dBox->AddPortrait("Jan", npcPortrait1);
-		dBox->AddPortrait("Jan", npcPortrait2);
-		dBox->AddPortrait("Jan", npcPortrait3);
-		dBox->AddPortrait("Jan", npcPortrait4);*/
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);

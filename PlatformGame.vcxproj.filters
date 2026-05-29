@@ -167,6 +167,9 @@
     <Filter Include="Source Files\Game\Entity\Enemies\Cucafera Mutant">
       <UniqueIdentifier>{340b8289-ab99-453a-8bc2-bf3a80079553}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Enemies\Correfoc">
+      <UniqueIdentifier>{9a586a5b-4244-412d-b114-09d6d6fc089d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -399,6 +402,9 @@
     <ClCompile Include="src\WaveProjectile.cpp">
       <Filter>Source Files\Game\Entity\Bosses\NinfaBoss</Filter>
     </ClCompile>
+    <ClCompile Include="src\Correfoc.cpp">
+      <Filter>Source Files\Game\Entity\Enemies\Correfoc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -625,6 +631,9 @@
     </ClInclude>
     <ClInclude Include="src\WaveProjectile.h">
       <Filter>Source Files\Game\Entity\Bosses\NinfaBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Correfoc.h">
+      <Filter>Source Files\Game\Entity\Enemies\Correfoc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
