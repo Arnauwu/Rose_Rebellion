@@ -4,7 +4,7 @@
 #include "Animation.h"
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
-#include "Pathfinding.h"
+#include "Timer.h"
 
 struct SDL_Texture;
 
@@ -19,27 +19,29 @@ public:
 	bool Update(float dt);
 	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
+	bool CleanUp() override;
 
 private:
-	void PerformPathfinding();
 	void GetPhysicsValues() override;
 	void Move() override;
 	void Knockback() override;
 	void ApplyPhysics() override;
 	void Draw(float dt);
 
-	void Attack();
-
-	bool wasWalking = false;
 
 public:
 
 	//Declare enemy parameters
+	float jumpForce = 0.0f;
+	float ballGravity = 48.0f;
 
-	Timer hoverTimer;
-	Timer hoverCooldown;
-	float hoverAmplitude = 4.0f;
-	float hoverSpeed = 0.5f;
+	float jumpDistanceTiles = 0.0f;
+
+	float initialX = 0.0f;
+	float initialY = 0.0f;
+
+	float jumpTimer = 0.0f;
+	float waitTime = 2000.0f;
 
 	//Sounds
 	int chocarToxicBall;

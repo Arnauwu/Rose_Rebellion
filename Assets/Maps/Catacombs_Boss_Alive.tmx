@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="32" nextobjectid="297">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="32" nextobjectid="299">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -58,7 +58,7 @@
  <tileset firstgid="259" name="Estalagmitas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Estalagmitas.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="323" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="80" columns="8">
+ <tileset firstgid="323" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Atlas_plataformaMovil.png" width="1024" height="1024"/>
  </tileset>
  <layer id="29" name="Fondo" width="62" height="40">
@@ -17609,6 +17609,18 @@
     <property name="BreakTime" type="int" value="2000"/>
     <property name="RespawnTime" type="int" value="4000"/>
    </properties>
+  </object>
+  <object id="297" name="ToxicBall" type="ToxicBall" x="6189.45" y="4857.33">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="298" name="ToxicBall" type="ToxicBall" x="1708" y="4860">
+   <properties>
+    <property name="Jump" type="int" value="9"/>
+   </properties>
+   <point/>
   </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns">
