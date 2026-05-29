@@ -290,8 +290,20 @@ bool GameScene::Start() {
 	//LoadTextureIfNull(npcPortrait3, "Assets/Textures/UI/Dialogues/npc_portrait3.png");
 	//LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png");
 
-	// Load Loading Screen
+	// Load Loading Screen 
 	LoadTextureIfNull(Rose_Sleep, "Assets/Textures/UI/LoadingScreen/Rose_Sleep.png");
+
+	//Load level intro textures
+	LoadTextureIfNull(introFrameTex, "Assets/Textures/UI/Buttons/frameTex.png");
+
+	std::unordered_map<int, std::string> introAliases = { {0, "focus"} };
+	introFrameAnim.LoadFromTSX("Assets/Textures/UI/Buttons/frameTex_LI.tsx", introAliases);
+
+	introFrameAnim.SetCurrent("focus");
+
+	if (introFrameAnim.GetAnim("focus")) {
+		introFrameAnim.GetAnim("focus")->SetLoop(false);
+	}
 
 	//Top Bar
 	CreateTopBarUI();
@@ -390,6 +402,10 @@ bool GameScene::Update(float dt) {
 			{
 				mapState = MapTransitionState::LEVEL_INTRO;
 				levelIntroTimer = 4.0f; // Duración
+				introFrameAnim.SetCurrent("focus");
+				if (introFrameAnim.GetAnim("focus")) {
+					introFrameAnim.GetAnim("focus")->Reset(); 
+				}
 			}
 			else {
 				mapState = MapTransitionState::NONE;
@@ -404,6 +420,8 @@ bool GameScene::Update(float dt) {
 
 		levelIntroTimer -= dt / 1000.0f;
 		Engine::GetInstance().hud->isHidden = true;
+
+		introFrameAnim.Update(dt);
 
 		if (levelIntroTimer <= 0.0f) {
 			mapState = MapTransitionState::NONE;
@@ -559,15 +577,50 @@ bool GameScene::PostUpdate() {
 
 		Uint8 textAlpha = 255;
 		if (levelIntroTimer > 3.0f) {
-			// Aparece suavemente durante el primer segundo
 			textAlpha = (Uint8)(255.0f * (4.0f - levelIntroTimer));
 		}
 		else if (levelIntroTimer < 1.0f) {
-			// Desaparece suavemente durante el último segundo
 			textAlpha = (Uint8)(255.0f * levelIntroTimer);
 		}
 
-		// Dibujar el título de la zona
+		if (introFrameTex != nullptr) {
+			// Definimos la "Caja Interna" para el texto. 
+			// Modifica el ancho (400) si nombres como "CATACUMBAS" se salen del marco.
+			int frameInnerWidth = 400;
+			int frameInnerHeight = 60;
+
+			SDL_Rect exactBounds = {
+				(screenW / 2) - (frameInnerWidth / 2),
+				(screenH / 2) - (frameInnerHeight / 2),
+				frameInnerWidth,
+				frameInnerHeight
+			};
+
+			// Replicamos exactamente el mismo Padding visual que en UIButton.cpp
+			int paddingHorizontal = 135;
+			int paddingVertical = 20;
+
+			exactBounds.x -= paddingHorizontal;
+			exactBounds.w += paddingHorizontal * 2;
+			exactBounds.y -= paddingVertical;
+			exactBounds.h += paddingVertical * 2;
+
+			// Obtenemos el Frame exacto que le toca dibujar de la animación de Tiled
+			SDL_Rect srcFrame = introFrameAnim.GetCurrentFrame();
+
+			SDL_FRect srcFRect = { (float)srcFrame.x, (float)srcFrame.y, (float)srcFrame.w, (float)srcFrame.h };
+			SDL_FRect dstFRect = { (float)exactBounds.x, (float)exactBounds.y, (float)exactBounds.w, (float)exactBounds.h };
+
+			// Aplicamos la opacidad (Fade) al marco para que aparezca y desaparezca suavemente
+			SDL_SetTextureBlendMode(introFrameTex, SDL_BLENDMODE_BLEND);
+			SDL_SetTextureAlphaMod(introFrameTex, textAlpha);
+
+			// Renderizamos el marco en la GPU utilizando la llamada nativa de SDL3
+			SDL_RenderTexture(Engine::GetInstance().render->renderer, introFrameTex, &srcFRect, &dstFRect);
+		}
+		// ==============================================================================
+
+		// 3. Dibujar el título de la zona (Por encima del marco animado)
 		SDL_Color textColor = { 255, 255, 255, textAlpha };
 		SDL_Rect textRect = { 0, (screenH / 2) - 50, screenW, 100 };
 
@@ -636,6 +689,8 @@ bool GameScene::CleanUp() {
 	UnloadTexture(books_3_1_active);
 	UnloadTexture(books_3_2_active);
 
+	//Level intro Unload
+	UnloadTexture(introFrameTex);
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {
 			if (elem) elem->CleanUp();

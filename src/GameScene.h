@@ -119,7 +119,7 @@ public:
 	SDL_Texture* skillFrameUI = nullptr;
 	SDL_Texture* textBgUI = nullptr;
 	SDL_Texture* sliderThumbTex = nullptr;
-	SDL_Texture* Rose_Sleep = nullptr;
+	
 	// Texture BG
 	SDL_Texture* texMapUI = nullptr;
 	SDL_Texture* texInventoryUI = nullptr;
@@ -166,6 +166,12 @@ public:
 	//SDL_Texture* npcPortrait3 = nullptr;
 	//SDL_Texture* npcPortrait4 = nullptr;
 
+	// Level intro textures
+	SDL_Texture* introFrameTex = nullptr;
+	AnimationSet introFrameAnim;
+
+	// Load screen textures
+	SDL_Texture* Rose_Sleep = nullptr;
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);
