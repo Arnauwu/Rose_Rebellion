@@ -583,46 +583,31 @@ bool GameScene::PostUpdate() {
 			textAlpha = (Uint8)(255.0f * levelIntroTimer);
 		}
 
+		SDL_Rect textRect = { 0, (screenH / 2) - 50, screenW, 100 };
+
 		if (introFrameTex != nullptr) {
-			// Definimos la "Caja Interna" para el texto. 
-			// Modifica el ancho (400) si nombres como "CATACUMBAS" se salen del marco.
-			int frameInnerWidth = 400;
-			int frameInnerHeight = 60;
 
-			SDL_Rect exactBounds = {
-				(screenW / 2) - (frameInnerWidth / 2),
-				(screenH / 2) - (frameInnerHeight / 2),
-				frameInnerWidth,
-				frameInnerHeight
-			};
+			SDL_Rect exactBounds = Engine::GetInstance().render->GetTextRenderedBounds(levelIntroText.c_str(), textRect, FontType::MENU);
 
-			// Replicamos exactamente el mismo Padding visual que en UIButton.cpp
-			int paddingHorizontal = 135;
-			int paddingVertical = 20;
+			int paddingVertical = (int)(exactBounds.h * 0.5f);   
+			int paddingHorizontal = (int)(exactBounds.h * 2.5f); 
 
 			exactBounds.x -= paddingHorizontal;
 			exactBounds.w += paddingHorizontal * 2;
 			exactBounds.y -= paddingVertical;
 			exactBounds.h += paddingVertical * 2;
 
-			// Obtenemos el Frame exacto que le toca dibujar de la animación de Tiled
 			SDL_Rect srcFrame = introFrameAnim.GetCurrentFrame();
-
 			SDL_FRect srcFRect = { (float)srcFrame.x, (float)srcFrame.y, (float)srcFrame.w, (float)srcFrame.h };
 			SDL_FRect dstFRect = { (float)exactBounds.x, (float)exactBounds.y, (float)exactBounds.w, (float)exactBounds.h };
 
-			// Aplicamos la opacidad (Fade) al marco para que aparezca y desaparezca suavemente
 			SDL_SetTextureBlendMode(introFrameTex, SDL_BLENDMODE_BLEND);
 			SDL_SetTextureAlphaMod(introFrameTex, textAlpha);
-
-			// Renderizamos el marco en la GPU utilizando la llamada nativa de SDL3
 			SDL_RenderTexture(Engine::GetInstance().render->renderer, introFrameTex, &srcFRect, &dstFRect);
 		}
-		// ==============================================================================
 
-		// 3. Dibujar el título de la zona (Por encima del marco animado)
+		
 		SDL_Color textColor = { 255, 255, 255, textAlpha };
-		SDL_Rect textRect = { 0, (screenH / 2) - 50, screenW, 100 };
 
 		Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
 	}
