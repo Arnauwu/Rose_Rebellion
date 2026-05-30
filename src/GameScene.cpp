@@ -7,6 +7,7 @@
 #include "GameManager.h"
 #include "UIManager.h"
 #include "DialogueManager.h"
+#include "LanguageManager.h"
 #include "UIDialogueBox.h"
 #include "Cinematics.h"
 
@@ -320,6 +321,12 @@ bool GameScene::Start() {
 	CreateDialogueUI();
 
 	RefreshMenuUI();
+
+	Engine::GetInstance().languageManager->RegisterLanguageChangeCallback(
+		[this](Language lang) { this->UpdateUILanguage(); }
+	);
+
+	UpdateUILanguage();
 	return true;
 }
 
@@ -471,6 +478,7 @@ bool GameScene::PostUpdate() {
 		int dotCount = (int)(loadingDotsTimer * 3.0f) % 4;
 
 		std::string loadingText = "Carregant";
+		// std::string loadingText = Engine::GetInstance().languageManager->GetString("TXT_LOADING");
 		for (int i = 0; i < dotCount; ++i) {
 			loadingText += ".";
 		}
@@ -810,7 +818,7 @@ void GameScene::CreateTopBarUI() {
 	};
 
 	for (const auto& def : topBarDefs) {
-		topBarElements.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, startX, yPos, wPerc, hPerc, sceneObserver));
+		topBarElements.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.keyId, startX, yPos, wPerc, hPerc, sceneObserver));
 		startX += spacingX;
 	}
 }
@@ -977,16 +985,16 @@ void GameScene::CreatePauseMenuUI() {
 	float pY = 0.40f, pSpacing = 0.1f;
 
 	ButtonDef pauseBtnDefs[] = {
-		{ (int)GameUI_ID::BTN_PAUSE_RESUME,   "RESUME" },
-		{ (int)GameUI_ID::BTN_PAUSE_OPTIONS,  "OPTIONS" },
-		{ (int)GameUI_ID::BTN_PAUSE_MAINMENU, "MAIN MENU" }
+		{ (int)GameUI_ID::BTN_PAUSE_RESUME,   "BTN_PAUSE_RESUME" },
+		{ (int)GameUI_ID::BTN_PAUSE_OPTIONS,  "BTN_PAUSE_OPTIONS" },
+		{ (int)GameUI_ID::BTN_PAUSE_MAINMENU, "BTN_PAUSE_MAINMENU" }
 	};
 
 	for (const auto& def : pauseBtnDefs) {
-		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, pY, pW, pH, sceneObserver);
+		std::string localizedText = Engine::GetInstance().languageManager->GetString(def.keyId);
+		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, localizedText.c_str(), 0.5f, pY, pW, pH, sceneObserver);
 
 		btn->SetBgTexture(buttonUI);
-
 		pauseMainUI.push_back(btn);
 		pY += pSpacing;
 	}
@@ -999,7 +1007,7 @@ void GameScene::CreatePauseSettingUI() {
 	float pW = 0.25f, pH = 0.08f;
 	float pY = 0.4f, pSpacing = 0.1f;
 
-	auto sldMus = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_MUSIC, "Music", 0.5f, pY, 0.3f, 0.05f, sceneObserver);
+	auto sldMus = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_MUSIC, Engine::GetInstance().languageManager->GetString("SLD_MUSIC").c_str(), 0.5f, pY, 0.3f, 0.05f, sceneObserver);
 	if (auto* s = dynamic_cast<UISlider*>(sldMus.get())) {
 		s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
 		s->SetThumbTexture(sliderThumbTex);
@@ -1007,7 +1015,7 @@ void GameScene::CreatePauseSettingUI() {
 	pauseOptionsUI.push_back(sldMus);
 	pY += pSpacing;
 
-	auto sldFx = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_FX, "FX", 0.5f, pY, 0.3f, 0.05f, sceneObserver);
+	auto sldFx = uiManager->CreateUIElement(UIElementType::SLIDER, (int)GameUI_ID::SLD_FX, Engine::GetInstance().languageManager->GetString("SDL_FX").c_str(), 0.5f, pY, 0.3f, 0.05f, sceneObserver);
 	if (auto* s = dynamic_cast<UISlider*>(sldFx.get())) {
 		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
 		s->SetThumbTexture(sliderThumbTex);
@@ -1015,12 +1023,12 @@ void GameScene::CreatePauseSettingUI() {
 	pauseOptionsUI.push_back(sldFx);
 	pY += pSpacing;
 
-	auto chkFull = uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)GameUI_ID::CHK_FULLSCREEN, "Fullscreen", 0.5f, pY, 0.05f, 0.05f, sceneObserver);
+	auto chkFull = uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)GameUI_ID::CHK_FULLSCREEN, Engine::GetInstance().languageManager->GetString("CHK_FULLSCREEN").c_str(), 0.4f, pY, 0.05f, 0.05f, sceneObserver);
 	if (auto* c = dynamic_cast<UICheckBox*>(chkFull.get())) c->isChecked = Engine::GetInstance().window->IsFullscreen();
 	pauseOptionsUI.push_back(chkFull);
 	pY += pSpacing;
 
-	pauseOptionsUI.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_OPTIONS_BACK, "BACK", 0.5f, pY, pW, pH, sceneObserver));
+	pauseOptionsUI.push_back(uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_OPTIONS_BACK, Engine::GetInstance().languageManager->GetString("BTN_OPTIONS_BACK").c_str(), 0.5f, pY, pW, pH, sceneObserver));
 }
 
 void GameScene::CreateDialogueUI() {
@@ -1150,6 +1158,22 @@ void GameScene::UpdateSkillVisuals() {
 			btn->SetTexture(gameState.stDownAttack ? books_3_2_active : books_3_2);
 			break;
 		}
+	}
+}
+
+void GameScene::UpdateUILanguage() {
+	auto langMgr = Engine::GetInstance().languageManager;
+
+	if (pauseMainUI.size() >= 3) {
+		pauseMainUI[0]->text = langMgr->GetString("BTN_PAUSE_RESUME");
+		pauseMainUI[1]->text = langMgr->GetString("BTN_PAUSE_OPTIONS"); 
+		pauseMainUI[2]->text = langMgr->GetString("BTN_PAUSE_MAINMENU");
+	}
+	if (pauseOptionsUI.size() >= 4) {
+		pauseOptionsUI[0]->text = langMgr->GetString("SLD_MUSIC");
+		pauseOptionsUI[1]->text = langMgr->GetString("SLD_FX");
+		pauseOptionsUI[2]->text = langMgr->GetString("CHK_FULLSCREEN");
+		pauseOptionsUI[3]->text = langMgr->GetString("BTN_BACK");
 	}
 }
 

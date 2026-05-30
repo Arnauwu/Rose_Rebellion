@@ -90,7 +90,7 @@ bool MenuScene::Start() {
 	settingsButtons.push_back(sldFX);
 	setY += spacing;
 
-	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)MenuUI_ID::CHK_FULLSCREEN, "Fullscreen", 0.5f, setY, 0.05f, 0.05f, sceneObserver);
+	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)MenuUI_ID::CHK_FULLSCREEN, Engine::GetInstance().languageManager->GetString("CHK_FULLSCREEN").c_str(), 0.5f, setY, 0.05f, 0.05f, sceneObserver);
 	if (auto* c = dynamic_cast<UICheckBox*>(chkFull.get())) c->isChecked = Engine::GetInstance().window->IsFullscreen();
 	settingsButtons.push_back(chkFull);
 	setY += spacing;
@@ -127,6 +127,7 @@ bool MenuScene::Start() {
 	Engine::GetInstance().languageManager->RegisterLanguageChangeCallback(
 		[this](Language lang) { this->UpdateUILanguage(); }
 	);
+	UpdateUILanguage();
 	ShowSettings(false);
 	return true;
 }
@@ -245,10 +246,14 @@ void MenuScene::UpdateUILanguage() {
 	}
 
 	// Actualizar botones de configuración
-	if (settingsButtons.size() >= 5) {
+	if (settingsButtons.size() >= 6) {
+		settingsButtons[0]->text = langMgr->GetString("SLD_MUSIC");
+		settingsButtons[1]->text = langMgr->GetString("SLD_FX");
 		settingsButtons[2]->text = langMgr->GetString("CHK_FULLSCREEN");
 		settingsButtons[3]->text = langMgr->GetString("BTN_ENGLISH");
 		settingsButtons[4]->text = langMgr->GetString("BTN_CATALAN");
+		settingsButtons[5]->text = langMgr->GetString("BTN_BACK");
+
 	}
 }
 

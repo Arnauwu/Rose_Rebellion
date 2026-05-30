@@ -25,7 +25,8 @@ public:
     // Establecer idioma
     void SetLanguage(Language lang);
 
-    // Obtener string traducido
+    // Cargar el .json
+    void LoadLanguageFiles() const;    // Obtener string traducido
     std::string GetString(const std::string& key) const;
 
     // Registrar callback para cuando cambie el idioma
@@ -33,9 +34,8 @@ public:
 
 private:
     Language currentLanguage;
-    std::map<std::string, std::string> englishStrings;
-    std::map<std::string, std::string> catalanStrings;
+    mutable std::map<std::string, std::string> englishStrings;
+    mutable std::map<std::string, std::string> catalanStrings;
+    mutable bool isLoaded = false;
     std::vector<std::function<void(Language)>> languageChangeCallbacks;
-
-    void InitializeDefaultStrings();
 };

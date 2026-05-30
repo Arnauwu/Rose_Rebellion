@@ -560,9 +560,6 @@
     <ClInclude Include="src\UIDialogueBox.h">
       <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClInclude>
-    <ClInclude Include="src\DialogueData.h">
-      <Filter>Source Files\Engine\Dialogue</Filter>
-    </ClInclude>
     <ClInclude Include="src\DialogueManager.h">
       <Filter>Source Files\Engine\Dialogue</Filter>
     </ClInclude>

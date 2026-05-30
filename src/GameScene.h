@@ -71,7 +71,7 @@ enum class GameUI_ID {
 	PANEL_SKILL_POPUP
 };
 
-struct ButtonDef { int id; const char* text; };
+struct ButtonDef { int id; const char* keyId; };
 
 struct SDL_Texture;
 
@@ -187,9 +187,9 @@ private:
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void UpdateSkillVisuals();
+	void UpdateUILanguage();
 
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
-
 	int uiClick;
 
 private:

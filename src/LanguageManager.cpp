@@ -1,5 +1,9 @@
 #include "LanguageManager.h"
 #include "Log.h"
+#include <fstream>
+#include <nlohmann/json.hpp> // Asegúrate de incluir la librería JSON
+
+using json = nlohmann::json;
 
 LanguageManager::LanguageManager() : Module(), currentLanguage(Language::CATALAN)
 {
@@ -10,7 +14,7 @@ LanguageManager::~LanguageManager() {}
 
 bool LanguageManager::Start()
 {
-    InitializeDefaultStrings();
+    LoadLanguageFiles();
     return true;
 }
 
@@ -42,6 +46,10 @@ void LanguageManager::SetLanguage(Language lang)
 
 std::string LanguageManager::GetString(const std::string& key) const
 {
+    if (!isLoaded) {
+        LoadLanguageFiles();
+    }
+
     if (currentLanguage == Language::ENGLISH) {
         auto it = englishStrings.find(key);
         if (it != englishStrings.end()) {
@@ -54,6 +62,7 @@ std::string LanguageManager::GetString(const std::string& key) const
             return it->second;
         }
     }
+
     return key;
 }
 
@@ -62,29 +71,35 @@ void LanguageManager::RegisterLanguageChangeCallback(std::function<void(Language
     languageChangeCallbacks.push_back(callback);
 }
 
-void LanguageManager::InitializeDefaultStrings()
+void LanguageManager::LoadLanguageFiles() const
 {
-    // ENGLISH
-    englishStrings["BTN_PLAY"] = "Start Game";
-    englishStrings["BTN_CONTINUE"] = "Load Game";
-    englishStrings["BTN_SETTINGS"] = "Settings";
-    englishStrings["BTN_EXIT"] = "Quit Game";
-    englishStrings["SLD_MUSIC"] = "Music Volume";
-    englishStrings["SLD_FX"] = "FX Volume";
-    englishStrings["CHK_FULLSCREEN"] = "Fullscreen";
-    englishStrings["BTN_BACK"] = "BACK";
-    englishStrings["BTN_ENGLISH"] = "English";
-    englishStrings["BTN_CATALAN"] = "Catalan";
+    if (isLoaded) return;
 
-    // CATALAN
-    catalanStrings["BTN_PLAY"] = "Comen\xc3\xa7" "ar Joc";
-    catalanStrings["BTN_CONTINUE"] = "Carregar Joc";
-    catalanStrings["BTN_SETTINGS"] = "Configuraci\xc3\xb3";
-    catalanStrings["BTN_EXIT"] = "Sortir";
-    catalanStrings["SLD_MUSIC"] = "Volum M\xc3\xbasica";
-    catalanStrings["SLD_FX"] = "Volum Efectes";
-    catalanStrings["CHK_FULLSCREEN"] = "Pantalla Completa";
-    catalanStrings["BTN_BACK"] = "ENRERE";
-    catalanStrings["BTN_ENGLISH"] = "English";
-    catalanStrings["BTN_CATALAN"] = "Catal\xc3\xa0";
+    std::ifstream fileEN("Assets/Settings/ui_strings_en.json");
+    if (fileEN.is_open()) {
+        json j;
+        fileEN >> j;
+        for (auto& element : j.items()) {
+            englishStrings[element.key()] = element.value().get<std::string>();
+        }
+        LOG("UI Strings (English) cargados correctamente.");
+    }
+    else {
+        LOG("Error: No se pudo abrir ui_strings_en.json");
+    }
+
+    std::ifstream fileCA("Assets/Settings/ui_strings_cat.json");
+    if (fileCA.is_open()) {
+        json j;
+        fileCA >> j;
+        for (auto& element : j.items()) {
+            catalanStrings[element.key()] = element.value().get<std::string>();
+        }
+        LOG("UI Strings (Catalan) cargados correctamente.");
+    }
+    else {
+        LOG("Error: No se pudo abrir ui_strings_cat.json");
+    }
+
+    isLoaded = true;
 }

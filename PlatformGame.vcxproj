@@ -243,7 +243,6 @@
     <ClInclude Include="src\SpecialFloors.h" />
     <ClInclude Include="src\ToxicBall.h" />
     <ClInclude Include="src\UIDialogueBox.h" />
-    <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />
     <ClInclude Include="src\Demon.h" />
     <ClInclude Include="src\DoubleJumpObj.h" />

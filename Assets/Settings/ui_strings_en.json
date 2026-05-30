@@ -1,0 +1,21 @@
+{
+"// --- MAIN MENU ---": "",
+    "BTN_PLAY": "Start Game",
+    "BTN_CONTINUE": "Load Game",
+    "BTN_SETTINGS": "Settings",
+    "BTN_EXIT": "Quit Game",
+
+"// --- MAIN MENU SETTINGS---": "",
+    "SLD_MUSIC": "Music Volume",
+    "SLD_FX": "FX Volume",
+    "CHK_FULLSCREEN": "Fullscreen",
+    "BTN_BACK": "BACK",
+
+    "BTN_ENGLISH": "English",
+    "BTN_CATALAN": "Catalan",
+
+"// --- MAIN PAUSE MENU ---": "",
+    "BTN_PAUSE_RESUME": "Resume",
+    "BTN_PAUSE_OPTIONS": "Options",
+    "BTN_PAUSE_MAINMENU": "Main Menu"
+}
