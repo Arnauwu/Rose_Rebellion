@@ -128,10 +128,10 @@ bool Map::Update(float dt)
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
-					if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 0) == false)
-					{
-						continue;
-					}
+					//if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 1000) == false)
+					//{
+					//	continue;
+					//}
 
 					unsigned int gid = obj->gid;
 
@@ -171,6 +171,16 @@ bool Map::Update(float dt)
 							SDL_Rect tileRect = { (int)obj->x, (int)obj->y, (int)obj->width, (int)obj->height };
 							SDL_Rect dstRect = { tileSet->GetRect(tileId).x, tileSet->GetRect(tileId).y, tileSet->GetRect(tileId).w, tileSet->GetRect(tileId).h };
 							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+							//Parallax
+							float paralax = 1.0f;
+
+							if (objectGroup->properties.GetProperty("Paralax") != nullptr)
+							{
+								paralax = objectGroup->properties.GetProperty("Paralax")->value;
+							}
+
+							tileRect.x += (Engine::GetInstance().render->camera.x * (1.0f - paralax));
 
 							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
 						}
@@ -295,10 +305,10 @@ bool Map::PostUpdate()
 			{
 				for (const auto& obj : objectGroup->objects)
 				{
-					if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 0) == false)
-					{
-						continue;
-					}
+					//if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 1000) == false)
+					//{
+					//	continue;
+					//}
 
 					unsigned int gid = obj->gid;
 
@@ -338,6 +348,16 @@ bool Map::PostUpdate()
 							SDL_Rect tileRect = { (int)obj->x, (int)obj->y, (int)obj->width, (int)obj->height };
 							SDL_Rect dstRect = { tileSet->GetRect(tileId).x, tileSet->GetRect(tileId).y, tileSet->GetRect(tileId).w, tileSet->GetRect(tileId).h };
 							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+							//Parallax
+							float paralax = 1.0f;
+
+							if (objectGroup->properties.GetProperty("Paralax") != nullptr)
+							{
+								paralax = objectGroup->properties.GetProperty("Paralax")->value;
+							}
+
+							tileRect.x -= (Engine::GetInstance().render->camera.x * (1.0f - paralax));
 
 							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
 						}
@@ -869,6 +889,10 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		else if (propertieNode.attribute("type").as_string() == std::string("int"))
 		{
 			p->value = propertieNode.attribute("value").as_int();
+		}
+		else if (propertieNode.attribute("type").as_string() == std::string("float"))
+		{
+			p->value = propertieNode.attribute("value").as_float();
 		}
 		else if (propertieNode.attribute("type").as_string() == std::string("file") ||
 			propertieNode.attribute("type").as_string() == std::string("string") ||

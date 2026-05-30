@@ -16,7 +16,7 @@ struct Properties
     struct Property
     {
         std::string name;
-        int value;
+        float value;
         std::string value2;
     };
 
