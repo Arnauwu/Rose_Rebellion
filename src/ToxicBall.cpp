@@ -25,14 +25,14 @@ bool ToxicBall::Awake() {
 
 bool ToxicBall::Start()
 {
-	//TO DO: CHANGE SOUNDS & TEXTURES
+	//TO DO: CHANGE SOUNDS
 
 	// Initialize enemy parameters
 	std::unordered_map<int, std::string> aliases = { {0,"Up"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases); //TO DO: Poner la animación de la pelota
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/ToxicBall/ToxicBall.tsx", aliases);
 	anims.SetCurrent("Up");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png"); //TO DO: Poner la textura de la pelota
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/ToxicBall/ToxicBall.png");
 
 	//Load Audio
 	chocarToxicBall = Engine::GetInstance().audio->LoadFx("");
@@ -138,14 +138,7 @@ void ToxicBall::Draw(float dt)
 	position.setX((float)x);
 	position.setY((float)y);
 
-	Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
-	Engine::GetInstance().render->SetColorMod(texture, r, g, b, 0, 0, 0);
-
 	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
-		
-	Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
-	delete r; delete g; delete b;
-
 }
 
 bool ToxicBall::CleanUp()
