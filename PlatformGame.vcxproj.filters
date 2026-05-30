@@ -167,6 +167,9 @@
     <Filter Include="Source Files\Game\Entity\Enemies\Cucafera Mutant">
       <UniqueIdentifier>{340b8289-ab99-453a-8bc2-bf3a80079553}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Language">
+      <UniqueIdentifier>{cd3ef242-276b-47b9-bf16-faeda64cb2b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -393,6 +396,9 @@
     <ClCompile Include="src\CucaferaMutant.cpp">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Mutant</Filter>
     </ClCompile>
+    <ClCompile Include="src\LanguageManager.cpp">
+      <Filter>Source Files\Engine\Language</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -613,6 +619,9 @@
     </ClInclude>
     <ClInclude Include="src\CucaferaMutant.h">
       <Filter>Source Files\Game\Entity\Enemies\Cucafera Mutant</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LanguageManager.h">
+      <Filter>Source Files\Engine\Language</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
