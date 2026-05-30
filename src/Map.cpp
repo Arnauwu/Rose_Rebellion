@@ -298,74 +298,6 @@ bool Map::PostUpdate()
 
 	if (mapLoaded)
 	{
-		for (const auto& objectGroup : mapData.objectGroups)
-		{
-			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
-				&& objectGroup->properties.GetProperty("Front") != NULL && objectGroup->properties.GetProperty("Front")->value == true)
-			{
-				for (const auto& obj : objectGroup->objects)
-				{
-					//if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 1000) == false)
-					//{
-					//	continue;
-					//}
-
-					unsigned int gid = obj->gid;
-
-					if (gid != 0)
-					{
-						const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-						const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
-						const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
-						const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
-
-						bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
-						bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
-						bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
-						uint32_t tileId = gid & TILE_ID_MASK;
-
-						float rotation = 0.0f;
-						SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
-
-						if (!flipD)
-						{
-							if (flipH && flipV) { rotation = 180.0f; }
-							else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
-							else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
-						}
-						else
-						{
-							if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
-							else if (flipH && !flipV) { rotation = 90.0f; }
-							else if (!flipH && flipV) { rotation = 270.0f; }
-							else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
-						}
-
-						TileSet* tileSet = GetTilesetFromTileId(tileId);
-
-						if (tileSet != nullptr)
-						{
-							SDL_Rect tileRect = { (int)obj->x, (int)obj->y, (int)obj->width, (int)obj->height };
-							SDL_Rect dstRect = { tileSet->GetRect(tileId).x, tileSet->GetRect(tileId).y, tileSet->GetRect(tileId).w, tileSet->GetRect(tileId).h };
-							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
-
-							//Parallax
-							float paralax = 1.0f;
-
-							if (objectGroup->properties.GetProperty("Paralax") != nullptr)
-							{
-								paralax = objectGroup->properties.GetProperty("Paralax")->value;
-							}
-
-							tileRect.x -= (Engine::GetInstance().render->camera.x * (1.0f - paralax));
-
-							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
-						}
-					}
-				}
-			}
-		}
-
 		for (const auto& mapLayer : mapData.layers)
 		{
 			if (mapLayer->tiles.empty()) continue;
@@ -450,6 +382,74 @@ bool Map::PostUpdate()
 
 								Engine::GetInstance().render->DrawRotatedTexture(tileSet->texture, dstRect.x, dstRect.y, &tileRect, sdlFlip, 1, rotation, center.x, center.y);
 							}
+						}
+					}
+				}
+			}
+		}
+
+		for (const auto& objectGroup : mapData.objectGroups)
+		{
+			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
+				&& objectGroup->properties.GetProperty("Front") != NULL && objectGroup->properties.GetProperty("Front")->value == true)
+			{
+				for (const auto& obj : objectGroup->objects)
+				{
+					//if (Engine::GetInstance().render->IsOnScreenWorldRect(obj->x, obj->y - obj->height, obj->width, obj->height, 1000) == false)
+					//{
+					//	continue;
+					//}
+
+					unsigned int gid = obj->gid;
+
+					if (gid != 0)
+					{
+						const uint32_t FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+						const uint32_t FLIPPED_VERTICALLY_FLAG = 0x40000000;
+						const uint32_t FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+						const uint32_t TILE_ID_MASK = 0x1FFFFFFF;
+
+						bool flipH = (gid & FLIPPED_HORIZONTALLY_FLAG) != 0;
+						bool flipV = (gid & FLIPPED_VERTICALLY_FLAG) != 0;
+						bool flipD = (gid & FLIPPED_DIAGONALLY_FLAG) != 0;
+						uint32_t tileId = gid & TILE_ID_MASK;
+
+						float rotation = 0.0f;
+						SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
+
+						if (!flipD)
+						{
+							if (flipH && flipV) { rotation = 180.0f; }
+							else if (flipH) { sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipV) { sdlFlip = SDL_FLIP_VERTICAL; }
+						}
+						else
+						{
+							if (!flipH && !flipV) { rotation = 90.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+							else if (flipH && !flipV) { rotation = 90.0f; }
+							else if (!flipH && flipV) { rotation = 270.0f; }
+							else if (flipH && flipV) { rotation = 270.0f; sdlFlip = SDL_FLIP_HORIZONTAL; }
+						}
+
+						TileSet* tileSet = GetTilesetFromTileId(tileId);
+
+						if (tileSet != nullptr)
+						{
+							SDL_Rect tileRect = { (int)obj->x, (int)obj->y, (int)obj->width, (int)obj->height };
+							SDL_Rect dstRect = { tileSet->GetRect(tileId).x, tileSet->GetRect(tileId).y, tileSet->GetRect(tileId).w, tileSet->GetRect(tileId).h };
+							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+
+							//Parallax
+							float paralax = 1.0f;
+
+							if (objectGroup->properties.GetProperty("Paralax") != nullptr)
+							{
+								paralax = objectGroup->properties.GetProperty("Paralax")->value;
+							}
+
+							tileRect.x -= (Engine::GetInstance().render->camera.x * (1.0f - paralax));
+
+							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
 						}
 					}
 				}
