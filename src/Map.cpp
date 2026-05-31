@@ -474,6 +474,7 @@ TileSet* Map::GetTilesetFromTileId(int gid) const
 bool Map::CleanUp()
 {
 	LOG("Unloading map");
+	mapLoaded = false;
 
 	for (auto& entity : mapDynamicEntities)
 	{
@@ -551,7 +552,8 @@ bool Map::Load(std::string path, std::string fileName)
 			tileSet->columns = tilesetNode.attribute("columns").as_int();
 
 			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
-			tileSet->texture = Engine::GetInstance().textures->Load((mapPath + imgName).c_str());
+			tileSet->surfaceTemp = Engine::GetInstance().textures->LoadSurfaceToRAM((mapPath + imgName).c_str());
+			tileSet->texture = nullptr;
 
 			for (pugi::xml_node tileNode = tilesetNode.child("tile"); tileNode; tileNode = tileNode.next_sibling("tile"))
 			{
@@ -846,6 +848,40 @@ bool Map::Load(std::string path, std::string fileName)
 		if (ret == true)
 		{
 			LOG("Successfully parsed map XML file :%s", fileName.c_str());
+			//LOG("width : %d height : %d", mapData.width, mapData.height);
+			//LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
+			//LOG("Tilesets----");
+
+			////iterate the tilesets
+			//for (const auto& tileset : mapData.tilesets) {
+			//	LOG("name : %s firstgid : %d", tileset->name.c_str(), tileset->firstGid);
+			//	LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
+			//	LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
+			//}
+
+			//LOG("Layers----");
+
+			//for (const auto& layer : mapData.layers) {
+			//	LOG("id : %d name : %s", layer->id, layer->name.c_str());
+			//	LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
+			//}
+
+			//LOG("Objects----");
+
+			//for (const auto& objGroups : mapData.objectGroups) {
+			//	LOG("Properties: ");
+			//	for (const auto& ogproperties : objGroups->properties.propertyList)
+			//	{
+			//		LOG("name : %s  value : %d ", ogproperties->name.c_str(), ogproperties->value);
+			//	}
+			//	LOG("Objects");
+			//	for (const auto& ogobjects : objGroups->objects)
+			//	{
+			//		LOG("id : %d  points : %d ", ogobjects->id, ogobjects->points);
+			//		LOG("x : %d  y : %d ", ogobjects->x, ogobjects->y);
+			//		LOG("width : %d  height : %d ", ogobjects->width, ogobjects->height);
+			//	}
+			//}
 		}
 		else
 		{
@@ -853,7 +889,6 @@ bool Map::Load(std::string path, std::string fileName)
 		}
 	}
 
-	mapLoaded = ret;
 	return ret;
 }
 
@@ -1352,4 +1387,23 @@ bool Map::DoorHasNoAnimation(PhysBody* door)
 		if (ndoor.body == door) return ndoor.noAnimation;
 	}
 	return false;
+}
+
+void Map::FinishVRAMUpload()
+{
+	LOG("Uploading map tileset surfaces to VRAM from Main Thread...");
+
+	for (const auto& tileSet : mapData.tilesets)
+	{
+		if (tileSet->surfaceTemp != nullptr)
+		{
+			// Subida controlada en el hilo principal a la memoria de la GPU
+			tileSet->texture = Engine::GetInstance().textures->CreateTextureFromRAM(tileSet->surfaceTemp);
+
+			// Una vez subida a la tarjeta de video, liberamos inmediatamente el espacio en RAM
+			SDL_DestroySurface(tileSet->surfaceTemp);
+			tileSet->surfaceTemp = nullptr;
+		}
+	}
+	mapLoaded = true;
 }

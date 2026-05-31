@@ -4,6 +4,9 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <list>
+#include <unordered_map>
+#include <string>
+
 class Textures : public Module
 {
 public:
@@ -22,13 +25,22 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-	// Load Texture
+	// Métodos heredados (Mantienen compatibilidad síncrona)
 	SDL_Texture* const Load(const char* path);
 	SDL_Texture* const LoadSurface(SDL_Surface* surface);
 	bool UnLoad(SDL_Texture* texture);
 	void GetSize(const SDL_Texture* texture, int& width, int& height) const;
 
+	// Carga la imagen en memoria del sistema (Ejecutable en hilos secundarios)
+	SDL_Surface* LoadSurfaceToRAM(const char* path);
+
+	// Sube los píxeles de la RAM a la VRAM de la GPU (SOLO ejecutable en el hilo principal)
+	SDL_Texture* CreateTextureFromRAM(SDL_Surface* surface);
+
+	void PreloadToRAM(const std::string& path);
 public:
 	std::list<SDL_Texture*> textures;
+private:
 
+	std::unordered_map<std::string, SDL_Surface*> surfaceCache;
 };

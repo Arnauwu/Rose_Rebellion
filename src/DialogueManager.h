@@ -1,11 +1,15 @@
 #pragma once
 #include "Module.h"
-#include "DialogueData.h"
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 class UIDialogueBox;
+struct DialogueLine {
+    std::string speaker;
+    std::string text;
+};
 
 class DialogueManager : public Module {
 public:

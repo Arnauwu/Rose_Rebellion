@@ -155,6 +155,8 @@ public:
     // GodMode
     void SetBodyType(PhysBody* p, bodyType type) const;
 
+    bool pausePhysics = false;
+
 private:
     // helpers
     static b2BodyType ToB2Type(bodyType t);

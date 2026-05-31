@@ -164,6 +164,7 @@
     <ClCompile Include="src\Door.cpp" />
     <ClCompile Include="src\HealthBarManager.cpp" />
     <ClCompile Include="src\GwellBoss.cpp" />
+    <ClCompile Include="src\LanguageManager.cpp" />
     <ClCompile Include="src\Minairon.cpp" />
     <ClCompile Include="src\MiniMap.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
@@ -240,13 +241,13 @@
     <ClInclude Include="src\Door.h" />
     <ClInclude Include="src\HealthBarManager.h" />
     <ClInclude Include="src\GwellBoss.h" />
+    <ClInclude Include="src\LanguageManager.h" />
     <ClInclude Include="src\Minairon.h" />
     <ClInclude Include="src\Minimap.h" />
     <ClInclude Include="src\NinfaBoss.h" />
     <ClInclude Include="src\SpecialFloors.h" />
     <ClInclude Include="src\ToxicBall.h" />
     <ClInclude Include="src\UIDialogueBox.h" />
-    <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />
     <ClInclude Include="src\Demon.h" />
     <ClInclude Include="src\DoubleJumpObj.h" />

@@ -8,6 +8,9 @@
 #include <vector>
 #include <memory>
 
+#include <thread>
+#include <atomic>
+
 #include "Minimap.h"
 
 class UIElement;
@@ -68,7 +71,7 @@ enum class GameUI_ID {
 	PANEL_SKILL_POPUP
 };
 
-struct ButtonDef { int id; const char* text; };
+struct ButtonDef { int id; const char* keyId; };
 
 struct SDL_Texture;
 
@@ -93,7 +96,9 @@ public:
 	void LoadItemsLore();
 	void LoadSkillsinfo();
 
-	//Minimap
+	void FinishMapLoad();
+
+		//Minimap
 	Minimap minimap;
 
 	// Scene lifecycle
@@ -108,19 +113,22 @@ public:
 	//Textures
 	void LoadTextureIfNull(SDL_Texture*& texture, const char* path);
 	void UnloadTexture(SDL_Texture*& texture);
-	
+
 	//Buttons textures
 	SDL_Texture* buttonUI = nullptr;
 	SDL_Texture* skillFrameUI = nullptr;
 	SDL_Texture* textBgUI = nullptr;
 	SDL_Texture* sliderThumbTex = nullptr;
-
+	
 	// Texture BG
 	SDL_Texture* texMapUI = nullptr;
 	SDL_Texture* texInventoryUI = nullptr;
-	SDL_Texture* texSkilltreeUI = nullptr;
 	SDL_Texture* texPauseUI = nullptr;
 	SDL_Texture* texSkillUI = nullptr;
+
+	SDL_Texture* texMapUI_CAT = nullptr;
+	SDL_Texture* texInventoryUI_CAT = nullptr;
+	SDL_Texture* texSkillUI_CAT = nullptr;
 
 	//Items Textures
 	SDL_Texture* texItemKeyCastle = nullptr;
@@ -128,7 +136,7 @@ public:
 	SDL_Texture* texItemKeyMountain = nullptr;
 	SDL_Texture* texItemKeyCatacumbs = nullptr;
 	SDL_Texture* texItemOrb = nullptr;
-	
+
 	// Power-ups
 	SDL_Texture* texItemGlide = nullptr;
 	SDL_Texture* texItemDash = nullptr;
@@ -163,6 +171,12 @@ public:
 	//SDL_Texture* npcPortrait3 = nullptr;
 	//SDL_Texture* npcPortrait4 = nullptr;
 
+	// Level intro textures
+	SDL_Texture* introFrameTex = nullptr;
+	AnimationSet introFrameAnim;
+
+	// Load screen textures
+	SDL_Texture* Rose_Sleep = nullptr;
 private:
 	// Helper functions for the Game Menu
 	void ToggleGameMenu(GameMenuTab tab);
@@ -172,15 +186,15 @@ private:
 	void CreateSkillPopupUI();
 
 	void CreatePauseMenuUI();
-	void CreatePauseSettingUI() ;
+	void CreatePauseSettingUI();
 	void CreateDialogueUI();
 
 	void UpdateInventoryVisuals();
 	void RefreshMenuUI();
 	void UpdateSkillVisuals();
+	void UpdateUILanguage();
 
 	void SetUIGroupVisible(std::vector<std::shared_ptr<UIElement>>& group, bool visible);
-
 	int uiClick;
 
 private:
@@ -218,11 +232,26 @@ private:
 	enum class MapTransitionState {
 		NONE,
 		FADING_OUT,
-		FADING_IN
+		FADING_IN,
+		LEVEL_INTRO
 	};
 
 	MapTransitionState mapState = MapTransitionState::NONE;
 	std::string nextMapName = "";
 	std::string targetSpawnID = "";
 	float mapFadeTime = 500.0f;
+
+	//Threads 
+	std::thread loadingThread;
+	std::atomic<bool> isLoadFinished{ false };
+	bool isAsyncLoading = false;
+	bool isDataInitialized = false;
+	std::string asyncMapFile = "";
+	std::string asyncPreviousMap = "";
+	
+	//Dots de carga
+	float loadingDotsTimer = 0.0f;
+	// Level intro
+	float levelIntroTimer = 0.0f;
+	std::string levelIntroText = "";
 };

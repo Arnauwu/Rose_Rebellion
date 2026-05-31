@@ -7,6 +7,7 @@
 #include <memory>
 
 struct SDL_Texture;
+class UIElement;
 
 enum class MenuUI_ID {
     BTN_PLAY = 1,
@@ -16,7 +17,9 @@ enum class MenuUI_ID {
     SLD_MUSIC,
     SLD_FX,
     CHK_FULLSCREEN,
-    BTN_BACK
+    BTN_BACK,
+    BTN_ENGLISH = 100,
+    BTN_CATALAN = 101
 };
 
 class MenuScene : public SceneBase {
@@ -39,6 +42,7 @@ public:
     SDL_Texture* mainClick = nullptr; 
 private:
     void ShowSettings(bool show);
+    void UpdateUILanguage();
     bool isSettingsOpen = false; 
 
     int uiClick;

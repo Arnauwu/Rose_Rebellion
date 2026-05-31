@@ -23,6 +23,7 @@ class Hud;
 class ParticleManager;
 class DialogueManager;
 class HealthBarManager;
+class LanguageManager;
 
 class Engine
 {
@@ -117,6 +118,8 @@ public:
 	std::shared_ptr<UIManager> uiManager;
 	std::shared_ptr<Hud> hud;
 	std::shared_ptr<HealthBarManager> healthBarManager;
+
+	std::shared_ptr<LanguageManager> languageManager;
 
 private:
 
