@@ -4,13 +4,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_rect.h>
 #include "Vector2D.h"
-#include <memory>
-#include <vector>
-#include <algorithm>
-#include <cmath>
-#include <cfloat>
 
-#define MAX_KEYS 300
 #define NUM_MOUSE_BUTTONS 5
 
 enum EventWindow
@@ -56,73 +50,68 @@ enum GamepadAxis
 	GAMEPAD_AXIS_COUNT = 6
 };
 
-// Forward declaration
-class UIButton;
-
 class Input : public Module
 {
+
 public:
+
 	Input();
+
+	// Destructor
 	virtual ~Input();
 
-	// Lifecycle
+	// Called before render is available
 	bool Awake();
+
+	// Called before the first frame
 	bool Start();
+
+	// Called each loop iteration
 	bool PreUpdate();
+
+	// Called before quitting
 	bool CleanUp();
 
-	// Keyboard
-	KeyState GetKey(int id) const;
-	KeyState GetMouseButtonDown(int id) const;
+	// Check key states (includes mouse and joy buttons)
+	KeyState GetKey(int id) const
+	{
+		return keyboard[id];
+	}
+
+	KeyState GetMouseButtonDown(int id) const
+	{
+		return mouseButtons[id - 1];
+	}
+
 	void ClearMouseInput();
 
-	// Gamepad
+	// Gamepad input methods
 	KeyState GetGamepadButton(GamepadButton button) const;
 	float GetGamepadAxis(GamepadAxis axis) const;
 	bool IsGamepadConnected() const { return gamepadConnected; }
 
-	// Window events
+	// Check if a certain window event happened
 	bool GetWindowEvent(EventWindow ev);
 
-	// Mouse
+	// Get mouse / axis position
 	Vector2D GetMousePosition();
 	Vector2D GetMouseMotion();
 
-	// UI Navigation with gamepad
-	void RegisterMenuButtons(const std::vector<std::shared_ptr<UIButton>>& buttons);
-	void ClearMenuButtons();
-
 private:
-	// Window events
 	bool windowEvents[WE_COUNT];
-
-	// Keyboard
 	KeyState* keyboard;
-	
-	// Mouse
 	KeyState mouseButtons[NUM_MOUSE_BUTTONS];
-	int mouseMotionX;
+	int	mouseMotionX;
 	int mouseMotionY;
 	int mouseX;
 	int mouseY;
 
 	// Gamepad
-	bool gamepadConnected;
-	SDL_Gamepad* gamepad;
+	bool gamepadConnected = false;
+	SDL_Gamepad* gamepad = nullptr;
 	KeyState gamepadButtons[GAMEPAD_COUNT];
 	float gamepadAxes[GAMEPAD_AXIS_COUNT];
 
-	// UI Navigation
-	std::vector<std::weak_ptr<UIButton>> menuButtons;
-	int selectedButtonIndex;
-	float stickThreshold;
-	float lastStickX;
-	float lastStickY;
-
-	// Private methods
 	void UpdateGamepadState();
 	void UpdateGamepadButtons();
-	void UpdateGamepadUINavigation();
-	void SelectButton(int index);
-	int FindClosestButton(float stickX, float stickY);
 };

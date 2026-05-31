@@ -100,16 +100,6 @@ bool MenuScene::Start() {
 		b->SetSounds(uiHover, uiClick);
 	}
 
-	// Registrar botones para navegación con gamepad
-	std::vector<std::shared_ptr<UIButton>> buttonsList;
-	for (const auto& btn : mainButtons) {
-		auto uiBtn = std::dynamic_pointer_cast<UIButton>(btn);
-		if (uiBtn) {
-			buttonsList.push_back(uiBtn);
-		}
-	}
-	Engine::GetInstance().input->RegisterMenuButtons(buttonsList);
-
 	ShowSettings(false);
 	return true;
 }
@@ -205,28 +195,6 @@ void MenuScene::ShowSettings(bool show) {
 			elem->state = UIElementState::DISABLED;
 		}
 	}
-
-	if (show) {
-		// Registrar botones de settings para gamepad
-		std::vector<std::shared_ptr<UIButton>> settingsList;
-		for (const auto& btn : settingsButtons) {
-			auto uiBtn = std::dynamic_pointer_cast<UIButton>(btn);
-			if (uiBtn) {
-				settingsList.push_back(uiBtn);
-			}
-		}
-		Engine::GetInstance().input->RegisterMenuButtons(settingsList);
-	} else {
-		// Volver a registrar botones principales
-		std::vector<std::shared_ptr<UIButton>> buttonsList;
-		for (const auto& btn : mainButtons) {
-			auto uiBtn = std::dynamic_pointer_cast<UIButton>(btn);
-			if (uiBtn) {
-				buttonsList.push_back(uiBtn);
-			}
-		}
-		Engine::GetInstance().input->RegisterMenuButtons(buttonsList);
-	}
 }
 
 bool MenuScene::CleanUp() {
@@ -251,10 +219,6 @@ bool MenuScene::CleanUp() {
 	Engine::GetInstance().audio->StopMusic();
 	mainButtons.clear();
 	settingsButtons.clear();
-
-	// Limpiar navegación con gamepad
-	Engine::GetInstance().input->ClearMenuButtons();
-	
 	return true;
 }
 
