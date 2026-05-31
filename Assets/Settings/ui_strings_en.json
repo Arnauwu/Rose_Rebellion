@@ -17,5 +17,12 @@
 "// --- MAIN PAUSE MENU ---": "",
     "BTN_PAUSE_RESUME": "Resume",
     "BTN_PAUSE_OPTIONS": "Options",
-    "BTN_PAUSE_MAINMENU": "Main Menu"
+    "BTN_PAUSE_MAINMENU": "Main Menu",
+
+"// --- LOADING LEVELS ---": "",
+    "TXT_LOADING": "Loading",
+    "INTRO_FOREST": "FOREST",
+    "INTRO_MOUNTAIN": "MOUNTAIN",
+    "INTRO_CATACOMBS": "CATACOMBS"
+
 }

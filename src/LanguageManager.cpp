@@ -71,6 +71,11 @@ void LanguageManager::RegisterLanguageChangeCallback(std::function<void(Language
     languageChangeCallbacks.push_back(callback);
 }
 
+void LanguageManager::ClearCallbacks()
+{
+    languageChangeCallbacks.clear();
+}
+
 void LanguageManager::LoadLanguageFiles() const
 {
     if (isLoaded) return;

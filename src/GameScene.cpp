@@ -249,12 +249,15 @@ bool GameScene::Start() {
 	LoadTextureIfNull(sliderThumbTex, "Assets/Textures/UI/Buttons/pomo.png");
 
 
-	// Texture Load
+	// Texture TOP BAR Load ENG/CAT
+	LoadTextureIfNull(texPauseUI, "Assets/Textures/UI/GameMenu/t_pauseUI.png");
 	LoadTextureIfNull(texMapUI, "Assets/Textures/UI/GameMenu/t_MapUI.png");
 	LoadTextureIfNull(texInventoryUI, "Assets/Textures/UI/GameMenu/t_inventoryUI.png");
-	LoadTextureIfNull(texPauseUI, "Assets/Textures/UI/GameMenu/t_pauseUI.png");
 	LoadTextureIfNull(texSkillUI, "Assets/Textures/UI/SkillUpgrade/t_skillUI.png");
 
+	LoadTextureIfNull(texMapUI_CAT, "Assets/Textures/UI/GameMenu/t_MapUI_CAT.png");
+	LoadTextureIfNull(texInventoryUI_CAT, "Assets/Textures/UI/GameMenu/t_inventoryUI_CAT.png");
+	LoadTextureIfNull(texSkillUI_CAT, "Assets/Textures/UI/SkillUpgrade/t_skillUI_CAT.png");
 	//Load Items
 	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
 	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forestKeyUI.png");
@@ -292,7 +295,7 @@ bool GameScene::Start() {
 	//LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png");
 
 	// Load Loading Screen 
-	LoadTextureIfNull(Rose_Sleep, "Assets/Textures/UI/LoadingScreen/Rose_Sleep.png");
+	//LoadTextureIfNull(Rose_Sleep, "Assets/Textures/UI/LoadingScreen/Rose_Sleep.png");
 
 	//Load level intro textures
 	LoadTextureIfNull(introFrameTex, "Assets/Textures/UI/Buttons/frameTex.png");
@@ -389,21 +392,21 @@ bool GameScene::Update(float dt) {
 				asyncPreviousMap.find("Forest_02") == std::string::npos)
 			{
 				showIntro = true;
-				levelIntroText = "BOSQUE";
+				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_FOREST");
 			}
 			// 2. Mostrar intro de MONTAÑA solo si NO venimos de otra zona de la montaña
 			else if (asyncMapFile.find("Mountain_01") != std::string::npos &&
 				asyncPreviousMap.find("Mountain_02") == std::string::npos)
 			{
 				showIntro = true;
-				levelIntroText = "MONTAÑA";
+				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_MOUNTAIN");
 			}
 			// 3. Mostrar intro de CATACUMBAS solo si NO venimos de otras catacumbas
 			else if ((asyncMapFile.find("Catacombs_01_M") != std::string::npos && asyncPreviousMap.find("Catacombs_02_M") == std::string::npos || asyncMapFile.find("Catacombs_01_F") != std::string::npos) &&
 				asyncPreviousMap.find("Catacombs_02_F") == std::string::npos )
 			{
 				showIntro = true;
-				levelIntroText = "CATACUMBAS";
+				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_CATACOMBS");
 			}
 			if (showIntro)
 			{
@@ -477,8 +480,7 @@ bool GameScene::PostUpdate() {
 	// DIBUJAR EN MITAD DE PANTALLA
 		int dotCount = (int)(loadingDotsTimer * 3.0f) % 4;
 
-		std::string loadingText = "Carregant";
-		// std::string loadingText = Engine::GetInstance().languageManager->GetString("TXT_LOADING");
+		std::string loadingText = Engine::GetInstance().languageManager->GetString("TXT_LOADING");
 		for (int i = 0; i < dotCount; ++i) {
 			loadingText += ".";
 		}
@@ -506,16 +508,17 @@ bool GameScene::PostUpdate() {
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
 			Engine::GetInstance().render->DrawRectangleUnscaled(fullScreenRect, 0, 0, 0, 180, true, false);
-
+			Language currentLang = Engine::GetInstance().languageManager->GetCurrentLanguage();
 			switch (currentMenuTab) {
 			case GameMenuTab::INVENTORY:
-				currentTextureToDraw = texInventoryUI;
+				// Si es catalán, muestra texInventoryUI_CA; si no, texInventoryUI
+				currentTextureToDraw = (currentLang == Language::CATALAN) ? texInventoryUI_CAT : texInventoryUI;
 				break;
 			case GameMenuTab::MAP:
-				currentTextureToDraw = texMapUI;
+				currentTextureToDraw = (currentLang == Language::CATALAN) ? texMapUI_CAT : texMapUI;
 				break;
 			case GameMenuTab::SKILL_TREE:
-				currentTextureToDraw = texSkillUI;
+				currentTextureToDraw = (currentLang == Language::CATALAN) ? texSkillUI_CAT : texSkillUI;
 				break;
 			case GameMenuTab::PAUSE_MENU:
 			case GameMenuTab::PAUSE_OPTIONS:
@@ -625,6 +628,8 @@ bool GameScene::PostUpdate() {
 bool GameScene::CleanUp() {
 	LOG("Freeing Game Scene");
 
+	Engine::GetInstance().languageManager->ClearCallbacks();
+
 	if (loadingThread.joinable()) {
 		loadingThread.join();
 	}
@@ -640,12 +645,14 @@ bool GameScene::CleanUp() {
 
 
 	// Texture Load
+	UnloadTexture(texPauseUI);
+
 	UnloadTexture(texMapUI);
 	UnloadTexture(texInventoryUI);
-	UnloadTexture(texSkilltreeUI);
-	UnloadTexture(texPauseUI);
 	UnloadTexture(texSkillUI);
-
+	UnloadTexture(texMapUI_CAT);
+	UnloadTexture(texInventoryUI_CAT);
+	UnloadTexture(texSkillUI_CAT);
 	//Load Items
 	UnloadTexture(texItemKeyCastle);
 	UnloadTexture(texItemKeyForest);

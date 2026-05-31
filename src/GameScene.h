@@ -123,9 +123,12 @@ public:
 	// Texture BG
 	SDL_Texture* texMapUI = nullptr;
 	SDL_Texture* texInventoryUI = nullptr;
-	SDL_Texture* texSkilltreeUI = nullptr;
 	SDL_Texture* texPauseUI = nullptr;
 	SDL_Texture* texSkillUI = nullptr;
+
+	SDL_Texture* texMapUI_CAT = nullptr;
+	SDL_Texture* texInventoryUI_CAT = nullptr;
+	SDL_Texture* texSkillUI_CAT = nullptr;
 
 	//Items Textures
 	SDL_Texture* texItemKeyCastle = nullptr;

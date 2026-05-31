@@ -31,6 +31,7 @@ public:
 
     // Registrar callback para cuando cambie el idioma
     void RegisterLanguageChangeCallback(std::function<void(Language)> callback);
+    void ClearCallbacks();
 
 private:
     Language currentLanguage;
