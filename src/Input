@@ -1,3 +1,4 @@
+.h
 #pragma once
 
 #include "Module.h"
@@ -8,7 +9,6 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
-#include <cfloat>
 
 #define MAX_KEYS 300
 #define NUM_MOUSE_BUTTONS 5
@@ -65,26 +65,21 @@ public:
 	Input();
 	virtual ~Input();
 
-	// Lifecycle
 	bool Awake();
 	bool Start();
 	bool PreUpdate();
 	bool CleanUp();
 
-	// Keyboard
 	KeyState GetKey(int id) const;
 	KeyState GetMouseButtonDown(int id) const;
 	void ClearMouseInput();
 
-	// Gamepad
 	KeyState GetGamepadButton(GamepadButton button) const;
 	float GetGamepadAxis(GamepadAxis axis) const;
 	bool IsGamepadConnected() const { return gamepadConnected; }
 
-	// Window events
 	bool GetWindowEvent(EventWindow ev);
 
-	// Mouse
 	Vector2D GetMousePosition();
 	Vector2D GetMouseMotion();
 
@@ -93,13 +88,8 @@ public:
 	void ClearMenuButtons();
 
 private:
-	// Window events
 	bool windowEvents[WE_COUNT];
-
-	// Keyboard
 	KeyState* keyboard;
-	
-	// Mouse
 	KeyState mouseButtons[NUM_MOUSE_BUTTONS];
 	int mouseMotionX;
 	int mouseMotionY;
@@ -119,7 +109,6 @@ private:
 	float lastStickX;
 	float lastStickY;
 
-	// Private methods
 	void UpdateGamepadState();
 	void UpdateGamepadButtons();
 	void UpdateGamepadUINavigation();

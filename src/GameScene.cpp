@@ -490,6 +490,10 @@ bool GameScene::CleanUp() {
 
 	dialogueUI.clear();
 	Engine::GetInstance().dialogueManager->SetDialogueUI(nullptr);
+
+	// Limpiar navegación con gamepad
+	Engine::GetInstance().input->ClearMenuButtons();
+
 	return true;
 }
 
@@ -686,6 +690,15 @@ void GameScene::CreateInventoryUI() {
 	descPanel->SetBgTexture(textBgUI);
 	inventoryUI.push_back(descPanel);
 
+	// Registrar botones de inventario para gamepad
+	std::vector<std::shared_ptr<UIButton>> inventoryButtonsList;
+	for (const auto& btn : inventoryUI) {
+		auto uiBtn = std::dynamic_pointer_cast<UIButton>(btn);
+		if (uiBtn) {
+			inventoryButtonsList.push_back(uiBtn);
+		}
+	}
+	Engine::GetInstance().input->RegisterMenuButtons(inventoryButtonsList);
 }
 
 void GameScene::CreateSkillUpgradeUI() {
@@ -736,6 +749,16 @@ void GameScene::CreateSkillUpgradeUI() {
 		}
 		skillUI.push_back(btn);
 	}
+
+	// Registrar botones de skills para gamepad
+	std::vector<std::shared_ptr<UIButton>> skillButtonsList;
+	for (const auto& btn : skillUI) {
+		auto uiBtn = std::dynamic_pointer_cast<UIButton>(btn);
+		if (uiBtn) {
+			skillButtonsList.push_back(uiBtn);
+		}
+	}
+	Engine::GetInstance().input->RegisterMenuButtons(skillButtonsList);
 }
 
 void GameScene::CreateSkillPopupUI() {
@@ -787,6 +810,16 @@ void GameScene::CreatePauseMenuUI() {
 		pY += pSpacing;
 	}
 	CreatePauseSettingUI();
+
+	// Registrar botones de pausa para gamepad
+	std::vector<std::shared_ptr<UIButton>> pauseButtonsList;
+	for (const auto& btn : pauseMainUI) {
+		auto uiBtn = std::dynamic_pointer_cast<UIButton>(btn);
+		if (uiBtn) {
+			pauseButtonsList.push_back(uiBtn);
+		}
+	}
+	Engine::GetInstance().input->RegisterMenuButtons(pauseButtonsList);
 }
 
 void GameScene::CreatePauseSettingUI() {
@@ -862,6 +895,12 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 	bool shouldPause = (currentMenuTab != GameMenuTab::NONE);
 	Engine::GetInstance().sceneManager->SetGamePaused(shouldPause);
 	RefreshMenuUI();
+
+	// BUSCA LA LÍNEA DONDE OCULTA LOS MENÚS Y AÑADE:
+	if (tab == GameMenuTab::NONE) {
+		// Limpiar navegación con gamepad al cerrar menú
+		Engine::GetInstance().input->ClearMenuButtons();
+	}
 }
 
 void GameScene::UpdateInventoryVisuals() {

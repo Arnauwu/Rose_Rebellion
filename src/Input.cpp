@@ -1,9 +1,13 @@
 #include "Engine.h"
 #include "Input.h"
 #include "Window.h"
-#include "render.h"
+#include "Render.h"
 #include "Log.h"
 #include "UIManager.h"
+#include "UIButton.h"
+#include <cmath>
+#include <algorithm>
+#include <cfloat>
 
 #define MAX_KEYS 300
 #define GAMEPAD_DEADZONE 0.25f
@@ -18,7 +22,17 @@ Input::Input() : Module()
 	memset(gamepadButtons, KEY_IDLE, sizeof(KeyState) * GAMEPAD_COUNT);
 	memset(gamepadAxes, 0, sizeof(float) * GAMEPAD_AXIS_COUNT);
 	memset(windowEvents, 0, sizeof(windowEvents));
-	mouseMotionX = mouseMotionY = mouseX = mouseY = 0;
+	
+	mouseMotionX = 0;
+	mouseMotionY = 0;
+	mouseX = 0;
+	mouseY = 0;
+	gamepadConnected = false;
+	gamepad = nullptr;
+	selectedButtonIndex = -1;
+	stickThreshold = 0.5f;
+	lastStickX = 0.0f;
+	lastStickY = 0.0f;
 }
 
 // Destructor
@@ -110,7 +124,6 @@ bool Input::PreUpdate()
 			mouseButtons[i] = KEY_IDLE;
 	}
 
-	// Update gamepad button states
 	UpdateGamepadButtons();
 
 	while (SDL_PollEvent(&event))
@@ -133,10 +146,12 @@ bool Input::PreUpdate()
 		case SDL_EVENT_WINDOW_RESTORED:
 			windowEvents[WE_SHOW] = true;
 			break;
+
 		case SDL_EVENT_WINDOW_RESIZED:
 		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 			Engine::GetInstance().uiManager->RecalculateAllUI();
 			break;
+
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			if (event.button.button >= 1 && event.button.button <= NUM_MOUSE_BUTTONS)
 				mouseButtons[event.button.button - 1] = KEY_DOWN;
@@ -188,6 +203,10 @@ bool Input::PreUpdate()
 			break;
 		}
 	}
+
+	UpdateGamepadState();
+	UpdateGamepadButtons();
+	UpdateGamepadUINavigation();
 
 	return true;
 }
@@ -254,18 +273,115 @@ void Input::UpdateGamepadButtons()
 	}
 }
 
-KeyState Input::GetGamepadButton(GamepadButton button) const
+void Input::UpdateGamepadUINavigation()
 {
-	if (button < 0 || button >= GAMEPAD_COUNT)
-		return KEY_IDLE;
-	return gamepadButtons[button];
+	if (menuButtons.empty() || !gamepadConnected) return;
+
+	menuButtons.erase(
+		std::remove_if(menuButtons.begin(), menuButtons.end(),
+			[](const std::weak_ptr<UIButton>& btn) { return btn.expired(); }),
+		menuButtons.end()
+	);
+
+	if (menuButtons.empty()) {
+		selectedButtonIndex = -1;
+		return;
+	}
+
+	float stickX = GetGamepadAxis(GAMEPAD_AXIS_LSTICK_X);
+	float stickY = GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
+
+	bool moved = (fabs(stickX - lastStickX) > stickThreshold) || 
+	             (fabs(stickY - lastStickY) > stickThreshold);
+
+	if (moved && (fabs(stickX) > 0.7f || fabs(stickY) > 0.7f)) {
+		int newIndex = FindClosestButton(stickX, stickY);
+		if (newIndex != selectedButtonIndex) {
+			SelectButton(newIndex);
+		}
+		lastStickX = stickX;
+		lastStickY = stickY;
+	}
+
+	if (selectedButtonIndex >= 0 && GetGamepadButton(GAMEPAD_A) == KEY_DOWN) {
+		auto btn = menuButtons[selectedButtonIndex].lock();
+		if (btn) {
+			mouseX = btn->bounds.x + btn->bounds.w / 2;
+			mouseY = btn->bounds.y + btn->bounds.h / 2;
+			mouseButtons[0] = KEY_DOWN;
+		}
+	}
 }
 
-float Input::GetGamepadAxis(GamepadAxis axis) const
+void Input::SelectButton(int index)
 {
-	if (axis < 0 || axis >= GAMEPAD_AXIS_COUNT)
-		return 0.0f;
-	return gamepadAxes[axis];
+	if (index < 0 || index >= (int)menuButtons.size()) return;
+
+	selectedButtonIndex = index;
+	auto btn = menuButtons[index].lock();
+	if (btn) {
+		mouseX = btn->bounds.x + btn->bounds.w / 2;
+		mouseY = btn->bounds.y + btn->bounds.h / 2;
+	}
+}
+
+int Input::FindClosestButton(float stickX, float stickY)
+{
+	if (menuButtons.empty()) return -1;
+
+	if (selectedButtonIndex < 0) return 0;
+
+	float angle = atan2(stickY, stickX);
+	std::vector<std::pair<int, float>> candidates;
+
+	for (int i = 0; i < (int)menuButtons.size(); ++i) {
+		auto btn = menuButtons[i].lock();
+		if (!btn || !btn->visible || !btn->canClick) continue;
+
+		auto current = menuButtons[selectedButtonIndex].lock();
+		if (!current) continue;
+
+		int dx = btn->bounds.x - current->bounds.x;
+		int dy = btn->bounds.y - current->bounds.y;
+		float btnAngle = atan2((float)dy, (float)dx);
+		float angleDiff = fabs(btnAngle - angle);
+
+		if (angleDiff > 3.14159f) angleDiff = 6.28318f - angleDiff;
+
+		candidates.push_back({ i, angleDiff });
+	}
+
+	if (!candidates.empty()) {
+		std::sort(candidates.begin(), candidates.end(),
+			[](const std::pair<int, float>& a, const std::pair<int, float>& b) { 
+				return a.second < b.second; 
+			});
+		return candidates[0].first;
+	}
+
+	return selectedButtonIndex;
+}
+
+void Input::RegisterMenuButtons(const std::vector<std::shared_ptr<UIButton>>& buttons)
+{
+	menuButtons.clear();
+	selectedButtonIndex = -1;
+	
+	for (const auto& btn : buttons) {
+		menuButtons.push_back(btn);
+	}
+
+	if (!menuButtons.empty()) {
+		SelectButton(0);
+	}
+}
+
+void Input::ClearMenuButtons()
+{
+	menuButtons.clear();
+	selectedButtonIndex = -1;
+	lastStickX = 0.0f;
+	lastStickY = 0.0f;
 }
 
 // Called before quitting
@@ -285,6 +401,30 @@ bool Input::CleanUp()
 bool Input::GetWindowEvent(EventWindow ev)
 {
 	return windowEvents[ev];
+}
+
+KeyState Input::GetKey(int id) const
+{
+	return keyboard[id];
+}
+
+KeyState Input::GetMouseButtonDown(int id) const
+{
+	return mouseButtons[id - 1];
+}
+
+KeyState Input::GetGamepadButton(GamepadButton button) const
+{
+	if (button >= 0 && button < GAMEPAD_COUNT)
+		return gamepadButtons[button];
+	return KEY_IDLE;
+}
+
+float Input::GetGamepadAxis(GamepadAxis axis) const
+{
+	if (axis >= 0 && axis < GAMEPAD_AXIS_COUNT)
+		return gamepadAxes[axis];
+	return 0.0f;
 }
 
 // Functions to ensure mouse information is not lost when switching from windowed mode to full-screen mode
