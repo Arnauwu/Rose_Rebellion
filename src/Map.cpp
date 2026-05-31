@@ -515,8 +515,6 @@ bool Map::Load(std::string path, std::string fileName)
 			tileSet->surfaceTemp = Engine::GetInstance().textures->LoadSurfaceToRAM((mapPath + imgName).c_str());
 			tileSet->texture = nullptr;
 
-			std::this_thread::yield();
-
 			// Load animation
 			for (pugi::xml_node tileNode = tilesetNode.child("tile"); tileNode; tileNode = tileNode.next_sibling("tile"))
 			{
@@ -544,7 +542,6 @@ bool Map::Load(std::string path, std::string fileName)
 
 			mapData.tilesets.push_back(tileSet);
 		}
-		std::this_thread::yield();
 		// Iterate all layers in the TMX and load each of them
 		for (pugi::xml_node layerNode = mapFileXML.child("map").child("layer"); layerNode != NULL; layerNode = layerNode.next_sibling("layer")) {
 
@@ -567,7 +564,7 @@ bool Map::Load(std::string path, std::string fileName)
 			// Add the layer to the map
 			mapData.layers.push_back(mapLayer);
 		}
-		std::this_thread::yield();
+
 		// Load Object Group
 		for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup"))
 		{
@@ -626,7 +623,7 @@ bool Map::Load(std::string path, std::string fileName)
 			//Add the layer to the map
 			mapData.objectGroups.push_back(objectgroup);
 		}
-		std::this_thread::yield();
+
 		// Creation of colliders and assign their type
 		for (const auto& objectsGroups : mapData.objectGroups)
 		{
