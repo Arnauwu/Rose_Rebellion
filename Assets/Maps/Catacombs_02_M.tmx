@@ -105088,6 +105088,7 @@
  <layer id="31" name="AguaToxica" width="280" height="125">
   <properties>
    <property name="Draw" type="bool" value="true"/>
+   <property name="Front" type="bool" value="true"/>
   </properties>
   <data>
    <tile/>

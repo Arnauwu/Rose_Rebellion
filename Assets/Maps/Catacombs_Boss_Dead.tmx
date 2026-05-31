@@ -11241,6 +11241,7 @@
  <layer id="30" name="ToxicWater" width="62" height="90">
   <properties>
    <property name="Draw" type="bool" value="true"/>
+   <property name="Front" type="bool" value="true"/>
   </properties>
   <data>
    <tile/>

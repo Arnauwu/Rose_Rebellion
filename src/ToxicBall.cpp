@@ -28,7 +28,7 @@ bool ToxicBall::Start()
 	//TO DO: CHANGE SOUNDS
 
 	// Initialize enemy parameters
-	std::unordered_map<int, std::string> aliases = { {0,"Up"} };
+	std::unordered_map<int, std::string> aliases = { {0,"Up"}, {6,"Down"} };
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/ToxicBall/ToxicBall.tsx", aliases);
 	anims.SetCurrent("Up");
 
@@ -105,6 +105,9 @@ void ToxicBall::Move() {
 	else {
 		velocity.y += ballGravity * 0.016f;
 	}
+
+	if (velocity.y >= 0) anims.SetCurrent("Down");
+	else anims.SetCurrent("Up");
 }
 
 void ToxicBall::Knockback() {
