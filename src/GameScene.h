@@ -158,6 +158,8 @@ public:
 	SDL_Texture* books_2_2_active = nullptr;
 	SDL_Texture* books_3_1_active = nullptr;
 	SDL_Texture* books_3_2_active = nullptr;
+	
+	bool inSkillPopUp = false;
 
 	//Dialogue UI Textures 
 	SDL_Texture* UIDialogueBoxTex = nullptr;

@@ -90,6 +90,7 @@ public:
 	//Key
 	void AddKey(KeyType type) { heldKeys.insert(type); }
 	bool HasKey(KeyType type) const { return heldKeys.find(type) != heldKeys.end(); }
+
 private:
 
 	void GodModeMove(float dt);
@@ -179,9 +180,6 @@ public:
 	Timer dashCooldownTimer;
 	float dashCooldownMS = 300;
 
-	/*--- PLAYER SKILL TREE --- */
-	int currentForceOrbs = 0;
-
 	// Interact
 	bool canInteract = false;
 	PhysBody* interactuableBody = nullptr;
@@ -219,7 +217,7 @@ public:
 	bool isVisible = true;
 
 private:
-
+	//Audio
 	int jumpFx;
 	int attackFx;
 	int dashPrincesa;

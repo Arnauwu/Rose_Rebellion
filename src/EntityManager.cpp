@@ -18,10 +18,12 @@
 
 #include "SavePoint.h"
 #include "Door.h"
+#include "KeyGate.h"
 
 #include "Cucafera.h"
 #include "CucaferaShiny.h"
 
+#include "Correfoc.h"
 
 #include "SwordKnight.h"
 #include "ShieldKnight.h"
@@ -36,6 +38,7 @@
 
 #include "KnightBoss.h"
 #include "NinfaBoss.h"
+#include "WaveProjectile.h"
 #include "GwellBoss.h"
 #include "Dragon.h"
 #include "DragonProjectile.h"
@@ -131,6 +134,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::DOOR:
 		entity = std::make_shared<DoorEntity>(); 
 		break;
+	case EntityType::KEY_GATE:
+		entity = std::make_shared<KeyGate>();
+		break;
 		//Enemies
 
 	case EntityType::CUCAFERA:
@@ -138,6 +144,10 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::CUCAFERA_SHINY:
 		entity = std::make_shared<CucaferaShiny>();
+		break;
+
+	case EntityType::CORREFOC:
+		entity = std::make_shared<Correfoc>();
 		break;
 
 	case EntityType::SWORD_KNIGHT:
@@ -172,6 +182,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::NINFA_MARE:
 		entity = std::make_shared<NinfaMare>();
+		break;
+	case EntityType::WAVE:
+		entity = std::make_shared<WaveProjectile>();
 		break;
 	case EntityType::GWELL_BOSS:
 		entity = std::make_shared<GwellBoss>();

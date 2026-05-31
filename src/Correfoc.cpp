@@ -1,4 +1,4 @@
-#include "Cucafera.h"
+#include "Correfoc.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -7,38 +7,35 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
-#include "ParticleManager.h"
-#include "Map.h"
 
 #include "tracy/Tracy.hpp"
 
-Cucafera::Cucafera() : Enemy(EntityType::CUCAFERA)
+Correfoc::Correfoc() : Enemy(EntityType::CORREFOC)
 {
-	name = "Cucafera";
+	name = "Correfoc";
 }
 
-Cucafera::~Cucafera() {
+Correfoc::~Correfoc() {
 
 }
 
-bool Cucafera::Awake() {
+bool Correfoc::Awake() {
 	return true;
 }
 
-bool Cucafera::Start()
+bool Correfoc::Start()
 {
 	// Initialize enemy parameters
-	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
+	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} }; //TO DO CHANGE TEXTURES
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
 
 	//Load Audio
-	morirCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav");
-	rodarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
-	chocarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Chocar.wav");
-	caminarCucafera = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
+	morirCorrefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav"); //TO DO CHANGE AUDIOS
+	explotarCorefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
+	caminarCorrefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
 
 	//Add physics to the enemy - initialize physics body
 	texW = 64;
@@ -51,7 +48,7 @@ bool Cucafera::Start()
 	//ssign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
-		// Initialize pathfinding
+	// Initialize pathfinding
 	pathfinding = std::make_shared<Pathfinding>(true);
 
 	//Reset pathfinding
@@ -60,9 +57,8 @@ bool Cucafera::Start()
 	pathFindingCooldown.Start();
 
 	//Stats
-	vision = 10;
-	speed = 2.0f;
-	knockbackForce = 5.0f;
+	vision = 15;
+	speed = 8.0f;
 
 	maxHealth = 30;
 	currentHealth = 30;
@@ -75,7 +71,7 @@ bool Cucafera::Start()
 	return true;
 }
 
-bool Cucafera::Update(float dt)
+bool Correfoc::Update(float dt)
 {
 	if (!active) return true;
 	ZoneScoped;
@@ -99,24 +95,18 @@ bool Cucafera::Update(float dt)
 		Knockback();
 		ApplyPhysics();
 	}
-	
+
 	if (isdead)
 	{
 		if (anims.GetCurrentName() != "dead")
 		{
-			Engine::GetInstance().audio->PlayFx(morirCucafera);
+			Engine::GetInstance().audio->PlayFx(morirCorrefoc);
 
-			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0});
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 			anims.GetAnim("dead")->SetLoop(false);
 			anims.SetCurrent("dead");
 			pbody->ctype = ColliderType::UNKNOWN;
 			isKnockedback = false;
-
-			//Create Health Orb //To do: Change to 20%
-			std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
-			healthOrb->position.setX(this->position.getX());
-			healthOrb->position.setY(this->position.getY() - 100);
-			healthOrb->Start();
 		}
 
 		if (anims.GetAnim("dead")->HasFinishedOnce())
@@ -126,14 +116,14 @@ bool Cucafera::Update(float dt)
 	}
 
 
-	bool isWalking = (velocity.x != 0 && !isdead && !isRolling && !isKnockedback);
+	bool isWalking = (velocity.x != 0 && !isdead && !isExploding);
 
 	if (isWalking && !wasWalking) {
-		Engine::GetInstance().audio->PlayFx(caminarCucafera, 99);
+		Engine::GetInstance().audio->PlayFx(caminarCorrefoc, 99);
 	}
-	
+
 	else if (!isWalking && wasWalking) {
-		Engine::GetInstance().audio->StopFx(caminarCucafera);
+		Engine::GetInstance().audio->StopFx(caminarCorrefoc);
 	}
 
 	wasWalking = isWalking;
@@ -143,7 +133,7 @@ bool Cucafera::Update(float dt)
 	return true;
 }
 
-void Cucafera::PerformPathfinding()
+void Correfoc::PerformPathfinding()
 {
 	//Reset path
 	pathfinding->ResetPath(GetTilePos());
@@ -166,26 +156,30 @@ void Cucafera::PerformPathfinding()
 	}
 }
 
-void Cucafera::GetPhysicsValues() {
+void Correfoc::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	velocity = { 0, velocity.y };
 }
 
-void Cucafera::Move() {
+void Correfoc::Move() {
 
 	Vector2D tilePos = GetTilePos();
 
 	// Move if player has been found
-	if (pathfinding->pathTiles.empty() && isRolling == false && isKnockedback == false)
+	if (pathfinding->pathTiles.empty() && isExploding == false)
 	{
-		anims.SetCurrent("walk");
+		anims.SetCurrent("walk"); //TO DO CHANGE
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist >= 5 && isRolling == false && isKnockedback == false)
+	else if (playerTileDist < 2 || isExploding)
 	{
-		anims.SetCurrent("walk"); 
+		Explode();
+	}
+	else if (playerTileDist >= 1 && isExploding == false)
+	{
+		anims.SetCurrent("walk"); //TO DO CHANGE
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -215,52 +209,22 @@ void Cucafera::Move() {
 			velocity.x *= 5;
 		}
 	}
-	else
-	{
-		if (!isdead && isKnockedback == false)
-		{
-			RollAttack();
-		}
-	}
+
 	return;
 }
 
-void Cucafera::Knockback()
+void Correfoc::Knockback()
 {
-	if (isdead) return;
-
-	if (isKnockedback)
-	{
-		isRolling = false;
-		anims.SetCurrent("hurt"); // TO DO : Hurt effect
-		if (lookingRight)
-		{
-			velocity.x = knockbackForce;
-		}
-		else
-		{
-			velocity.x = -knockbackForce;
-		}
-	}
-	if (knockbackTime <= 0)
-	{
-		isKnockedback = false;
-		knockbackTime = 500.0f;
-	}
-	else
-	{
-		knockbackTime -= Engine::GetInstance().GetDt();
-	}
 }
 
-void Cucafera::ApplyPhysics() {
+void Correfoc::ApplyPhysics() {
 
 	// Apply velocity via helper
 	b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
 }
 
-void Cucafera::Draw(float dt)
+void Correfoc::Draw(float dt)
 {
 	if (Engine::GetInstance().sceneManager->isGamePaused == false)
 	{
@@ -304,46 +268,50 @@ void Cucafera::Draw(float dt)
 	}
 }
 
-void Cucafera::RollAttack()
+void Correfoc::Explode()
 {
-	if (isRolling == false && isKnockedback == false)
+	if (isExploding == false) //WindUp
 	{
-		Engine::GetInstance().audio->PlayFx(rodarCucafera);
-		isRolling = true;
-		anims.SetCurrent("startSpin");
-		startAttack.Start();
+		Engine::GetInstance().audio->PlayFx(explotarCorefoc);
+		isExploding = true;
+		anims.SetCurrent("startSpin"); //TO DO CHANGE
+		startExplosion.Start();
 		return;
 	}
 
-	if (startAttack.ReadMSec() >= 250 && isKnockedback == false)
+	if (startExplosion.ReadMSec() >= 250 && !explosionCreated) //Create Explosion
 	{
-		anims.SetCurrent("spin");
-		if (lookingRight == false)
-		{
-			velocity.x = speed * 2;
-		}
-		else 
-		{
-			velocity.x = -speed * 2;
-		}
+		anims.SetCurrent("spin");//TO DO CHANGE
+
+		damage = 50;
+		pbody->ctype = ColliderType::ENEMY_ATTACK;
+		
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+
+		pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW * 5, bodyType::DYNAMIC);
+		Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
+
+		explosionCreated = true;
+		explosionDuration.Start();
+	}
+
+	if (explosionDuration.ReadMSec() >= 500 && explosionCreated)
+	{
+		isdead = true;
 	}
 }
 
 
 
 //Define OnCollision function for the enemy. 
-void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
+void Correfoc::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
 	switch (physB->ctype)
 	{
-	case ColliderType::MAP:
 	case ColliderType::PLAYER:
 	case ColliderType::ENEMY:
-		isRolling = false;
-		break;
-
 	case ColliderType::PLAYER_ATTACK:
-		TakeDamage(physB->listener->damage);
-		isKnockedback = true;
+		Explode();
 		break;
 
 	default:
@@ -351,12 +319,10 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b
 	}
 }
 
-void Cucafera::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
+void Correfoc::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	switch (physB->ctype)
 	{
-	case ColliderType::MAP:
-		break;
 	default:
 		break;
 	}

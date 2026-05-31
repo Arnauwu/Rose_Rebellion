@@ -8,6 +8,7 @@
 #include "GameManager.h"
 #include "ParticleManager.h"
 #include "dialogueManager.h"
+#include "KeyGate.h"
 #include "Npc.h"
 
 #include "Log.h"
@@ -22,6 +23,28 @@
 #include "tracy/Tracy.hpp"
 
 using namespace std;
+
+namespace
+{
+	const char* GetRequiredKeyMessage(KeyType keyType)
+	{
+		switch (keyType) {
+		case KeyType::FOREST:
+			return "You need to find the Forest Key.";
+		case KeyType::MOUNTAIN:
+			return "You need to find the Mountain Key.";
+		case KeyType::CATACUMBA:
+			return "You need to find the Catacombs Key.";
+		case KeyType::BOSS:
+			return "You need to find the Boss Key.";
+		case KeyType::CASTLE:
+			return "You need to find the Castle Key.";
+		case KeyType::NONE:
+		default:
+			return "You need to find the key for this door.";
+		}
+	}
+}
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -136,19 +159,25 @@ bool Player::Update(float dt)
 {
 	ZoneScoped;
 	
-	if (isFrozen) 
+	if (isFrozen)
 	{
 		GetPhysicsValues();
-		velocity = { 0, velocity.y }; 
+		velocity = { 0, velocity.y };
 		ApplyPhysics();
 
+		
 		if (lookingRight)
 		{
-			anims.SetCurrent("idle_right");
+			if (anims.GetCurrentName() != "idle_right") {
+				anims.SetCurrent("idle_right");
+			}
 		}
 		else
 		{
-			anims.SetCurrent("idle_left");
+
+			if (anims.GetCurrentName() != "idle_left") {
+				anims.SetCurrent("idle_left");
+			}
 		}
 		Draw(dt);
 		return true;
@@ -821,125 +850,116 @@ void Player::Dash()
 void Player::Interact()
 {
 	bool interactPressed = false;
-
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-		interactPressed = true;
-
-	if (Engine::GetInstance().input->IsGamepadConnected() &&
-		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_DOWN)
-		interactPressed = true;
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) interactPressed = true;
+	if (Engine::GetInstance().input->IsGamepadConnected() && Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_DOWN) interactPressed = true;
 
 	if (canInteract && interactuableBody != nullptr && interactPressed)
 	{
-
-		if (interactuableBody->ctype == ColliderType::DOOR)
+		
+		if (interactuableBody->ctype == ColliderType::KEY_GATE)
 		{
-			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
-			if (isMaintenance)
+			KeyGate* gate = (KeyGate*)interactuableBody->listener;
+			if (gate != nullptr && gate->state == GateState::CLOSED)
 			{
+				if (gate->requiredKey == KeyType::NONE || this->HasKey(gate->requiredKey))
+				{
+					Engine::GetInstance().audio->PlayFx(openDoor);
+					if (gate->requiredKey != KeyType::NONE) this->heldKeys.erase(gate->requiredKey);
+					isFrozen = true;
+					gate->OpenGate();
+					interactuableBody = nullptr;
+					canInteract = false;
+					return;
+				}
+				else
+				{
+					Engine::GetInstance().audio->PlayFx(closedDoor);
+					Engine::GetInstance().hud->ShowNotification(GetRequiredKeyMessage(gate->requiredKey));
+				}
+			}
+		}
+		else if (interactuableBody->ctype == ColliderType::DOOR)
+		{
+			auto openDoorAndTransition = [&]()
+			{
+				Engine::GetInstance().audio->PlayFx(openDoor);
+
+				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
+					Engine::GetInstance().sceneManager->setNewMap = true;
+					return;
+				}
+
+				isFrozen = true;
+
+				int cx, cy, doorW, doorH;
+				interactuableBody->GetPosition(cx, cy);
+				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+
+				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+				if (doorAnim != nullptr) {
+					doorAnim->zOrder = -1;
+					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+				}
+				else {
+					isFrozen = false;
+					Engine::GetInstance().sceneManager->setNewMap = true;
+				}
+			};
+
+			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
+			if (isMaintenance) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
 				Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
 				return;
 			}
 
 			bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
-			if (isClosed)
-			{
+			if (isClosed) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
 				Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
 				return;
 			}
 
 			bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
-
 			if (requiresKey)
 			{
-				//Get Key Property
 				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
-
 				if (requiredKey == KeyType::NONE) {
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					LOG("ERROR: Esta puerta necesita llave pero no se le asignó un KeyRegion en Tiled.");
 					Engine::GetInstance().hud->ShowNotification("The door is locked. (Configuration Error)");
 					return;
 				}
 
 				if (this->HasKey(requiredKey))
 				{
-					Engine::GetInstance().audio->PlayFx(openDoor);
-					LOG("Has usado la llave %d para abrir la puerta.", (int)requiredKey);
-
-					this->heldKeys.erase(requiredKey); 
+					this->heldKeys.erase(requiredKey);
 
 					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 					if (!doorId.empty()) {
 						GameManager::GetInstance().gameState.openedDoors.push_back(doorId);
 					}
 
-					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
-					{
-						
-						Engine::GetInstance().sceneManager->setNewMap = true;
-					}
-					else {
-						isFrozen = true;
-						int cx, cy;
-						interactuableBody->GetPosition(cx, cy);
-
-						int doorW, doorH;
-						Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
-
-						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-						DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
-
-						if (doorAnim != nullptr) {
-							doorAnim->zOrder = -1;
-							doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
-						}
-					}
+					openDoorAndTransition();
 				}
 				else
 				{
-					Engine::GetInstance().audio->PlayFx(closedDoor);	 
-					LOG("Necesitas la llave ESPECIFICA (Tipo %d) para esta región.", (int)requiredKey);
-					Engine::GetInstance().hud->ShowNotification("You need a specific region key to open this door.");
+					Engine::GetInstance().audio->PlayFx(closedDoor);
+					Engine::GetInstance().hud->ShowNotification(GetRequiredKeyMessage(requiredKey));
 				}
 			}
 			else
 			{
-				LOG("Esta puerta no necesita llave");
-				Engine::GetInstance().audio->PlayFx(openDoor);
-
-				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody))
-				{
-					
-					Engine::GetInstance().sceneManager->setNewMap = true;
-				}
-				else {
-					isFrozen = true;
-					int cx, cy;
-					interactuableBody->GetPosition(cx, cy);
-
-					int doorW, doorH;
-					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
-
-					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
-
-					if (doorAnim != nullptr) {
-						doorAnim->zOrder = -1;
-						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
-					}
-				}
+				openDoorAndTransition();
 			}
 		}
+		
 		else if (interactuableBody->ctype == ColliderType::NPC)
 		{
 			Npc* npc = (Npc*)interactuableBody->listener;
 			if (npc != nullptr)
 			{
 				Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
-				LOG("INICIO DIALOGO");
 				Engine::GetInstance().input->ClearMouseInput();
 			}
 		}
@@ -1498,10 +1518,14 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		canInteract = true;
 		interactuableBody = physB;
 		break;
+	case ColliderType::KEY_GATE:
+		canInteract = true;
+		interactuableBody = physB;
+		break;
 	case ColliderType::PATH:
 	{
 		bool requiresGlide = Engine::GetInstance().map->DoorRequiresGlide(physB);
-
+			
 		if (requiresGlide && !GameManager::GetInstance().gameState.glideUnlocked)
 		{
 			Engine::GetInstance().hud->ShowNotification("Quieres morir estampada contra el suelo?");
@@ -1698,6 +1722,10 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 
 		break;
 	case ColliderType::DOOR:
+		canInteract = false;																																																								
+		interactuableBody = nullptr;
+		break;
+	case ColliderType::KEY_GATE:
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;
@@ -1711,6 +1739,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	default:
 		break;
 	}
+
 }
 
 Vector2D Player::GetPosition()

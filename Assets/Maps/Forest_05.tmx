@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="709">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="718">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -45,32 +45,36 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
+   <property name="Paralax" type="float" value="0.8"/>
   </properties>
-  <object id="626" gid="67" x="4608" y="2048" width="3712" height="2048"/>
-  <object id="630" gid="71" x="384" y="2560" width="4224" height="2560"/>
+  <object id="709" gid="67" x="4608" y="2560" width="3840" height="2944"/>
  </objectgroup>
  <objectgroup id="20" name="Fondo2">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
+   <property name="Paralax" type="float" value="0.9"/>
   </properties>
-  <object id="627" gid="68" x="4608" y="2432" width="3712" height="2432"/>
+  <object id="627" gid="68" x="4992" y="2432" width="3328" height="2560"/>
   <object id="631" gid="72" x="896" y="2688" width="3712" height="1444"/>
+  <object id="710" gid="71" x="384" y="2432" width="4608" height="2560"/>
  </objectgroup>
  <objectgroup id="21" name="Fondo3">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
+   <property name="Paralax" type="float" value="0.95"/>
   </properties>
-  <object id="632" gid="73" x="512" y="2432" width="4224" height="2432"/>
   <object id="635" gid="69" x="4992" y="2048" width="2304" height="2048"/>
  </objectgroup>
  <objectgroup id="22" name="Fondo4">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
+   <property name="Paralax" type="float" value="1"/>
   </properties>
   <object id="633" gid="70" x="4736" y="2432" width="3840" height="2432"/>
+  <object id="717" gid="73" x="512" y="2432" width="4224" height="2432"/>
  </objectgroup>
  <layer id="1" name="Map" width="45" height="21">
   <properties>
@@ -788,15 +792,15 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="28"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
    <tile gid="39"/>
    <tile gid="32"/>
    <tile gid="37"/>
@@ -833,15 +837,15 @@
    <tile gid="4"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="28"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
-   <tile gid="29"/>
+   <tile gid="37"/>
+   <tile gid="40"/>
+   <tile gid="40"/>
+   <tile gid="40"/>
+   <tile gid="39"/>
+   <tile gid="37"/>
+   <tile gid="40"/>
+   <tile gid="31"/>
+   <tile gid="40"/>
    <tile gid="32"/>
    <tile gid="39"/>
    <tile gid="31"/>
@@ -897,8 +901,7 @@
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="1073741867"/>
+   <tile gid="38"/>
    <tile/>
    <tile/>
    <tile/>
@@ -915,8 +918,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="3221225515"/>
-   <tile gid="37"/>
+   <tile/>
+   <tile/>
+   <tile gid="36"/>
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="37"/>
@@ -943,7 +947,6 @@
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="37"/>
-   <tile gid="37"/>
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
@@ -960,7 +963,8 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="37"/>
+   <tile gid="29"/>
+   <tile gid="29"/>
    <tile gid="37"/>
    <tile gid="32"/>
    <tile gid="37"/>
@@ -1028,6 +1032,7 @@
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
+   <property name="Paralax" type="float" value="1.1"/>
   </properties>
  </objectgroup>
  <objectgroup color="#aa0000" id="19" name="Spikes">
@@ -1036,13 +1041,13 @@
    <property name="Square" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="692" x="5888" y="0" width="128" height="2048">
+  <object id="692" x="5888" y="0" width="128" height="1920">
    <properties>
     <property name="TeleportTo" type="file" value="Forest_04.tmx"/>
    </properties>
@@ -1053,26 +1058,28 @@
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="303" x="4608" y="2048" width="1408" height="640"/>
+  <object id="303" x="4608" y="1920" width="1408" height="768"/>
   <object id="304" x="896" y="2432" width="3712" height="256"/>
   <object id="305" x="512" y="2048" width="384" height="640"/>
   <object id="306" x="0" y="0" width="512" height="2688"/>
   <object id="694" x="512" y="-128" width="5504" height="128"/>
   <object id="707" x="1792" y="1920" width="384" height="74"/>
   <object id="708" x="3072" y="1920" width="384" height="76"/>
+  <object id="714" x="4352" y="2048" width="256" height="128"/>
+  <object id="715" x="3712" y="2176" width="896" height="256"/>
  </objectgroup>
  <objectgroup id="33" name="Rampa">
   <properties>
    <property name="Polygon" type="bool" value="true"/>
   </properties>
   <object id="702" x="896" y="2432">
-   <polygon points="0,0 0,-384 256,-256 512,-256 512,-128 640,0"/>
+   <polygon points="0,0 0,-384 256,-256 512,-256 512,0"/>
   </object>
   <object id="703" x="3584" y="2432">
-   <polygon points="0,0 128,-128 128,-256 512,-256 768,-384 1024,-384 1024,0"/>
+   <polygon points="640,-256 512,-256 768,-384 768,-256"/>
   </object>
  </objectgroup>
- <layer id="31" name="GroundNavLayer" width="45" height="21">
+ <layer id="31" name="GroundNavLayer" width="45" height="21" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -2025,7 +2032,7 @@
    <tile gid="65"/>
   </data>
  </layer>
- <layer id="32" name="AirNavLayer" width="45" height="21">
+ <layer id="32" name="AirNavLayer" width="45" height="21" visible="0">
   <properties>
    <property name="Air" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -2982,7 +2989,7 @@
   <object id="557" name="NinfaBoss " type="NinfaBoss" x="2560" y="2176">
    <point/>
   </object>
-  <object id="697" name="Player" type="Player" x="4992" y="1920">
+  <object id="697" name="Player" type="Player" x="4992" y="1792">
    <point/>
   </object>
  </objectgroup>
@@ -2990,7 +2997,7 @@
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
-  <object id="696" name="Player" type="Player" x="5120" y="1920">
+  <object id="696" name="Player" type="Player" x="5248" y="1792">
    <properties>
     <property name="FromRoom" type="file" value="Forest_04.tmx"/>
    </properties>

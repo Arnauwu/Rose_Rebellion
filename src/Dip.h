@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Enemy.h"
 #include "Animation.h" 
 #include <box2d/box2d.h>
@@ -30,25 +29,29 @@ private:
 
 	void AttackPlayer();
 	void ExecuteSpecialAttack(Vector2D playerPos);
+	void FinishSpecialAttack();
+	bool HasLandedAfterSpecialJump() const;
 
 	bool isTouchingPlayer = false;
-	int playerContacts = 0; // Contador para las m¨²ltiples colisiones del jugador
+	int playerContacts = 0; // Contador para las m??ltiples colisiones del jugador
+	int groundContacts = 0;
+	bool leftGroundDuringSpecial = false;
 	Timer patrolTimer; // Temporizador para controlar la patrulla
 public:
 	Timer startAttack;
 	int attackDamage = 5;
 	bool wasWalking = false;
 
-	
+
 	Timer attackVisualTimer;
 	bool isAttackingVisual = false;
 
 	Timer specialAttackTimer; // Temporizador global de 6 segundos
 	Timer phaseTimer;         // Temporizador para cada fase del salto
 	bool isSpecialAttacking = false;
-	int specialPhase = 0;     // 1 = Saltar atr¨¢s, 2 = Saltar al Player, 3 = Saltar de vuelta
-	Vector2D leapStartPos;    // Posici¨®n inicial antes del ataque
-	Vector2D lockedPlayerPos; // Posici¨®n del jugador bloqueada en el momento del salto
+	int specialPhase = 0;     // 1 = Saltar atr??s, 2 = Saltar al Player, 3 = Saltar de vuelta
+	Vector2D leapStartPos;    // Posici??n inicial antes del ataque
+	Vector2D lockedPlayerPos; // Posici??n del jugador bloqueada en el momento del salto
 
 	int morirDip = 0;
 	int caminarDip = 0;

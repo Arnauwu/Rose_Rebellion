@@ -16,7 +16,7 @@ struct Properties
     struct Property
     {
         std::string name;
-        int value;
+        float value;
         std::string value2;
     };
 
@@ -254,4 +254,5 @@ private:
     MapData mapData;
     pugi::xml_document mapFileXML;
     std::list<PhysBody*> colliderList;
+    std::vector<std::shared_ptr<Entity>> mapDynamicEntities;
 };
