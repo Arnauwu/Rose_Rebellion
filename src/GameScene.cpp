@@ -1021,7 +1021,7 @@ void GameScene::CreateSkillPopupUI() {
 	skillPopupUI.push_back(skillPopupText);
 
 	// Botón Comprar
-	auto btnBuy = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BUY, "Desbloquear", 0.4f, 0.65f, 0.1f, 0.05f, sceneObserver);
+	auto btnBuy = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BUY, "Desbloquejar", 0.4f, 0.65f, 0.1f, 0.05f, sceneObserver);
 	btnBuy->SetBgTexture(buttonUI);
 	skillPopupUI.push_back(btnBuy);
 
@@ -1048,7 +1048,8 @@ void GameScene::CreatePauseMenuUI() {
 	};
 
 	for (const auto& def : pauseBtnDefs) {
-		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, pY, pW, pH, sceneObserver);
+		std::string localizedText = Engine::GetInstance().languageManager->GetString(def.keyId);
+		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, localizedText.c_str(), 0.5f, pY, pW, pH, sceneObserver);
 		btn->SetBgTexture(buttonUI);
 		pauseMainUI.push_back(btn);
 		pY += pSpacing;
