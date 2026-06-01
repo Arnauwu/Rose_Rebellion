@@ -855,7 +855,7 @@ void Player::Interact()
 
 	if (canInteract && interactuableBody != nullptr && interactPressed)
 	{
-		
+
 		if (interactuableBody->ctype == ColliderType::KEY_GATE)
 		{
 			KeyGate* gate = (KeyGate*)interactuableBody->listener;
@@ -881,31 +881,38 @@ void Player::Interact()
 		else if (interactuableBody->ctype == ColliderType::DOOR)
 		{
 			auto openDoorAndTransition = [&]()
-			{
-				Engine::GetInstance().audio->PlayFx(openDoor);
+				{
+					Engine::GetInstance().audio->PlayFx(openDoor);
 
-				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
-					Engine::GetInstance().sceneManager->setNewMap = true;
-					return;
-				}
+					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
+						Engine::GetInstance().sceneManager->setNewMap = true;
+						return;
+					}
 
-				isFrozen = true;
+					isFrozen = true;
 
-				int cx, cy, doorW, doorH;
-				interactuableBody->GetPosition(cx, cy);
-				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					int cx, cy, doorW, doorH;
+					interactuableBody->GetPosition(cx, cy);
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
-				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
-				if (doorAnim != nullptr) {
-					doorAnim->zOrder = -1;
-					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
-				}
-				else {
-					isFrozen = false;
-					Engine::GetInstance().sceneManager->setNewMap = true;
-				}
-			};
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1;
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
+					else {
+						isFrozen = false;
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+				};
+
+			bool requiresDoubleJump = Engine::GetInstance().map->DoorRequiresDoubleJump(interactuableBody);
+			if (requiresDoubleJump && !GameManager::GetInstance().gameState.doubleJumpUnlocked) {
+				Engine::GetInstance().audio->PlayFx(closedDoor);
+				Engine::GetInstance().hud->ShowNotification("You need to unlock Double Jump to enter.");
+				return;
+			}
 
 			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
 			if (isMaintenance) {
@@ -922,6 +929,7 @@ void Player::Interact()
 			}
 
 			bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
 			if (requiresKey)
 			{
 				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
@@ -953,7 +961,7 @@ void Player::Interact()
 				openDoorAndTransition();
 			}
 		}
-		
+
 		else if (interactuableBody->ctype == ColliderType::NPC)
 		{
 			Npc* npc = (Npc*)interactuableBody->listener;
