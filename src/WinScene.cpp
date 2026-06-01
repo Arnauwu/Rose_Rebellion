@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Audio.h"
 #include "SceneManager.h"
+#include "Textures.h"
 
 WinScene::WinScene() : SceneBase(), isFadingOut(false) {
 }
@@ -29,6 +30,14 @@ bool WinScene::Start() {
         LOG("Failed to play outro cinematic. Skipping to Menu.");
         Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU);
     }
+    loadingThread = std::thread([]() {
+        auto textures = Engine::GetInstance().textures;
+        textures->PreloadToRAM("Assets/Textures/UI/MainMenu/MainMenu.png");
+        textures->PreloadToRAM("Assets/Textures/UI/MainMenu/MainMenu_S.png");
+        textures->PreloadToRAM("Assets/Textures/UI/Buttons/frameTex.png");
+        textures->PreloadToRAM("Assets/Textures/UI/Buttons/pomo.png");
+        textures->PreloadToRAM("Assets/Textures/UI/Buttons/clickAnim.png");
+        });
     return true;
 }
 
@@ -52,5 +61,8 @@ bool WinScene::Update(float dt) {
 bool WinScene::CleanUp() {
     LOG("Freeing Win Scene");
     Engine::GetInstance().cinematics->StopVideo();
+    if (loadingThread.joinable()) {
+        loadingThread.join();
+    }
     return true;
 }

@@ -29,7 +29,7 @@ bool SceneManager::Awake() {
 }
 
 bool SceneManager::Start() {
-    nextSceneID = SceneID::GAME;
+    nextSceneID = SceneID::INTRO;
     PerformSceneChange();
     return true;
 }
@@ -102,7 +102,7 @@ void SceneManager::ChangeScene(SceneID newScene, float fadeTime) {
     nextSceneID = newScene;
     isFadingOut = true;
     currentFadeTime = fadeTime;
-
+    if(currentSceneID != SceneID::INTRO)
     Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, fadeTime);
 }
 

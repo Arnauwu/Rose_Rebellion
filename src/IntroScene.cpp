@@ -15,18 +15,23 @@ bool IntroScene::Awake() {
 	return true;
 }
 bool IntroScene::Start() {
-	auto textures = Engine::GetInstance().textures;
-	textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png");
-	textures->Load("Assets/Textures/UI/MainMenu/MainMenu_S.png");
-	textures->Load("Assets/Textures/UI/Buttons/frameTex.png");
-	textures->Load("Assets/Textures/UI/Buttons/pomo.png");
-
+	
 	Engine::GetInstance().audio->PlayMusic(nullptr);
 
 	if (!Engine::GetInstance().cinematics->PlayVideo("Assets/Cinematics/GameIntro.mp4")) {
 		LOG("Failed to play intro cinematic. Skipping to Game.");
 		Engine::GetInstance().sceneManager->ChangeScene(SceneID::MENU);
+		return true;
 	}
+	loadingThread = std::thread([]() {
+		auto textures = Engine::GetInstance().textures;
+		textures->PreloadToRAM("Assets/Textures/UI/MainMenu/MainMenu.png");
+		textures->PreloadToRAM("Assets/Textures/UI/MainMenu/MainMenu_S.png");
+		textures->PreloadToRAM("Assets/Textures/UI/Buttons/frameTex.png");
+		textures->PreloadToRAM("Assets/Textures/UI/Buttons/pomo.png");
+
+		textures->PreloadToRAM("Assets/Textures/UI/Buttons/clickAnim.png");
+		});
 	return true;
 }
 
@@ -42,11 +47,9 @@ bool IntroScene::Update(float dt) {
 bool IntroScene::CleanUp() {
 	LOG("Freeing Intro Cinematic Scene");
 
-	auto textures = Engine::GetInstance().textures;
-	textures->UnLoad(textures->Load("Assets/Textures/UI/MainMenu/MainMenu.png"));
-	textures->UnLoad(textures->Load("Assets/Textures/UI/MainMenu/MainMenu_S.png"));
-	textures->UnLoad(textures->Load("Assets/Textures/UI/Buttons/frameTex.png"));
-	textures->UnLoad(textures->Load("Assets/Textures/UI/Buttons/pomo.png"));
+	if (loadingThread.joinable()) {
+		loadingThread.join();
+	}
 
 	return true;
 }
