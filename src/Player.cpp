@@ -158,12 +158,6 @@ bool Player::Update(float dt)
 	if (pbody == nullptr) return true;
 	Engine::GetInstance().entityManager->SetPlayer(this);
 
-	// Actualizar regeneración de mana AQUÍ - antes de cualquier otro check
-	if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
-	{
-		UpdateManaRegen(dt);
-	}
-
 	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
 
 	if (isDialogueActive) 
@@ -301,18 +295,6 @@ bool Player::Update(float dt)
 	return true;
 }
 
-// Método para actualizar la regeneración de mana
-void Player::UpdateManaRegen(float dt)
-{
-	if (currentMana < maxMana)
-	{
-		currentMana += (int)(manaRegenAmount * (dt / 1000.0f)); // dt está en milisegundos
-		if (currentMana > maxMana)
-		{
-			currentMana = maxMana;
-		}
-	}
-}
 
 bool Player::PostUpdate()
 {
@@ -772,14 +754,14 @@ void Player::RangedAttack(float dt)
 		return;
 	}
 
-	if (currentMana < manaCostPerShot)
+	if (currentHealth < hpCostPerShot)
 	{
-		LOG("Insufficient mana! Current: %d, Required: %d", currentMana, manaCostPerShot);
+		LOG("Insufficient health! Current: %d, Required: %d", currentHealth, hpCostPerShot);
 		return;
 	}
 
 	// Gastar mana
-	currentMana -= manaCostPerShot;
+	currentHealth -= hpCostPerShot;
 
 	// Determinar dirección
 	float dirX = lookingRight ? 1.0f : -1.0f;
@@ -805,8 +787,8 @@ void Player::RangedAttack(float dt)
 
 	if (proj != nullptr)
 	{
-		int launchX = (int)(position.getX() + dirX * 70);
-		int launchY = (int)(position.getY() + dirY * 70);
+		int launchX = (int)(position.getX() + dirX);
+		int launchY = (int)(position.getY() + dirY);
 		
 		// Establecer posición ANTES de llamar a Start()
 		proj->position.setX((float)launchX);
@@ -816,14 +798,14 @@ void Player::RangedAttack(float dt)
 		proj->Awake();
 		proj->Start();
 		
-		// Ahora sí lanzar el projectile
-		proj->Launch((float)launchX, (float)launchY, dirX, dirY);
+
+		proj->Launch(launchX, launchY, dirX, dirY);
 	}
 
 	// Iniciar cooldown
 	rangedAttackCooldownTimer.Start();
 
-	LOG("Ranged Attack launched! Mana remaining: %d/%d", currentMana, maxMana);
+	LOG("Ranged Attack launched! Mana remaining: %d/%d", currentHealth, maxHealth);
 }
 
 void Player::Glide()
@@ -1441,7 +1423,7 @@ void Player::UnlockSkill(SkillTree skill, int cost)
 	case SkillTree::FAST_DASH:
 		if (!state.stFastDash) {
 			state.stFastDash = true;
-			state.currentForceOrbs -= cost;
+		 state.currentForceOrbs -= cost;
 			AddItem(ItemID::STRENGTH_ORB, -cost);
 			this->dashForce += 15.0f;
 		}

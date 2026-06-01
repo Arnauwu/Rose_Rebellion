@@ -91,10 +91,6 @@ public:
 	void AddKey(KeyType type) { heldKeys.insert(type); }
 	bool HasKey(KeyType type) const { return heldKeys.find(type) != heldKeys.end(); }
 
-	// Mana System Getters
-	int GetCurrentMana() const { return currentMana; }
-	int GetMaxMana() const { return maxMana; }
-
 private:
 
 	void GodModeMove(float dt);
@@ -118,8 +114,6 @@ private:
 	void CameraFollows();
 	CameraMode currentCameraMode = CameraMode::DYNAMIC;
 
-	// Mana System
-	void UpdateManaRegen(float dt);
 
 	//// Helpers
 	std::unordered_map<int, std::string> GetAliases(std::string name);
@@ -227,11 +221,7 @@ public:
 	float flashIntervalMS = 100.0f;         
 	bool isVisible = true;
 
-	/*--- MANA SYSTEM --- */
-	int currentMana = 100;
-	int maxMana = 100;
-	int manaCostPerShot = 10;
-	float manaRegenAmount = 1.0f; // Mana points per second
+	int hpCostPerShot = 10;
 	Timer rangedAttackCooldownTimer;
 	float rangedAttackCooldownMS = 1000.0f; // 1 second between shots
 

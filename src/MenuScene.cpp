@@ -100,6 +100,8 @@ bool MenuScene::Start() {
 		b->SetSounds(uiHover, uiClick);
 	}
 
+	Engine::GetInstance().input->SetNavigationEnabled(true);
+
 	ShowSettings(false);
 	return true;
 }

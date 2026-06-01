@@ -223,4 +223,6 @@ private:
 	std::string nextMapName = "";
 	std::string targetSpawnID = "";
 	float mapFadeTime = 500.0f;
+
+	std::shared_ptr<UIElement> skillPointsDisplay = nullptr;
 };

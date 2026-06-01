@@ -269,6 +269,9 @@ bool GameScene::Start() {
 
 	CreateDialogueUI();
 
+	// AL FINAL, desactivar navegación:
+	Engine::GetInstance().input->SetNavigationEnabled(false);
+	
 	RefreshMenuUI();
 	return true;
 }
@@ -283,12 +286,19 @@ bool GameScene::Update(float dt) {
 	if (dialogueMgr->IsDialogueActive()) {
 		return true;
 	}
+	
 	// --- SUB-MENU INPUT HANDLING ---
-	// Toggle menus based on keyboard shortcuts
 	RefreshMenuUI();
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
 	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
 	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+
+	// AÑADIR ESTO - SELECT button para Inventory
+	if (input->IsGamepadConnected() &&
+		input->GetGamepadButton(GAMEPAD_BACK) == KEY_DOWN)
+	{
+		ToggleGameMenu(GameMenuTab::INVENTORY);
+	}
 
 	if (mapState == MapTransitionState::FADING_OUT) {
 
@@ -715,17 +725,16 @@ void GameScene::CreateSkillUpgradeUI() {
 	};
 
 	std::vector<SkillSlotDef> slots = {
-		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX + float(0.02), centerY - offsetY - float(0.015),baseSize, squareH, books_1_1}, // Arriba derecha
-		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY - float(0.015),baseSize, squareH, books_1_2 }, // Arriba izquierda
+		{ GameUI_ID::SKILL_BOOK_1_1, "", centerX - offsetX + float(0.02), centerY - offsetY - float(0.015),baseSize, squareH, books_1_1},
+		{ GameUI_ID::SKILL_BOOK_1_2, "", centerX + offsetX , centerY - offsetY - float(0.015),baseSize, squareH, books_1_2 },
 
-		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX + float(0.05), centerY, baseSize, squareH, books_2_1 }, // Medio izquierda
-		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.02), centerY,baseSize, squareH, books_2_2 }, // Medio derecha
+		{ GameUI_ID::SKILL_BOOK_2_1, "", centerX - offsetX + float(0.05), centerY, baseSize, squareH, books_2_1 },
+		{ GameUI_ID::SKILL_BOOK_2_2, "", centerX + offsetX + float(0.02), centerY,baseSize, squareH, books_2_2 },
 
-		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX + float(0.05) , centerY + offsetY,baseSize, squareH, books_3_1 }, // Abajo derecha
-		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX + float(0.04), centerY + offsetY,baseSize, squareH, books_3_2 }, // Abajo Izquierda 
+		{ GameUI_ID::SKILL_BOOK_3_1, "", centerX - offsetX + float(0.05) , centerY + offsetY,baseSize, squareH, books_3_1 },
+		{ GameUI_ID::SKILL_BOOK_3_2, "", centerX + offsetX + float(0.04), centerY + offsetY,baseSize, squareH, books_3_2 },
 
-		// ITEMS
-		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.1525), centerY + offsetY + float(0.0225),baseSize * float(0.65), squareH * float(0.65), texItemOrb } // Orbe
+		{ GameUI_ID::INV_ITEM_ORB, "", centerX + offsetX + float(0.1525), centerY + offsetY + float(0.0225),baseSize * float(0.65), squareH * float(0.65), texItemOrb }
 	};
 
 	for (const auto& slot : slots) {
@@ -780,9 +789,7 @@ void GameScene::CreatePauseMenuUI() {
 
 	for (const auto& def : pauseBtnDefs) {
 		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, pY, pW, pH, sceneObserver);
-
 		btn->SetBgTexture(buttonUI);
-
 		pauseMainUI.push_back(btn);
 		pY += pSpacing;
 	}
@@ -851,17 +858,19 @@ void GameScene::CreateDialogueUI() {
 // ==========================================
 
 void GameScene::ToggleGameMenu(GameMenuTab tab) {
-	// If we press the key of the currently open tab, close it
 	if (currentMenuTab == tab) {
 		currentMenuTab = GameMenuTab::NONE;
 	}
 	else {
-		// Otherwise, switch to the requested tab
 		currentMenuTab = tab;
 	}
+	
 	bool shouldPause = (currentMenuTab != GameMenuTab::NONE);
 	Engine::GetInstance().sceneManager->SetGamePaused(shouldPause);
 	RefreshMenuUI();
+
+	// ESTO ES LO IMPORTANTE: Activar/desactivar según si hay menú abierto
+	Engine::GetInstance().input->SetNavigationEnabled(currentMenuTab != GameMenuTab::NONE);
 }
 
 void GameScene::UpdateInventoryVisuals() {
@@ -916,7 +925,13 @@ void GameScene::RefreshMenuUI() {
 	SetUIGroupVisible(inventoryUI, currentMenuTab == GameMenuTab::INVENTORY);
 	SetUIGroupVisible(mapUI, currentMenuTab == GameMenuTab::MAP);
 	SetUIGroupVisible(skillUI, currentMenuTab == GameMenuTab::SKILL_TREE);
-
+	
+	// AÑADIR ESTO:
+	if (skillPointsDisplay) {
+		skillPointsDisplay->visible = (currentMenuTab == GameMenuTab::SKILL_TREE);
+		skillPointsDisplay->state = (currentMenuTab == GameMenuTab::SKILL_TREE) ? 
+			UIElementState::NORMAL : UIElementState::DISABLED;
+	}
 
 	SetUIGroupVisible(pauseMainUI, currentMenuTab == GameMenuTab::PAUSE_MENU);
 	SetUIGroupVisible(pauseOptionsUI, currentMenuTab == GameMenuTab::PAUSE_OPTIONS);
