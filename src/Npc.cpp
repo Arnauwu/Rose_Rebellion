@@ -6,6 +6,8 @@
 #include "Render.h"
 #include "Window.h"
 #include "DialogueManager.h"
+#include "LanguageManager.h"
+
 #include "EntityManager.h"
 #include "Log.h"
 
@@ -27,6 +29,8 @@ bool Npc::Start() {
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/NPCs/Npc1.png");
     //TO DO: CAMBIAR TEXTURA
     interactIcon = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/Flecha.png");
+    zOrder = -1;
+    glowTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Glow.png");
     texW = 128;
     texH = 128;
 
@@ -94,12 +98,36 @@ bool Npc::Update(float dt) {
             int screenY = (int)((cam.y + drawY * scale) * zoomLevel) - 35;
             int screenW = (int)((iconW * 3 * scale) * zoomLevel);
             int screenH = (int)((iconH * scale) * zoomLevel);
-
+            // EFECTO Shadow
+       /*     SDL_Rect shadowBounds = { screenX + 2, screenY + 2, screenW, screenH };
+            SDL_Color shadowColor = { 0, 0, 0, 255 };
+            Engine::GetInstance().render->DrawTextCentered("PARLAR {E}", shadowBounds, shadowColor, FontType::CUERPO);*/
+            
+            //Text
             SDL_Rect textBoundsScreen = { screenX, screenY, screenW, screenH };
-
             SDL_Color textColor = { 255, 255,255, 255 };
+            std::string interactText = Engine::GetInstance().languageManager->GetString("INTERACT_NPC");
+            Engine::GetInstance().render->DrawTextCentered(interactText.c_str(), textBoundsScreen, textColor, FontType::CUERPO);
 
-            Engine::GetInstance().render->DrawTextCentered("PARLAR {E}", textBoundsScreen, textColor, FontType::CUERPO);
+            //Efecto glow
+            if (glowTex != nullptr) {
+                SDL_SetTextureBlendMode(glowTex, SDL_BLENDMODE_ADD);
+
+                SDL_SetTextureColorMod(glowTex, 150, 150, 150);
+
+                // Palpito del brillo
+                Uint8 glowAlpha = (Uint8)(150 + sin(iconTimer * 5.0f) * 50);
+                SDL_SetTextureAlphaMod(glowTex, glowAlpha);
+
+                int glowW = iconW * 3;
+                int glowH = iconH * 2.3;
+                int glowX = screenX - (glowW / 2) + (screenW / 2);
+                int glowY = screenY - (glowH / 2) + (screenH / 2) + 5;
+
+                SDL_FRect dstGlow = { (float)glowX, (float)glowY, (float)glowW, (float)glowH };
+
+                SDL_RenderTexture(Engine::GetInstance().render->renderer, glowTex, nullptr, &dstGlow);
+            }
         }
     }
 

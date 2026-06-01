@@ -23,6 +23,9 @@
     "TXT_LOADING": "Loading",
     "INTRO_FOREST": "FOREST",
     "INTRO_MOUNTAIN": "MOUNTAIN",
-    "INTRO_CATACOMBS": "CATACOMBS"
+    "INTRO_CATACOMBS": "CATACOMBS",
+
+"// --- INTERACT TEXT ---": "",
+    "INTERACT_NPC": "TALK {E}"
 
 }

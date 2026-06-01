@@ -174,6 +174,7 @@ public:
 	// Level intro textures
 	SDL_Texture* introFrameTex = nullptr;
 	AnimationSet introFrameAnim;
+	SDL_Texture* introGlowTex = nullptr;
 
 	// Load screen textures
 	SDL_Texture* Rose_Sleep = nullptr;

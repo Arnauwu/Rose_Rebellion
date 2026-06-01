@@ -299,6 +299,7 @@ bool GameScene::Start() {
 
 	//Load level intro textures
 	LoadTextureIfNull(introFrameTex, "Assets/Textures/UI/Buttons/frameTex.png");
+	LoadTextureIfNull(introGlowTex, "Assets/Textures/UI/glow.png");
 
 	std::unordered_map<int, std::string> introAliases = { {0, "focus"} };
 	introFrameAnim.LoadFromTSX("Assets/Textures/UI/Buttons/frameTex_LI.tsx", introAliases);
@@ -582,6 +583,7 @@ bool GameScene::PostUpdate() {
 		Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, mapFadeTime);
 	}
 
+	//Level intro 
 	if (mapState == MapTransitionState::LEVEL_INTRO) {
 		int screenW = Engine::GetInstance().window->windowWidth;
 		int screenH = Engine::GetInstance().window->windowHeight;
@@ -621,9 +623,28 @@ bool GameScene::PostUpdate() {
 			SDL_SetTextureBlendMode(introFrameTex, SDL_BLENDMODE_BLEND);
 			SDL_SetTextureAlphaMod(introFrameTex, textAlpha);
 			SDL_RenderTexture(Engine::GetInstance().render->renderer, introFrameTex, &srcFRect, &dstFRect);
+
+			if (introGlowTex != nullptr) {
+				SDL_SetTextureBlendMode(introGlowTex, SDL_BLENDMODE_ADD);
+
+				SDL_SetTextureAlphaMod(introGlowTex, textAlpha);
+
+				SDL_SetTextureColorMod(introGlowTex, 255, 200, 100);
+
+				float glowPadding = 80.0f; 
+				SDL_FRect dstGlow = {
+					(float)exactBounds.x - glowPadding,
+					(float)exactBounds.y - (glowPadding / 2.0f),
+					(float)exactBounds.w + (glowPadding * 2.0f),
+					(float)exactBounds.h + glowPadding
+				};
+
+				SDL_RenderTexture(Engine::GetInstance().render->renderer, introGlowTex, nullptr, &dstGlow);
+			}
+			SDL_Color textColor = { 255, 255, 255, textAlpha };
+			Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
 		}
 
-		
 		SDL_Color textColor = { 255, 255, 255, textAlpha };
 
 		Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
@@ -697,6 +718,8 @@ bool GameScene::CleanUp() {
 
 	//Level intro Unload
 	UnloadTexture(introFrameTex);
+	UnloadTexture(introGlowTex);
+
 	auto deleteGroup = [](std::vector<std::shared_ptr<UIElement>>& group) {
 		for (auto& elem : group) {
 			if (elem) elem->CleanUp();
