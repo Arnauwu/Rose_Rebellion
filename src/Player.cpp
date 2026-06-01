@@ -11,6 +11,7 @@
 #include "KeyGate.h"
 #include "Npc.h"
 
+#include "Projectile.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -246,6 +247,8 @@ bool Player::Update(float dt)
 
 			Attack(dt);
 
+			RangedAttack(dt);
+
 			Glide();
 
 			Dash();
@@ -319,6 +322,7 @@ bool Player::Update(float dt)
 
 	return true;
 }
+
 
 bool Player::PostUpdate()
 {
@@ -754,6 +758,82 @@ void Player::Attack(float dt)
 			}
 		}
 	}
+}
+
+void Player::RangedAttack(float dt)
+{
+	bool rangedPressed = false;
+
+	// Keyboard H
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+		rangedPressed = true;
+
+	// Gamepad - B button (círculo)
+	if (Engine::GetInstance().input->IsGamepadConnected() &&
+		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_B) == KEY_DOWN)
+		rangedPressed = true;
+
+	if (!rangedPressed || isGliding) return;
+
+	// Verificar si hay cooldown activo o mana insuficiente
+	if (rangedAttackCooldownTimer.ReadMSec() < rangedAttackCooldownMS)
+	{
+		LOG("Ranged attack on cooldown or insufficient mana!");
+		return;
+	}
+
+	if (currentHealth < hpCostPerShot)
+	{
+		LOG("Insufficient health! Current: %d, Required: %d", currentHealth, hpCostPerShot);
+		return;
+	}
+
+	// Gastar mana
+	currentHealth -= hpCostPerShot;
+
+	// Determinar dirección
+	float dirX = lookingRight ? 1.0f : -1.0f;
+	float dirY = 0.0f;
+
+	// Detectar si hay entrada hacia arriba
+	bool lookUp = Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT;
+	if (Engine::GetInstance().input->IsGamepadConnected())
+	{
+		float lstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
+		if (lstickY < -0.5f) lookUp = true;
+	}
+
+	if (lookUp)
+	{
+		dirX = 0.0f;
+		dirY = -1.0f;
+	}
+
+	// Crear projectile
+	auto projectile = Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE);
+	Projectile* proj = dynamic_cast<Projectile*>(projectile.get());
+
+	if (proj != nullptr)
+	{
+		int launchX = (int)(position.getX() + dirX);
+		int launchY = (int)(position.getY() + dirY);
+		
+		// Establecer posición ANTES de llamar a Start()
+		proj->position.setX((float)launchX);
+		proj->position.setY((float)launchY);
+		
+		// Llamar a Awake() y Start() manualmente
+		proj->Awake();
+		proj->Start();
+		
+
+		proj->Launch(launchX, launchY, dirX, dirY);
+	}
+
+	// Iniciar cooldown
+	rangedAttackCooldownTimer.Start();
+
+	LOG("Ranged Attack launched! Mana remaining: %d/%d", currentHealth, maxHealth);
 }
 
 void Player::Glide()
@@ -1370,7 +1450,7 @@ void Player::UnlockSkill(SkillTree skill, int cost)
 	case SkillTree::FAST_DASH:
 		if (!state.stFastDash) {
 			state.stFastDash = true;
-			state.currentForceOrbs -= cost;
+		 state.currentForceOrbs -= cost;
 			AddItem(ItemID::STRENGTH_ORB, -cost);
 			this->dashForce += 15.0f;
 		}
@@ -1700,7 +1780,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
 	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
 
-	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temportal? Fix
+	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temporal? Fix
 	{
 		// TO DO: Con el rectangulo (Middle) se guarda correctamente en typeA, con ambos circulos se guarda en typeB porque los detecta en shapeB
 		typeA = typeB;

@@ -9,6 +9,7 @@ enum class EntityType
 	PLAYER,
 	NPC,
 
+	PROJECTILE,
 	ITEM,
 	KEY,
 	MANTA,

@@ -46,6 +46,15 @@ bool Cinematics::Update(float dt)
 		return true;
 	}
 
+	// AÑADIR ESTO - Saltar con START del gamepad
+	auto input = Engine::GetInstance().input;
+	if (input->IsGamepadConnected() &&
+		input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
+	{
+		StopVideo();
+		return true;
+	}
+
 	elapsedMs += dt;
 	double elapsedSec = elapsedMs / 1000.0;
 

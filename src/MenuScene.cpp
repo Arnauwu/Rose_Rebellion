@@ -124,6 +124,8 @@ bool MenuScene::Start() {
 		b->SetSounds(uiHover, uiClick);
 	}
 
+	Engine::GetInstance().input->SetNavigationEnabled(true);
+
 	Engine::GetInstance().languageManager->RegisterLanguageChangeCallback(
 		[this](Language lang) { this->UpdateUILanguage(); }
 	);
@@ -164,7 +166,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
 		if (GameManager::GetInstance().LoadGame("savegame.xml")) {
-			LOG("Partida cargada con éxito. Entrando al juego...");
+			LOG("Partida cargada con Ã©xito. Entrando al juego...");
 			SDL_Delay(150);
 			sceneManager->ChangeScene(SceneID::GAME);
 		}
@@ -245,7 +247,7 @@ void MenuScene::UpdateUILanguage() {
 		mainButtons[3]->text = langMgr->GetString("BTN_EXIT");
 	}
 
-	// Actualizar botones de configuración
+	// Actualizar botones de configuraciÃ³n
 	if (settingsButtons.size() >= 6) {
 		settingsButtons[0]->text = langMgr->GetString("SLD_MUSIC");
 		settingsButtons[1]->text = langMgr->GetString("SLD_FX");

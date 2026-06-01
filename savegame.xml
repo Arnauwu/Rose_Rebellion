@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="100" maxHealth="100" keyCount="0" currentForceOrbs="1" />
-	<Unlockables hasSickle="false" glideUnlocked="false" dashUnlocked="false" doubleJumpUnlocked="false" wallJumpUnlocked="false" />
+	<PlayerStats currentHealth="60" maxHealth="100" keyCount="0" currentForceOrbs="10" />
+	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="false" />
 	<WorldState currentMap="Forest_01.tmx">
 		<Position x="11200" y="2174" />
 	</WorldState>
 	<OpenedDoors />
 	<CollectedItems>
-		<Item id="Forest_01.tmx_SkillPointOrb_8376_2201" />
+		<Item id="Nexo.tmx_Sickle_3876_1118" />
+		<Item id="Forest_01.tmx_HealthOrbs_11033_2563" />
 	</CollectedItems>
 </SaveGame>

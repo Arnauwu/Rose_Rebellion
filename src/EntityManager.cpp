@@ -10,6 +10,7 @@
 #include "Keys.h"
 #include "Manta.h"
 #include "Sickle.h"
+#include "Projectile.h"
 #include "HealthOrb.h"
 #include "SkillPointOrb.h"
 #include "DashObj.h"
@@ -224,6 +225,8 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::WALLJUMP_OBJ:
 		entity = std::make_shared<WallJumpObj>();
 		break;
+	case EntityType::PROJECTILE:
+		entity = std::make_shared<Projectile>();
 	default:
 		break;
 	}
