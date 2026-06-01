@@ -1,0 +1,27 @@
+{
+"// --- MAIN MENU ---": "",
+    "BTN_PLAY": "Començar Joc",
+    "BTN_CONTINUE": "Carregar Joc",
+    "BTN_SETTINGS": "Configuració",
+    "BTN_EXIT": "Sortir",
+
+"// --- MAIN MENU SETTINGS---": "",
+    "SLD_MUSIC": "Volum Música",
+    "SLD_FX": "Volum Efectes",
+    "CHK_FULLSCREEN": "Pantalla Completa",
+    "BTN_BACK": "ENRERE",
+
+    "BTN_ENGLISH": "English",
+    "BTN_CATALAN": "Català",
+
+"// --- MAIN PAUSE MENU ---": "",
+    "BTN_PAUSE_RESUME": "Continuar",
+    "BTN_PAUSE_OPTIONS": "Opcions",
+    "BTN_PAUSE_MAINMENU": "Menú Principal",
+
+"// --- LOADING LEVELS ---": "",
+    "TXT_LOADING": "Carregant",
+    "INTRO_FOREST": "BOSC",
+    "INTRO_MOUNTAIN": "MUNTANYA",
+    "INTRO_CATACOMBS": "CATACUMBES"
+}

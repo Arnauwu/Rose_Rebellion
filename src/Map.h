@@ -16,7 +16,7 @@ struct Properties
     struct Property
     {
         std::string name;
-        int value;
+        float value;
         std::string value2;
     };
 
@@ -52,7 +52,6 @@ struct Door
 {
     PhysBody* body;
     std::string teleportTo;
-    bool needsKey;
     std::string uniqueId;
     bool underMaintenance;
     bool DoorClose;
@@ -63,11 +62,11 @@ struct Door
     int y;
     bool noAnimation = false;
     bool requiresGlide;
+    bool needsKey;
+    bool needsDoubleJump;
 
     KeyType requiredKey = KeyType::NONE;
     
-
-
 };
 
 struct Path
@@ -141,6 +140,7 @@ struct TileSet
     int tileCount;
     int columns;
     SDL_Texture* texture;
+    SDL_Surface* surfaceTemp = nullptr;
 
     std::unordered_map<int, Animation> animations; // tileId -> Animation
 
@@ -199,6 +199,8 @@ public:
     // Load new map
     bool Load(std::string path, std::string mapFileName);
 
+    void FinishVRAMUpload();
+
     // Method that translates x,y coordinates from map positions to world positions
     Vector2D MapToWorld(int i, int j) const;
     Vector2D WorldToMap(int x, int y);
@@ -232,6 +234,7 @@ public:
     std::string GetDoorUniqueId(PhysBody* door);
     bool DoorRequiresGlide(PhysBody* door);
     bool DoorNeedsKey(PhysBody* door);
+    bool DoorRequiresDoubleJump(PhysBody* door);
     bool DoorUnderMaintenance(PhysBody* door);
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);
@@ -253,4 +256,5 @@ private:
     MapData mapData;
     pugi::xml_document mapFileXML;
     std::list<PhysBody*> colliderList;
+    std::vector<std::shared_ptr<Entity>> mapDynamicEntities;
 };

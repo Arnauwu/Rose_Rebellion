@@ -4,6 +4,7 @@
 #include "Physics.h"
 #include "Input.h"
 #include "Render.h"
+#include "Window.h"
 #include "DialogueManager.h"
 #include "EntityManager.h"
 #include "Log.h"
@@ -24,7 +25,8 @@ bool Npc::Awake() {
 
 bool Npc::Start() {
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/NPCs/Npc1.png");
-
+    //TO DO: CAMBIAR TEXTURA
+    interactIcon = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/Flecha.png");
     texW = 128;
     texH = 128;
 
@@ -48,6 +50,7 @@ bool Npc::Update(float dt) {
         if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
             Engine::GetInstance().dialogueManager->StartDialogue(dialogueID);
             Engine::GetInstance().input->ClearMouseInput(); // Limpiar inputs residuales
+
         }
     }
 
@@ -60,10 +63,44 @@ bool Npc::Update(float dt) {
     if (texture != nullptr) {
         Engine::GetInstance().render->DrawTexture(texture, x - (texW), y - (texH / 2), nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
     }
+    if (texture != nullptr) {
+        Engine::GetInstance().render->DrawTexture(texture, x - (texW), y - (texH / 2), nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
+    }
 
-   
     if (isPlayerInRange && !Engine::GetInstance().dialogueManager->IsDialogueActive()) {
-        // TODO: Draw Icono de hablar
+        if (interactIcon != nullptr) {
+            iconTimer += dt / 1000.0f;
+
+            float offsetY = sin(iconTimer * 5.0f) * 10.0f;
+
+            float fIconW = 0.0f;
+            float fIconH = 0.0f;
+
+            SDL_GetTextureSize(interactIcon, &fIconW, &fIconH);
+
+            int iconW = (int)fIconW;
+            int iconH = (int)fIconH;
+
+            int drawX = x - (iconW / 2);
+            int drawY = y - (texH / 2) - iconH - 20 + (int)offsetY;
+
+            Engine::GetInstance().render->DrawTexture(interactIcon, drawX, drawY, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
+            
+            SDL_Rect cam = Engine::GetInstance().render->camera;
+            int scale = Engine::GetInstance().window->GetScale();
+            float zoomLevel = Engine::GetInstance().render->GetZoom();
+
+            int screenX = (int)((cam.x + (drawX - iconW) * scale) * zoomLevel);
+            int screenY = (int)((cam.y + drawY * scale) * zoomLevel) - 35;
+            int screenW = (int)((iconW * 3 * scale) * zoomLevel);
+            int screenH = (int)((iconH * scale) * zoomLevel);
+
+            SDL_Rect textBoundsScreen = { screenX, screenY, screenW, screenH };
+
+            SDL_Color textColor = { 255, 255,255, 255 };
+
+            Engine::GetInstance().render->DrawTextCentered("PARLAR {E}", textBoundsScreen, textColor, FontType::CUERPO);
+        }
     }
 
     return true;
@@ -71,6 +108,7 @@ bool Npc::Update(float dt) {
 
 bool Npc::CleanUp() {
     if (texture) Engine::GetInstance().textures->UnLoad(texture);
+    if (interactIcon) Engine::GetInstance().textures->UnLoad(interactIcon);
     if (pbody) {
         Engine::GetInstance().physics->DeletePhysBody(pbody);
         pbody = nullptr;

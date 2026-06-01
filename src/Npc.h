@@ -30,4 +30,6 @@ private:
     SDL_Texture* texture = nullptr;
     int texW, texH;
     AnimationSet anims;
+    SDL_Texture* interactIcon = nullptr;
+    float iconTimer = 0.0f;
 };

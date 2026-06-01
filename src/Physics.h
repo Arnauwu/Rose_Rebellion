@@ -60,6 +60,7 @@ enum class ColliderType {
     //Movement between maps
     PATH,
     DOOR,
+    KEY_GATE,
     
     //Special Floors
     SPECIALFLOOR,
@@ -153,6 +154,8 @@ public:
     bool RayCast(b2Vec2 start, b2Vec2 end);
     // GodMode
     void SetBodyType(PhysBody* p, bodyType type) const;
+
+    bool pausePhysics = false;
 
 private:
     // helpers

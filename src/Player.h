@@ -182,9 +182,6 @@ public:
 	Timer dashCooldownTimer;
 	float dashCooldownMS = 300;
 
-	/*--- PLAYER SKILL TREE --- */
-	int currentForceOrbs = 0;
-
 	// Interact
 	bool canInteract = false;
 	PhysBody* interactuableBody = nullptr;
@@ -226,7 +223,7 @@ public:
 	float rangedAttackCooldownMS = 1000.0f; // 1 second between shots
 
 private:
-
+	//Audio
 	int jumpFx;
 	int attackFx;
 	int dashPrincesa;

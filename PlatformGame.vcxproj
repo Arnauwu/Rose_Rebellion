@@ -152,6 +152,8 @@
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Bat.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
+    <ClCompile Include="src\Correfoc.cpp" />
+    <ClCompile Include="src\KeyGate.cpp" />
     <ClCompile Include="src\Cinematics.cpp" />
     <ClCompile Include="src\Cucafera.cpp" />
     <ClCompile Include="src\CucaferaMutant.cpp" />
@@ -163,6 +165,7 @@
     <ClCompile Include="src\Door.cpp" />
     <ClCompile Include="src\HealthBarManager.cpp" />
     <ClCompile Include="src\GwellBoss.cpp" />
+    <ClCompile Include="src\LanguageManager.cpp" />
     <ClCompile Include="src\Minairon.cpp" />
     <ClCompile Include="src\MiniMap.cpp" />
     <ClCompile Include="src\NinfaBoss.cpp" />
@@ -218,6 +221,7 @@
     <ClCompile Include="src\UISlider.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\WallJumpObj.cpp" />
+    <ClCompile Include="src\WaveProjectile.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\WinScene.cpp" />
   </ItemGroup>
@@ -226,6 +230,8 @@
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Bat.h" />
     <ClInclude Include="src\CameraController.h" />
+    <ClInclude Include="src\Correfoc.h" />
+    <ClInclude Include="src\KeyGate.h" />
     <ClInclude Include="src\Cinematics.h" />
     <ClInclude Include="src\Cucafera.h" />
     <ClInclude Include="src\CucaferaMutant.h" />
@@ -237,6 +243,7 @@
     <ClInclude Include="src\Door.h" />
     <ClInclude Include="src\HealthBarManager.h" />
     <ClInclude Include="src\GwellBoss.h" />
+    <ClInclude Include="src\LanguageManager.h" />
     <ClInclude Include="src\Minairon.h" />
     <ClInclude Include="src\Minimap.h" />
     <ClInclude Include="src\NinfaBoss.h" />
@@ -244,7 +251,6 @@
     <ClInclude Include="src\SpecialFloors.h" />
     <ClInclude Include="src\ToxicBall.h" />
     <ClInclude Include="src\UIDialogueBox.h" />
-    <ClInclude Include="src\DialogueData.h" />
     <ClInclude Include="src\DialogueManager.h" />
     <ClInclude Include="src\Demon.h" />
     <ClInclude Include="src\DoubleJumpObj.h" />
@@ -294,6 +300,7 @@
     <ClInclude Include="src\UISlider.h" />
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\WallJumpObj.h" />
+    <ClInclude Include="src\WaveProjectile.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\WinScene.h" />
   </ItemGroup>

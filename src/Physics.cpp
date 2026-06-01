@@ -41,6 +41,8 @@ bool Physics::Start()
 // 
 bool Physics::PreUpdate()
 {
+    if (pausePhysics) return true;
+
     ZoneScoped;
 
     bool ret = true;

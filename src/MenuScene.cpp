@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "Input.h"
 #include "Cinematics.h"
+#include "LanguageManager.h"
 
 #include "Window.h"
 #include "Log.h"
@@ -37,11 +38,10 @@ bool MenuScene::Start() {
 		mainClick = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/clickAnim.png");
 	}
 
-
 	auto uiManager = Engine::GetInstance().uiManager;
 	Module* sceneObserver = (Module*)Engine::GetInstance().sceneManager.get();
 	
-	struct ButtonDef { int id; const char* text; };
+	struct ButtonDef { int id; const char* keyId; };
 
 	float wPerc = 0.20f; // 25% of the screen width
 	float hPerc = 0.08f; // 8% of the top of the screen.
@@ -49,14 +49,15 @@ bool MenuScene::Start() {
 	float currentY = 0.60f; // Hight
 	
 	ButtonDef mainBtnDefs[] = {
-		{ (int)MenuUI_ID::BTN_PLAY,     "Start Game" },
-		{ (int)MenuUI_ID::BTN_CONTINUE, "Load Game" },
-		{ (int)MenuUI_ID::BTN_SETTINGS, "Settings" },
-		{ (int)MenuUI_ID::BTN_EXIT,     "Quit Game" }
+		{ (int)MenuUI_ID::BTN_PLAY,     "BTN_PLAY" },
+		{ (int)MenuUI_ID::BTN_CONTINUE, "BTN_CONTINUE" },
+		{ (int)MenuUI_ID::BTN_SETTINGS, "BTN_SETTINGS" },
+		{ (int)MenuUI_ID::BTN_EXIT,     "BTN_EXIT" }
 	};
 
 	for (const auto& def : mainBtnDefs) {
-		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, def.text, 0.5f, currentY, wPerc, hPerc, sceneObserver);
+		std::string localizedText = Engine::GetInstance().languageManager->GetString(def.keyId);
+		auto btn = uiManager->CreateUIElement(UIElementType::BUTTON, def.id, localizedText.c_str(), 0.5f, currentY, wPerc, hPerc, sceneObserver);
 		
 		if (auto* b = dynamic_cast<UIButton*>(btn.get())) {
 			b->SetFrameTexture(mainFrame);
@@ -71,15 +72,17 @@ bool MenuScene::Start() {
 	// MAIN MENU SETTINGS
 	float setY = 0.45f;
 
-	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_MUSIC, "Music Volume", 0.5f, setY, 0.3f, 0.05f, sceneObserver);
+	auto sldMusic = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_MUSIC, Engine::GetInstance().languageManager->GetString("SLD_MUSIC").c_str(), 0.5f, setY, 0.3f, 0.05f, sceneObserver);
+
 	if (auto* s = dynamic_cast<UISlider*>(sldMusic.get())) {
-	s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
-	s->SetThumbTexture(sliderThumbTex);}
+		s->SetValue(Engine::GetInstance().audio->GetMusicVolume());
+		s->SetThumbTexture(sliderThumbTex);
+	}
 	settingsButtons.push_back(sldMusic);
 
 	setY += spacing;
 
-	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_FX, "FX Volume", 0.5f, setY, 0.3f, 0.05f, sceneObserver);
+	auto sldFX = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::SLIDER, (int)MenuUI_ID::SLD_FX, Engine::GetInstance().languageManager->GetString("SLD_FX").c_str(), 0.5f, setY, 0.3f, 0.05f, sceneObserver);
 	if (auto* s = dynamic_cast<UISlider*>(sldFX.get())) {
 		s->SetThumbTexture(sliderThumbTex);
 		s->SetValue(Engine::GetInstance().audio->GetSFXVolume());
@@ -87,12 +90,33 @@ bool MenuScene::Start() {
 	settingsButtons.push_back(sldFX);
 	setY += spacing;
 
-	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)MenuUI_ID::CHK_FULLSCREEN, "Fullscreen", 0.5f, setY, 0.05f, 0.05f, sceneObserver);
+	auto chkFull = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::CHECKBOX, (int)MenuUI_ID::CHK_FULLSCREEN, Engine::GetInstance().languageManager->GetString("CHK_FULLSCREEN").c_str(), 0.5f, setY, 0.05f, 0.05f, sceneObserver);
 	if (auto* c = dynamic_cast<UICheckBox*>(chkFull.get())) c->isChecked = Engine::GetInstance().window->IsFullscreen();
 	settingsButtons.push_back(chkFull);
 	setY += spacing;
 
-	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, (int)MenuUI_ID::BTN_BACK, "BACK", 0.5f, setY, wPerc, hPerc, sceneObserver);
+	auto btnEnglish = Engine::GetInstance().uiManager->CreateUIElement(
+		UIElementType::BUTTON, (int)MenuUI_ID::BTN_ENGLISH, "English",
+		0.4f, setY, wPerc, hPerc, sceneObserver
+	);
+	if (auto* b = dynamic_cast<UIButton*>(btnEnglish.get())) {
+		b->SetClickTexture(mainClick);
+		b->SetSounds(uiHover, uiClick);
+	}
+	settingsButtons.push_back(btnEnglish);
+
+	auto btnCatalan = Engine::GetInstance().uiManager->CreateUIElement(
+		UIElementType::BUTTON, (int)MenuUI_ID::BTN_CATALAN, "Catal\xc3\xa0",
+		0.6f, setY, wPerc, hPerc, sceneObserver
+	);
+	if (auto* b = dynamic_cast<UIButton*>(btnCatalan.get())) {
+		b->SetClickTexture(mainClick);
+		b->SetSounds(uiHover, uiClick);
+	}
+	settingsButtons.push_back(btnCatalan);
+	setY += spacing;
+
+	auto btnBack = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, (int)MenuUI_ID::BTN_BACK, Engine::GetInstance().languageManager->GetString("BTN_BACK").c_str(), 0.5f, setY, wPerc, hPerc, sceneObserver);
 	settingsButtons.push_back(btnBack);
 	if (auto* b = dynamic_cast<UIButton*>(btnBack.get())) {
 		b->SetFrameTexture(mainFrame);
@@ -102,6 +126,10 @@ bool MenuScene::Start() {
 
 	Engine::GetInstance().input->SetNavigationEnabled(true);
 
+	Engine::GetInstance().languageManager->RegisterLanguageChangeCallback(
+		[this](Language lang) { this->UpdateUILanguage(); }
+	);
+	UpdateUILanguage();
 	ShowSettings(false);
 	return true;
 }
@@ -138,7 +166,7 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
         break;
     case (int)MenuUI_ID::BTN_CONTINUE:
 		if (GameManager::GetInstance().LoadGame("savegame.xml")) {
-			LOG("Partida cargada con �xito. Entrando al juego...");
+			LOG("Partida cargada con éxito. Entrando al juego...");
 			SDL_Delay(150);
 			sceneManager->ChangeScene(SceneID::GAME);
 		}
@@ -166,6 +194,15 @@ bool MenuScene::OnUIMouseClickEvent(UIElement* uiElement) {
     case (int)MenuUI_ID::BTN_BACK:
         ShowSettings(false);
         break;
+	case (int)MenuUI_ID::BTN_ENGLISH:
+		LOG("Language changed to: English");
+		Engine::GetInstance().languageManager->SetLanguage(Language::ENGLISH);
+		return true;
+
+	case (int)MenuUI_ID::BTN_CATALAN:
+		LOG("Language changed to: Catalan");
+		Engine::GetInstance().languageManager->SetLanguage(Language::CATALAN);
+		return true;
     default:
         break;
     }
@@ -196,6 +233,29 @@ void MenuScene::ShowSettings(bool show) {
 			elem->visible = false;
 			elem->state = UIElementState::DISABLED;
 		}
+	}
+}
+
+void MenuScene::UpdateUILanguage() {
+	auto langMgr = Engine::GetInstance().languageManager;
+
+	// Actualizar botones principales
+	if (mainButtons.size() >= 4) {
+		mainButtons[0]->text = langMgr->GetString("BTN_PLAY");
+		mainButtons[1]->text = langMgr->GetString("BTN_CONTINUE");
+		mainButtons[2]->text = langMgr->GetString("BTN_SETTINGS");
+		mainButtons[3]->text = langMgr->GetString("BTN_EXIT");
+	}
+
+	// Actualizar botones de configuración
+	if (settingsButtons.size() >= 6) {
+		settingsButtons[0]->text = langMgr->GetString("SLD_MUSIC");
+		settingsButtons[1]->text = langMgr->GetString("SLD_FX");
+		settingsButtons[2]->text = langMgr->GetString("CHK_FULLSCREEN");
+		settingsButtons[3]->text = langMgr->GetString("BTN_ENGLISH");
+		settingsButtons[4]->text = langMgr->GetString("BTN_CATALAN");
+		settingsButtons[5]->text = langMgr->GetString("BTN_BACK");
+
 	}
 }
 

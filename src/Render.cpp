@@ -181,7 +181,7 @@ void Render::SetViewPort(const SDL_Rect& rect)
 
 void Render::ResetViewPort()
 {
-	SDL_SetRenderViewport(renderer, &viewport);
+	SDL_SetRenderViewport(renderer, NULL);
 }
 
 // Blit to screen

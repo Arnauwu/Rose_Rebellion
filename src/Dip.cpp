@@ -78,6 +78,9 @@ bool Dip::Start()
 	isAttackingVisual = false;
 	isTouchingPlayer = false;
 	playerContacts = 0;
+	groundContacts = 0;
+	leftGroundDuringSpecial = false;
+	specialAttackTimer.Start();
 	patrolTimer.Start(); // Iniciar temporizador de patrulla
 
 	int x, y;
@@ -172,10 +175,36 @@ void Dip::GetPhysicsValues() {
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 }
 
+void Dip::FinishSpecialAttack()
+{
+	isSpecialAttacking = false;
+	specialPhase = 0;
+	leftGroundDuringSpecial = false;
+	specialAttackTimer.Start();
+	this->damage = attackDamage;
+	if (pbody != nullptr) pbody->ctype = ColliderType::ENEMY;
+	velocity.x = 0;
+
+	if (anims.GetCurrentName() == "Jump")
+	{
+		anims.SetCurrent(isTouchingPlayer ? "Attack" : "Idle");
+	}
+}
+
+bool Dip::HasLandedAfterSpecialJump() const
+{
+	return leftGroundDuringSpecial && groundContacts > 0 && std::abs(velocity.y) < 0.5f;
+}
+
 void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 {
 	Vector2D pos = GetPosition();
 	float attackOffset = 55.0f;
+
+	if (groundContacts <= 0 || std::abs(velocity.y) > 0.5f)
+	{
+		leftGroundDuringSpecial = true;
+	}
 
 	if (specialPhase == 1)
 	{
@@ -201,18 +230,26 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 	{
 		if (phaseTimer.ReadMSec() < 500)
 		{
-			anims.SetCurrent("Jump");
-			bool jumpRight = (lockedPlayerPos.getX() > leapStartPos.getX());
-
-			velocity.x = jumpRight ? (speed * 4.0f) : -(speed * 4.0f);
-			lookingRight = jumpRight;
-
-			float targetX = jumpRight ? (lockedPlayerPos.getX() - attackOffset) : (lockedPlayerPos.getX() + attackOffset);
-
-			if ((jumpRight && pos.getX() >= targetX) ||
-				(!jumpRight && pos.getX() <= targetX))
+			if (HasLandedAfterSpecialJump())
 			{
 				velocity.x = 0;
+				anims.SetCurrent("Idle");
+			}
+			else
+			{
+				anims.SetCurrent("Jump");
+				bool jumpRight = (lockedPlayerPos.getX() > leapStartPos.getX());
+
+				velocity.x = jumpRight ? (speed * 4.0f) : -(speed * 4.0f);
+				lookingRight = jumpRight;
+
+				float targetX = jumpRight ? (lockedPlayerPos.getX() - attackOffset) : (lockedPlayerPos.getX() + attackOffset);
+
+				if ((jumpRight && pos.getX() >= targetX) ||
+					(!jumpRight && pos.getX() <= targetX))
+				{
+					velocity.x = 0;
+				}
 			}
 		}
 		else
@@ -225,42 +262,38 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 	}
 	else if (specialPhase == 3)
 	{
-		if (phaseTimer.ReadMSec() < 500)
+		if (HasLandedAfterSpecialJump() && phaseTimer.ReadMSec() > 250)
 		{
-			anims.SetCurrent("Jump");
-			bool returnRight = (leapStartPos.getX() > lockedPlayerPos.getX());
-			velocity.x = returnRight ? (speed * 4.0f) : -(speed * 4.0f);
-			lookingRight = (playerPos.getX() > pos.getX());
-
-			if ((returnRight && pos.getX() >= leapStartPos.getX()) ||
-				(!returnRight && pos.getX() <= leapStartPos.getX()))
-			{
-				velocity.x = 0;
-			}
+			FinishSpecialAttack();
+			return;
 		}
-		else
+
+		if (phaseTimer.ReadMSec() > 1200)
 		{
-			isSpecialAttacking = false;
-			specialPhase = 0;
-			specialAttackTimer.Start();
-			this->damage = attackDamage;
-			pbody->ctype = ColliderType::ENEMY;
+			FinishSpecialAttack();
+			return;
+		}
+
+		anims.SetCurrent("Jump");
+		bool returnRight = (leapStartPos.getX() > lockedPlayerPos.getX());
+		velocity.x = returnRight ? (speed * 4.0f) : -(speed * 4.0f);
+		lookingRight = (playerPos.getX() > pos.getX());
+
+		if ((returnRight && pos.getX() >= leapStartPos.getX()) ||
+			(!returnRight && pos.getX() <= leapStartPos.getX()) ||
+			std::abs(pos.getX() - leapStartPos.getX()) < 12.0f)
+		{
 			velocity.x = 0;
 		}
 	}
 }
-
 void Dip::Move() {
 
 	// Si es empujado (knockback) o está muerto, no se mueve ni ataca
 	if (isKnockedback || isdead) {
 		// Cancelar ataque especial si es golpeado
 		if (isSpecialAttacking) {
-			isSpecialAttacking = false;
-			specialPhase = 0;
-			specialAttackTimer.Start();
-			this->damage = attackDamage;
-			pbody->ctype = ColliderType::ENEMY;
+			FinishSpecialAttack();
 		}
 		return;
 	}
@@ -272,18 +305,11 @@ void Dip::Move() {
 	Vector2D pos = GetPosition();
 	Vector2D playerPos = player->GetPosition();
 
-	if (isTouchingPlayer)
-	{
-		velocity.x = 0;
-		lookingRight = (playerPos.getX() > pos.getX());
-		AttackPlayer();
-		return;
-	}
-
 	if (!isSpecialAttacking && specialAttackTimer.ReadMSec() >= 6000 && playerTileDist <= vision)
 	{
 		isSpecialAttacking = true;
 		specialPhase = 1;
+		leftGroundDuringSpecial = false;
 		phaseTimer.Start();
 
 		// Configurar daño a 1 y cambiar ctype a ATAQUE para el impacto
@@ -293,9 +319,18 @@ void Dip::Move() {
 		Engine::GetInstance().physics->SetYVelocity(pbody, -6.0f); // Pequeño salto hacia atrás
 	}
 
+	// El ataque especial debe terminar su propia secuencia aunque toque al jugador.
 	if (isSpecialAttacking)
 	{
 		ExecuteSpecialAttack(playerPos);
+		return;
+	}
+
+	if (isTouchingPlayer)
+	{
+		velocity.x = 0;
+		lookingRight = (playerPos.getX() > pos.getX());
+		AttackPlayer();
 		return;
 	}
 
@@ -379,7 +414,6 @@ void Dip::Move() {
 		velocity.x *= 5.0f;
 	}
 }
-
 void Dip::AttackPlayer()
 {
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
@@ -438,16 +472,16 @@ void Dip::Draw(float dt)
 {
 	if (isdead)
 	{
-	
+
 		if (anims.GetCurrentName() != "Dead")
 		{
 			anims.SetCurrent("Dead");
-			anims.GetAnim("Dead")->SetLoop(false);  
+			anims.GetAnim("Dead")->SetLoop(false);
 		}
-		
+
 		if (anims.GetAnim("Dead")->HasFinishedOnce())
 		{
-			
+
 			pendingToDelete = true;
 			active = false;
 		}
@@ -493,6 +527,10 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 {
 	switch (physB->ctype)
 	{
+	case ColliderType::MAP:
+	case ColliderType::SPECIALFLOOR:
+		groundContacts++;
+		break;
 	case ColliderType::PLAYER_ATTACK:
 		LOG("Dip hit! Damage = %d", physB->listener->damage);
 		Entity::TakeDamage(physB->listener->damage);
@@ -527,7 +565,12 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 
 void Dip::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
-	if (physB->ctype == ColliderType::PLAYER)
+	if (physB->ctype == ColliderType::MAP || physB->ctype == ColliderType::SPECIALFLOOR)
+	{
+		groundContacts--;
+		if (groundContacts < 0) groundContacts = 0;
+	}
+	else if (physB->ctype == ColliderType::PLAYER)
 	{
 		playerContacts--;
 		if (playerContacts <= 0)

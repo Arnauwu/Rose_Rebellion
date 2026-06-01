@@ -19,6 +19,7 @@
 #include "ParticleManager.h"
 #include "DialogueManager.h"
 #include "HealthBarManager.h"
+#include "LanguageManager.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -55,6 +56,8 @@ Engine::Engine() {
     hud = std::make_shared<Hud>();
     healthBarManager = std::make_shared<HealthBarManager>();
 
+    languageManager = std::make_shared<LanguageManager>();
+
     // Ordered for awake / Start / Update
     // Reverse order of CleanUp
     AddModule(std::static_pointer_cast<Module>(window));
@@ -78,7 +81,8 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(hud));
 
     AddModule(std::static_pointer_cast<Module>(healthBarManager));
-
+    //Language Manager
+    AddModule(std::static_pointer_cast<Module>(languageManager));
     // UI Manager on top of the other modules
     AddModule(std::static_pointer_cast<Module>(uiManager));
 

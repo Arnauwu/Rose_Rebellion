@@ -42,40 +42,83 @@ bool Textures::CleanUp()
 	return true;
 }
 
-// Load new texture from file path
 SDL_Texture* const Textures::Load(const char* path)
 {
 	SDL_Texture* texture = NULL;
-	SDL_Surface* surface = IMG_Load(path);
+	std::string sPath = path;
 
-	if (surface == NULL)
+	if (surfaceCache.find(sPath) != surfaceCache.end())
 	{
-		LOG("Could not load surface with path: %s. IMG_Load: %s", path, SDL_GetError());
+		SDL_Surface* surface = surfaceCache[sPath];
+
+		texture = LoadSurface(surface); 
+
+		SDL_DestroySurface(surface);
+		surfaceCache.erase(sPath); 
+
+		return texture;
 	}
-	else
+
+	SDL_Surface* surface = IMG_Load(path);
+	if (surface != NULL)
 	{
 		texture = LoadSurface(surface);
-		SDL_DestroySurface(surface); // SDL3: free with SDL_DestroySurface
+		SDL_DestroySurface(surface);
 	}
 
 	return texture;
 }
 
-// Unload texture
 bool Textures::UnLoad(SDL_Texture* texture)
 {
-	for (const auto& _texture : textures) {
-		if (_texture == texture) {
+	for (auto it = textures.begin(); it != textures.end(); ++it) {
+		if (*it == texture) {
 			SDL_DestroyTexture(texture);
+			textures.erase(it);
 			return true;
 		}
 	}
 	return false;
 }
 
-// Translate a surface into a texture
 SDL_Texture* const Textures::LoadSurface(SDL_Surface* surface)
 {
+	return CreateTextureFromRAM(surface);
+}
+
+void Textures::GetSize(const SDL_Texture* texture, int& width, int& height) const
+{
+	float tw = 0.0f;
+	float th = 0.0f;
+	if (!SDL_GetTextureSize((SDL_Texture*)texture, &tw, &th))
+	{
+		LOG("SDL_GetTextureSize failed: %s", SDL_GetError());
+		width = 0;
+		height = 0;
+	}
+	else
+	{
+		width = (int)tw;
+		height = (int)th;
+	}
+}
+
+
+SDL_Surface* Textures::LoadSurfaceToRAM(const char* path)
+{
+	// Seguro de usar en hilos secundarios (No interactúa con la GPU)
+	SDL_Surface* surface = IMG_Load(path);
+	if (surface == NULL)
+	{
+		LOG("Could not load surface with path: %s. IMG_Load: %s", path, SDL_GetError());
+	}
+	return surface;
+}
+
+SDL_Texture* Textures::CreateTextureFromRAM(SDL_Surface* surface)
+{
+	if (surface == nullptr) return nullptr;
+
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(Engine::GetInstance().render->renderer, surface);
 
 	if (texture == NULL)
@@ -91,20 +134,15 @@ SDL_Texture* const Textures::LoadSurface(SDL_Surface* surface)
 	return texture;
 }
 
-// Retrieve size of a texture
-void Textures::GetSize(const SDL_Texture* texture, int& width, int& height) const
+void Textures::PreloadToRAM(const std::string& path)
 {
-	float tw = 0.0f;
-	float th = 0.0f;
-	if (!SDL_GetTextureSize((SDL_Texture*)texture, &tw, &th))
+	SDL_Surface* surface = IMG_Load(path.c_str());
+	if (surface != NULL)
 	{
-		LOG("SDL_GetTextureSize failed: %s", SDL_GetError());
-		width = 0;
-		height = 0;
+		surfaceCache[path] = surface; // Lo guardamos en la caché temporal
 	}
 	else
 	{
-		width = (int)tw;
-		height = (int)th;
+		LOG("Error precargando textura pesada: %s", SDL_GetError());
 	}
 }
