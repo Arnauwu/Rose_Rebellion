@@ -107,7 +107,6 @@ void BreakableRock::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shap
 	ApplyHitFeedback();
 
 	if (hitsTaken >= maxHits) {
-		Engine::GetInstance().particleManager->EmitHitSparks(position.getX(), position.getY(), false);
 		SetDestroyed();
 		return;
 	}
