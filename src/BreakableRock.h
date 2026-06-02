@@ -22,6 +22,8 @@ public:
 private:
 	void ApplyHitFeedback();
 	bool CheckIfDestroyed();
+	void RemoveCollider();
+	void ResetPlayerWallState();
 	void SetDestroyed();
 	void SetDamageFrame();
 

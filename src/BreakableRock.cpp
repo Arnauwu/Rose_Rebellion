@@ -150,7 +150,26 @@ bool BreakableRock::CheckIfDestroyed()
 void BreakableRock::SetDestroyed()
 {
 	GameManager::GetInstance().gameState.collectedItems.insert(uniqueID);
+	RemoveCollider();
+	ResetPlayerWallState();
 	Destroy();
+}
+
+void BreakableRock::RemoveCollider()
+{
+	if (pbody != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
+}
+
+void BreakableRock::ResetPlayerWallState()
+{
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player == nullptr) return;
+
+	player->onWall = false;
+	player->wallDirection = 0;
 }
 
 void BreakableRock::SetDamageFrame()
