@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="58" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="115">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="58" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="116">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -15019,7 +15019,8 @@
   <object id="9" x="6525.21" y="3430.85" width="385.243" height="539.727">
    <properties>
     <property name="DoorClosed" type="bool" value="true"/>
-    <property name="TeleportTo" type="file" value="Castle.tmx"/>
+    <property name="TeleportTo" type="file" value="Nexo.tmx"/>
+    <property name="UnlockID" value="CastleNexoBossDoor"/>
    </properties>
   </object>
   <object id="23" x="2693.18" y="1941.19" width="425.576" height="618.727">
@@ -15082,6 +15083,13 @@
   <object id="37" name="PlayerSpawns" x="6718.67" y="3838.67">
    <properties>
     <property name="FromRoom" type="file" value="Castle.tmx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="115" name="PlayerSpawns" x="6718.67" y="3838.67">
+   <properties>
+    <property name="FromRoom" type="file" value="Nexo.tmx"/>
+    <property name="SpawnID" value="NexoCastleBossDoor"/>
    </properties>
    <point/>
   </object>

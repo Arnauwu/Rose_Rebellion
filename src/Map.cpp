@@ -690,9 +690,13 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.body = collider;
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo") ? obj->properties.GetProperty("TeleportTo")->value2 : "";
 
-						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+						Properties::Property* unlockIdProp = obj->properties.GetProperty("UnlockID");
+						newDoor.uniqueId = unlockIdProp != nullptr ? unlockIdProp->value2 : mapFileName + "_" + std::to_string((int)obj->id);
 						newDoor.width = (int)obj->width;
 						newDoor.height = (int)obj->height;
+
+						Properties::Property* spawnIDProp = obj->properties.GetProperty("SpawnID");
+						newDoor.spawnID = (spawnIDProp != nullptr) ? spawnIDProp->value2 : "";
 
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						newDoor.needsKey = (needsKeyProp != nullptr) ? needsKeyProp->value : false;
@@ -702,9 +706,11 @@ bool Map::Load(std::string path, std::string fileName)
 
 						newDoor.requiredKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
+						bool doorUnlocked = false;
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
 							if (unlockedId == newDoor.uniqueId) {
 								newDoor.needsKey = false;
+								doorUnlocked = true;
 								break;
 							}
 						}
@@ -713,7 +719,7 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.underMaintenance = (maintenanceProp != nullptr) ? maintenanceProp->value : false;
 
 						Properties::Property* closedProp = obj->properties.GetProperty("DoorClosed");
-						newDoor.DoorClose = (closedProp != nullptr) ? closedProp->value : false;
+						newDoor.DoorClose = doorUnlocked ? false : ((closedProp != nullptr) ? closedProp->value : false);
 
 						Properties::Property* noAnimProp = obj->properties.GetProperty("NoAnimation");
 						newDoor.noAnimation = (noAnimProp != nullptr) ? noAnimProp->value : false;
