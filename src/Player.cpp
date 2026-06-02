@@ -160,6 +160,13 @@ bool Player::Update(float dt)
 {
 	ZoneScoped;
 	
+	if (pbody == nullptr) return true;
+
+	if (Engine::GetInstance().entityManager->GetPlayer() == nullptr)
+	{
+		Engine::GetInstance().entityManager->SetPlayer(this);
+	}
+
 	if (isFrozen)
 	{
 		GetPhysicsValues();
@@ -184,8 +191,7 @@ bool Player::Update(float dt)
 		return true;
 	}
 
-	if (pbody == nullptr) return true;
-	Engine::GetInstance().entityManager->SetPlayer(this);
+
 
 	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
 
@@ -258,6 +264,8 @@ bool Player::Update(float dt)
 
 		if (onGround && !onWall && !onAir && !isdead) //Save LastSafePosition
 		{
+			dashUsed = false;
+
 			if (safePositionTimer.ReadMSec() >= safePositionInterval)
 			{
 
@@ -885,7 +893,8 @@ void Player::Dash()
 	// Start Dash
 	if (GameManager::GetInstance().gameState.dashUnlocked == true &&
 		dashPressed && isDashing == false &&
-		dashCooldownTimer.ReadMSec() > dashCooldownMS)
+		dashCooldownTimer.ReadMSec() > dashCooldownMS &&
+		dashUsed == false)
 	{
 		if (lookingRight == true)
 		{
@@ -903,6 +912,7 @@ void Player::Dash()
 
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
 		isDashing = true;
+		dashUsed = true;
 		dashTimer.Start();
 	}
 
@@ -1275,25 +1285,7 @@ void Player::CameraFollows()
 	// ==========================================
 
 	// Manda la posición a CameraController
-	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
-	float camX, camY;
-	cameraController.GetCameraPosition(camX, camY);
-
-	// Lógica del Eje X (Común para ambos modos)
-	float targetCamX = -position.getX() + (screenW / 2.0f);
-	if (targetCamX > 0) targetCamX = 0;
-	float minCamX = -(mapSize.getX() - screenW);
-	if (targetCamX < minCamX) targetCamX = minCamX;
-
-	float currentCamX_f = Engine::GetInstance().render->camera.x;
-	if (dtSeconds > 0.0f) {
-		float lerpX = 8.0f * dtSeconds;
-		if (lerpX > 1.0f) lerpX = 1.0f;
-		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
-	}
-
-	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
-	Engine::GetInstance().render->camera.y = (int)camY;
+	cameraController.Update(dt, targetCamPos);
 }
 
 void Player::SetCameraMode(CameraMode mode) {
@@ -1532,6 +1524,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	switch (physB->ctype)
 	{
 	case ColliderType::DANGER:
+		if (isDashing) return;
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead && !isInvincible)
 		{
@@ -1731,6 +1724,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::ENEMY:
+		if (isDashing) return;
 		if (!isInvincible && !isdead)
 		{
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
@@ -1744,6 +1738,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	case ColliderType::ENEMY_ATTACK:
+		if (isDashing) return;
 		LOG("Hit player");
 		if (!isInvincible && !isdead)
 		{
