@@ -43,8 +43,6 @@ bool ParticleManager::Start() {
     }
 
 
-    hitP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/hitP.png");
-    bloodP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/bloodP.png");
     pickP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/pickP.png");
 
     return true;
@@ -154,17 +152,9 @@ bool ParticleManager::CleanUp() {
     }
 
     // Limpiamos el resto
-    if (hitP != nullptr) {
-        Engine::GetInstance().textures->UnLoad(hitP);
-        hitP = nullptr;
-    }
     if (pickP != nullptr) {
         Engine::GetInstance().textures->UnLoad(pickP);
         pickP = nullptr;
-    }
-    if (bloodP != nullptr) {
-        Engine::GetInstance().textures->UnLoad(bloodP);
-        bloodP = nullptr;
     }
     if (attackSpriteSheet != nullptr) {
         Engine::GetInstance().textures->UnLoad(attackSpriteSheet);
@@ -343,27 +333,8 @@ void ParticleManager::EmitDashDust(float x, float y, bool lookingRight) {
 }
 
 void ParticleManager::EmitHitSparks(float x, float y, bool isBlood) {
-    int numParticles = 1;
-
-    for (int i = 0; i < numParticles; i++) {
-        float vx = 0.0f;
-        float vy = 0.0f;
-        float life = 150.0f;
-        float size = 96.0f;
-
-        float startX = x - (size / 2.0f);
-        float startY = y - (size / 2.0f);
-
-        SDL_Texture* currentTexture = isBlood ? bloodP : hitP;
-
-        if (currentTexture != nullptr) {
-            Emit(currentTexture, startX, startY, vx, vy, life, size, true, 0.0f);
-        }
-        else {
-            SDL_Color color = isBlood ? SDL_Color{ 255, 30, 30, 255 } : SDL_Color{ 255, 200, 50, 255 };
-            Emit(startX, startY, vx, vy, life, color, 16.0f, true);
-        }
-    }
+    (void)isBlood;
+    EmitAttack(x, y, (rand() % 2) == 0);
 }
 
 void ParticleManager::EmitItemPickup(float x, float y) {
@@ -409,7 +380,7 @@ int ParticleManager::FindNextDeadParticle() {
 
 void ParticleManager::EmitAttack(float x, float y, bool lookingRight) {
     float life = 200.0f;
-    float scale = 2.6f;
+    float scale = 3.2f;
 
     if (attackSpriteSheet != nullptr) {
         int randomChoice = rand() % 2;

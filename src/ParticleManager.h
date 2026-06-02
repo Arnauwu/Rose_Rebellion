@@ -67,12 +67,6 @@ public:
     Animation animAttack1;
     Animation animAttack2;
 
-    SDL_Texture* hitP = nullptr;
-    Animation animHitSpark;
-
-    SDL_Texture* bloodP = nullptr;
-    Animation animBloodHit;
-
     SDL_Texture* pickP = nullptr;
     Animation animPickup;
 
