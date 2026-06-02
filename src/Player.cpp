@@ -160,6 +160,13 @@ bool Player::Update(float dt)
 {
 	ZoneScoped;
 	
+	if (pbody == nullptr) return true;
+
+	if (Engine::GetInstance().entityManager->GetPlayer() == nullptr)
+	{
+		Engine::GetInstance().entityManager->SetPlayer(this);
+	}
+
 	if (isFrozen)
 	{
 		GetPhysicsValues();
@@ -184,8 +191,7 @@ bool Player::Update(float dt)
 		return true;
 	}
 
-	if (pbody == nullptr) return true;
-	Engine::GetInstance().entityManager->SetPlayer(this);
+
 
 	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
 
@@ -1275,25 +1281,7 @@ void Player::CameraFollows()
 	// ==========================================
 
 	// Manda la posición a CameraController
-	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
-	float camX, camY;
-	cameraController.GetCameraPosition(camX, camY);
-
-	// Lógica del Eje X (Común para ambos modos)
-	float targetCamX = -position.getX() + (screenW / 2.0f);
-	if (targetCamX > 0) targetCamX = 0;
-	float minCamX = -(mapSize.getX() - screenW);
-	if (targetCamX < minCamX) targetCamX = minCamX;
-
-	float currentCamX_f = Engine::GetInstance().render->camera.x;
-	if (dtSeconds > 0.0f) {
-		float lerpX = 8.0f * dtSeconds;
-		if (lerpX > 1.0f) lerpX = 1.0f;
-		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
-	}
-
-	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
-	Engine::GetInstance().render->camera.y = (int)camY;
+	cameraController.Update(dt, targetCamPos);
 }
 
 void Player::SetCameraMode(CameraMode mode) {

@@ -129,6 +129,8 @@ public:
 	int dmgbuff = 0;
 	int defbuff = 0;
 
+	CameraController cameraController;
+
 	// Texture
 	SDL_Texture* texture = nullptr;
 	int texW, texH;
@@ -264,6 +266,5 @@ private:
 	Death = 99
 	*/
 
-	CameraController cameraController;
 	Vector2D respawnPosition;
 };

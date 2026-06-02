@@ -76,6 +76,65 @@ bool KnightBoss::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		return true;
+	}
+
+	if (introDone != 4)
+	{
+		Player* player = Engine::GetInstance().entityManager->GetPlayer();
+		player->isFrozen = true;
+		
+		GetPhysicsValues();
+
+		if (anims.GetCurrentName() != "jump" && introDone == 0)
+		{
+			anims.SetCurrent("jump");
+			anims.GetAnim("jump")->SetLoop(false);
+		}
+		else if (anims.GetAnim("jump")->HasFinishedOnce() && introDone == 0)
+		{
+			introDone = 1;
+			anims.SetCurrent("jump2");
+			anims.GetAnim("jump2")->SetLoop(false);
+
+		}
+		else if(anims.GetAnim("jump2")->HasFinishedOnce() && introDone == 1)
+		{
+			introDone = 2;
+		}
+
+		if (introDone == 0)
+		{
+			velocity.y = -10;
+		}
+		else if (introDone == 1)
+		{
+			velocity.y = 10;
+		}
+
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
+
+		player->cameraController.Update(dt, this->GetPosition());
+
+		if (introDone == 2)
+		{
+			player->cameraController.StartShake(3000, 25);
+			introDone = 3;
+		}
+
+		if (introDone == 3 && player->cameraController.GetRemainingShakeTime() < 0)
+		{
+			introDone = 4;
+			player->isFrozen = false;
+		}
+
+		Draw(dt);
+		return true;
+	}
+
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
 		if (pathFindingCooldown.ReadMSec() > 500)

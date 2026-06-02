@@ -33,6 +33,7 @@ private:
 	void ShieldDash();
 
 public:
+	int introDone = 0; // 0 Not Started - 1 Started Jump- 2 Jump 2
 
 	PhysBody* swordHitbox = nullptr;
 

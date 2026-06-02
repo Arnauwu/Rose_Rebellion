@@ -8,7 +8,10 @@ public:
 	CameraController();
 	~CameraController();
 
-	void Update(float dt, Vector2D playerPos, int screenW, int screenH, float mapWidth, float mapHeight);
+	void Update(float dt, Vector2D entityPos);
+
+	void StartShake(float duration, float intensity);
+	float GetRemainingShakeTime() { return shakeTimeRemaining; }
 
 	void GetCameraPosition(float& outX, float& outY) const;
 
@@ -23,5 +26,11 @@ private:
 	float verticalOffset;         // Vertical Offset 
 	float yDivisor = 1.75f;       // Camara mode
 
+	//Shake
+	float shakeDuration = 0.0f; // In MS
+	float shakeTimeRemaining = 0.0f;
+	float shakeIntensity = 0.0f;
+
+	
 	void ClampToMapBounds(float& x, float& y, int screenW, int screenH, float mapWidth, float mapHeight);
 };
