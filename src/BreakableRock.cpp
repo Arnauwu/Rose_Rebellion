@@ -83,13 +83,17 @@ bool BreakableRock::Update(float dt)
 
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 	float renderScale = std::max(width / (float)animFrame.w, height / (float)animFrame.h);
-	Engine::GetInstance().render->DrawRotatedTexture(
-		texture,
+	SDL_Rect rockRect = {
 		x - (int)(animFrame.w * renderScale / 2.0f) + shakeOffsetX,
 		y - (int)(animFrame.h * renderScale / 2.0f) + shakeOffsetY,
-		&animFrame,
-		SDL_FLIP_NONE,
-		renderScale
+		(int)(animFrame.w * renderScale),
+		(int)(animFrame.h * renderScale)
+	};
+
+	Engine::GetInstance().render->DrawWorldTextureScaledSection(
+		texture,
+		animFrame,
+		rockRect
 	);
 
 	return true;

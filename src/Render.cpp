@@ -448,6 +448,30 @@ bool Render::DrawTextureScaledSection(SDL_Texture* texture, const SDL_Rect& srcR
 	return true;
 }
 
+
+bool Render::DrawWorldTextureScaledSection(SDL_Texture* texture, const SDL_Rect& srcRect, const SDL_Rect& destRect, float speed) const
+{
+	if (texture == nullptr) return false;
+
+	int scale = Engine::GetInstance().window->GetScale();
+	SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
+	SDL_FRect dstFRect = {
+		(float)((int)(camera.x * speed) + destRect.x * scale) * zoomLevel,
+		(float)((int)(camera.y * speed) + destRect.y * scale) * zoomLevel,
+		(float)(destRect.w * scale) * zoomLevel,
+		(float)(destRect.h * scale) * zoomLevel
+	};
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	if (!SDL_RenderTexture(renderer, texture, &srcFRect, &dstFRect))
+	{
+		LOG("Cannot draw world scaled section. SDL_Error: %s", SDL_GetError());
+		return false;
+	}
+
+	return true;
+}
 bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
 {
 	bool ret = true;
