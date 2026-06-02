@@ -25,6 +25,7 @@ struct Particle {
     Animation anim;
     bool isAnimated = false;
     SDL_FlipMode flipMode = SDL_FLIP_NONE;
+    bool centerFrameContent = false;
 };
 
 class ParticleManager : public Module {
@@ -40,7 +41,7 @@ public:
 
     void Emit(float x, float y, float vx, float vy, float life, SDL_Color color, float size, bool useCamera = true);
     void Emit(SDL_Texture* texture, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f);
-    void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f, SDL_FlipMode flipMode = SDL_FLIP_NONE, float scale = 1.0f);
+    void Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera = true, float angularVelocity = 0.0f, SDL_FlipMode flipMode = SDL_FLIP_NONE, float scale = 1.0f, bool centerFrameContent = false);
 
     // Nuevas funciones de emisi¨®n para el SpriteSheet unificado
     void EmitDust(float x, float y, bool lookingRight); // andar
