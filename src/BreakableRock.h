@@ -37,6 +37,8 @@ private:
 	int hitsTaken = 0;
 	int maxHits = 4;
 	std::string uniqueID;
+	Vector2D uniqueIDPosition;
+	bool hasUniqueIDPosition = false;
 
 	float shakeTimer = 0.0f;
 	float shakeDuration = 140.0f;

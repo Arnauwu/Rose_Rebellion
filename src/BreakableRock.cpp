@@ -12,8 +12,16 @@
 #include "Textures.h"
 
 #include <cstdlib>
+#include <algorithm>
 #include <string>
 #include <unordered_map>
+
+namespace
+{
+	constexpr float RockBlockScale = 1.35f;
+	constexpr int RockMinBlockWidth = 520;
+	constexpr int RockMinBlockHeight = 520;
+}
 
 BreakableRock::BreakableRock() : Entity(EntityType::BREAKABLE_ROCK)
 {
@@ -74,11 +82,14 @@ bool BreakableRock::Update(float dt)
 	}
 
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-	Engine::GetInstance().render->DrawTexture(
+	float renderScale = std::max(width / (float)animFrame.w, height / (float)animFrame.h);
+	Engine::GetInstance().render->DrawRotatedTexture(
 		texture,
-		x - animFrame.w / 2 + shakeOffsetX,
-		y - animFrame.h / 2 + shakeOffsetY,
-		&animFrame
+		x - (int)(animFrame.w * renderScale / 2.0f) + shakeOffsetX,
+		y - (int)(animFrame.h * renderScale / 2.0f) + shakeOffsetY,
+		&animFrame,
+		SDL_FLIP_NONE,
+		renderScale
 	);
 
 	return true;
@@ -116,8 +127,14 @@ void BreakableRock::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shap
 
 void BreakableRock::SetSize(int width, int height)
 {
-	this->width = width;
-	this->height = height;
+	int originalHeight = height;
+	uniqueIDPosition = position;
+	hasUniqueIDPosition = true;
+
+	this->width = std::max(RockMinBlockWidth, (int)(width * RockBlockScale));
+	this->height = std::max(RockMinBlockHeight, (int)(height * RockBlockScale));
+
+	position.setY(position.getY() + (originalHeight - this->height) / 2.0f);
 }
 
 void BreakableRock::ApplyHitFeedback()
@@ -137,7 +154,8 @@ void BreakableRock::ApplyHitFeedback()
 bool BreakableRock::CheckIfDestroyed()
 {
 	std::string currentMap = Engine::GetInstance().map->mapFileName;
-	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)position.getX()) + "_" + std::to_string((int)position.getY());
+	Vector2D idPosition = hasUniqueIDPosition ? uniqueIDPosition : position;
+	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)idPosition.getX()) + "_" + std::to_string((int)idPosition.getY());
 
 	if (GameManager::GetInstance().gameState.collectedItems.count(uniqueID) > 0) {
 		Destroy();
