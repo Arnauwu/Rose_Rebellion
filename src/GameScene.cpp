@@ -101,12 +101,12 @@ void GameScene::LoadMap(std::string mapFile)
 		if (this->asyncMapFile.find("Castle_Room_Storage") != std::string::npos) {
 			Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Princess/Princess.png");
 		}
-	/*	if (this->asyncMapFile.find("Forest_01") != std::string::npos 
-			|| this->asyncMapFile.find("Forest_02") != std::string::npos 
-			|| this->asyncMapFile.find("Forest_03") != std::string::npos 
-			|| this->asyncMapFile.find("Forest_04") != std::string::npos) {
-			Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Enemies//png");
-		}*/
+		/*	if (this->asyncMapFile.find("Forest_01") != std::string::npos
+				|| this->asyncMapFile.find("Forest_02") != std::string::npos
+				|| this->asyncMapFile.find("Forest_03") != std::string::npos
+				|| this->asyncMapFile.find("Forest_04") != std::string::npos) {
+				Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Enemies//png");
+			}*/
 		else if (this->asyncMapFile.find("Mountain_01") != std::string::npos) {
 			Engine::GetInstance().textures->PreloadToRAM("Assets/Textures/Entities/Enemies/Dip/SS_Dip.png");
 		}
@@ -258,6 +258,17 @@ bool GameScene::Start() {
 	LoadTextureIfNull(texMapUI_CAT, "Assets/Textures/UI/GameMenu/t_MapUI_CAT.png");
 	LoadTextureIfNull(texInventoryUI_CAT, "Assets/Textures/UI/GameMenu/t_inventoryUI_CAT.png");
 	LoadTextureIfNull(texSkillUI_CAT, "Assets/Textures/UI/SkillUpgrade/t_skillUI_CAT.png");
+
+	LoadTextureIfNull(texMenuAnim, "Assets/Textures/UI/GameMenu/t_menuAnim.png");
+
+	std::unordered_map<int, std::string> menuAliases = { {0, "open"} };
+	menuAnimSet.LoadFromTSX("Assets/Textures/UI/GameMenu/menuAnim.tsx", menuAliases);
+	menuAnimSet.SetCurrent("open");
+
+	if (menuAnimSet.GetAnim("open")) {
+		menuAnimSet.GetAnim("open")->SetLoop(false);
+	}
+
 	//Load Items
 	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
 	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forestKeyUI.png");
@@ -337,7 +348,7 @@ bool GameScene::Start() {
 
 bool GameScene::Update(float dt) {
 
-	
+
 	if (isAsyncLoading) {
 
 		loadingDotsTimer += dt / 1000.0f;
@@ -346,19 +357,19 @@ bool GameScene::Update(float dt) {
 			isDataInitialized = true;
 
 			// Unimos el hilo de forma segura para liberar recursos del sistema
-		if (loadingThread.joinable()) {
+			if (loadingThread.joinable()) {
 				loadingThread.join();
 			}
 
 			FinishMapLoad();
-			isAsyncLoading = false; 
+			isAsyncLoading = false;
 
 			mapState = MapTransitionState::FADING_IN;
 			Engine::GetInstance().render->StartFade(FadeDirection::FADE_IN, mapFadeTime);
 		}
-		return true; 
+		return true;
 	}
-	
+
 	auto render = Engine::GetInstance().render;
 	auto input = Engine::GetInstance().input;
 	auto dialogueMgr = Engine::GetInstance().dialogueManager;
@@ -369,6 +380,11 @@ bool GameScene::Update(float dt) {
 	// --- SUB-MENU INPUT HANDLING ---
 	// Toggle menus based on keyboard shortcuts
 	RefreshMenuUI();
+	if (currentMenuTab == GameMenuTab::INVENTORY || currentMenuTab == GameMenuTab::MAP || currentMenuTab == GameMenuTab::SKILL_TREE) {
+		menuAnimSet.Update(dt);
+		RefreshMenuUI();
+	}
+
 	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
 	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
 	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
@@ -388,23 +404,20 @@ bool GameScene::Update(float dt) {
 		if (render->IsFadeComplete()) {
 
 			bool showIntro = false;
-			// Comprobar si el mapa cargado requiere presentación
 			if (asyncMapFile.find("Forest_01") != std::string::npos &&
 				asyncPreviousMap.find("Forest_02") == std::string::npos)
 			{
 				showIntro = true;
 				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_FOREST");
 			}
-			// 2. Mostrar intro de MONTAÑA solo si NO venimos de otra zona de la montaña
 			else if (asyncMapFile.find("Mountain_01") != std::string::npos &&
 				asyncPreviousMap.find("Mountain_02") == std::string::npos)
 			{
 				showIntro = true;
 				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_MOUNTAIN");
 			}
-			// 3. Mostrar intro de CATACUMBAS solo si NO venimos de otras catacumbas
 			else if ((asyncMapFile.find("Catacombs_01_M") != std::string::npos && asyncPreviousMap.find("Catacombs_02_M") == std::string::npos || asyncMapFile.find("Catacombs_01_F") != std::string::npos) &&
-				asyncPreviousMap.find("Catacombs_02_F") == std::string::npos )
+				asyncPreviousMap.find("Catacombs_02_F") == std::string::npos)
 			{
 				showIntro = true;
 				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_CATACOMBS");
@@ -415,7 +428,7 @@ bool GameScene::Update(float dt) {
 				levelIntroTimer = 4.0f; // Duración
 				introFrameAnim.SetCurrent("focus");
 				if (introFrameAnim.GetAnim("focus")) {
-					introFrameAnim.GetAnim("focus")->Reset(); 
+					introFrameAnim.GetAnim("focus")->Reset();
 				}
 			}
 			else {
@@ -478,7 +491,7 @@ bool GameScene::PostUpdate() {
 		// Dibujar un fondo negro completamente opaco (Alpha a 255)
 		Engine::GetInstance().render->DrawRectangleUnscaled(fullScreenRect, 0, 0, 0, 255, true, false);
 
-	// DIBUJAR EN MITAD DE PANTALLA
+		// DIBUJAR EN MITAD DE PANTALLA
 		int dotCount = (int)(loadingDotsTimer * 3.0f) % 4;
 
 		std::string loadingText = Engine::GetInstance().languageManager->GetString("TXT_LOADING");
@@ -509,149 +522,171 @@ bool GameScene::PostUpdate() {
 			SDL_Rect fullScreenRect = { 0, 0, screenW, screenH };
 
 			Engine::GetInstance().render->DrawRectangleUnscaled(fullScreenRect, 0, 0, 0, 180, true, false);
-			Language currentLang = Engine::GetInstance().languageManager->GetCurrentLanguage();
-			switch (currentMenuTab) {
-			case GameMenuTab::INVENTORY:
-				// Si es catalán, muestra texInventoryUI_CA; si no, texInventoryUI
-				currentTextureToDraw = (currentLang == Language::CATALAN) ? texInventoryUI_CAT : texInventoryUI;
-				break;
-			case GameMenuTab::MAP:
-				currentTextureToDraw = (currentLang == Language::CATALAN) ? texMapUI_CAT : texMapUI;
-				break;
-			case GameMenuTab::SKILL_TREE:
-				currentTextureToDraw = (currentLang == Language::CATALAN) ? texSkillUI_CAT : texSkillUI;
-				break;
-			case GameMenuTab::PAUSE_MENU:
-			case GameMenuTab::PAUSE_OPTIONS:
-				currentTextureToDraw = texPauseUI;
-				break;
-			default:
-				break;
-			}
-			if (currentTextureToDraw != nullptr) {
-				Engine::GetInstance().render->DrawTextureScaled(currentTextureToDraw, fullScreenRect);
+
+			bool isAnimFinished = true;
+			if (menuAnimSet.GetAnim("open")) {
+				isAnimFinished = menuAnimSet.GetAnim("open")->HasFinishedOnce();
 			}
 
-			if (currentMenuTab == GameMenuTab::MAP)
-			{
-				minimap.DrawMinimap();
-			}
-			else if (currentMenuTab == GameMenuTab::SKILL_TREE) //Show how much orb the player has
-			{
-				int currentForceOrbs = GameManager::GetInstance().gameState.currentForceOrbs;
-				SDL_Color color = { 255,255,255,255 };
-				Engine::GetInstance().render->DrawText(std::to_string(currentForceOrbs).c_str(), 850, 475, 100, 100, color);
-			}
+			if (!isAnimFinished && (currentMenuTab == GameMenuTab::INVENTORY || currentMenuTab == GameMenuTab::MAP || currentMenuTab == GameMenuTab::SKILL_TREE)) {
+				if (texMenuAnim != nullptr) {
+					SDL_Rect srcFrame = menuAnimSet.GetCurrentFrame();
 
-			return true;
-		}
-		// If any menu is open, freeze normal gameplay logic
-		if (currentMenuTab != GameMenuTab::NONE) {
-
-			int screenW, screenH;
-			screenW = Engine::GetInstance().window->windowWidth;
-			screenH = Engine::GetInstance().window->windowHeight;
-
-			SDL_Rect bgRect = { 0, 0, screenW, screenH };
-
-			Engine::GetInstance().render->DrawRectangle(bgRect, 0, 0, 0, 180, true, false);
-
-			return true;
-		}
-	}
-
-	if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
-
-		sceneManager->setNewMap = false;
-		Player* p = Engine::GetInstance().entityManager->GetPlayer();
-		if (p != nullptr && p->interactuableBody != nullptr) {
-			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
-
-			if (p->interactuableBody->ctype == ColliderType::PATH) {
-				targetSpawnID = Engine::GetInstance().map->GetPathSpawnID(p->interactuableBody);
+					if (srcFrame.w > 0 && srcFrame.h > 0) {
+						Engine::GetInstance().render->DrawTextureScaledSection(texMenuAnim, srcFrame, fullScreenRect);
+					}
+					else {
+						LOG("ADVERTENCIA: El srcFrame de la animacion es 0x0. ¡Revisa tu archivo TSX!");
+					}
+				}
 			}
 			else {
+				Language currentLang = Engine::GetInstance().languageManager->GetCurrentLanguage();
+
+				switch (currentMenuTab) {
+				case GameMenuTab::INVENTORY:
+					// Si es catalán, muestra texInventoryUI_CA; si no, texInventoryUI
+					currentTextureToDraw = (currentLang == Language::CATALAN) ? texInventoryUI_CAT : texInventoryUI;
+					break;
+				case GameMenuTab::MAP:
+					currentTextureToDraw = (currentLang == Language::CATALAN) ? texMapUI_CAT : texMapUI;
+					break;
+				case GameMenuTab::SKILL_TREE:
+					currentTextureToDraw = (currentLang == Language::CATALAN) ? texSkillUI_CAT : texSkillUI;
+					break;
+				case GameMenuTab::PAUSE_MENU:
+				case GameMenuTab::PAUSE_OPTIONS:
+					currentTextureToDraw = texPauseUI;
+					break;
+				default:
+					break;
+				}
+				if (currentTextureToDraw != nullptr) {
+					Engine::GetInstance().render->DrawTextureScaled(currentTextureToDraw, fullScreenRect);
+				}
+
+				if (currentMenuTab == GameMenuTab::MAP)
+				{
+					minimap.DrawMinimap();
+				}
+				else if (currentMenuTab == GameMenuTab::SKILL_TREE) //Show how much orb the player has
+				{
+					int currentForceOrbs = GameManager::GetInstance().gameState.currentForceOrbs;
+					SDL_Color color = { 255,255,255,255 };
+					Engine::GetInstance().render->DrawText(std::to_string(currentForceOrbs).c_str(), 850, 475, 100, 100, color);
+				}
+
+				return true;
+			}
+			// If any menu is open, freeze normal gameplay logic
+			if (currentMenuTab != GameMenuTab::NONE) {
+
+				int screenW, screenH;
+				screenW = Engine::GetInstance().window->windowWidth;
+				screenH = Engine::GetInstance().window->windowHeight;
+
+				SDL_Rect bgRect = { 0, 0, screenW, screenH };
+
+				Engine::GetInstance().render->DrawRectangle(bgRect, 0, 0, 0, 180, true, false);
+
+				return true;
+			}
+		}
+
+		if (sceneManager->setNewMap && mapState == MapTransitionState::NONE) {
+
+			sceneManager->setNewMap = false;
+			Player* p = Engine::GetInstance().entityManager->GetPlayer();
+			if (p != nullptr && p->interactuableBody != nullptr) {
+				nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
+
+				if (p->interactuableBody->ctype == ColliderType::PATH) {
+					targetSpawnID = Engine::GetInstance().map->GetPathSpawnID(p->interactuableBody);
+				}
+				else {
+					targetSpawnID = "";
+				}
+			}
+			else {
+				nextMapName = "";
 				targetSpawnID = "";
 			}
-		}
-		else {
-			nextMapName = "";
-			targetSpawnID = "";
-		}
 
-		mapState = MapTransitionState::FADING_OUT;
-		Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, mapFadeTime);
-	}
-
-	//Level intro 
-	if (mapState == MapTransitionState::LEVEL_INTRO) {
-		int screenW = Engine::GetInstance().window->windowWidth;
-		int screenH = Engine::GetInstance().window->windowHeight;
-
-		// Barras - cinemáticas
-		SDL_Rect topBar = { 0, 0, screenW, screenH / 7 };
-		SDL_Rect bottomBar = { 0, screenH - (screenH / 7), screenW, screenH / 7 };
-		Engine::GetInstance().render->DrawRectangleUnscaled(topBar, 0, 0, 0, 255, true, false);
-		Engine::GetInstance().render->DrawRectangleUnscaled(bottomBar, 0, 0, 0, 255, true, false);
-
-		Uint8 textAlpha = 255;
-		if (levelIntroTimer > 3.0f) {
-			textAlpha = (Uint8)(255.0f * (4.0f - levelIntroTimer));
-		}
-		else if (levelIntroTimer < 1.0f) {
-			textAlpha = (Uint8)(255.0f * levelIntroTimer);
+			mapState = MapTransitionState::FADING_OUT;
+			Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, mapFadeTime);
 		}
 
-		SDL_Rect textRect = { 0, (screenH / 2) - 50, screenW, 100 };
+		//Level intro 
+		if (mapState == MapTransitionState::LEVEL_INTRO) {
+			int screenW = Engine::GetInstance().window->windowWidth;
+			int screenH = Engine::GetInstance().window->windowHeight;
 
-		if (introFrameTex != nullptr) {
+			// Barras - cinemáticas
+			SDL_Rect topBar = { 0, 0, screenW, screenH / 7 };
+			SDL_Rect bottomBar = { 0, screenH - (screenH / 7), screenW, screenH / 7 };
+			Engine::GetInstance().render->DrawRectangleUnscaled(topBar, 0, 0, 0, 255, true, false);
+			Engine::GetInstance().render->DrawRectangleUnscaled(bottomBar, 0, 0, 0, 255, true, false);
 
-			SDL_Rect exactBounds = Engine::GetInstance().render->GetTextRenderedBounds(levelIntroText.c_str(), textRect, FontType::MENU);
-
-			int paddingVertical = (int)(exactBounds.h * 0.5f);   
-			int paddingHorizontal = (int)(exactBounds.h * 2.5f); 
-
-			exactBounds.x -= paddingHorizontal;
-			exactBounds.w += paddingHorizontal * 2;
-			exactBounds.y -= paddingVertical;
-			exactBounds.h += paddingVertical * 2;
-
-			SDL_Rect srcFrame = introFrameAnim.GetCurrentFrame();
-			SDL_FRect srcFRect = { (float)srcFrame.x, (float)srcFrame.y, (float)srcFrame.w, (float)srcFrame.h };
-			SDL_FRect dstFRect = { (float)exactBounds.x, (float)exactBounds.y, (float)exactBounds.w, (float)exactBounds.h };
-
-			SDL_SetTextureBlendMode(introFrameTex, SDL_BLENDMODE_BLEND);
-			SDL_SetTextureAlphaMod(introFrameTex, textAlpha);
-			SDL_RenderTexture(Engine::GetInstance().render->renderer, introFrameTex, &srcFRect, &dstFRect);
-
-			if (introGlowTex != nullptr) {
-				SDL_SetTextureBlendMode(introGlowTex, SDL_BLENDMODE_ADD);
-
-				SDL_SetTextureAlphaMod(introGlowTex, textAlpha);
-
-				SDL_SetTextureColorMod(introGlowTex, 255, 200, 100);
-
-				float glowPadding = 80.0f; 
-				SDL_FRect dstGlow = {
-					(float)exactBounds.x - glowPadding,
-					(float)exactBounds.y - (glowPadding / 2.0f),
-					(float)exactBounds.w + (glowPadding * 2.0f),
-					(float)exactBounds.h + glowPadding
-				};
-
-				SDL_RenderTexture(Engine::GetInstance().render->renderer, introGlowTex, nullptr, &dstGlow);
+			Uint8 textAlpha = 255;
+			if (levelIntroTimer > 3.0f) {
+				textAlpha = (Uint8)(255.0f * (4.0f - levelIntroTimer));
 			}
+			else if (levelIntroTimer < 1.0f) {
+				textAlpha = (Uint8)(255.0f * levelIntroTimer);
+			}
+
+			SDL_Rect textRect = { 0, (screenH / 2) - 50, screenW, 100 };
+
+			if (introFrameTex != nullptr) {
+
+				SDL_Rect exactBounds = Engine::GetInstance().render->GetTextRenderedBounds(levelIntroText.c_str(), textRect, FontType::MENU);
+
+				int paddingVertical = (int)(exactBounds.h * 0.5f);
+				int paddingHorizontal = (int)(exactBounds.h * 2.5f);
+
+				exactBounds.x -= paddingHorizontal;
+				exactBounds.w += paddingHorizontal * 2;
+				exactBounds.y -= paddingVertical;
+				exactBounds.h += paddingVertical * 2;
+
+				SDL_Rect srcFrame = introFrameAnim.GetCurrentFrame();
+				SDL_FRect srcFRect = { (float)srcFrame.x, (float)srcFrame.y, (float)srcFrame.w, (float)srcFrame.h };
+				SDL_FRect dstFRect = { (float)exactBounds.x, (float)exactBounds.y, (float)exactBounds.w, (float)exactBounds.h };
+
+				SDL_SetTextureBlendMode(introFrameTex, SDL_BLENDMODE_BLEND);
+				SDL_SetTextureAlphaMod(introFrameTex, textAlpha);
+				SDL_RenderTexture(Engine::GetInstance().render->renderer, introFrameTex, &srcFRect, &dstFRect);
+
+				if (introGlowTex != nullptr) {
+					SDL_SetTextureBlendMode(introGlowTex, SDL_BLENDMODE_ADD);
+
+					SDL_SetTextureAlphaMod(introGlowTex, textAlpha);
+
+					SDL_SetTextureColorMod(introGlowTex, 255, 200, 100);
+
+					float glowPadding = 80.0f;
+					SDL_FRect dstGlow = {
+						(float)exactBounds.x - glowPadding,
+						(float)exactBounds.y - (glowPadding / 2.0f),
+						(float)exactBounds.w + (glowPadding * 2.0f),
+						(float)exactBounds.h + glowPadding
+					};
+
+					SDL_RenderTexture(Engine::GetInstance().render->renderer, introGlowTex, nullptr, &dstGlow);
+				}
+				SDL_Color textColor = { 255, 255, 255, textAlpha };
+				Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
+			}
+
 			SDL_Color textColor = { 255, 255, 255, textAlpha };
+
 			Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
 		}
 
-		SDL_Color textColor = { 255, 255, 255, textAlpha };
-
-		Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
+		return true;
 	}
-
-	return true;
 }
+
 bool GameScene::CleanUp() {
 	LOG("Freeing Game Scene");
 
@@ -660,7 +695,7 @@ bool GameScene::CleanUp() {
 	if (loadingThread.joinable()) {
 		loadingThread.join();
 	}
-		// Clean up map and entities
+	// Clean up map and entities
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
@@ -680,6 +715,8 @@ bool GameScene::CleanUp() {
 	UnloadTexture(texMapUI_CAT);
 	UnloadTexture(texInventoryUI_CAT);
 	UnloadTexture(texSkillUI_CAT);
+	UnloadTexture(texMenuAnim);
+
 	//Load Items
 	UnloadTexture(texItemKeyCastle);
 	UnloadTexture(texItemKeyForest);
@@ -811,45 +848,45 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::INV_ITEM_ORB:
 		updateLorePanel("STRENGTH_ORB", p && p->HasItem(ItemID::STRENGTH_ORB));
 		break;
-	case (int)GameUI_ID::SKILL_BOOK_1_1: 
+	case (int)GameUI_ID::SKILL_BOOK_1_1:
 		if (!inSkillPopUp)
 		{
-			updateSkillPopup("HEALTH_UP", SkillTree::HEALTH_UP); 
+			updateSkillPopup("HEALTH_UP", SkillTree::HEALTH_UP);
 		}
 		break;
 
-	case (int)GameUI_ID::SKILL_BOOK_1_2: 
+	case (int)GameUI_ID::SKILL_BOOK_1_2:
 		if (!inSkillPopUp)
 		{
-			updateSkillPopup("IFRAMES_UP", SkillTree::IFRAMES_UP); 
+			updateSkillPopup("IFRAMES_UP", SkillTree::IFRAMES_UP);
 		}
 		break;
 
 	case (int)GameUI_ID::SKILL_BOOK_2_1:
 		if (!inSkillPopUp)
 		{
-			updateSkillPopup("SPEED_UP", SkillTree::SPEED_UP); 
+			updateSkillPopup("SPEED_UP", SkillTree::SPEED_UP);
 		}
 		break;
 
-	case (int)GameUI_ID::SKILL_BOOK_2_2: 
+	case (int)GameUI_ID::SKILL_BOOK_2_2:
 		if (!inSkillPopUp)
 		{
 			updateSkillPopup("FAST_DASH", SkillTree::FAST_DASH);
-		}		
+		}
 		break;
 
-	case (int)GameUI_ID::SKILL_BOOK_3_1: 
+	case (int)GameUI_ID::SKILL_BOOK_3_1:
 		if (!inSkillPopUp)
 		{
-			updateSkillPopup("UP_ATTACK", SkillTree::UP_ATTACK); 
+			updateSkillPopup("UP_ATTACK", SkillTree::UP_ATTACK);
 		}
 		break;
 
 	case (int)GameUI_ID::SKILL_BOOK_3_2:
 		if (!inSkillPopUp)
 		{
-			updateSkillPopup("DOWN_ATTACK", SkillTree::DOWN_ATTACK); 
+			updateSkillPopup("DOWN_ATTACK", SkillTree::DOWN_ATTACK);
 		}
 		break;
 
@@ -1135,8 +1172,14 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 		currentMenuTab = GameMenuTab::NONE;
 	}
 	else {
-		// Otherwise, switch to the requested tab
+		bool wasClosed = (currentMenuTab == GameMenuTab::NONE);
 		currentMenuTab = tab;
+
+		if (wasClosed && (tab == GameMenuTab::INVENTORY || tab == GameMenuTab::MAP || tab == GameMenuTab::SKILL_TREE)) {
+			if (menuAnimSet.GetAnim("open")) {
+				menuAnimSet.GetAnim("open")->Reset();
+			}
+		}
 	}
 	bool shouldPause = (currentMenuTab != GameMenuTab::NONE);
 	Engine::GetInstance().sceneManager->SetGamePaused(shouldPause);
@@ -1179,23 +1222,22 @@ void GameScene::UpdateInventoryVisuals() {
 
 void GameScene::RefreshMenuUI() {
 	if (descPanel != nullptr) descPanel->text = "Select an item...";
+	bool isAnimFinished = true;
+	if (menuAnimSet.GetAnim("open")) {
+		isAnimFinished = menuAnimSet.GetAnim("open")->HasFinishedOnce();
+	}
+
 	bool showTopBar = (currentMenuTab == GameMenuTab::INVENTORY ||
 		currentMenuTab == GameMenuTab::MAP ||
-		currentMenuTab == GameMenuTab::SKILL_TREE);
+		currentMenuTab == GameMenuTab::SKILL_TREE) && isAnimFinished;
 	SetUIGroupVisible(topBarElements, showTopBar);
 
-	if (currentMenuTab == GameMenuTab::INVENTORY) {
-		UpdateInventoryVisuals();
-	}
+	if (currentMenuTab == GameMenuTab::INVENTORY) UpdateInventoryVisuals();
+	else if (currentMenuTab == GameMenuTab::SKILL_TREE) UpdateSkillVisuals();
 
-	else if (currentMenuTab == GameMenuTab::SKILL_TREE) {
-		UpdateSkillVisuals();
-	}
-
-	SetUIGroupVisible(inventoryUI, currentMenuTab == GameMenuTab::INVENTORY);
-	SetUIGroupVisible(mapUI, currentMenuTab == GameMenuTab::MAP);
-	SetUIGroupVisible(skillUI, currentMenuTab == GameMenuTab::SKILL_TREE);
-
+	SetUIGroupVisible(inventoryUI, currentMenuTab == GameMenuTab::INVENTORY && isAnimFinished);
+	SetUIGroupVisible(mapUI, currentMenuTab == GameMenuTab::MAP && isAnimFinished);
+	SetUIGroupVisible(skillUI, currentMenuTab == GameMenuTab::SKILL_TREE && isAnimFinished);
 
 	SetUIGroupVisible(pauseMainUI, currentMenuTab == GameMenuTab::PAUSE_MENU);
 	SetUIGroupVisible(pauseOptionsUI, currentMenuTab == GameMenuTab::PAUSE_OPTIONS);
@@ -1233,7 +1275,7 @@ void GameScene::UpdateUILanguage() {
 
 	if (pauseMainUI.size() >= 3) {
 		pauseMainUI[0]->text = langMgr->GetString("BTN_PAUSE_RESUME");
-		pauseMainUI[1]->text = langMgr->GetString("BTN_PAUSE_OPTIONS"); 
+		pauseMainUI[1]->text = langMgr->GetString("BTN_PAUSE_OPTIONS");
 		pauseMainUI[2]->text = langMgr->GetString("BTN_PAUSE_MAINMENU");
 	}
 	if (pauseOptionsUI.size() >= 4) {

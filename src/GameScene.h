@@ -126,6 +126,9 @@ public:
 	SDL_Texture* texPauseUI = nullptr;
 	SDL_Texture* texSkillUI = nullptr;
 
+	SDL_Texture* texMenuAnim = nullptr;
+	AnimationSet menuAnimSet;
+
 	SDL_Texture* texMapUI_CAT = nullptr;
 	SDL_Texture* texInventoryUI_CAT = nullptr;
 	SDL_Texture* texSkillUI_CAT = nullptr;
