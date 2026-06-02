@@ -107,6 +107,9 @@
     <Filter Include="Source Files\Game\Entity\Items\Sickle">
       <UniqueIdentifier>{22e68f4e-c50a-4419-a8d9-e8f508f3416e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Breakable Rock">
+      <UniqueIdentifier>{bbd9d6c7-70fb-4f32-8f25-6b1f87b2aa93}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Game\Entity\Bosses">
       <UniqueIdentifier>{7371f354-1e96-4b51-9cbb-019c10ada71a}</UniqueIdentifier>
     </Filter>
@@ -388,6 +391,9 @@
     <ClCompile Include="src\WallJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
+    <ClCompile Include="src\BreakableRock.cpp">
+      <Filter>Source Files\Game\Entity\Breakable Rock</Filter>
+    </ClCompile>
     <ClCompile Include="src\WinScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
@@ -609,6 +615,9 @@
     <ClInclude Include="src\CucaferaMutant.h" />
     <ClInclude Include="src\WallJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BreakableRock.h">
+      <Filter>Source Files\Game\Entity\Breakable Rock</Filter>
     </ClInclude>
     <ClInclude Include="src\WinScene.h">
       <Filter>Source Files\Game\Scenes</Filter>

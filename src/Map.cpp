@@ -48,6 +48,7 @@
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
 #include "WallJumpObj.h"
+#include "BreakableRock.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -1152,6 +1153,13 @@ void Map::SpawnEntities()
 				else if (entityType == std::string("WallJumpObj")) {
 					std::shared_ptr<WallJumpObj> walljumpobj = std::dynamic_pointer_cast<WallJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::WALLJUMP_OBJ));
 					if (walljumpobj != nullptr) walljumpobj->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("BreakableRock") || entityType == std::string("Roca")) {
+					std::shared_ptr<BreakableRock> rock = std::dynamic_pointer_cast<BreakableRock>(Engine::GetInstance().entityManager->CreateEntity(EntityType::BREAKABLE_ROCK));
+					if (rock != nullptr) {
+						rock->position = Vector2D(x + w / 2.0f, y + h / 2.0f);
+						rock->SetSize((int)w, (int)h);
+					}
 				}
 				else if (entityType == std::string("Npc"))
 				{

@@ -51,6 +51,7 @@ enum class EntityType
 	KEY_GATE,
 
 	SPECIALFLOOR,
+	BREAKABLE_ROCK,
 
 	UNKNOWN
 };
