@@ -126,6 +126,9 @@ public:
 	SDL_Texture* texPauseUI = nullptr;
 	SDL_Texture* texSkillUI = nullptr;
 
+	SDL_Texture* texMenuAnim = nullptr;
+	AnimationSet menuAnimSet;
+
 	SDL_Texture* texMapUI_CAT = nullptr;
 	SDL_Texture* texInventoryUI_CAT = nullptr;
 	SDL_Texture* texSkillUI_CAT = nullptr;
@@ -174,6 +177,7 @@ public:
 	// Level intro textures
 	SDL_Texture* introFrameTex = nullptr;
 	AnimationSet introFrameAnim;
+	SDL_Texture* introGlowTex = nullptr;
 
 	// Load screen textures
 	SDL_Texture* Rose_Sleep = nullptr;
@@ -208,6 +212,9 @@ private:
 	std::vector<std::shared_ptr<UIElement>> mapUI;
 	std::vector<std::shared_ptr<UIElement>> skillUI;
 
+	bool isMenuClosing = false;
+
+	// Descripti�n Panel
 	// Descriptión Panel
 	std::unordered_map<std::string, ItemLore> itemsLoreDB;
 	std::shared_ptr<UIElement> descPanel = nullptr;

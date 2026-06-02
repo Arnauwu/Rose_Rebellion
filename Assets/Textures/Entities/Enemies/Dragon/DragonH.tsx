@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.12.1" name="DragonH" tilewidth="1024" tileheight="1024" tilecount="180" columns="15">
+<tileset version="1.10" tiledversion="1.10.2" name="DragonH" tilewidth="1024" tileheight="1024" tilecount="180" columns="15">
  <image source="DragonH.png" trans="ffffff" width="15360" height="12288"/>
  <tile id="0">
   <animation>
@@ -120,21 +120,20 @@
  </tile>
  <tile id="165">
   <animation>
-   <frame tileid="165" duration="150"/>
-   <frame tileid="166" duration="150"/>
-   <frame tileid="167" duration="150"/>
-   <frame tileid="168" duration="150"/>
-   <frame tileid="170" duration="100"/>
-   <frame tileid="171" duration="100"/>
-   <frame tileid="172" duration="250"/>
-   <frame tileid="173" duration="250"/>
-   <frame tileid="174" duration="250"/>
-   <frame tileid="175" duration="250"/>
-   <frame tileid="176" duration="250"/>
-   <frame tileid="177" duration="250"/>
-   <frame tileid="178" duration="250"/>
-   <frame tileid="179" duration="250"/>
-   <frame tileid="169" duration="150"/>
+   <frame tileid="165" duration="300"/>
+   <frame tileid="166" duration="300"/>
+   <frame tileid="167" duration="300"/>
+   <frame tileid="168" duration="300"/>
+   <frame tileid="170" duration="200"/>
+   <frame tileid="171" duration="200"/>
+   <frame tileid="172" duration="300"/>
+   <frame tileid="173" duration="350"/>
+   <frame tileid="174" duration="350"/>
+   <frame tileid="175" duration="350"/>
+   <frame tileid="176" duration="350"/>
+   <frame tileid="177" duration="350"/>
+   <frame tileid="178" duration="350"/>
+   <frame tileid="179" duration="350"/>
   </animation>
  </tile>
 </tileset>

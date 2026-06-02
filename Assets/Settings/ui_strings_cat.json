@@ -23,5 +23,10 @@
     "TXT_LOADING": "Carregant",
     "INTRO_FOREST": "BOSC",
     "INTRO_MOUNTAIN": "MUNTANYA",
-    "INTRO_CATACOMBS": "CATACUMBES"
+    "INTRO_CATACOMBS": "CATACUMBES",
+
+"// --- INTERACT TEXT ---": "",
+    "INTERACT_NPC": "PARLAR {E}"
+
+
 }

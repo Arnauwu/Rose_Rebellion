@@ -430,6 +430,24 @@ bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const 
 	return ret;
 }
 
+bool Render::DrawTextureScaledSection(SDL_Texture* texture, const SDL_Rect& srcRect, const SDL_Rect& destRect) const
+{
+	if (texture == nullptr) return false;
+
+	SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
+	SDL_FRect dstFRect = { (float)destRect.x, (float)destRect.y, (float)destRect.w, (float)destRect.h };
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	if (!SDL_RenderTexture(renderer, texture, &srcFRect, &dstFRect))
+	{
+		LOG("Cannot draw scaled section. SDL_Error: %s", SDL_GetError());
+		return false;
+	}
+
+	return true;
+}
+
 bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
 {
 	bool ret = true;
