@@ -696,6 +696,9 @@ bool Map::Load(std::string path, std::string fileName)
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						newDoor.needsKey = (needsKeyProp != nullptr) ? needsKeyProp->value : false;
 
+						Properties::Property* requiresDoubleJump = obj->properties.GetProperty("RequiresDoubleJump");
+						newDoor.needsDoubleJump = (requiresDoubleJump != nullptr) ? requiresDoubleJump->value : false;
+
 						newDoor.requiredKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
@@ -1284,6 +1287,15 @@ bool Map::DoorRequiresGlide(PhysBody* door)
 	for (const auto& ndoor : mapData.doors)
 	{
 		if (ndoor.body == door) return ndoor.requiresGlide;
+	}
+	return false;
+}
+
+bool Map::DoorRequiresDoubleJump(PhysBody* door)
+{
+	for (const auto& ndoor : mapData.doors)
+	{
+		if (ndoor.body == door) return ndoor.needsDoubleJump;
 	}
 	return false;
 }

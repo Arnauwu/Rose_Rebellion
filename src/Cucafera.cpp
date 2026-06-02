@@ -343,6 +343,7 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b
 
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
+		physB->listener->currentHealth += 5;
 		isKnockedback = true;
 		break;
 

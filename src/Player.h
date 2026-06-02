@@ -102,6 +102,7 @@ private:
 	void RespawnFromVoid();
 	void Jump(float dt);
 	void Attack(float dt);
+	void RangedAttack(float dt);
 	void Glide();
 	void Dash();
 
@@ -112,6 +113,7 @@ private:
 
 	void CameraFollows();
 	CameraMode currentCameraMode = CameraMode::DYNAMIC;
+
 
 	//// Helpers
 	std::unordered_map<int, std::string> GetAliases(std::string name);
@@ -126,6 +128,8 @@ public:
 	float speed = 10.0f;
 	int dmgbuff = 0;
 	int defbuff = 0;
+
+	CameraController cameraController;
 
 	// Texture
 	SDL_Texture* texture = nullptr;
@@ -172,6 +176,7 @@ public:
 
 	// Dash
 	bool isDashing = false; // Flag to check if the player has dashed
+	bool dashUsed = false;
 	float dashForce = 30.0f;
 
 	Timer dashTimer;
@@ -216,6 +221,10 @@ public:
 	float flashIntervalMS = 100.0f;         
 	bool isVisible = true;
 
+	int hpCostPerShot = 10;
+	Timer rangedAttackCooldownTimer;
+	float rangedAttackCooldownMS = 1000.0f; // 1 second between shots
+
 private:
 	//Audio
 	int jumpFx;
@@ -258,6 +267,5 @@ private:
 	Death = 99
 	*/
 
-	CameraController cameraController;
 	Vector2D respawnPosition;
 };

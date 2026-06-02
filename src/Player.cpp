@@ -11,6 +11,7 @@
 #include "KeyGate.h"
 #include "Npc.h"
 
+#include "Projectile.h"
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -159,6 +160,13 @@ bool Player::Update(float dt)
 {
 	ZoneScoped;
 	
+	if (pbody == nullptr) return true;
+
+	if (Engine::GetInstance().entityManager->GetPlayer() == nullptr)
+	{
+		Engine::GetInstance().entityManager->SetPlayer(this);
+	}
+
 	if (isFrozen)
 	{
 		GetPhysicsValues();
@@ -183,8 +191,7 @@ bool Player::Update(float dt)
 		return true;
 	}
 
-	if (pbody == nullptr) return true;
-	Engine::GetInstance().entityManager->SetPlayer(this);
+
 
 	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
 
@@ -246,6 +253,8 @@ bool Player::Update(float dt)
 
 			Attack(dt);
 
+			RangedAttack(dt);
+
 			Glide();
 
 			Dash();
@@ -255,6 +264,8 @@ bool Player::Update(float dt)
 
 		if (onGround && !onWall && !onAir && !isdead) //Save LastSafePosition
 		{
+			dashUsed = false;
+
 			if (safePositionTimer.ReadMSec() >= safePositionInterval)
 			{
 
@@ -319,6 +330,7 @@ bool Player::Update(float dt)
 
 	return true;
 }
+
 
 bool Player::PostUpdate()
 {
@@ -756,6 +768,82 @@ void Player::Attack(float dt)
 	}
 }
 
+void Player::RangedAttack(float dt)
+{
+	bool rangedPressed = false;
+
+	// Keyboard H
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+		rangedPressed = true;
+
+	// Gamepad - B button (círculo)
+	if (Engine::GetInstance().input->IsGamepadConnected() &&
+		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_B) == KEY_DOWN)
+		rangedPressed = true;
+
+	if (!rangedPressed || isGliding) return;
+
+	// Verificar si hay cooldown activo o mana insuficiente
+	if (rangedAttackCooldownTimer.ReadMSec() < rangedAttackCooldownMS)
+	{
+		LOG("Ranged attack on cooldown or insufficient mana!");
+		return;
+	}
+
+	if (currentHealth < hpCostPerShot)
+	{
+		LOG("Insufficient health! Current: %d, Required: %d", currentHealth, hpCostPerShot);
+		return;
+	}
+
+	// Gastar mana
+	currentHealth -= hpCostPerShot;
+
+	// Determinar dirección
+	float dirX = lookingRight ? 1.0f : -1.0f;
+	float dirY = 0.0f;
+
+	// Detectar si hay entrada hacia arriba
+	bool lookUp = Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT;
+	if (Engine::GetInstance().input->IsGamepadConnected())
+	{
+		float lstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
+		if (lstickY < -0.5f) lookUp = true;
+	}
+
+	if (lookUp)
+	{
+		dirX = 0.0f;
+		dirY = -1.0f;
+	}
+
+	// Crear projectile
+	auto projectile = Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE);
+	Projectile* proj = dynamic_cast<Projectile*>(projectile.get());
+
+	if (proj != nullptr)
+	{
+		int launchX = (int)(position.getX() + dirX);
+		int launchY = (int)(position.getY() + dirY);
+		
+		// Establecer posición ANTES de llamar a Start()
+		proj->position.setX((float)launchX);
+		proj->position.setY((float)launchY);
+		
+		// Llamar a Awake() y Start() manualmente
+		proj->Awake();
+		proj->Start();
+		
+
+		proj->Launch(launchX, launchY, dirX, dirY);
+	}
+
+	// Iniciar cooldown
+	rangedAttackCooldownTimer.Start();
+
+	LOG("Ranged Attack launched! Mana remaining: %d/%d", currentHealth, maxHealth);
+}
+
 void Player::Glide()
 {
 	if (GameManager::GetInstance().gameState.glideUnlocked)
@@ -805,7 +893,8 @@ void Player::Dash()
 	// Start Dash
 	if (GameManager::GetInstance().gameState.dashUnlocked == true &&
 		dashPressed && isDashing == false &&
-		dashCooldownTimer.ReadMSec() > dashCooldownMS)
+		dashCooldownTimer.ReadMSec() > dashCooldownMS &&
+		dashUsed == false)
 	{
 		if (lookingRight == true)
 		{
@@ -823,6 +912,7 @@ void Player::Dash()
 
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
 		isDashing = true;
+		dashUsed = true;
 		dashTimer.Start();
 	}
 
@@ -855,7 +945,7 @@ void Player::Interact()
 
 	if (canInteract && interactuableBody != nullptr && interactPressed)
 	{
-		
+
 		if (interactuableBody->ctype == ColliderType::KEY_GATE)
 		{
 			KeyGate* gate = (KeyGate*)interactuableBody->listener;
@@ -881,31 +971,38 @@ void Player::Interact()
 		else if (interactuableBody->ctype == ColliderType::DOOR)
 		{
 			auto openDoorAndTransition = [&]()
-			{
-				Engine::GetInstance().audio->PlayFx(openDoor);
+				{
+					Engine::GetInstance().audio->PlayFx(openDoor);
 
-				if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
-					Engine::GetInstance().sceneManager->setNewMap = true;
-					return;
-				}
+					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
+						Engine::GetInstance().sceneManager->setNewMap = true;
+						return;
+					}
 
-				isFrozen = true;
+					isFrozen = true;
 
-				int cx, cy, doorW, doorH;
-				interactuableBody->GetPosition(cx, cy);
-				Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					int cx, cy, doorW, doorH;
+					interactuableBody->GetPosition(cx, cy);
+					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
 
-				auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
-				DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
-				if (doorAnim != nullptr) {
-					doorAnim->zOrder = -1;
-					doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
-				}
-				else {
-					isFrozen = false;
-					Engine::GetInstance().sceneManager->setNewMap = true;
-				}
-			};
+					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
+					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
+					if (doorAnim != nullptr) {
+						doorAnim->zOrder = -1;
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+					}
+					else {
+						isFrozen = false;
+						Engine::GetInstance().sceneManager->setNewMap = true;
+					}
+				};
+
+			bool requiresDoubleJump = Engine::GetInstance().map->DoorRequiresDoubleJump(interactuableBody);
+			if (requiresDoubleJump && !GameManager::GetInstance().gameState.doubleJumpUnlocked) {
+				Engine::GetInstance().audio->PlayFx(closedDoor);
+				Engine::GetInstance().hud->ShowNotification("You need to unlock Double Jump to enter.");
+				return;
+			}
 
 			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
 			if (isMaintenance) {
@@ -922,6 +1019,7 @@ void Player::Interact()
 			}
 
 			bool requiresKey = Engine::GetInstance().map->DoorNeedsKey(interactuableBody);
+
 			if (requiresKey)
 			{
 				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
@@ -953,7 +1051,7 @@ void Player::Interact()
 				openDoorAndTransition();
 			}
 		}
-		
+
 		else if (interactuableBody->ctype == ColliderType::NPC)
 		{
 			Npc* npc = (Npc*)interactuableBody->listener;
@@ -1187,25 +1285,7 @@ void Player::CameraFollows()
 	// ==========================================
 
 	// Manda la posición a CameraController
-	cameraController.Update(dt, targetCamPos, screenW, screenH, mapSize.getX(), mapSize.getY());
-	float camX, camY;
-	cameraController.GetCameraPosition(camX, camY);
-
-	// Lógica del Eje X (Común para ambos modos)
-	float targetCamX = -position.getX() + (screenW / 2.0f);
-	if (targetCamX > 0) targetCamX = 0;
-	float minCamX = -(mapSize.getX() - screenW);
-	if (targetCamX < minCamX) targetCamX = minCamX;
-
-	float currentCamX_f = Engine::GetInstance().render->camera.x;
-	if (dtSeconds > 0.0f) {
-		float lerpX = 8.0f * dtSeconds;
-		if (lerpX > 1.0f) lerpX = 1.0f;
-		currentCamX_f += (targetCamX - currentCamX_f) * lerpX;
-	}
-
-	Engine::GetInstance().render->camera.x = (int)currentCamX_f;
-	Engine::GetInstance().render->camera.y = (int)camY;
+	cameraController.Update(dt, targetCamPos);
 }
 
 void Player::SetCameraMode(CameraMode mode) {
@@ -1362,7 +1442,7 @@ void Player::UnlockSkill(SkillTree skill, int cost)
 	case SkillTree::FAST_DASH:
 		if (!state.stFastDash) {
 			state.stFastDash = true;
-			state.currentForceOrbs -= cost;
+		 state.currentForceOrbs -= cost;
 			AddItem(ItemID::STRENGTH_ORB, -cost);
 			this->dashForce += 15.0f;
 		}
@@ -1444,6 +1524,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	switch (physB->ctype)
 	{
 	case ColliderType::DANGER:
+		if (isDashing) return;
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead && !isInvincible)
 		{
@@ -1643,6 +1724,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::ENEMY:
+		if (isDashing) return;
 		if (!isInvincible && !isdead)
 		{
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
@@ -1656,6 +1738,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	case ColliderType::ENEMY_ATTACK:
+		if (isDashing) return;
 		LOG("Hit player");
 		if (!isInvincible && !isdead)
 		{
@@ -1692,7 +1775,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	ShapeType typeA = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeA);
 	ShapeType typeB = (ShapeType)(uintptr_t)Engine::GetInstance().physics->GetShapeUserData(shapeB);
 
-	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temportal? Fix
+	if (typeA == ShapeType::NONE && typeB != ShapeType::NONE) //Temporal? Fix
 	{
 		// TO DO: Con el rectangulo (Middle) se guarda correctamente en typeA, con ambos circulos se guarda en typeB porque los detecta en shapeB
 		typeA = typeB;

@@ -1,9 +1,12 @@
 #include "Engine.h"
 #include "Input.h"
 #include "Window.h"
-#include "render.h"
+#include "Render.h"
 #include "Log.h"
 #include "UIManager.h"
+#include <cmath>
+#include <algorithm>
+#include <cfloat>
 
 #define MAX_KEYS 300
 #define GAMEPAD_DEADZONE 0.25f
@@ -18,10 +21,20 @@ Input::Input() : Module()
 	memset(gamepadButtons, KEY_IDLE, sizeof(KeyState) * GAMEPAD_COUNT);
 	memset(gamepadAxes, 0, sizeof(float) * GAMEPAD_AXIS_COUNT);
 	memset(windowEvents, 0, sizeof(windowEvents));
-	mouseMotionX = mouseMotionY = mouseX = mouseY = 0;
+
+	mouseMotionX = 0;
+	mouseMotionY = 0;
+	mouseX = 0;
+	mouseY = 0;
+	gamepadConnected = false;
+	gamepad = nullptr;
+	navigationEnabled = false;
+	stickThresholdX = 0.7f;
+	stickThresholdY = 0.7f;
+	lastStickX = 0.0f;
+	lastStickY = 0.0f;
 }
 
-// Destructor
 Input::~Input()
 {
 	delete[] keyboard;
@@ -32,7 +45,6 @@ Input::~Input()
 	}
 }
 
-// Called before render is available
 bool Input::Awake()
 {
 	LOG("Init SDL input event system");
@@ -53,15 +65,13 @@ bool Input::Awake()
 	return ret;
 }
 
-// Called before the first frame
 bool Input::Start()
 {
 	SDL_StopTextInput(Engine::GetInstance().window->window);
 
-	// Try to connect first gamepad
 	int numJoysticks = 0;
 	const SDL_JoystickID* joystickIds = SDL_GetJoysticks(&numJoysticks);
-	
+
 	if (numJoysticks > 0)
 	{
 		gamepad = SDL_OpenGamepad(joystickIds[0]);
@@ -75,7 +85,6 @@ bool Input::Start()
 	return true;
 }
 
-// Called each loop iteration
 bool Input::PreUpdate()
 {
 	static SDL_Event event;
@@ -110,7 +119,6 @@ bool Input::PreUpdate()
 			mouseButtons[i] = KEY_IDLE;
 	}
 
-	// Update gamepad button states
 	UpdateGamepadButtons();
 
 	while (SDL_PollEvent(&event))
@@ -133,10 +141,12 @@ bool Input::PreUpdate()
 		case SDL_EVENT_WINDOW_RESTORED:
 			windowEvents[WE_SHOW] = true;
 			break;
+
 		case SDL_EVENT_WINDOW_RESIZED:
 		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 			Engine::GetInstance().uiManager->RecalculateAllUI();
 			break;
+
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			if (event.button.button >= 1 && event.button.button <= NUM_MOUSE_BUTTONS)
 				mouseButtons[event.button.button - 1] = KEY_DOWN;
@@ -189,6 +199,10 @@ bool Input::PreUpdate()
 		}
 	}
 
+	UpdateGamepadState();
+	UpdateGamepadButtons();
+	UpdateUINavigation();
+
 	return true;
 }
 
@@ -196,7 +210,6 @@ void Input::UpdateGamepadState()
 {
 	if (gamepad == nullptr) return;
 
-	// Update analog sticks and triggers
 	gamepadAxes[GAMEPAD_AXIS_LSTICK_X] = SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_LEFTX) / 32768.0f;
 	gamepadAxes[GAMEPAD_AXIS_LSTICK_Y] = SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_LEFTY) / 32768.0f;
 	gamepadAxes[GAMEPAD_AXIS_RSTICK_X] = SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_RIGHTX) / 32768.0f;
@@ -204,7 +217,6 @@ void Input::UpdateGamepadState()
 	gamepadAxes[GAMEPAD_AXIS_LT] = SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) / 32768.0f;
 	gamepadAxes[GAMEPAD_AXIS_RT] = SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) / 32768.0f;
 
-	// Apply deadzone
 	for (int i = 0; i < GAMEPAD_AXIS_COUNT; ++i)
 	{
 		if (fabs(gamepadAxes[i]) < GAMEPAD_DEADZONE)
@@ -218,19 +230,18 @@ void Input::UpdateGamepadButtons()
 {
 	if (gamepad == nullptr) return;
 
-	// Define button mappings
 	SDL_GamepadButton sdlButtons[] = {
-		SDL_GAMEPAD_BUTTON_SOUTH,		// A
-		SDL_GAMEPAD_BUTTON_EAST,		// B
-		SDL_GAMEPAD_BUTTON_WEST,		// X
-		SDL_GAMEPAD_BUTTON_NORTH,		// Y
-		SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,			// LB
-		SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,			// RB
-		SDL_GAMEPAD_BUTTON_BACK,		// BACK
-		SDL_GAMEPAD_BUTTON_START,		// START
-		SDL_GAMEPAD_BUTTON_LEFT_STICK,	// LSTICK
-		SDL_GAMEPAD_BUTTON_RIGHT_STICK, // RSTICK
-		SDL_GAMEPAD_BUTTON_GUIDE		// GUIDE
+		SDL_GAMEPAD_BUTTON_SOUTH,
+		SDL_GAMEPAD_BUTTON_EAST,
+		SDL_GAMEPAD_BUTTON_WEST,
+		SDL_GAMEPAD_BUTTON_NORTH,
+		SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,
+		SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,
+		SDL_GAMEPAD_BUTTON_BACK,
+		SDL_GAMEPAD_BUTTON_START,
+		SDL_GAMEPAD_BUTTON_LEFT_STICK,
+		SDL_GAMEPAD_BUTTON_RIGHT_STICK,
+		SDL_GAMEPAD_BUTTON_GUIDE
 	};
 
 	for (int i = 0; i < GAMEPAD_COUNT; ++i)
@@ -254,21 +265,45 @@ void Input::UpdateGamepadButtons()
 	}
 }
 
-KeyState Input::GetGamepadButton(GamepadButton button) const
+void Input::UpdateUINavigation()
 {
-	if (button < 0 || button >= GAMEPAD_COUNT)
-		return KEY_IDLE;
-	return gamepadButtons[button];
+	if (!navigationEnabled || !gamepadConnected) return;
+
+	float stickX = GetGamepadAxis(GAMEPAD_AXIS_LSTICK_X);
+	float stickY = GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
+
+	if (fabs(stickX) > stickThresholdX || fabs(stickY) > stickThresholdY)
+	{
+		int screenW = Engine::GetInstance().window->windowWidth;
+		int screenH = Engine::GetInstance().window->windowHeight;
+		
+		int moveX = (int)(stickX * 15.0f);
+		int moveY = (int)(stickY * 15.0f);
+		
+		mouseX += moveX;
+		mouseY += moveY;
+		
+		mouseX = std::max(0, std::min(mouseX, screenW - 1));
+		mouseY = std::max(0, std::min(mouseY, screenH - 1));
+
+		SDL_WarpMouseInWindow(Engine::GetInstance().window->window, (float)mouseX, (float)mouseY);
+	}
+
+	// Botón A simula click izquierdo - SIN SDL_PushEvent
+	if (GetGamepadButton(GAMEPAD_A) == KEY_DOWN)
+	{
+		mouseButtons[0] = KEY_DOWN;
+	}
+	else if (GetGamepadButton(GAMEPAD_A) == KEY_REPEAT)
+	{
+		mouseButtons[0] = KEY_REPEAT;
+	}
+	else if (GetGamepadButton(GAMEPAD_A) == KEY_UP)
+	{
+		mouseButtons[0] = KEY_UP;
+	}
 }
 
-float Input::GetGamepadAxis(GamepadAxis axis) const
-{
-	if (axis < 0 || axis >= GAMEPAD_AXIS_COUNT)
-		return 0.0f;
-	return gamepadAxes[axis];
-}
-
-// Called before quitting
 bool Input::CleanUp()
 {
 	LOG("Quitting SDL event subsystem");
@@ -287,7 +322,30 @@ bool Input::GetWindowEvent(EventWindow ev)
 	return windowEvents[ev];
 }
 
-// Functions to ensure mouse information is not lost when switching from windowed mode to full-screen mode
+KeyState Input::GetKey(int id) const
+{
+	return keyboard[id];
+}
+
+KeyState Input::GetMouseButtonDown(int id) const
+{
+	return mouseButtons[id - 1];
+}
+
+KeyState Input::GetGamepadButton(GamepadButton button) const
+{
+	if (button >= 0 && button < GAMEPAD_COUNT)
+		return gamepadButtons[button];
+	return KEY_IDLE;
+}
+
+float Input::GetGamepadAxis(GamepadAxis axis) const
+{
+	if (axis >= 0 && axis < GAMEPAD_AXIS_COUNT)
+		return gamepadAxes[axis];
+	return 0.0f;
+}
+
 Vector2D Input::GetMousePosition()
 {
 	float windowX, windowY;

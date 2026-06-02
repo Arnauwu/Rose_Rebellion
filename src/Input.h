@@ -4,7 +4,13 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_rect.h>
 #include "Vector2D.h"
+#include <memory>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <cfloat>
 
+#define MAX_KEYS 300
 #define NUM_MOUSE_BUTTONS 5
 
 enum EventWindow
@@ -50,68 +56,72 @@ enum GamepadAxis
 	GAMEPAD_AXIS_COUNT = 6
 };
 
+// Forward declaration
+class UIButton;
+
 class Input : public Module
 {
-
 public:
-
 	Input();
-
-	// Destructor
 	virtual ~Input();
 
-	// Called before render is available
+	// Lifecycle
 	bool Awake();
-
-	// Called before the first frame
 	bool Start();
-
-	// Called each loop iteration
 	bool PreUpdate();
-
-	// Called before quitting
 	bool CleanUp();
 
-	// Check key states (includes mouse and joy buttons)
-	KeyState GetKey(int id) const
-	{
-		return keyboard[id];
-	}
-
-	KeyState GetMouseButtonDown(int id) const
-	{
-		return mouseButtons[id - 1];
-	}
-
+	// Keyboard
+	KeyState GetKey(int id) const;
+	KeyState GetMouseButtonDown(int id) const;
 	void ClearMouseInput();
 
-	// Gamepad input methods
+	// Gamepad
 	KeyState GetGamepadButton(GamepadButton button) const;
 	float GetGamepadAxis(GamepadAxis axis) const;
 	bool IsGamepadConnected() const { return gamepadConnected; }
 
-	// Check if a certain window event happened
+	// Window events
 	bool GetWindowEvent(EventWindow ev);
 
-	// Get mouse / axis position
+	// Mouse
 	Vector2D GetMousePosition();
 	Vector2D GetMouseMotion();
 
+	// UI Navigation - Nueva API simplificada
+	void UpdateUINavigation();
+	void SetNavigationEnabled(bool enabled) { navigationEnabled = enabled; }
+	bool IsNavigationEnabled() const { return navigationEnabled; }
+
 private:
+	// Window events
 	bool windowEvents[WE_COUNT];
+
+	// Keyboard
 	KeyState* keyboard;
+	
+	// Mouse
 	KeyState mouseButtons[NUM_MOUSE_BUTTONS];
-	int	mouseMotionX;
+	int mouseMotionX;
 	int mouseMotionY;
 	int mouseX;
 	int mouseY;
 
 	// Gamepad
-	bool gamepadConnected = false;
-	SDL_Gamepad* gamepad = nullptr;
+	bool gamepadConnected;
+	SDL_Gamepad* gamepad;
 	KeyState gamepadButtons[GAMEPAD_COUNT];
 	float gamepadAxes[GAMEPAD_AXIS_COUNT];
 
+	// UI Navigation mejorada
+	bool navigationEnabled;
+	float stickThresholdX;
+	float stickThresholdY;
+	float lastStickX;
+	float lastStickY;
+
+	// Private methods
 	void UpdateGamepadState();
 	void UpdateGamepadButtons();
+	void SimulateMouseClick(int x, int y);
 };

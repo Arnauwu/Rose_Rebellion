@@ -214,7 +214,8 @@ private:
 
 	bool isMenuClosing = false;
 
-	// Descriptión Panel
+	// Descriptiï¿½n Panel
+	// DescriptiÃ³n Panel
 	std::unordered_map<std::string, ItemLore> itemsLoreDB;
 	std::shared_ptr<UIElement> descPanel = nullptr;
 
@@ -247,6 +248,7 @@ private:
 	std::string targetSpawnID = "";
 	float mapFadeTime = 500.0f;
 
+	std::shared_ptr<UIElement> skillPointsDisplay = nullptr;
 	//Threads 
 	std::thread loadingThread;
 	std::atomic<bool> isLoadFinished{ false };

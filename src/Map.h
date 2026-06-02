@@ -52,7 +52,6 @@ struct Door
 {
     PhysBody* body;
     std::string teleportTo;
-    bool needsKey;
     std::string uniqueId;
     bool underMaintenance;
     bool DoorClose;
@@ -63,6 +62,8 @@ struct Door
     int y;
     bool noAnimation = false;
     bool requiresGlide;
+    bool needsKey;
+    bool needsDoubleJump;
 
     KeyType requiredKey = KeyType::NONE;
     
@@ -233,6 +234,7 @@ public:
     std::string GetDoorUniqueId(PhysBody* door);
     bool DoorRequiresGlide(PhysBody* door);
     bool DoorNeedsKey(PhysBody* door);
+    bool DoorRequiresDoubleJump(PhysBody* door);
     bool DoorUnderMaintenance(PhysBody* door);
     bool DoorClosed(PhysBody* door);
     std::string PathInfo(PhysBody* path);

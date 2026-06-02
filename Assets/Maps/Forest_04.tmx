@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="153" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="35" nextobjectid="730">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="153" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="35" nextobjectid="735">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -35,7 +35,7 @@
  <tileset firstgid="134" name="F_Bosque_V6_04" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
   <image source="Forest/Fondo_Vigente/06_F_Ninfas/F_Bosque_V6_04.png" width="2304" height="1444"/>
  </tileset>
- <objectgroup id="18" name="Fondo1">
+ <objectgroup id="18" name="Fondo1" visible="0">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -51,7 +51,7 @@
   <object id="728" gid="131" x="19584" y="1792" width="2304" height="1444"/>
   <object id="729" gid="131" x="21888" y="1792" width="2304" height="1444"/>
  </objectgroup>
- <objectgroup id="20" name="Fondo2">
+ <objectgroup id="20" name="Fondo2" visible="0">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -69,7 +69,7 @@
   <object id="629" gid="1073741956" x="-1664" y="5632" width="7040" height="3584"/>
   <object id="726" gid="1073741956" x="18176" y="6016" width="3200" height="4096"/>
  </objectgroup>
- <objectgroup id="21" name="Fondo3">
+ <objectgroup id="21" name="Fondo3" visible="0">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -84,7 +84,7 @@
   <object id="634" gid="133" x="-896" y="1792" width="2304" height="2048"/>
   <object id="637" gid="133" x="4096" y="1920" width="4264" height="4676"/>
  </objectgroup>
- <objectgroup id="22" name="Fondo4">
+ <objectgroup id="22" name="Fondo4" visible="0">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -444,7 +444,7 @@
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="39"/>
-   <tile/>
+   <tile gid="30"/>
    <tile/>
    <tile/>
    <tile/>
@@ -753,7 +753,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="28"/>
    <tile gid="38"/>
    <tile/>
    <tile/>
@@ -1209,7 +1209,7 @@
    <tile gid="40"/>
    <tile gid="39"/>
    <tile gid="37"/>
-   <tile/>
+   <tile gid="30"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1519,8 +1519,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="44"/>
-   <tile gid="46"/>
+   <tile gid="37"/>
+   <tile gid="38"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1663,17 +1663,17 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="1073741897"/>
-   <tile gid="1073741898"/>
-   <tile gid="1073741899"/>
-   <tile gid="1073741900"/>
-   <tile gid="1073741901"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="1073741889"/>
-   <tile gid="1073741890"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="28"/>
+   <tile gid="45"/>
+   <tile gid="35"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2129,7 +2129,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="26"/>
    <tile/>
    <tile/>
    <tile gid="61"/>
@@ -2282,7 +2282,7 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="29"/>
+   <tile gid="37"/>
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
@@ -3010,7 +3010,7 @@
    <tile gid="40"/>
   </data>
  </layer>
- <objectgroup id="28" name="Fondo5    ">
+ <objectgroup id="28" name="Fondo5    " visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
@@ -3037,8 +3037,6 @@
   <object id="342" x="12800" y="1664" width="384" height="65.3333"/>
   <object id="343" x="11904" y="1024" width="384" height="70.6667"/>
   <object id="714" x="5376" y="1920" width="384" height="128"/>
-  <object id="715" x="5248" y="1280" width="256" height="128"/>
-  <object id="716" x="4096" y="1280" width="640" height="128"/>
   <object id="717" x="1792" y="2048" width="74" height="240.333"/>
   <object id="719" x="14976" y="1792" width="96" height="385.333"/>
  </objectgroup>
@@ -3108,10 +3106,10 @@
   <object id="283" x="8960" y="2048" width="256" height="128"/>
   <object id="284" x="8064" y="2048" width="512" height="128"/>
   <object id="292" x="5376" y="640" width="512" height="256"/>
-  <object id="293" x="5248" y="256" width="128" height="1024"/>
+  <object id="293" x="5248" y="256" width="128" height="896"/>
   <object id="294" x="5376" y="896" width="256" height="256"/>
   <object id="295" x="5632" y="896" width="128" height="128"/>
-  <object id="296" x="5376" y="1152" width="128" height="128"/>
+  <object id="296" x="5248" y="1152" width="256" height="256"/>
   <object id="297" x="5376" y="2304" width="512" height="128"/>
   <object id="298" x="5376" y="1792" width="512" height="128"/>
   <object id="299" x="2304" y="1792" width="512" height="128"/>
@@ -3135,8 +3133,13 @@
   <object id="710" x="7680" y="1024" width="384" height="74"/>
   <object id="711" x="6656" y="768" width="384" height="74"/>
   <object id="723" x="11264" y="1536" width="128" height="896"/>
+  <object id="730" x="4992" y="1664" width="128" height="128"/>
+  <object id="731" x="5120" y="1280" width="128" height="128"/>
+  <object id="732" x="4736" y="256" width="128" height="128"/>
+  <object id="733" x="5120" y="512" width="128" height="128"/>
+  <object id="734" x="4736" y="896" width="128" height="128"/>
  </objectgroup>
- <objectgroup id="33" name="Rampas">
+ <objectgroup id="33" name="Rampas" visible="0">
   <properties>
    <property name="Polygon" type="bool" value="true"/>
   </properties>
@@ -3144,7 +3147,7 @@
    <polygon points="0,0 1024,-512 1024,384 0,384"/>
   </object>
  </objectgroup>
- <objectgroup id="34" name="KeyGate">
+ <objectgroup id="34" name="KeyGate" visible="0">
   <properties>
    <property name="KeyGate" type="bool" value="true"/>
    <property name="KeyRegion" value="Bosque"/>
@@ -3153,7 +3156,7 @@
   </properties>
   <object id="725" x="4220" y="1268" width="308" height="532"/>
  </objectgroup>
- <layer id="31" name="GroundNavLayer" width="153" height="19">
+ <layer id="31" name="GroundNavLayer" width="153" height="19" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -6068,7 +6071,7 @@
    <tile gid="129"/>
   </data>
  </layer>
- <layer id="32" name="AirNavLayer" width="153" height="19">
+ <layer id="32" name="AirNavLayer" width="153" height="19" visible="0">
   <properties>
    <property name="Air" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -8983,7 +8986,7 @@
    <tile gid="129"/>
   </data>
  </layer>
- <objectgroup id="11" name="EntitiesSpawnPoints">
+ <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="528" name="Ninfa" type="Ninfa" x="16384" y="1024">
    <point/>
   </object>
@@ -9012,7 +9015,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns" visible="0">
+ <objectgroup id="15" name="PlayerSpawns">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
@@ -9034,7 +9037,7 @@
    </properties>
    <point/>
   </object>
-  <object id="702" name="Player" type="Player" x="4992" y="1664">
+  <object id="702" name="Player" type="Player" x="4980" y="180">
    <properties>
     <property name="FromRoom" type="file" value="Forest_03.tmx"/>
    </properties>
