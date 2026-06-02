@@ -65,7 +65,8 @@ public:
 	float hoverAmplitude = 4.0f;
 	float hoverSpeed = 1.5f;
 
-
+	// Fade
+	bool isFadingOut = false;
 	// Sounds
 	int deathSoundId;
 };

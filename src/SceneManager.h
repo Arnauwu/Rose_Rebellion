@@ -35,7 +35,7 @@ public:
     bool CleanUp() override;
 
     // Changes the current active scene
-    void ChangeScene(SceneID newScene, float fadeTime = 800.0f);
+    void ChangeScene(SceneID newScene, float fadeTime = 1000.0f);
 
     // Module UI override
     bool OnUIMouseClickEvent(UIElement* uiElement) override;

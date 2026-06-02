@@ -15,6 +15,8 @@ public:
     void AddFrame(const SDL_Rect& r, int durationMs);
     void SetLoop(bool v);
     void Reset();
+    void SetReverse(bool v);
+    bool IsReverse() const;
     bool HasFinishedOnce() const;
     void Update(float dt);
     const SDL_Rect& GetCurrentFrame() const;
@@ -26,6 +28,7 @@ private:
     int timeInFrameMs_ = 0;
     bool loop_ = true;
     bool finishedOnce_ = false;
+    bool isReverse_ = false;
 
     static SDL_Rect kEmpty_;
 };

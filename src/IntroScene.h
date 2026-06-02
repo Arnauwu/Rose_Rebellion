@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneBase.h"
 #include "Textures.h"
+#include <thread>
 
 struct SDL_Texture;
 class IntroScene : public SceneBase {
@@ -14,5 +15,6 @@ public:
     bool CleanUp() override;
 
     SDL_Texture* introTexture = nullptr;
-   
+private:
+    std::thread loadingThread;
 };

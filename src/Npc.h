@@ -31,5 +31,6 @@ private:
     int texW, texH;
     AnimationSet anims;
     SDL_Texture* interactIcon = nullptr;
+    SDL_Texture* glowTex = nullptr;
     float iconTimer = 0.0f;
 };

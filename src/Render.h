@@ -47,7 +47,7 @@ public:
 	bool DrawTextureScaled(SDL_Texture* texture, const SDL_Rect& destRect) const;
 	bool DrawTexture9Slice(SDL_Texture* texture, const SDL_Rect& destRect, int left, int right, int top, int bottom) const;
 	bool DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const SDL_Rect* section, SDL_FlipMode flip = SDL_FLIP_NONE, float adjustableScale = 1, double angle = 0, int pivotX = 0, int pivotY = 0) const;
-
+	bool DrawTextureScaledSection(SDL_Texture* texture, const SDL_Rect& srcRect, const SDL_Rect& destRect) const;
 
 	bool DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
 	bool DrawRectangleUnscaled(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;

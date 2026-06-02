@@ -1,5 +1,6 @@
 #pragma once
-#include "SceneBase.h" // Asegúrate de que este es el nombre correcto del archivo base de tus escenas
+#include "SceneBase.h" 
+#include <thread>
 
 class WinScene : public SceneBase {
 public:
@@ -13,4 +14,5 @@ public:
 
 private:
     bool isFadingOut;
+    std::thread loadingThread;
 };

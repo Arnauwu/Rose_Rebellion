@@ -109,8 +109,14 @@ bool Dragon::Update(float dt)
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())
 	{
-		pendingToDelete = true;
-		Engine::GetInstance().sceneManager->ChangeScene(SceneID::WIN);
+		if (!isFadingOut) {
+			Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, 1.5f);
+			isFadingOut = true;
+		}
+		else if (Engine::GetInstance().render->IsFadeComplete()) {
+			pendingToDelete = true;
+			Engine::GetInstance().sceneManager->ChangeScene(SceneID::WIN);
+		}
 	}
 
 	Draw(dt);

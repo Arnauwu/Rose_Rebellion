@@ -102,7 +102,7 @@ void SceneManager::ChangeScene(SceneID newScene, float fadeTime) {
     nextSceneID = newScene;
     isFadingOut = true;
     currentFadeTime = fadeTime;
-
+    if(currentSceneID != SceneID::INTRO)
     Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, fadeTime);
 }
 
