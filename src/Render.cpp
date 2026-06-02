@@ -216,10 +216,13 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 	SDL_FRect srcRect;
 	if (section != NULL)
 	{
-		srcRect.x = (float)section->x;
-		srcRect.y = (float)section->y;
-		srcRect.w = (float)section->w;
-		srcRect.h = (float)section->h;
+		const float epsilon = 0.01f; // Un valor pequeñísimo
+
+		srcRect.x = (float)section->x + epsilon;
+		srcRect.y = (float)section->y + epsilon;
+		srcRect.w = (float)section->w - (epsilon * 2.0f);
+		srcRect.h = (float)section->h - (epsilon * 2.0f);
+
 		src = &srcRect;
 	}
 
@@ -281,10 +284,13 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 	SDL_FRect srcRect;
 	if (section != NULL)
 	{
-		srcRect.x = (float)section->x;
-		srcRect.y = (float)section->y;
-		srcRect.w = (float)section->w;
-		srcRect.h = (float)section->h;
+		const float epsilon = 0.01f; // Un valor pequeñísimo
+
+		srcRect.x = (float)section->x + epsilon;
+		srcRect.y = (float)section->y + epsilon;
+		srcRect.w = (float)section->w - (epsilon * 2.0f);
+		srcRect.h = (float)section->h - (epsilon * 2.0f);
+
 		src = &srcRect;
 	}
 
@@ -403,10 +409,13 @@ bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const 
 	SDL_FRect srcRect;
 	if (section != NULL)
 	{
-		srcRect.x = (float)section->x;
-		srcRect.y = (float)section->y;
-		srcRect.w = (float)section->w;
-		srcRect.h = (float)section->h;
+		const float epsilon = 0.01f; // Un valor pequeñísimo
+
+		srcRect.x = (float)section->x + epsilon;
+		srcRect.y = (float)section->y + epsilon;
+		srcRect.w = (float)section->w - (epsilon * 2.0f);
+		srcRect.h = (float)section->h - (epsilon * 2.0f);
+
 		src = &srcRect;
 	}
 

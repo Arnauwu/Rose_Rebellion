@@ -37,7 +37,9 @@ bool IntroCinematicScene::Start() {
         textures->PreloadToRAM("Assets/Textures/UI/GameMenu/t_MapUI.png");
         textures->PreloadToRAM("Assets/Textures/UI/GameMenu/t_inventoryUI.png");
         textures->PreloadToRAM("Assets/Textures/UI/SkillUpgrade/t_skillUI.png");
+        textures->PreloadToRAM("Assets/Textures/UI/GameMenu/t_menuAnim.png");
 
+        // ADD PORTAITS
         textures->PreloadToRAM("Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
         textures->PreloadToRAM("Assets/Textures/UI/Dialogues/princess_portrait.png");
 

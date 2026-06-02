@@ -62,7 +62,8 @@ Player::~Player()
 bool Player::Awake()
 {
 	Engine::GetInstance().entityManager->SetPlayer(this);
-
+	canInteract = false;
+	interactuableBody = nullptr;
 	currentHealth = GameManager::GetInstance().gameState.currentHealth;
 	LOG("Player Awake: Posición final establecida en %f, %f", position.getX(), position.getY());
 	return true;
@@ -1469,6 +1470,9 @@ void Player::UnlockSkill(SkillTree skill, int cost)
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
+
+	canInteract = false;
+	interactuableBody = nullptr;
 	if (pbody != nullptr) {
 		pbody->listener = nullptr;
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
@@ -1805,7 +1809,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 
 		break;
 	case ColliderType::DOOR:
-		canInteract = false;																																																								
+		canInteract = false;
 		interactuableBody = nullptr;
 		break;
 	case ColliderType::KEY_GATE:
