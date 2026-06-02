@@ -13,11 +13,17 @@ void Animation::AddFrame(const SDL_Rect& r, int durationMs) {
 }
 
 void Animation::SetLoop(bool v) { loop_ = v; }
+void Animation::SetReverse(bool v) { isReverse_ = v; }
+bool Animation::IsReverse() const { return isReverse_; }
 
 void Animation::Reset() {
-    currentIndex_ = 0;
-    timeInFrameMs_ = 0;
     finishedOnce_ = false;
+    timeInFrameMs_ = 0;
+    if (isReverse_ && !frames_.empty()) {
+        currentIndex_ = static_cast<int>(frames_.size()) - 1;
+    } else {
+        currentIndex_ = 0;
+    }
 }
 
 bool Animation::HasFinishedOnce() const { return finishedOnce_ && !loop_; }
@@ -30,17 +36,22 @@ void Animation::Update(float dt) {
     while (timeInFrameMs_ >= frames_[currentIndex_].durationMs) {
         timeInFrameMs_ -= frames_[currentIndex_].durationMs;
 
-        if (currentIndex_ + 1 < static_cast<int>(frames_.size())) {
-            ++currentIndex_;
-        }
-        else {
-            if (loop_) {
-                currentIndex_ = 0;
+        if (!isReverse_) {
+            if (currentIndex_ + 1 < static_cast<int>(frames_.size())) {
+                ++currentIndex_;
             }
             else {
-                finishedOnce_ = true;
-                currentIndex_ = static_cast<int>(frames_.size()) - 1;
-                break;
+                if (loop_) currentIndex_ = 0;
+                else { finishedOnce_ = true; currentIndex_ = static_cast<int>(frames_.size()) - 1; break; }
+            }
+        }
+        else {
+            if (currentIndex_ > 0) {
+                --currentIndex_;
+            }
+            else {
+                if (loop_) currentIndex_ = static_cast<int>(frames_.size()) - 1;
+                else { finishedOnce_ = true; currentIndex_ = 0; break; }
             }
         }
     }

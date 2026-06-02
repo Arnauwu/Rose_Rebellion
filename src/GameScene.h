@@ -212,6 +212,8 @@ private:
 	std::vector<std::shared_ptr<UIElement>> mapUI;
 	std::vector<std::shared_ptr<UIElement>> skillUI;
 
+	bool isMenuClosing = false;
+
 	// Descriptión Panel
 	std::unordered_map<std::string, ItemLore> itemsLoreDB;
 	std::shared_ptr<UIElement> descPanel = nullptr;
