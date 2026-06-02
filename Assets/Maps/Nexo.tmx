@@ -7588,6 +7588,7 @@
   <object id="26" x="6152" y="750.667" width="368" height="528">
    <properties>
     <property name="NeedsKey" type="bool" value="true"/>
+    <property name="KeyRegion" value="boss"/>
     <property name="TeleportTo" type="file" value="Castle_Room_Storage.tmx"/>
    </properties>
   </object>

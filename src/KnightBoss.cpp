@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "HealthBarManager.h"
 #include "Physics.h"
+#include "Keys.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -174,6 +175,14 @@ bool KnightBoss::Update(float dt)
 			healthOrb->position.setX(this->position.getX() + (i * 100));
 			healthOrb->position.setY(this->position.getY());
 			healthOrb->Start();
+		}
+
+		std::shared_ptr<Keys> bossKey = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
+		if (bossKey != nullptr) {
+			bossKey->position.setX(this->position.getX() + 150.0f);
+			bossKey->position.setY(this->position.getY());
+			bossKey->SetKeyType(KeyType::BOSS);
+			bossKey->Start();
 		}
 	}
 

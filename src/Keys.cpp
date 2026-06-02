@@ -18,7 +18,7 @@ namespace
         case KeyType::CATACUMBA:
             return "CatacumbsKey";
         case KeyType::BOSS:
-            return "BossKey";
+            return "CastleKey";
         case KeyType::CASTLE:
         case KeyType::NONE:
         default:
