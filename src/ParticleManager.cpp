@@ -379,7 +379,7 @@ int ParticleManager::FindNextDeadParticle() {
 
 void ParticleManager::EmitAttack(float x, float y, bool lookingRight) {
     float life = 200.0f;
-    float scale = 2.0f;
+    float scale = 2.6f;
 
     if (attackSpriteSheet != nullptr) {
         int randomChoice = rand() % 2;
@@ -387,6 +387,9 @@ void ParticleManager::EmitAttack(float x, float y, bool lookingRight) {
         if (selectedAnim->GetFrameCount() > 0) {
             SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
+            if (selectedAnim == &animAttack2) {
+                x += lookingRight ? -45.0f : 45.0f;
+            }
         
             Emit(attackSpriteSheet, *selectedAnim, x, y, 0, 0,
                 life, 150.0f, true, 0.0f, flip, scale);
