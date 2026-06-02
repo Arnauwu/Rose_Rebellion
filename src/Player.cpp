@@ -264,6 +264,8 @@ bool Player::Update(float dt)
 
 		if (onGround && !onWall && !onAir && !isdead) //Save LastSafePosition
 		{
+			dashUsed = false;
+
 			if (safePositionTimer.ReadMSec() >= safePositionInterval)
 			{
 
@@ -891,7 +893,8 @@ void Player::Dash()
 	// Start Dash
 	if (GameManager::GetInstance().gameState.dashUnlocked == true &&
 		dashPressed && isDashing == false &&
-		dashCooldownTimer.ReadMSec() > dashCooldownMS)
+		dashCooldownTimer.ReadMSec() > dashCooldownMS &&
+		dashUsed == false)
 	{
 		if (lookingRight == true)
 		{
@@ -909,6 +912,7 @@ void Player::Dash()
 
 		Engine::GetInstance().audio->PlayFx(dashPrincesa);
 		isDashing = true;
+		dashUsed = true;
 		dashTimer.Start();
 	}
 
@@ -1520,6 +1524,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 	switch (physB->ctype)
 	{
 	case ColliderType::DANGER:
+		if (isDashing) return;
 		LOG("Collision with DANGER zone!");
 		if (!godMode && !isdead && !isInvincible)
 		{
@@ -1719,6 +1724,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		interactuableBody = physB;
 		break;
 	case ColliderType::ENEMY:
+		if (isDashing) return;
 		if (!isInvincible && !isdead)
 		{
 		Engine::GetInstance().audio->PlayFx(recibirDamage);
@@ -1732,6 +1738,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	case ColliderType::ENEMY_ATTACK:
+		if (isDashing) return;
 		LOG("Hit player");
 		if (!isInvincible && !isdead)
 		{

@@ -176,6 +176,7 @@ public:
 
 	// Dash
 	bool isDashing = false; // Flag to check if the player has dashed
+	bool dashUsed = false;
 	float dashForce = 30.0f;
 
 	Timer dashTimer;
