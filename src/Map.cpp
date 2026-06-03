@@ -1053,11 +1053,13 @@ void Map::SpawnEntities()
 				}
 				else if (entityType == std::string("SwordKnight"))
 				{
+					if (mapFileName == "Nexo.tmx" && GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
 					if (swordKnight != nullptr) swordKnight->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("ShieldKnight"))
 				{
+					if (mapFileName == "Nexo.tmx" && GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
 					if (shieldKnight != nullptr) shieldKnight->position = Vector2D(x, y);
 				}
@@ -1098,21 +1100,25 @@ void Map::SpawnEntities()
 				}
 				else if (entityType == std::string("KnightBoss"))
 				{
+					if (GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
 					if (knightBoss != nullptr) knightBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("NinfaBoss"))
 				{
+					if (GameManager::GetInstance().gameState.ninfaBossKilled) { continue; }
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					if (ninfaBoss != nullptr) ninfaBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("GwellBoss"))
 				{
+					if (GameManager::GetInstance().gameState.lizardBossKilled) { continue; }
 					std::shared_ptr<GwellBoss> gwellBoss = std::dynamic_pointer_cast<GwellBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_BOSS));
 					if (gwellBoss != nullptr) gwellBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Dragon"))
 				{
+					if (GameManager::GetInstance().gameState.dragonBossKilled) { continue; }
 					std::shared_ptr<Dragon> dragon = std::dynamic_pointer_cast<Dragon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DRAGON));
 					if (dragon != nullptr) dragon->position = Vector2D(x, y);
 				}

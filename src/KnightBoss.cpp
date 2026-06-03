@@ -11,8 +11,9 @@
 #include "Map.h"
 #include "Timer.h"
 #include "HealthBarManager.h"
-#include "Physics.h"
 #include "Keys.h"
+
+#include "GameManager.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -189,6 +190,7 @@ bool KnightBoss::Update(float dt)
 	if (anims.GetAnim("dead")->HasFinishedOnce())
 	{
 		pendingToDelete = true;
+		GameManager::GetInstance().gameState.knightBossKilled = true;
 		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 	}
 
@@ -434,7 +436,7 @@ void KnightBoss::SwordAttack()
 			Engine::GetInstance().audio->PlayFx(atacarFx);
 			anims.SetCurrent("attack");
 		}
-		velocity.x = 0;
+		velocity .x = 0;
 		damage = 30;
 
 		// 1. CREAR HITBOX: En el momento del impacto visual (ej: a los 500ms)

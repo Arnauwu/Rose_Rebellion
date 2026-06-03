@@ -15,6 +15,8 @@
 #include "HealthOrb.h"
 #include <cmath>
 
+#include "GameManager.h"
+
 #include "tracy/Tracy.hpp"
 
 NinfaMare::NinfaMare() : Enemy(EntityType::NINFA_MARE) // O EntityType::BOSS si tienes uno
@@ -144,6 +146,7 @@ bool NinfaMare::Update(float dt)
                 hOrb->Start();
                 Engine::GetInstance().entityManager->AddEntity(hOrb);
             }
+            GameManager::GetInstance().gameState.ninfaBossKilled = true;
             pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame
         }
     }
