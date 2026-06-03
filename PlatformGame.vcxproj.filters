@@ -394,6 +394,21 @@
     <ClCompile Include="src\Projectile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Correfoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KeyGate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LanguageManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WaveProjectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GwellProjectile.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -555,9 +570,6 @@
     <ClInclude Include="src\UIDialogueBox.h">
       <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClInclude>
-    <ClInclude Include="src\DialogueData.h">
-      <Filter>Source Files\Engine\Dialogue</Filter>
-    </ClInclude>
     <ClInclude Include="src\DialogueManager.h">
       <Filter>Source Files\Engine\Dialogue</Filter>
     </ClInclude>
@@ -615,6 +627,13 @@
     </ClInclude>
     <ClInclude Include="src\Projectile.h" />
     <ClCompile Include="src\Projectile.cpp" />
+    <ClInclude Include="src\Correfoc.h" />
+    <ClInclude Include="src\KeyGate.h" />
+    <ClInclude Include="src\LanguageManager.h" />
+    <ClInclude Include="src\WaveProjectile.h" />
+    <ClInclude Include="src\GwellProjectile.h">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">

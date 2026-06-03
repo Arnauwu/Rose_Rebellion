@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="32" nextobjectid="299">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="62" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="32" nextobjectid="300">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -17624,6 +17624,9 @@
    <properties>
     <property name="Jump" type="int" value="9"/>
    </properties>
+   <point/>
+  </object>
+  <object id="299" name="GwellBoss" type="GwellBoss" x="3968" y="4224">
    <point/>
   </object>
  </objectgroup>

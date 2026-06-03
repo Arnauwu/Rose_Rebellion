@@ -11,6 +11,8 @@
 #include "Map.h"
 #include "Timer.h"
 #include "Physics.h"
+#include "GwellProjectile.h"
+#include "Player.h"
 
 #include <random>
 
@@ -32,16 +34,17 @@ bool GwellBoss::Awake() {
 }
 
 bool GwellBoss::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{15,"walk"},{45,"takeOff"},{60,"air"},{90,"stomp"},{105,"claw"},{135,"shoot"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/GwellBoss/GwellBoss.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"jump"},{24,"jump2"},{48,"hurt"},{72,"dead"},{84,"start_assault"},{96,"assault"},{108,"attack"},{120,"idle"},{132,"walk"} }; // TO DO: Add new_anims (0-48) & start asssault
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/GwellBoss/GwellBoss.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png"); //TO DO: Cambiar a "Assets/Textures/Entities/Enemies/GwellBoss/GwellBoss.png"
+	
 	// Create Body
-	texW = 768;
-	texH = 768*2/3;
-	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW, texH, bodyType::DYNAMIC); // TO DO: Adjust Size & Geometric Shape
+	texW = 256;
+	texH = 170;
+	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW, texH, bodyType::DYNAMIC); // TO DO: Adjust Size & Geometric Shape
 
 	pbody->listener = this;
 	pbody->ctype = ColliderType::ENEMY;
@@ -51,12 +54,18 @@ bool GwellBoss::Start() {
 	pathfinding->ResetPath(GetTilePos());
 	pathFindingCooldown.Start();
 
-	// Boss  Stats  // TO DO: AJUSTAR
-	vision = 30;
-	speed = 1.5f;
+	//Map
+	minFloorX = position.getX() - 600.0f; //Floor
+	maxFloorX = position.getX() + 600.0f;
+	leftWallClingPos = Vector2D(minFloorX - 100.0f, position.getY() - 400.0f); // Left Wall
+	rightWallClingPos = Vector2D(maxFloorX + 100.0f, position.getY() - 400.0f); // Right Wall
+
+	// Boss Stats
+	vision = 40;
+	speed = 5.0f;
 	knockbackForce = 0.0f; //Immune to knockback
 
-	maxHealth = 1200;
+	maxHealth = 200;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -88,20 +97,6 @@ bool GwellBoss::Update(float dt)
 		Knockback();
 		ApplyPhysics();
 	}
-
-	//if (isdead && anims.GetCurrentName() != "dead") //TO DO UNCOMENT
-	//{
-	//	Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-	//	anims.GetAnim("dead")->SetLoop(false); 
-	//	anims.SetCurrent("dead");
-	//	pbody->ctype = ColliderType::UNKNOWN;
-	//}
-
-	//if (anims.GetAnim("dead")->HasFinishedOnce()) //TO DO UNCOMENT
-	//{
-	//	pendingToDelete = true;
-	//	// TO DO: END SCREEN / ANIM ???
-	//}
 
 	Draw(dt);
 
@@ -139,210 +134,76 @@ void GwellBoss::Move()
 	{
 		velocity = b2Vec2_zero; // Stays Put
 		
-		if (anims.GetCurrentName() != "takeOff") //TO DO CHANGE TO PHASE CHANGE
+		//if (anims.GetCurrentName() != "takeOff") anims.SetCurrent("takeOff");
+
+		if (currentPhase == GwellBossPhase::TRANSITION_TO_WALL)
 		{
-			anims.SetCurrent("takeOff");
-			anims.GetAnim("takeOff")->SetLoop(false);
-			switch (currentPhase) //TO DO CHANGE MUSIC TOO
-			{
-			case GROUND2:
-				currentPhase = AIR2;
-				pathfinding = std::make_shared<Pathfinding>(false); // Air Pathfinding
-				pathfinding->ResetPath(GetTilePos());
-				pathFindingCooldown.Start();
+			Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 
-				// Delete Hitbox
-				if (attackHitbox != nullptr) {
-					b2DestroyBody(attackHitbox->body);
-					attackHitbox = nullptr;
-				}
+			// Lerp hacia la pared objetivo
+			velocity.x = (targetWallPos.getX() - position.getX()) * 0.05f;
+			velocity.y = (targetWallPos.getY() - position.getY()) * 0.05f;
 
-				Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
-
-				hoverTimer.Start();
-				hoverCooldown.Start();
-				break;
-			case AIR2:
-				currentPhase = GROUND2;
-				Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f);
-				pbody->ctype = ColliderType::ENEMY;
-				break;
+			// Si llega a la posición objetivo
+			if (abs(position.getX() - targetWallPos.getX()) < 20.0f && abs(position.getY() - targetWallPos.getY()) < 20.0f) {
+				currentPhase = GwellBossPhase::WALL_CLING;
+				velocity = b2Vec2_zero;
+				isInvincible = false;
+				wallHitsTaken = 0;
+				lookingRight = (position.getX() < (minFloorX + maxFloorX) / 2.0f); // Mira al centro
+				attackCooldown.Start();
 			}
 		}
-		
-		if (anims.GetAnim("takeOff")->HasFinishedOnce()) {
-			isInvincible = false; 
-		}
-
 		return;
 	}
 
-	//Movement
-	if (pathfinding->pathTiles.empty() || playerTileDist > vision) {
-		if (currentPhase == GROUND2)
-		{
-			anims.SetCurrent("idle");
-		}
-		else
-		{
-			anims.SetCurrent("air");
-		}
-		velocity.x = 0;
-		velocity.y = 0;
-		return;
-	}
-
-	switch (currentPhase)
+	if (currentPhase == GwellBossPhase::WALL_CLING)
 	{
-	case GROUND2:
-		if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2) )) && startedAttacking == false)
-		{
-			anims.SetCurrent("walk");
+		velocity = b2Vec2_zero;
+		if (attackCooldown.ReadMSec() >= attackCooldownTime) Attack();
+		return;
+	}
 
-			if (pathfinding->pathTiles.back() == tilePos)
-			{
-				pathfinding->pathTiles.pop_back();
-				if (pathfinding->pathTiles.empty()) { return; }
-			}
+	// Movement normal en suelo
+	if (pathfinding->pathTiles.empty() || playerTileDist > vision) {
+		anims.SetCurrent("idle");
+		velocity.x = 0;
+		return;
+	}
 
-			Vector2D nextTile = pathfinding->pathTiles.back();
+	if (playerTileDist >= attackTileRange && startedAttacking == false)
+	{
+		anims.SetCurrent("walk");
 
-			if (nextTile.getX() > tilePos.getX())
-			{
-				velocity.x = speed;
-				lookingRight = true;
-			}
-			else if (nextTile.getX() < tilePos.getX())
-			{
-				velocity.x = -speed;
-				lookingRight = false;
-			}
-			else
-			{
-				velocity.x = 0;
-			}
-		}
-		else
-		{
-			if (attackCooldown.ReadMSec() >= attackCooldownTime)
-			{
-				//Look towards player
-				if (pathfinding->pathTiles.back() == tilePos)
-				{
-					pathfinding->pathTiles.pop_back();
-					if (pathfinding->pathTiles.empty()) { return; }
-				}
-
-				Vector2D nextTile = pathfinding->pathTiles.back();
-
-				if (nextTile.getX() > tilePos.getX())
-				{
-					lookingRight = true;
-				}
-				else if (nextTile.getX() < tilePos.getX())
-				{
-					lookingRight = false;
-				}
-
-				Attack();
-			}
-		}
-		break;
-	case AIR2:
-		//Vertical
-		if (hoverCooldown.ReadMSec() >= 250)
-		{
-			int posY = Engine::GetInstance().map->MapToWorld(tilePos.getX(), tilePos.getY()).getY();
-
-			float baseY;
-
-			if (pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 4))
-			{
-				// Get world Y of the tile BELOW the demon
-				baseY = posY + Engine::GetInstance().map->GetTileHeight() * 4; // tiles down
-			}
-			else
-			{
-				// Get world Y of the tile OVER the demon
-				baseY = posY - Engine::GetInstance().map->GetTileHeight() * 4; // tiles above
-			}
-
-			// Floating offset
-			float offset = sin(hoverTimer.ReadSec() * hoverSpeed) * hoverAmplitude;
-
-			// Final target
-			float targetY = baseY + offset;
-
-
-			int x, y;
-			pbody->GetPosition(x, y);
-
-			// Smoothly move toward target 
-			velocity.y += (targetY - y) * 0.1f;
-			velocity.y = SDL_clamp(velocity.y, -3.0f, 3.0f);
-
-			hoverCooldown.Start();
+		if (pathfinding->pathTiles.back() == tilePos) {
+			pathfinding->pathTiles.pop_back();
+			if (pathfinding->pathTiles.empty()) return;
 		}
 
+		Vector2D nextTile = pathfinding->pathTiles.back();
 
-
-		//Horitzontal
-		if (playerTileDist >= (attackTileRange + (texW / (Engine::GetInstance().map->GetTileWidth() * 2))) && startedAttacking == false)
-		{
-			anims.SetCurrent("air");
-
-			if (pathfinding->pathTiles.back() == tilePos)
-			{
-				pathfinding->pathTiles.pop_back();
-				if (pathfinding->pathTiles.empty()) { return; }
-			}
-
-			Vector2D nextTile = pathfinding->pathTiles.back();
-
-			if (nextTile.getX() > tilePos.getX())
-			{
-				velocity.x = speed;
-				lookingRight = true;
-			}
-			else if (nextTile.getX() < tilePos.getX())
-			{
-				velocity.x = -speed;
-				lookingRight = false;
-			}
-			else
-			{
-				velocity.x = 0;
-			}
+		if (nextTile.getX() > tilePos.getX()) {
+			velocity.x = speed;
+			lookingRight = true;
 		}
-		else
-		{
-			if (attackCooldown.ReadMSec() >= attackCooldownTime)
-			{
-				//Look towards player
-				if (pathfinding->pathTiles.back() == tilePos)
-				{
-					pathfinding->pathTiles.pop_back();
-					if (pathfinding->pathTiles.empty()) { return; }
-				}
-
-				Vector2D nextTile = pathfinding->pathTiles.back();
-
-				if (nextTile.getX() > tilePos.getX())
-				{
-					lookingRight = true;
-				}
-				else if (nextTile.getX() < tilePos.getX())
-				{
-					lookingRight = false;
-				}
-
-				Attack();
-			}
+		else if (nextTile.getX() < tilePos.getX()) {
+			velocity.x = -speed;
+			lookingRight = false;
 		}
 
-		break;
-	case MIXED2:
-		break;
+		// LIMITAR AL BORDE DE LA PLATAFORMA INFERIOR
+		if (position.getX() < minFloorX && velocity.x < 0) velocity.x = 0;
+		if (position.getX() > maxFloorX && velocity.x > 0) velocity.x = 0;
+	}
+	else
+	{
+		velocity.x = 0;
+		if (attackCooldown.ReadMSec() >= attackCooldownTime)
+		{
+			Player* player = Engine::GetInstance().entityManager->GetPlayer();
+			lookingRight = (player->position.getX() > position.getX());
+			Attack();
+		}
 	}
 }
 
@@ -378,17 +239,11 @@ void GwellBoss::Knockback()
 void GwellBoss::ApplyPhysics() {
 	switch (currentPhase)
 	{
-	case GROUND2:
+	case GROUNDD:
 		b2Vec2 currentVel = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, currentVel.y });
 		break;
-	case AIR2:
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
-		break;
-	case MIXED2:
-		break;
 	}
-
 }
 
 void GwellBoss::Draw(float dt)
@@ -435,70 +290,110 @@ void GwellBoss::Draw(float dt)
 
 void GwellBoss::Attack()
 {
-	switch (currentPhase)
+	if (isAttacking == false)
 	{
-	case GwellBossPhase::GROUND2:
-		if (isAttacking == false) 
+		if (startedAttacking == false)
 		{
-			if (startedAttacking == false)
-			{
-				anims.GetAnim(currentAttackAnim)->SetLoop(false);
-				anims.SetCurrent(currentAttackAnim);
-				attackWindUp.Start();
-				startedAttacking = true;
+			anims.GetAnim(currentAttackAnim)->SetLoop(false);
+			anims.SetCurrent(currentAttackAnim);
+			attackWindUp.Start();
+			startedAttacking = true;
+		}
+
+		if (attackWindUp.ReadMSec() >= attackWindupTime)
+		{
+			isAttacking = true;
+
+			if (attackHitbox != nullptr) {
+				b2DestroyBody(attackHitbox->body);
+				attackHitbox = nullptr;
 			}
 
-			// CreateAttack
-			if (attackWindUp.ReadMSec() >= attackWindupTime) 
+			Player* player = Engine::GetInstance().entityManager->GetPlayer();
+			Vector2D playerPos = player->position;
+
+			if (currentPhase == GwellBossPhase::GROUNDD)
 			{
-				isAttacking = true;
-
-				// Delete Hitbox (In case it didn't correctly delete)
-				if (attackHitbox != nullptr) {
-					b2DestroyBody(attackHitbox->body);
-					attackHitbox = nullptr;
-				}
-
-				// AttackSize
-				int attW = 0, attH = 0, hX = 0, hY = 0;
-				if (currentAttack == 1)
+				if (currentAttack == 1) // Tongue Attack
 				{
-					attW = 150; attH = texH;
-					hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
-					hY = position.getY();
+					int attW = 400; int attH = 40;
+					int hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
+					int hY = position.getY() + 30; // Height of the mouth
+
+					attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
+					attackHitbox->listener = this;
+					attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
 				}
-				else if (currentAttack == 2)
+				else if (currentAttack == 2) // Toxic Ball Projectile
 				{
-					attW = 300; attH = 100;
-					hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
-					hY = position.getY() + texH/2 - attH/2;
+					auto projEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_PROJECTILE);
+					GwellProjectile* proj = dynamic_cast<GwellProjectile*>(projEntity.get());
+					if (proj) {
+						Vector2D spawnPos = position;
+						spawnPos.setX(lookingRight ? position.getX() + texW / 2 : position.getX() - texW / 2);
+						Vector2D dir = playerPos - spawnPos;
+
+						proj->Awake();
+						proj->Start();
+						proj->Launch(spawnPos, dir);
+					}
 				}
-				else if (currentAttack == 3)
+				else if (currentAttack == 3) // Double Swipe
 				{
-					Player* player = Engine::GetInstance().entityManager->GetPlayer();
-					Vector2D playerPos = player->GetPosition();
+					int attW = 140; int attH = 150;
+					int hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
 
-					attW = 300; attH = 100;
-					hX = playerPos.getX();
-					hY = position.getY() + texH / 2 - attH / 2;
+					attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, position.getY(), attW, attH, bodyType::KINEMATIC);
+					attackHitbox->listener = this;
+					attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
 				}
+			}
+			else if (currentPhase == GwellBossPhase::WALL_CLING)
+			{
+				Vector2D spawnPos = position;
+				spawnPos.setX(lookingRight ? position.getX() + 50 : position.getX() - 50);
 
+				Vector2D baseDir = (playerPos - spawnPos).normalized();
+				float baseAngle = atan2(baseDir.getY(), baseDir.getX());
 
-				// Create attackHitbox
-				attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
+				for (int i = -1; i <= 1; i++) {
+					auto projEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_PROJECTILE);
+					GwellProjectile* proj = dynamic_cast<GwellProjectile*>(projEntity.get());
+					if (proj) {
+						proj->Awake();
+						proj->Start();
+						float angle = baseAngle + (i * 0.35f);
+						Vector2D dir(cos(angle), sin(angle));
+						proj->Launch(spawnPos, dir);
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		if (anims.GetAnim(currentAttackAnim)->HasFinishedOnce())
+		{
+			if (currentAttack == 3 && clawStep == 1)
+			{
+				// Second attack
+				clawStep = 2;
+				anims.GetAnim(currentAttackAnim)->Reset();
+
+				if (attackHitbox != nullptr) b2DestroyBody(attackHitbox->body);
+
+				int attW = 160; int attH = 160;
+				int hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
+				attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, position.getY(), attW, attH, bodyType::KINEMATIC);
 				attackHitbox->listener = this;
 				attackHitbox->ctype = ColliderType::ENEMY_ATTACK;
-				}
-		}
-		else
-		{
-			// Attack End
-			if (anims.GetAnim(currentAttackAnim)->HasFinishedOnce())
+			}
+			else
 			{
 				isAttacking = false;
-				anims.SetCurrent("idle");
+				clawStep = 0;
+				if (currentPhase == GwellBossPhase::GROUNDD) anims.SetCurrent("idle");
 
-				// Delete Hitbox
 				if (attackHitbox != nullptr) {
 					b2DestroyBody(attackHitbox->body);
 					attackHitbox = nullptr;
@@ -509,128 +404,51 @@ void GwellBoss::Attack()
 				nextAttackSelected = false;
 			}
 		}
-
-		
-		break;
-	case GwellBossPhase::AIR2:
-		if (isAttacking == false)
-		{
-			if (startedAttacking == false)
-			{
-				anims.GetAnim(currentAttackAnim)->SetLoop(false);
-				anims.SetCurrent(currentAttackAnim);
-				attackWindUp.Start();
-				startedAttacking = true;
-			}
-
-			// CreateAttack
-			if (attackWindUp.ReadMSec() >= attackWindupTime)
-			{
-				isAttacking = true;
-
-				if (currentAttack == 1)
-				{
-					// Create Projectiles
-					for (int i = 0; i < 3; i++)
-					{
-						/*std::shared_ptr<GwellBossProjectile> projectile = std::dynamic_pointer_cast<GwellBossProjectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_BOSS_PROJECTILE));
-						Vector2D pos; pos.setX(lookingRight ? position.getX() + texW / 2 - 64 * (1 - i) : position.getX() - texW / 2 + 64 * (1 - i));
-						pos.setY(position.getY() + 64 * (1 - i));
-						projectile->position = pos;
-						projectile->Start();*/
-					}
-
-				}
-				else if (currentAttack == 2)
-				{
-					pbody->ctype = ColliderType::ENEMY_ATTACK;
-					//TO DO Make it Dive
-				}
-			}
-		}
-		else
-		{
-			// Attack End
-			if (anims.GetAnim(currentAttackAnim)->HasFinishedOnce())
-			{
-				isAttacking = false;
-				anims.SetCurrent("air");
-
-				if (currentAttack == 2)
-				{
-					pbody->ctype = ColliderType::ENEMY;
-				}
-
-				attackCooldown.Start();
-				startedAttacking = false;
-				nextAttackSelected = false;
-			}
-		}
-		break;
-	case GwellBossPhase::MIXED2:
-
-		break;
 	}
 }
 
 void GwellBoss::SelectAttack()
 {
-	if (nextAttackSelected)
-	{
-		return;
-	}
+	if (nextAttackSelected) return;
+	
 	switch (currentPhase)
 	{
-	case GwellBossPhase::GROUND2:
+	case GwellBossPhase::GROUNDD:
 		currentAttack = GenerateRandomNumber(1, 3);
-		switch (currentAttack)			// TO DO Adjust COOLDOWN / WINDUP / DAMAGE
+		switch (currentAttack)		
 		{
-		case 1: // Claw
+		case 1: // Tongue Lash (Long Range)
+			damage = 15;
+			attackCooldownTime = 1500.0f;
+			attackWindupTime = 600.0f;
+			attackTileRange = 6;
+			currentAttackAnim = "idle"; // TO DO: Cambiar por el de la lengua
+			break;
+		case 2: // Toxic Ball (Projectile)
 			damage = 20;
-			attackCooldownTime = 500.0f;
-			attackWindupTime = 750.0f;
-			attackTileRange = 1;
-			currentAttackAnim = "claw";
-			break;
-		case 2: //Tail
-			damage = 10;
-			attackCooldownTime = 1000.0f;
-			attackWindupTime = 750.0f;
-			attackTileRange = 3;
-			currentAttackAnim = "claw"; //TO DO CHANGE
-			break;
-		case 3: //Ground Spikes
-			damage = 30;
 			attackCooldownTime = 2000.0f;
-			attackWindupTime = 1800.0f;
-			attackTileRange = 5;
-			currentAttackAnim = "stomp";
+			attackWindupTime = 800.0f;
+			attackTileRange = 8;
+			currentAttackAnim = "idle"; // TO DO: Cambiar por el shoot
+			break;
+		case 3: // Double Swipe (Short Range)
+			damage = 10;
+			attackCooldownTime = 1500.0f;
+			attackWindupTime = 400.0f;
+			attackTileRange = 2;
+			currentAttackAnim = "idle"; // TO DO: Cambiar por el claw
+			clawStep = 1; // Start combo
 			break;
 		}
 		break;
 
-	case GwellBossPhase::AIR2:
-		currentAttack = GenerateRandomNumber(1, 1); // TODO RESTORE
-		switch (currentAttack)			// TO DO Adjust COOLDOWN / WINDUP / DAMAGE
-		{
-		case 1: // Shoot
-			damage = 0;
-			attackCooldownTime = 250.0f;
-			attackWindupTime = 100.0f;
-			attackTileRange = 5;
-			currentAttackAnim = "shoot";
-			break;
-		case 2: //Dive
-			damage = 50;
-			attackCooldownTime = 1000.0f;
-			attackWindupTime = 500.0f;
-			attackTileRange = 5;
-			currentAttackAnim = "claw"; // TOOD CHANGE
-			break;
-		}
-		break;
-	case GwellBossPhase::MIXED2:
-
+	case GwellBossPhase::WALL_CLING:
+		currentAttack = 1;
+		damage = 15;
+		attackCooldownTime = 2500.0f;
+		attackWindupTime = 500.0f;
+		attackTileRange = 10;
+		currentAttackAnim = "shoot";
 		break;
 	}
 	nextAttackSelected = true;
@@ -646,32 +464,51 @@ int GwellBoss::GenerateRandomNumber(int minNumber, int maxNumber)
 	return randomNumber;
 }
 
-void GwellBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
-	if (physA == attackHitbox)
-	{
-		return;
-	}
-
+void GwellBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
+{
+	if (physA == attackHitbox) return;
 
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
 		if (isInvincible == false)
 		{
-			TakeDamage(physB->listener->damage);
-			isKnockedback = true;
-			if (currentHealth <= maxHealth * 2 / 3) //Change Phase 66% //TO DO: Adjust Health Values
+			if (currentPhase == GwellBossPhase::WALL_CLING)
 			{
-				isInvincible = true;
+				wallHitsTaken++;
+				if (wallHitsTaken >= maxWallHits)
+				{
+					currentPhase = GwellBossPhase::GROUNDD;
+					Engine::GetInstance().physics->SetGravityScale(pbody, 1.0f);
+					isKnockedback = true;
+					knockbackTime = 1500.0f;
+					hasDoneWallPhase = true;
+				}
 			}
-			else if (currentHealth <= maxHealth * 1 / 3) // 33%
+			else
 			{
-				isInvincible = true;
+				TakeDamage(physB->listener->damage);
+				isKnockedback = true;
+
+				// If health <50% jump to the wall
+				if (currentHealth <= maxHealth * 0.5f && !hasDoneWallPhase && currentPhase == GwellBossPhase::GROUNDD)
+				{
+					currentPhase = GwellBossPhase::TRANSITION_TO_WALL;
+					isInvincible = true;
+
+					// Wall more near
+					float distLeft = abs(position.getX() - leftWallClingPos.getX());
+					float distRight = abs(position.getX() - rightWallClingPos.getX());
+					targetWallPos = (distLeft < distRight) ? leftWallClingPos : rightWallClingPos;
+
+					if (attackHitbox != nullptr) {
+						b2DestroyBody(attackHitbox->body);
+						attackHitbox = nullptr;
+					}
+					isAttacking = false;
+				}
 			}
 		}
-		break;
-
-	default:
 		break;
 	}
 }
