@@ -398,8 +398,8 @@ bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const 
 
 	// SDL3 uses float rects for rendering
 	SDL_FRect rect;
-	rect.x = (float)((camera.x + dest->x) * scale) * zoomLevel;
-	rect.y = (float)((camera.y + dest->y) * scale) * zoomLevel;
+	rect.x = std::round((float)((camera.x + dest->x) * scale) * zoomLevel);
+	rect.y = std::round((float)((camera.y + dest->y) * scale) * zoomLevel);
 	rect.w = (float)(dest->w * scale * adjustableScale) * zoomLevel;
 	rect.h = (float)(dest->h * scale * adjustableScale) * zoomLevel;
 

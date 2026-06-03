@@ -975,6 +975,8 @@ void Player::Interact()
 				{
 					Engine::GetInstance().audio->PlayFx(openDoor);
 
+					canInteract = false;
+
 					if (Engine::GetInstance().map->DoorHasNoAnimation(interactuableBody)) {
 						Engine::GetInstance().sceneManager->setNewMap = true;
 						return;
