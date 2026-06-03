@@ -1706,6 +1706,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		physB->GetPosition(spX, spY);
 		respawnPosition = Vector2D((float)spX, (float)spY);
 
+		this->currentHealth = maxHealth;
+
 		auto& gameState = GameManager::GetInstance().gameState;
 		gameState.playerPosition = respawnPosition;
 		gameState.currentHealth = this->currentHealth;

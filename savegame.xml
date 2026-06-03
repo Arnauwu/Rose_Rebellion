@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="60" maxHealth="100" keyCount="0" currentForceOrbs="10" />
-	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="false" />
+	<PlayerStats currentHealth="40" maxHealth="100" keyCount="0" currentForceOrbs="20" />
+	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="true" />
 	<WorldState currentMap="Forest_01.tmx">
 		<Position x="11200" y="2174" />
 	</WorldState>
