@@ -48,6 +48,7 @@
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
 #include "WallJumpObj.h"
+#include "BreakableRock.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -689,9 +690,13 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.body = collider;
 						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo") ? obj->properties.GetProperty("TeleportTo")->value2 : "";
 
-						newDoor.uniqueId = mapFileName + "_" + std::to_string((int)obj->id);
+						Properties::Property* unlockIdProp = obj->properties.GetProperty("UnlockID");
+						newDoor.uniqueId = unlockIdProp != nullptr ? unlockIdProp->value2 : mapFileName + "_" + std::to_string((int)obj->id);
 						newDoor.width = (int)obj->width;
 						newDoor.height = (int)obj->height;
+
+						Properties::Property* spawnIDProp = obj->properties.GetProperty("SpawnID");
+						newDoor.spawnID = (spawnIDProp != nullptr) ? spawnIDProp->value2 : "";
 
 						Properties::Property* needsKeyProp = obj->properties.GetProperty("NeedsKey");
 						newDoor.needsKey = (needsKeyProp != nullptr) ? needsKeyProp->value : false;
@@ -701,9 +706,11 @@ bool Map::Load(std::string path, std::string fileName)
 
 						newDoor.requiredKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
+						bool doorUnlocked = false;
 						for (const std::string& unlockedId : GameManager::GetInstance().gameState.openedDoors) {
 							if (unlockedId == newDoor.uniqueId) {
 								newDoor.needsKey = false;
+								doorUnlocked = true;
 								break;
 							}
 						}
@@ -712,7 +719,7 @@ bool Map::Load(std::string path, std::string fileName)
 						newDoor.underMaintenance = (maintenanceProp != nullptr) ? maintenanceProp->value : false;
 
 						Properties::Property* closedProp = obj->properties.GetProperty("DoorClosed");
-						newDoor.DoorClose = (closedProp != nullptr) ? closedProp->value : false;
+						newDoor.DoorClose = doorUnlocked ? false : ((closedProp != nullptr) ? closedProp->value : false);
 
 						Properties::Property* noAnimProp = obj->properties.GetProperty("NoAnimation");
 						newDoor.noAnimation = (noAnimProp != nullptr) ? noAnimProp->value : false;
@@ -1046,11 +1053,13 @@ void Map::SpawnEntities()
 				}
 				else if (entityType == std::string("SwordKnight"))
 				{
+					if (mapFileName == "Nexo.tmx" && GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<SwordKnight> swordKnight = std::dynamic_pointer_cast<SwordKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SWORD_KNIGHT));
 					if (swordKnight != nullptr) swordKnight->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("ShieldKnight"))
 				{
+					if (mapFileName == "Nexo.tmx" && GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<ShieldKnight> shieldKnight = std::dynamic_pointer_cast<ShieldKnight>(Engine::GetInstance().entityManager->CreateEntity(EntityType::SHIELD_KNIGHT));
 					if (shieldKnight != nullptr) shieldKnight->position = Vector2D(x, y);
 				}
@@ -1091,21 +1100,25 @@ void Map::SpawnEntities()
 				}
 				else if (entityType == std::string("KnightBoss"))
 				{
+					if (GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
 					if (knightBoss != nullptr) knightBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("NinfaBoss"))
 				{
+					if (GameManager::GetInstance().gameState.ninfaBossKilled) { continue; }
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					if (ninfaBoss != nullptr) ninfaBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("GwellBoss"))
 				{
+					if (GameManager::GetInstance().gameState.lizardBossKilled) { continue; }
 					std::shared_ptr<GwellBoss> gwellBoss = std::dynamic_pointer_cast<GwellBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_BOSS));
 					if (gwellBoss != nullptr) gwellBoss->position = Vector2D(x, y);
 				}
 				else if (entityType == std::string("Dragon"))
 				{
+					if (GameManager::GetInstance().gameState.dragonBossKilled) { continue; }
 					std::shared_ptr<Dragon> dragon = std::dynamic_pointer_cast<Dragon>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DRAGON));
 					if (dragon != nullptr) dragon->position = Vector2D(x, y);
 				}
@@ -1152,6 +1165,13 @@ void Map::SpawnEntities()
 				else if (entityType == std::string("WallJumpObj")) {
 					std::shared_ptr<WallJumpObj> walljumpobj = std::dynamic_pointer_cast<WallJumpObj>(Engine::GetInstance().entityManager->CreateEntity(EntityType::WALLJUMP_OBJ));
 					if (walljumpobj != nullptr) walljumpobj->position = Vector2D(x, y);
+				}
+				else if (entityType == std::string("BreakableRock") || entityType == std::string("Roca")) {
+					std::shared_ptr<BreakableRock> rock = std::dynamic_pointer_cast<BreakableRock>(Engine::GetInstance().entityManager->CreateEntity(EntityType::BREAKABLE_ROCK));
+					if (rock != nullptr) {
+						rock->position = Vector2D(x + w / 2.0f, y + h / 2.0f);
+						rock->SetSize((int)w, (int)h);
+					}
 				}
 				else if (entityType == std::string("Npc"))
 				{

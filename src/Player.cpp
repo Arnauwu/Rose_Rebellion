@@ -37,7 +37,7 @@ namespace
 		case KeyType::CATACUMBA:
 			return "You need to find the Catacombs Key.";
 		case KeyType::BOSS:
-			return "You need to find the Boss Key.";
+			return "You need to find the Castle Key.";
 		case KeyType::CASTLE:
 			return "You need to find the Castle Key.";
 		case KeyType::NONE:

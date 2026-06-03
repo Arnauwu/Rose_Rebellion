@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="58" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="115">
+<map version="1.10" tiledversion="1.12.0" orientation="orthogonal" renderorder="right-down" width="58" height="32" tilewidth="128" tileheight="128" infinite="0" nextlayerid="22" nextobjectid="115">
  <tileset firstgid="1" name="Atlas_Pasillo_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Pasillo_01.png" width="1024" height="1024"/>
  </tileset>
@@ -15010,7 +15010,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="9" name="Door" visible="0">
+ <objectgroup id="9" name="Door">
   <properties>
    <property name="Door" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -15019,6 +15019,7 @@
   <object id="9" x="6525.21" y="3430.85" width="385.243" height="539.727">
    <properties>
     <property name="DoorClosed" type="bool" value="true"/>
+    <property name="NoAnimation" type="bool" value="true"/>
     <property name="TeleportTo" type="file" value="Castle.tmx"/>
    </properties>
   </object>
@@ -15051,7 +15052,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="16" name="PlayerSpawns" visible="0">
+ <objectgroup id="16" name="PlayerSpawns">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

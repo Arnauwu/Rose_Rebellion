@@ -16,6 +16,7 @@
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
 #include "WallJumpObj.h"
+#include "BreakableRock.h"
 
 #include "SavePoint.h"
 #include "Door.h"
@@ -224,6 +225,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::WALLJUMP_OBJ:
 		entity = std::make_shared<WallJumpObj>();
+		break;
+	case EntityType::BREAKABLE_ROCK:
+		entity = std::make_shared<BreakableRock>();
 		break;
 	case EntityType::PROJECTILE:
 		entity = std::make_shared<Projectile>();

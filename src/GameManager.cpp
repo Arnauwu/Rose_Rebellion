@@ -41,6 +41,22 @@ bool GameManager::SaveGame(const std::string& filename) {
     pos.append_attribute("x").set_value(gameState.playerPosition.getX());
     pos.append_attribute("y").set_value(gameState.playerPosition.getY());
 
+    //Bosses
+    pugi::xml_node bosses = root.append_child("Bosses");
+
+    pugi::xml_node knightBossKilled = bosses.append_child("KnightBossKilled");
+    knightBossKilled.append_attribute("bool").set_value(gameState.knightBossKilled);
+
+    pugi::xml_node ninfaBossKilled = bosses.append_child("NinfaBossKilled");
+    ninfaBossKilled.append_attribute("bool").set_value(gameState.ninfaBossKilled);
+
+    pugi::xml_node lizardBossKilled = bosses.append_child("LizardBossKilled");
+    lizardBossKilled.append_attribute("bool").set_value(gameState.lizardBossKilled);
+
+    pugi::xml_node dragonBossKilled = bosses.append_child("DragonBossKilled");
+    dragonBossKilled.append_attribute("bool").set_value(gameState.dragonBossKilled);
+
+
     // Open doors
     pugi::xml_node doors = root.append_child("OpenedDoors");
     for (const auto& doorId : gameState.openedDoors) {
@@ -116,6 +132,35 @@ bool GameManager::LoadGame(const std::string& filename) {
         if (pos) {
             tempState.playerPosition.setX(pos.attribute("x").as_float(96.0f));
             tempState.playerPosition.setY(pos.attribute("y").as_float(96.0f));
+        }
+    }
+
+    //Load Bosses Variables
+    pugi::xml_node bosses = root.child("Bosses");
+    if (bosses)
+    {
+        pugi::xml_node knightBossKilled = bosses.child("KnightBossKilled");
+        if (knightBossKilled)
+        {
+            tempState.knightBossKilled = knightBossKilled.attribute("bool");
+        }
+
+        pugi::xml_node ninfaBossKilled = bosses.child("NinfaBossKilled");
+        if (ninfaBossKilled)
+        {
+            tempState.ninfaBossKilled = ninfaBossKilled.attribute("bool");
+        }
+
+        pugi::xml_node lizardBossKilled = bosses.child("LizardBossKilled");
+        if (lizardBossKilled)
+        {
+            tempState.lizardBossKilled = lizardBossKilled.attribute("bool");
+        }
+
+        pugi::xml_node dragonBossKilled = bosses.child("DragonBossKilled");
+        if (dragonBossKilled)
+        {
+            tempState.dragonBossKilled = dragonBossKilled.attribute("bool");
         }
     }
 
