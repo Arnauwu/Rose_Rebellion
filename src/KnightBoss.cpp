@@ -85,9 +85,10 @@ bool KnightBoss::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
-	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
-	{
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 100, 0, 400)){
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+
 		return true;
 	}
 
@@ -157,11 +158,6 @@ bool KnightBoss::Update(float dt)
 		{
 			// Si nos detecta, le pasamos este boss al manager para mostrar la barra
 			Engine::GetInstance().healthBarManager->SetBoss(this);
-		}
-		else
-		{
-			// Si el jugador se aleja, ocultamos la barra
-			Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 		}
 
 		GetPhysicsValues();

@@ -70,7 +70,7 @@ public:
 
 	// See if Rect is on screen
 	bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
-
+	bool IsOnScreenWorldRect(float x, float y, float w, float h, int marginX, int marginTop, int marginBottom) const;
 	//Fade functions
 	void StartFade(FadeDirection dir, float durationMs);
 	void UpdateFade(float dt);

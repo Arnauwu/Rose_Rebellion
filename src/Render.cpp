@@ -174,6 +174,32 @@ bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin)
 	return result;
 }
 
+bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int marginX, int marginTop, int marginBottom) const
+{
+	bool result = false;
+
+	// Límite izquierdo y superior reales
+	float camLeft = -camera.x - marginX;
+	float camTop = -camera.y - marginTop;
+
+	// Límite derecho e inferior reales (corregido)
+	float camRight = -camera.x + camera.w + marginX;
+	float camBott = -camera.y + camera.h + marginBottom;
+
+	float objRight = x + w;
+	float objBott = y + h;
+
+	if (objRight >= camLeft && x <= camRight)
+	{
+		if (objBott >= camTop && y <= camBott)
+		{
+			result = true;
+		}
+	}
+
+	return result;
+}
+
 void Render::SetViewPort(const SDL_Rect& rect)
 {
 	SDL_SetRenderViewport(renderer, &rect);
