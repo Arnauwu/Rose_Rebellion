@@ -3,7 +3,7 @@
 #include "SDL3/SDL.h"
 #include "Timer.h" 
 #include <vector>
-
+#include "Animation.h"
 #define TOTAL_LIFE_FRAMES 8
 #define TRANSITION_MS 200
 
@@ -34,12 +34,16 @@ public:
 
     void ShowTutorial(TutorialType type);
     bool isHidden = false;
+
+    void TriggerBossIntro(SDL_Texture* portraitTex, AnimationSet* anim, float duration);
+    void DrawBossIntro(float dt);
 private:
     void DrawPlayerHealthBar();
     void DrawDiamondCounter();
     void DrawMineralIndicator();
     void DrawNotification();
     void DrawTutorial();
+
 private:
 
     SDL_Texture* lifeBarTexture = nullptr;
@@ -74,4 +78,11 @@ private:
     std::string notificationText;
     float notificationTimer = 0.0f;
     const float NOTIFICATION_DURATION = 3.0f;
+
+    //Variables de Boss Intro
+    bool isBossIntroActive = false;
+    float bossIntroTimer = 0.0f;
+    float bossIntroTotalDuration = 0.0f;
+    SDL_Texture* activeBossPortraitTex = nullptr;
+    AnimationSet* activeBossPortraitAnim = nullptr;
 };

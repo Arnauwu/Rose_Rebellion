@@ -61,4 +61,6 @@ public:
 	int caminarFx, atacarFx, morirFx, gritoFx, hurtFx;
 
 	int deathSoundId;
+	SDL_Texture* portraitTex = nullptr;
+	AnimationSet portraitAnim;
 };

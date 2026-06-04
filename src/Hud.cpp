@@ -14,7 +14,7 @@
 #include "tracy/Tracy.hpp"
 
 Hud::Hud() : Module() {
-    name = "hud";
+	name = "hud";
 }
 
 Hud::~Hud() {}
@@ -22,190 +22,190 @@ Hud::~Hud() {}
 bool Hud::Awake() { return true; }
 
 bool Hud::Start() {
-    LOG("Loading HUD");
-    lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
+	LOG("Loading HUD");
+	lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
 
-    tutWalkTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Caminar_V1.png");
-    tutJumpTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Saltar_V1.png");
-    tutGlideTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Planear_V1.png");
-    tutDashTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Dash_V1.png");
-    tutAttackTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Atacar-V1.png");
+	tutWalkTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Caminar_V1.png");
+	tutJumpTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Saltar_V1.png");
+	tutGlideTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Planear_V1.png");
+	tutDashTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Dash_V1.png");
+	tutAttackTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Atacar-V1.png");
 
-    float imagenAnchoReal = 6144.0f;
-    float imagenAltoReal = 5109.0f;
+	float imagenAnchoReal = 6144.0f;
+	float imagenAltoReal = 5109.0f;
 
-    int cols = 12;
-    int rows = 10;
+	int cols = 12;
+	int rows = 10;
 
-    // 2. Ahora el cálculo será perfecto para el tamaño que de verdad tiene tu archivo
-    float exactWidth = imagenAnchoReal / (float)cols;
-    float exactHeight = imagenAltoReal / (float)rows;
+	// 2. Ahora el cálculo será perfecto para el tamaño que de verdad tiene tu archivo
+	float exactWidth = imagenAnchoReal / (float)cols;
+	float exactHeight = imagenAltoReal / (float)rows;
 
-    int dibujosPorFila[] = { 10, 3, 4, 4, 4, 4, 3, 10, 2, 5 };
-    lifeFrames.clear();
+	int dibujosPorFila[] = { 10, 3, 4, 4, 4, 4, 3, 10, 2, 5 };
+	lifeFrames.clear();
 
-    for (int fila = 0; fila < 10; fila++) {
-        int numDibujos = dibujosPorFila[fila];
+	for (int fila = 0; fila < 10; fila++) {
+		int numDibujos = dibujosPorFila[fila];
 
-        for (int c = 0; c < numDibujos; c++) {
-            int posX = (int)(c * exactWidth);
-            int posY = (int)(fila * exactHeight);
+		for (int c = 0; c < numDibujos; c++) {
+			int posX = (int)(c * exactWidth);
+			int posY = (int)(fila * exactHeight);
 
-            // Quitamos un par de píxeles por si el artista apuró mucho los bordes
-            int recorteAncho = (int)exactWidth - 2;
-            int recorteAlto = (int)exactHeight;
+			// Quitamos un par de píxeles por si el artista apuró mucho los bordes
+			int recorteAncho = (int)exactWidth - 2;
+			int recorteAlto = (int)exactHeight;
 
-            SDL_Rect frameRect = { posX, posY, recorteAncho, recorteAlto };
-            lifeFrames.push_back(frameRect);
-        }
-    }
+			SDL_Rect frameRect = { posX, posY, recorteAncho, recorteAlto };
+			lifeFrames.push_back(frameRect);
+		}
+	}
 
-    return true;
+	return true;
 }
 
 bool Hud::Update(float dt) {
-    ZoneScoped;
+	ZoneScoped;
 
-    Player* player = Engine::GetInstance().entityManager->GetPlayer();
-    if (player == nullptr) return true;
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player == nullptr) return true;
 
-    if (player->maxHealth > 0) {
-        int hp = player->currentHealth;
+	if (player->maxHealth > 0) {
+		int hp = player->currentHealth;
 
-        // dead
-        if (player->isdead || hp <= 0) {
-            currentVisualFrame = 9;
-        }
-        // max life
-        else if (hp >= 100) {
-            currentVisualFrame = 0;
-        }
+		// dead
+		if (player->isdead || hp <= 0) {
+			currentVisualFrame = 9;
+		}
+		// max life
+		else if (hp >= 100) {
+			currentVisualFrame = 0;
+		}
 
-        else {
-            float hpPercent = (float)hp / 100.0f;
+		else {
+			float hpPercent = (float)hp / 100.0f;
 
-            // calculate frame with current life
-            currentVisualFrame = 9 - (int)(hpPercent * 9.0f);
+			// calculate frame with current life
+			currentVisualFrame = 9 - (int)(hpPercent * 9.0f);
 
-            if (currentVisualFrame <= 0) currentVisualFrame = 1;
-            if (currentVisualFrame >= 9) currentVisualFrame = 8;
-        }
-    }
+			if (currentVisualFrame <= 0) currentVisualFrame = 1;
+			if (currentVisualFrame >= 9) currentVisualFrame = 8;
+		}
+	}
 
-    if (notificationTimer > 0.0f) {
-        notificationTimer -= dt / 1000.0f; 
-        if (notificationTimer < 0.0f) {
-            notificationTimer = 0.0f;
-        }
-    }
+	if (notificationTimer > 0.0f) {
+		notificationTimer -= dt / 1000.0f;
+		if (notificationTimer < 0.0f) {
+			notificationTimer = 0.0f;
+		}
+	}
 
-    if (tutorialTimer > 0.0f) {
-        tutorialTimer -= dt / 1000.0f;
-        if (tutorialTimer < 0.0f) {
-            tutorialTimer = 0.0f;
-            currentTutorial = TutorialType::NONE; // Lo ocultamos al acabar
-        }
-    }
+	if (tutorialTimer > 0.0f) {
+		tutorialTimer -= dt / 1000.0f;
+		if (tutorialTimer < 0.0f) {
+			tutorialTimer = 0.0f;
+			currentTutorial = TutorialType::NONE; // Lo ocultamos al acabar
+		}
+	}
 
-    return true;
+	return true;
 }
 
 bool Hud::PostUpdate() {
-    ZoneScoped;
+	ZoneScoped;
 
-    auto sceneManager = Engine::GetInstance().sceneManager;
-    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	auto sceneManager = Engine::GetInstance().sceneManager;
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-    if (player == nullptr) {
-        return true;
-    }
+	if (player == nullptr) {
+		return true;
+	}
 
-    if (sceneManager->IsGamePaused() || isHidden) {
-        return true;
-    }
-    
-    DrawPlayerHealthBar();
-    DrawMineralIndicator();
-    DrawDiamondCounter();
-    DrawNotification();
-    DrawTutorial();
+	if (sceneManager->IsGamePaused() || isHidden) {
+		return true;
+	}
 
-    return true;
+	DrawPlayerHealthBar();
+	DrawMineralIndicator();
+	DrawDiamondCounter();
+	DrawNotification();
+	DrawTutorial();
+	DrawBossIntro(Engine::GetInstance().GetDt());
+	return true;
 }
 
 void Hud::DrawPlayerHealthBar() {
-    if (lifeBarTexture == nullptr) {
-        LOG("ERROR: La textura de la vida no se ha cargado. Revisa la ruta y el .png");
-        return;
-    }
-    if (lifeFrames.empty()) {
-        LOG("ERROR: La lista de frames esta vacia.");
-        return;
-    }
+	if (lifeBarTexture == nullptr) {
+		LOG("ERROR: La textura de la vida no se ha cargado. Revisa la ruta y el .png");
+		return;
+	}
+	if (lifeFrames.empty()) {
+		LOG("ERROR: La lista de frames esta vacia.");
+		return;
+	}
 
-    Player* player = Engine::GetInstance().entityManager->GetPlayer();
-    if (player == nullptr) return;
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player == nullptr) return;
 
-    int hp = player->currentHealth;
-    int maxHp = player->maxHealth;
-    if (maxHp <= 0) return;
+	int hp = player->currentHealth;
+	int maxHp = player->maxHealth;
+	if (maxHp <= 0) return;
 
-    int totalFrames = lifeFrames.size(); // Esto será 51
-    int frameActual = 0;
+	int totalFrames = lifeFrames.size(); // Esto será 51
+	int frameActual = 0;
 
-    // --- NUEVA LÓGICA ESTRICTA DE VIDA ---
-    // 1. REGLA ESTRICTA: 0 Vida = Último frame (Barra vacía)
-    if (hp <= 0 || player->isdead) {
-        frameActual = totalFrames - 1;
-    }
-    // 2. REGLA ESTRICTA: 100% Vida = Primer frame (Barra llena)
-    else if (hp >= maxHp) {
-        frameActual = 0;
-    }
-    // 3. ESTADOS INTERMEDIOS (Barra bajando)
-    else {
-        float hpPercent = (float)hp / (float)maxHp;
+	// --- NUEVA LÓGICA ESTRICTA DE VIDA ---
+	// 1. REGLA ESTRICTA: 0 Vida = Último frame (Barra vacía)
+	if (hp <= 0 || player->isdead) {
+		frameActual = totalFrames - 1;
+	}
+	// 2. REGLA ESTRICTA: 100% Vida = Primer frame (Barra llena)
+	else if (hp >= maxHp) {
+		frameActual = 0;
+	}
+	// 3. ESTADOS INTERMEDIOS (Barra bajando)
+	else {
+		float hpPercent = (float)hp / (float)maxHp;
 
-        // Calculamos qué frame le toca
-        frameActual = (int)((1.0f - hpPercent) * (totalFrames - 1));
+		// Calculamos qué frame le toca
+		frameActual = (int)((1.0f - hpPercent) * (totalFrames - 1));
 
-        // Evitamos que muestre la barra vacía si aún le queda 1 punto de vida
-        if (frameActual >= totalFrames - 1) {
-            frameActual = totalFrames - 2;
-        }
-        // Evitamos que muestre la barra llena si ya le han hecho daño
-        if (frameActual <= 0) {
-            frameActual = 1;
-        }
-    }
-    // ------------------------------------
+		// Evitamos que muestre la barra vacía si aún le queda 1 punto de vida
+		if (frameActual >= totalFrames - 1) {
+			frameActual = totalFrames - 2;
+		}
+		// Evitamos que muestre la barra llena si ya le han hecho daño
+		if (frameActual <= 0) {
+			frameActual = 1;
+		}
+	}
+	// ------------------------------------
 
-    // 3. Obtener el recorte precalculado y dibujarlo
-    SDL_Rect srcRect = lifeFrames[frameActual];
+	// 3. Obtener el recorte precalculado y dibujarlo
+	SDL_Rect srcRect = lifeFrames[frameActual];
 
-    SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
-    int scale = Engine::GetInstance().window->GetScale();
-    float zoomLevel = Engine::GetInstance().render->GetZoom();
+	SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
+	int scale = Engine::GetInstance().window->GetScale();
+	float zoomLevel = Engine::GetInstance().render->GetZoom();
 
-    // Queremos que esté a 40 píxeles de margen en un espacio virtual normal.
-    // Al dividir por zoomLevel, evitamos que el zoom del motor empuje la barra hacia arriba o abajo.
-    float marginX = 30.0f;
-    float marginY = -300.0f;
+	// Queremos que esté a 40 píxeles de margen en un espacio virtual normal.
+	// Al dividir por zoomLevel, evitamos que el zoom del motor empuje la barra hacia arriba o abajo.
+	float marginX = 30.0f;
+	float marginY = -300.0f;
 
-    // SDL3 nos obliga a pasar los rectángulos en formato float (SDL_FRect)
-    SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
+	// SDL3 nos obliga a pasar los rectángulos en formato float (SDL_FRect)
+	SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
 
-    SDL_FRect dstFRect;
-    // Replicamos con precisión milimétrica la fórmula de tu Render.cpp para la posición
-    dstFRect.x = (float)(marginX * scale) * zoomLevel;
-    dstFRect.y = (float)(marginY * scale) * zoomLevel;
+	SDL_FRect dstFRect;
+	// Replicamos con precisión milimétrica la fórmula de tu Render.cpp para la posición
+	dstFRect.x = (float)(marginX * scale) * zoomLevel;
+	dstFRect.y = (float)(marginY * scale) * zoomLevel;
 
-    // ¡AQUÍ ESTÁ LA MAGIA! Multiplicamos el ancho y el alto por 1.5f para agrandarla
-    dstFRect.w = (float)(srcRect.w * scale) * zoomLevel * 1.5f;
-    dstFRect.h = (float)(srcRect.h * scale) * zoomLevel * 1.5f;
+	// ¡AQUÍ ESTÁ LA MAGIA! Multiplicamos el ancho y el alto por 1.5f para agrandarla
+	dstFRect.w = (float)(srcRect.w * scale) * zoomLevel * 1.5f;
+	dstFRect.h = (float)(srcRect.h * scale) * zoomLevel * 1.5f;
 
-    // Invocamos la función nativa de SDL3 que estira la sección elegida sin rotarla
-    SDL_RenderTexture(renderer, lifeBarTexture, &srcFRect, &dstFRect);
+	// Invocamos la función nativa de SDL3 que estira la sección elegida sin rotarla
+	SDL_RenderTexture(renderer, lifeBarTexture, &srcFRect, &dstFRect);
 }
 
 void Hud::DrawDiamondCounter() {
@@ -218,116 +218,176 @@ void Hud::DrawMineralIndicator() {
 
 
 bool Hud::CleanUp() {
-    // Engine::GetInstance().textures->UnLoad(lifeBarTexture);
-    if (lifeBarTexture != nullptr) {
-        Engine::GetInstance().textures->UnLoad(lifeBarTexture);
-        lifeBarTexture = nullptr;
-    }
-    if (tutWalkTex != nullptr) Engine::GetInstance().textures->UnLoad(tutWalkTex);
-    if (tutJumpTex != nullptr) Engine::GetInstance().textures->UnLoad(tutJumpTex);
-    if (tutGlideTex != nullptr) Engine::GetInstance().textures->UnLoad(tutGlideTex);
-    if (tutDashTex != nullptr) Engine::GetInstance().textures->UnLoad(tutDashTex);
-    if (tutAttackTex != nullptr) Engine::GetInstance().textures->UnLoad(tutAttackTex);
-    return true;
+	activeBossPortraitTex = nullptr;
+	activeBossPortraitAnim = nullptr;
+	isBossIntroActive = false;
+
+	if (lifeBarTexture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(lifeBarTexture);
+		lifeBarTexture = nullptr;
+	}
+	if (tutWalkTex != nullptr) Engine::GetInstance().textures->UnLoad(tutWalkTex);
+	if (tutJumpTex != nullptr) Engine::GetInstance().textures->UnLoad(tutJumpTex);
+	if (tutGlideTex != nullptr) Engine::GetInstance().textures->UnLoad(tutGlideTex);
+	if (tutDashTex != nullptr) Engine::GetInstance().textures->UnLoad(tutDashTex);
+	if (tutAttackTex != nullptr) Engine::GetInstance().textures->UnLoad(tutAttackTex);
+	return true;
 }
 
 void Hud::ShowNotification(const std::string& message) {
-    notificationText = message;
-    notificationTimer = NOTIFICATION_DURATION;
+	notificationText = message;
+	notificationTimer = NOTIFICATION_DURATION;
 }
 
 void Hud::DrawNotification() {
-    if (notificationTimer > 0.0f && !notificationText.empty()) {
-        Uint8 alphaText = 255;
-        Uint8 alphaBg = 160;
+	if (notificationTimer > 0.0f && !notificationText.empty()) {
+		Uint8 alphaText = 255;
+		Uint8 alphaBg = 160;
 
-        // Desapareciendo lentamente
-        if (notificationTimer < 1.0f) {
-            alphaText = (Uint8)(255.0f * notificationTimer);
-            alphaBg = (Uint8)(160.0f * notificationTimer);
-        }
+		// Desapareciendo lentamente
+		if (notificationTimer < 1.0f) {
+			alphaText = (Uint8)(255.0f * notificationTimer);
+			alphaBg = (Uint8)(160.0f * notificationTimer);
+		}
 
-        // Tamaño de pantalla
-        int screenW, screenH;
-        screenW = Engine::GetInstance().window->windowWidth;
+		// Tamaño de pantalla
+		int screenW, screenH;
+		screenW = Engine::GetInstance().window->windowWidth;
 
-        screenH = Engine::GetInstance().window->windowHeight;
+		screenH = Engine::GetInstance().window->windowHeight;
 
-        // Tamaño del cuadro de solicitud
-        int rectW = 600;
-        int rectH = 70;
+		// Tamaño del cuadro de solicitud
+		int rectW = 600;
+		int rectH = 70;
 
-        // Ubicación del aviso
-        int posY = screenH / 8;
+		// Ubicación del aviso
+		int posY = screenH / 8;
 
-        SDL_Rect bgRect = {
-            screenW / 2 - rectW / 2,
-            posY+60,
-            rectW,
-            rectH
-        };
+		SDL_Rect bgRect = {
+			screenW / 2 - rectW / 2,
+			posY + 60,
+			rectW,
+			rectH
+		};
 
-        // Draw
-        Engine::GetInstance().render->DrawRectangleUnscaled(bgRect, 220, 220, 220, alphaBg, true, false);
+		// Draw
+		Engine::GetInstance().render->DrawRectangleUnscaled(bgRect, 220, 220, 220, alphaBg, true, false);
 
-        // Draw txto
-        SDL_Color color = { 0, 0, 0, alphaText }; // color negro
-        SDL_Rect textBounds = { bgRect.x + 10, bgRect.y + 5, bgRect.w - 20, bgRect.h - 10 };
+		// Draw txto
+		SDL_Color color = { 0, 0, 0, alphaText }; // color negro
+		SDL_Rect textBounds = { bgRect.x + 10, bgRect.y + 5, bgRect.w - 20, bgRect.h - 10 };
 
-        Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color, FontType::MENU);
-    }
+		Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color, FontType::MENU);
+	}
 }
 
 void Hud::ShowTutorial(TutorialType type) {
-    currentTutorial = type;
-    tutorialTimer = TUTORIAL_DURATION; // Reinicia el temporizador
+	currentTutorial = type;
+	tutorialTimer = TUTORIAL_DURATION; // Reinicia el temporizador
 }
 
 void Hud::DrawTutorial() {
-    if (currentTutorial == TutorialType::NONE || tutorialTimer <= 0.0f) return;
+	if (currentTutorial == TutorialType::NONE || tutorialTimer <= 0.0f) return;
 
-    SDL_Texture* textureToDraw = nullptr;
+	SDL_Texture* textureToDraw = nullptr;
 
-    switch (currentTutorial) {
-    case TutorialType::WALK:   textureToDraw = tutWalkTex; break;
-    case TutorialType::JUMP:   textureToDraw = tutJumpTex; break;
-    case TutorialType::GLIDE:  textureToDraw = tutGlideTex; break;
-    case TutorialType::DASH:   textureToDraw = tutDashTex; break;
-    case TutorialType::ATTACK: textureToDraw = tutAttackTex; break;
-    default: return;
-    }
+	switch (currentTutorial) {
+	case TutorialType::WALK:   textureToDraw = tutWalkTex; break;
+	case TutorialType::JUMP:   textureToDraw = tutJumpTex; break;
+	case TutorialType::GLIDE:  textureToDraw = tutGlideTex; break;
+	case TutorialType::DASH:   textureToDraw = tutDashTex; break;
+	case TutorialType::ATTACK: textureToDraw = tutAttackTex; break;
+	default: return;
+	}
 
-    if (textureToDraw == nullptr) return;
+	if (textureToDraw == nullptr) return;
 
-    // Calcular el nivel de transparencia para el desvanecimiento final (el último segundo se borra poco a poco)
-    Uint8 alpha = 255;
-    if (tutorialTimer < 1.0f) {
-        alpha = (Uint8)(255.0f * tutorialTimer);
-    }
-    SDL_SetTextureAlphaMod(textureToDraw, alpha);
+	// Calcular el nivel de transparencia para el desvanecimiento final (el último segundo se borra poco a poco)
+	Uint8 alpha = 255;
+	if (tutorialTimer < 1.0f) {
+		alpha = (Uint8)(255.0f * tutorialTimer);
+	}
+	SDL_SetTextureAlphaMod(textureToDraw, alpha);
 
-    // Obtener dimensiones reales de la textura
-    float texW, texH;
-    SDL_GetTextureSize(textureToDraw, &texW, &texH);
+	// Obtener dimensiones reales de la textura
+	float texW, texH;
+	SDL_GetTextureSize(textureToDraw, &texW, &texH);
 
-    // Dónde y a qué tamaño dibujarlo
-    SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
-    int screenW = Engine::GetInstance().window->windowWidth;
-    int screenH = Engine::GetInstance().window->windowHeight;
+	// Dónde y a qué tamaño dibujarlo
+	SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
+	int screenW = Engine::GetInstance().window->windowWidth;
+	int screenH = Engine::GetInstance().window->windowHeight;
 
-    // Puedes multiplicar el texW y texH por un factor si la imagen es muy grande o pequeña
-    float scale = 0.8f;
+	// Puedes multiplicar el texW y texH por un factor si la imagen es muy grande o pequeña
+	float scale = 0.8f;
 
-    SDL_FRect dstFRect;
-    dstFRect.w = texW * scale;
-    dstFRect.h = texH * scale;
-    // Centrado horizontal
-    dstFRect.x = (screenW - dstFRect.w) / 2.0f;
-    // Posicionado en la parte inferior de la pantalla (a 100 px del borde)
-    dstFRect.y = 60.0f;
+	SDL_FRect dstFRect;
+	dstFRect.w = texW * scale;
+	dstFRect.h = texH * scale;
+	// Centrado horizontal
+	dstFRect.x = (screenW - dstFRect.w) / 2.0f;
+	// Posicionado en la parte inferior de la pantalla (a 100 px del borde)
+	dstFRect.y = 60.0f;
 
-    SDL_RenderTexture(renderer, textureToDraw, nullptr, &dstFRect);
+	SDL_RenderTexture(renderer, textureToDraw, nullptr, &dstFRect);
 
-    // Restaurar el alpha a 255 por seguridad
-    SDL_SetTextureAlphaMod(textureToDraw, 255);
+	// Restaurar el alpha a 255 por seguridad
+	SDL_SetTextureAlphaMod(textureToDraw, 255);
+}
+
+void Hud::TriggerBossIntro(SDL_Texture* portraitTex, AnimationSet* anim, float duration) {
+	activeBossPortraitTex = portraitTex;
+	activeBossPortraitAnim = anim;
+	bossIntroTimer = duration;
+	bossIntroTotalDuration = duration;
+	isBossIntroActive = true;
+}
+
+void Hud::DrawBossIntro(float dt) {
+	if (!isBossIntroActive) return;
+
+	bossIntroTimer -= dt / 1000.0f;
+
+	if (bossIntroTimer <= 0.0f) {
+		isBossIntroActive = false;
+		return;
+	}
+
+	if (activeBossPortraitAnim != nullptr) {
+		activeBossPortraitAnim->Update(dt);
+	}
+
+	//FADE
+	Uint8 alpha = 255;
+	float fadeDuration = 0.5f;
+	float elapsedTime = bossIntroTotalDuration - bossIntroTimer;
+
+	if (elapsedTime < fadeDuration) {
+		alpha = (Uint8)(255.0f * (elapsedTime / fadeDuration));
+	}
+	else if (bossIntroTimer < fadeDuration) {
+		alpha = (Uint8)(255.0f * (bossIntroTimer / fadeDuration));
+	}
+
+	if (activeBossPortraitTex != nullptr) {
+		SDL_SetTextureAlphaMod(activeBossPortraitTex, alpha);
+	}
+
+	// Posición
+	int screenW = Engine::GetInstance().window->windowWidth;
+	int screenH = Engine::GetInstance().window->windowHeight;
+	int portraitW = 800;
+	int portraitH = 150;
+
+	SDL_Rect dstRect = { (screenW - portraitW) / 2, 60, portraitW, portraitH };
+
+	//Renderizado
+	if (activeBossPortraitTex != nullptr && activeBossPortraitAnim != nullptr) {
+		SDL_Rect srcFrame = activeBossPortraitAnim->GetCurrentFrame();
+		Engine::GetInstance().render->DrawTextureScaledSection(activeBossPortraitTex, srcFrame, dstRect);
+	}
+
+	if (activeBossPortraitTex != nullptr) {
+		SDL_SetTextureAlphaMod(activeBossPortraitTex, 255);
+	}
 }

@@ -11,6 +11,7 @@
 #include "Map.h"
 #include "Timer.h"
 #include "HealthBarManager.h"
+#include "Hud.h"
 #include "Physics.h"
 
 #include "tracy/Tracy.hpp"
@@ -36,6 +37,14 @@ bool KnightBoss::Start() {
 	// Initialize parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
+	//Intro Boss
+	portraitTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/BossPresentation/KnightFrame.png");
+
+	std::unordered_map<int, std::string> frameAliases = { {0, "play"} };
+	portraitAnim.LoadFromTSX("Assets/Textures/UI/BossPresentation/KnightFrame.tsx", frameAliases);
+	portraitAnim.SetCurrent("play");
+
+	//Audios
 	morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
 	caminarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
 	atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
@@ -122,6 +131,7 @@ bool KnightBoss::Update(float dt)
 		if (introDone == 2)
 		{
 			player->cameraController.StartShake(3000, 25);
+			Engine::GetInstance().hud->TriggerBossIntro(portraitTex, &portraitAnim, 3.0f);
 			introDone = 3;
 		}
 
@@ -525,6 +535,12 @@ void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shap
 bool KnightBoss::CleanUp() 
 {
 	active = false;
+
+	if (portraitTex != nullptr) {
+		Engine::GetInstance().textures->UnLoad(portraitTex);
+		portraitTex = nullptr;
+	}
+
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	if (swordHitbox != nullptr) {
