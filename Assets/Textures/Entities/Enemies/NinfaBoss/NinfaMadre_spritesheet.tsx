@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="NinfaMadre_spritesheet" tilewidth="512" tileheight="512" tilecount="140" columns="20">
+<tileset version="1.10" tiledversion="1.10.2" name="NinfaMadre_spritesheet" tilewidth="512" tileheight="512" tilecount="140" columns="20">
  <image source="NinfaMadre_spritesheet.png" width="10240" height="3584"/>
  <tile id="0">
   <animation>
@@ -11,26 +11,43 @@
  </tile>
  <tile id="20">
   <animation>
+   <frame tileid="20" duration="150"/>
+   <frame tileid="21" duration="150"/>
+   <frame tileid="22" duration="150"/>
+   <frame tileid="23" duration="150"/>
+   <frame tileid="24" duration="150"/>
+   <frame tileid="25" duration="150"/>
+   <frame tileid="26" duration="150"/>
+   <frame tileid="27" duration="150"/>
+   <frame tileid="28" duration="150"/>
+   <frame tileid="29" duration="150"/>
+   <frame tileid="30" duration="150"/>
+   <frame tileid="31" duration="150"/>
+   <frame tileid="32" duration="150"/>
+   <frame tileid="33" duration="150"/>
+   <frame tileid="34" duration="200"/>
+   <frame tileid="35" duration="200"/>
+   <frame tileid="36" duration="200"/>
+  </animation>
+ </tile>
+ <tile id="21">
+  <animation>
    <frame tileid="20" duration="100"/>
    <frame tileid="21" duration="100"/>
    <frame tileid="22" duration="100"/>
    <frame tileid="23" duration="100"/>
    <frame tileid="24" duration="100"/>
-   <frame tileid="25" duration="100"/>
-   <frame tileid="26" duration="100"/>
-   <frame tileid="27" duration="100"/>
-   <frame tileid="28" duration="100"/>
-   <frame tileid="29" duration="100"/>
-   <frame tileid="30" duration="100"/>
-   <frame tileid="31" duration="100"/>
-   <frame tileid="32" duration="100"/>
-   <frame tileid="33" duration="100"/>
-   <frame tileid="34" duration="100"/>
-   <frame tileid="35" duration="100"/>
-   <frame tileid="36" duration="100"/>
-   <frame tileid="37" duration="100"/>
-   <frame tileid="38" duration="100"/>
-   <frame tileid="39" duration="100"/>
+   <frame tileid="23" duration="100"/>
+   <frame tileid="22" duration="100"/>
+   <frame tileid="21" duration="100"/>
+   <frame tileid="20" duration="100"/>
+  </animation>
+ </tile>
+ <tile id="36">
+  <animation>
+   <frame tileid="36" duration="150"/>
+   <frame tileid="37" duration="150"/>
+   <frame tileid="38" duration="150"/>
   </animation>
  </tile>
  <tile id="40">

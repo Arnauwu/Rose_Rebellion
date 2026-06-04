@@ -3137,7 +3137,7 @@
   <object id="732" x="4736" y="256" width="128" height="128"/>
   <object id="733" x="5120" y="512" width="128" height="128"/>
   <object id="734" x="4736" y="896" width="128" height="128"/>
-  <object id="746" x="18432" y="1408" width="125.333" height="126.667"/>
+  <object id="746" x="18432" y="1408" width="125.333" height="87.2731"/>
   <object id="747" x="8704" y="1152" width="896" height="128"/>
  </objectgroup>
  <objectgroup id="33" name="Rampas">
@@ -3157,10 +3157,10 @@
    <polygon points="0,0 768,0 0,768"/>
   </object>
   <object id="738" x="18304" y="1408">
-   <polygon points="0,0 128,0 128,128"/>
+   <polygon points="0,0 128,0 128,94.6667"/>
   </object>
-  <object id="743" x="18560" y="1536">
-   <polygon points="0,0 0,-128 128,-128"/>
+  <object id="743" x="18560" y="1496.61">
+   <polygon points="0,0 0,-88.6061 128,-88.6061"/>
   </object>
  </objectgroup>
  <objectgroup id="34" name="KeyGate" visible="0">

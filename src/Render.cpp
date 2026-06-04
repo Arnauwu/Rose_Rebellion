@@ -855,7 +855,8 @@ void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;
 	int w, h;
-	Engine::GetInstance().window->GetWindowSize(w,h);
+	w = Engine::GetInstance().window->windowWidth;
+	h = Engine::GetInstance().window->windowHeight;
 
 	camera.w =  w / zoomLevel;
 	camera.h = h / zoomLevel;

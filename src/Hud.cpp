@@ -119,6 +119,7 @@ bool Hud::PostUpdate() {
 	if (player == nullptr) {
 		return true;
 	}
+	DrawBossIntro(Engine::GetInstance().GetDt());
 
 	if (sceneManager->IsGamePaused() || isHidden) {
 		return true;
@@ -129,7 +130,6 @@ bool Hud::PostUpdate() {
 	DrawDiamondCounter();
 	DrawNotification();
 	DrawTutorial();
-	DrawBossIntro(Engine::GetInstance().GetDt());
 	return true;
 }
 

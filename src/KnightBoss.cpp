@@ -94,6 +94,8 @@ bool KnightBoss::Update(float dt)
 
 	if (introDone != 4)
 	{
+		Engine::GetInstance().hud->isHidden = true;
+
 		Player* player = Engine::GetInstance().entityManager->GetPlayer();
 		player->isFrozen = true;
 		
@@ -161,6 +163,8 @@ bool KnightBoss::Update(float dt)
 			{
 				introDone = 4;
 				player->isFrozen = false;
+				Engine::GetInstance().hud->isHidden = false;
+
 			}
 		}
 
