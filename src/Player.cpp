@@ -37,7 +37,7 @@ namespace
 		case KeyType::CATACUMBA:
 			return "You need to find the Catacombs Key.";
 		case KeyType::BOSS:
-			return "You need to find the Boss Key.";
+			return "You need to find the Castle Key.";
 		case KeyType::CASTLE:
 			return "You need to find the Castle Key.";
 		case KeyType::NONE:
@@ -1711,6 +1711,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		int spX, spY;
 		physB->GetPosition(spX, spY);
 		respawnPosition = Vector2D((float)spX, (float)spY);
+
+		this->currentHealth = maxHealth;
 
 		auto& gameState = GameManager::GetInstance().gameState;
 		gameState.playerPosition = respawnPosition;

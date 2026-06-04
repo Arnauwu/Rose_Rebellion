@@ -394,6 +394,9 @@ void SwordKnight::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA
 
 		hitFromRight = (playerX > position.getX());
 		break;
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
+		break;
 
 	default:
 		break;

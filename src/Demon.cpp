@@ -406,7 +406,9 @@ void Demon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Sh
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
 		break;
-
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
+		break;
 	default:
 		isAttacking = false;
 		pbody->ctype = ColliderType::ENEMY;

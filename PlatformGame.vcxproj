@@ -151,8 +151,10 @@
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Bat.cpp" />
+    <ClCompile Include="src\BreakableRock.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
     <ClCompile Include="src\Correfoc.cpp" />
+    <ClCompile Include="src\GwellProjectile.cpp" />
     <ClCompile Include="src\KeyGate.cpp" />
     <ClCompile Include="src\Cinematics.cpp" />
     <ClCompile Include="src\Cucafera.cpp" />
@@ -229,8 +231,10 @@
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Bat.h" />
+    <ClInclude Include="src\BreakableRock.h" />
     <ClInclude Include="src\CameraController.h" />
     <ClInclude Include="src\Correfoc.h" />
+    <ClInclude Include="src\GwellProjectile.h" />
     <ClInclude Include="src\KeyGate.h" />
     <ClInclude Include="src\Cinematics.h" />
     <ClInclude Include="src\Cucafera.h" />

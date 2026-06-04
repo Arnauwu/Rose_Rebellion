@@ -28,6 +28,12 @@ struct GameState {
     std::string currentMap = "Nexo.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
+    // Bosses
+    bool knightBossKilled = false;
+    bool ninfaBossKilled = false;
+    bool lizardBossKilled = false;
+    bool dragonBossKilled = false;
+
     std::vector<std::string> openedDoors;
     std::unordered_set<std::string> collectedItems;
 };

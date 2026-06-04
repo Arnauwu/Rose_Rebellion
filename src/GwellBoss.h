@@ -8,7 +8,7 @@
 
 struct SDL_Texture;
 
-enum GwellBossPhase { GROUND2, AIR2, MIXED2 };
+enum GwellBossPhase { GROUNDD, TRANSITION_TO_WALL, WALL_CLING };
 
 class GwellBoss : public Enemy
 {
@@ -32,9 +32,9 @@ private:
 	void Draw(float dt);
 
 	void Attack();
-
 	void SelectAttack();
 	int GenerateRandomNumber(int minNumber, int maxNumber);
+
 public:
 
 	PhysBody* attackHitbox = nullptr;
@@ -49,7 +49,6 @@ public:
 	Timer attackCooldown;
 	Timer attackWindUp;
 	
-	//TO DO ADJUST VALUES DEPENDING ON ATTACK
 	float attackWindupTime = 500.0f;
 	float attackCooldownTime = 2000.0f;
 	std::string currentAttackAnim = "";
@@ -57,26 +56,22 @@ public:
 
 	//GwellBoss
 	bool isInvincible = false; //Changing Phase
-	GwellBossPhase currentPhase = GwellBossPhase::GROUND2; // First Phase
+	GwellBossPhase currentPhase = GwellBossPhase::GROUNDD; // First Phase
+	bool hasDoneWallPhase = false;
 
-	//Air
-	Timer hoverTimer;
-	Timer hoverCooldown;
-	float hoverAmplitude = 4.0f;
-	float hoverSpeed = 1.5f;
+	float minFloorX = 0.0f;
+	float maxFloorX = 0.0f;
+	Vector2D targetWallPos;
+	Vector2D leftWallClingPos;
+	Vector2D rightWallClingPos;
 
+	// Wall Mechanics
+	int wallHitsTaken = 0;
+	int maxWallHits = 3;
+	int wallDirection = 1; // 1 Right, -1 Left
+
+	int clawStep = 0; // 0: Inactive, 1: First attack, 2: Second attack
 
 	// Sounds
 	int deathSoundId;
 };
-
-
-/*
-FASE 2: Aire
-Proyectiles hacia el suelo (Volando te tira proyectiles a 90º hacia el suelo (se pueden devolver con ataque hacia arriba))
-Salta hacia arriba y se tira hacia a ti de morro planeando (estilo ataque los zorros de nieve)
-
-FASE 3: Tierra-Aire
-Morir dramáticamente con una rosa de su sangre
-*/
-

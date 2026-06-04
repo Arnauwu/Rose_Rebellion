@@ -543,6 +543,9 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 			currentHealth = 0;
 		}
 		break;
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
+		break;
 	case ColliderType::PLAYER:
 
 		playerContacts++;

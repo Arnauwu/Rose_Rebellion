@@ -107,6 +107,9 @@
     <Filter Include="Source Files\Game\Entity\Items\Sickle">
       <UniqueIdentifier>{22e68f4e-c50a-4419-a8d9-e8f508f3416e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Breakable Rock">
+      <UniqueIdentifier>{bbd9d6c7-70fb-4f32-8f25-6b1f87b2aa93}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Game\Entity\Bosses">
       <UniqueIdentifier>{7371f354-1e96-4b51-9cbb-019c10ada71a}</UniqueIdentifier>
     </Filter>
@@ -388,11 +391,29 @@
     <ClCompile Include="src\WallJumpObj.cpp">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClCompile>
+    <ClCompile Include="src\BreakableRock.cpp">
+      <Filter>Source Files\Game\Entity\Breakable Rock</Filter>
+    </ClCompile>
     <ClCompile Include="src\WinScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="src\Projectile.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Correfoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KeyGate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LanguageManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WaveProjectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GwellProjectile.cpp">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -555,9 +576,6 @@
     <ClInclude Include="src\UIDialogueBox.h">
       <Filter>Source Files\Utils\UI Buttons</Filter>
     </ClInclude>
-    <ClInclude Include="src\DialogueData.h">
-      <Filter>Source Files\Engine\Dialogue</Filter>
-    </ClInclude>
     <ClInclude Include="src\DialogueManager.h">
       <Filter>Source Files\Engine\Dialogue</Filter>
     </ClInclude>
@@ -610,11 +628,21 @@
     <ClInclude Include="src\WallJumpObj.h">
       <Filter>Source Files\Game\Entity\Items\SkillObj</Filter>
     </ClInclude>
+    <ClInclude Include="src\BreakableRock.h">
+      <Filter>Source Files\Game\Entity\Breakable Rock</Filter>
+    </ClInclude>
     <ClInclude Include="src\WinScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="src\Projectile.h" />
     <ClCompile Include="src\Projectile.cpp" />
+    <ClInclude Include="src\Correfoc.h" />
+    <ClInclude Include="src\KeyGate.h" />
+    <ClInclude Include="src\LanguageManager.h" />
+    <ClInclude Include="src\WaveProjectile.h" />
+    <ClInclude Include="src\GwellProjectile.h">
+      <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">

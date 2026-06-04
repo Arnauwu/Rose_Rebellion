@@ -10,12 +10,13 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "Timer.h"
-#include "Physics.h"
 #include "HealthBarManager.h"
 
 #include <random>
 
 #include "DragonProjectile.h"
+
+#include "GameManager.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -109,6 +110,7 @@ bool Dragon::Update(float dt)
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())
 	{
+		GameManager::GetInstance().gameState.dragonBossKilled = true;
 		if (!isFadingOut) {
 			Engine::GetInstance().render->StartFade(FadeDirection::FADE_OUT, 1.5f);
 			isFadingOut = true;
@@ -683,6 +685,9 @@ void Dragon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 				isInvincible = true;
 			}
 		}
+		break;
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
 		break;
 
 	default:

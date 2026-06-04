@@ -16,6 +16,7 @@
 #include "DashObj.h"
 #include "DoubleJumpObj.h"
 #include "WallJumpObj.h"
+#include "BreakableRock.h"
 
 #include "SavePoint.h"
 #include "Door.h"
@@ -41,6 +42,7 @@
 #include "NinfaBoss.h"
 #include "WaveProjectile.h"
 #include "GwellBoss.h"
+#include "GwellProjectile.h"
 #include "Dragon.h"
 #include "DragonProjectile.h"
 
@@ -190,6 +192,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::GWELL_BOSS:
 		entity = std::make_shared<GwellBoss>();
 		break;
+	case EntityType::GWELL_PROJECTILE:
+		entity = std::make_shared<GwellProjectile>();
+		break;
 	case EntityType::DRAGON:
 		entity = std::make_shared<Dragon>();
 		break;
@@ -224,6 +229,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::WALLJUMP_OBJ:
 		entity = std::make_shared<WallJumpObj>();
+		break;
+	case EntityType::BREAKABLE_ROCK:
+		entity = std::make_shared<BreakableRock>();
 		break;
 	case EntityType::PROJECTILE:
 		entity = std::make_shared<Projectile>();

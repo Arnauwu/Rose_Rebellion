@@ -1,4 +1,4 @@
-ï»¿#include "ParticleManager.h"
+#include "ParticleManager.h"
 #include "Engine.h"
 #include "Render.h"
 #include "tracy/Tracy.hpp"
@@ -32,7 +32,7 @@ bool ParticleManager::Start() {
         if (dustAnimSet.Has("dash"))  animDashDust = *dustAnimSet.GetAnim("dash");
     }
 
-    // 2. Cargar texturas de los demÃ¡s efectos (Impactos, Sangre, Pickups)
+    // 2. Cargar texturas de los dem¨¢s efectos (Impactos, Sangre, Pickups)
     attackSpriteSheet= Engine::GetInstance().textures->Load("Assets/Textures/Particles/SS_efectos_destello_ataque.png");
 
     AnimationSet attackAnimSet;
@@ -43,8 +43,6 @@ bool ParticleManager::Start() {
     }
 
 
-    hitP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/hitP.png");
-    bloodP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/bloodP.png");
     pickP = Engine::GetInstance().textures->Load("Assets/Textures/Particles/pickP.png");
 
     return true;
@@ -100,10 +98,37 @@ bool ParticleManager::PostUpdate() {
                 
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha / 2);
                
-                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x + 3.0f, particle.y + 3.0f, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
+                float drawX = particle.x;
+                float drawY = particle.y;
+                if (particle.centerFrameContent && particle.isAnimated) {
+                    float visualOffsetX = 0.0f;
+                    float visualOffsetY = 0.0f;
+                    int tileId = (srcRect.y / 256) * 8 + (srcRect.x / 256);
+
+                    switch (tileId) {
+                    case 16: visualOffsetX = 51.0f; visualOffsetY = 0.5f; break;
+                    case 17: visualOffsetX = 46.5f; visualOffsetY = -1.0f; break;
+                    case 18: visualOffsetX = 36.5f; visualOffsetY = 7.5f; break;
+                    case 19: visualOffsetX = 27.0f; visualOffsetY = 11.5f; break;
+                    case 20: visualOffsetX = 14.5f; visualOffsetY = 15.5f; break;
+                    case 21: visualOffsetX = 5.0f; visualOffsetY = 28.0f; break;
+                    case 22: visualOffsetX = -6.5f; visualOffsetY = 17.0f; break;
+                    case 23: visualOffsetX = -10.0f; visualOffsetY = 13.0f; break;
+                    case 24: visualOffsetX = -16.0f; visualOffsetY = 8.0f; break;
+                    case 25: visualOffsetX = -18.5f; visualOffsetY = 0.5f; break;
+                    case 26: visualOffsetX = -20.5f; visualOffsetY = -3.0f; break;
+                    case 27: visualOffsetX = -28.0f; visualOffsetY = -2.0f; break;
+                    default: break;
+                    }
+
+                    drawX += (particle.flipMode == SDL_FLIP_HORIZONTAL ? visualOffsetX : -visualOffsetX) * particle.scale;
+                    drawY -= visualOffsetY * particle.scale;
+                }
+
+                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, drawX + 3.0f, drawY + 3.0f, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha);
 
-                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, particle.x, particle.y, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);
+                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, drawX, drawY, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);
                 SDL_SetTextureAlphaMod(particle.texture, 255);
                 SDL_SetTextureColorMod(particle.texture, 255, 255, 255);
             }
@@ -127,17 +152,9 @@ bool ParticleManager::CleanUp() {
     }
 
     // Limpiamos el resto
-    if (hitP != nullptr) {
-        Engine::GetInstance().textures->UnLoad(hitP);
-        hitP = nullptr;
-    }
     if (pickP != nullptr) {
         Engine::GetInstance().textures->UnLoad(pickP);
         pickP = nullptr;
-    }
-    if (bloodP != nullptr) {
-        Engine::GetInstance().textures->UnLoad(bloodP);
-        bloodP = nullptr;
     }
     if (attackSpriteSheet != nullptr) {
         Engine::GetInstance().textures->UnLoad(attackSpriteSheet);
@@ -147,7 +164,7 @@ bool ParticleManager::CleanUp() {
 }
 
 // ---------------------------------------------------------
-// FUNCIONES BASE DE EMISIÃ“N
+// FUNCIONES BASE DE EMISI¨®N
 // ---------------------------------------------------------
 
 // Sobrecarga 1: Cuadrado sin nada
@@ -168,11 +185,12 @@ void ParticleManager::Emit(float x, float y, float vx, float vy, float life, SDL
     pool[index].angle = 0.0f;
     pool[index].angularVelocity = 0.0f;
     pool[index].isAnimated = false;
+    pool[index].centerFrameContent = false;
 
     pool[index].active = true;
 }
 
-// Sobrecarga 2: PartÃ­cula con textura
+// Sobrecarga 2: Part¨ªcula con textura
 void ParticleManager::Emit(SDL_Texture* texture, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity) {
     int index = FindNextDeadParticle();
 
@@ -190,12 +208,13 @@ void ParticleManager::Emit(SDL_Texture* texture, float x, float y, float vx, flo
     pool[index].angle = 0.0f;
     pool[index].angularVelocity = angularVelocity;
     pool[index].isAnimated = false;
+    pool[index].centerFrameContent = false;
 
     pool[index].active = true;
 }
 
-// Sobrecarga 3: PartÃ­cula con AnimaciÃ³n
-void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity, SDL_FlipMode flipMod, float scale) {
+// Sobrecarga 3: Part¨ªcula con Animaci¨®n
+void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float y, float vx, float vy, float life, float size, bool useCamera, float angularVelocity, SDL_FlipMode flipMod, float scale, bool centerFrameContent) {
     int index = FindNextDeadParticle();
 
     pool[index].x = x;  
@@ -212,18 +231,19 @@ void ParticleManager::Emit(SDL_Texture* texture, Animation anim, float x, float 
     pool[index].angle = 0.0f;
     pool[index].angularVelocity = angularVelocity;
 
-    // Inyectar y reiniciar la animaciÃ³n
+    // Inyectar y reiniciar la animaci¨®n
     pool[index].anim = anim;
     pool[index].anim.Reset();
     pool[index].isAnimated = true;
     pool[index].flipMode = flipMod;
     pool[index].scale = scale;
+    pool[index].centerFrameContent = centerFrameContent;
 
     pool[index].active = true;
 }
 
 // ---------------------------------------------------------
-// FUNCIONES ESPECÃFICAS
+// FUNCIONES ESPEC¨ªFICAS
 // ---------------------------------------------------------
 
 void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
@@ -237,13 +257,13 @@ void ParticleManager::EmitDust(float x, float y, bool lookingRight) {
 
         SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-        // --- AJUSTE DE POSICIÃ“N: TALÃ“N (Heel) ---
+        // --- AJUSTE DE POSICI¨®N: TAL¨®N (Heel) ---
        
         float offsetX = lookingRight ? 5.0f : 45.0f;
         float startX = x - (size / 2.0f) + offsetX;
         float startY = y - (size / 2.0f);
 
-        // Usamos el SpriteSheet unificado y la animaciÃ³n 'animWalkDust'
+        // Usamos el SpriteSheet unificado y la animaci¨®n 'animWalkDust'
         if (dustSpriteSheet != nullptr && animWalkDust.GetFrameCount() > 0) {
             Emit(dustSpriteSheet, animWalkDust, startX, startY, vx, vy, life, size, true, 0.0f, flip);
         }
@@ -294,8 +314,8 @@ void ParticleManager::EmitDashDust(float x, float y, bool lookingRight) {
 
           SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-          // --- AJUSTE DE POSICIÃ“N: TALÃ“N (Heel) ---
-          // Al hacer dash, el polvo suele quedar un poco mÃ¡s atrÃ¡s que al caminar
+          // --- AJUSTE DE POSICI¨®N: TAL¨®N (Heel) ---
+          // Al hacer dash, el polvo suele quedar un poco m¨¢s atr¨¢s que al caminar
           float offsetX = lookingRight ? -30.0f : 30.0f;
 
           float startX = (x + offsetX) - (size / 2.0f);
@@ -313,27 +333,8 @@ void ParticleManager::EmitDashDust(float x, float y, bool lookingRight) {
 }
 
 void ParticleManager::EmitHitSparks(float x, float y, bool isBlood) {
-    int numParticles = 1;
-
-    for (int i = 0; i < numParticles; i++) {
-        float vx = 0.0f;
-        float vy = 0.0f;
-        float life = 150.0f;
-        float size = 96.0f;
-
-        float startX = x - (size / 2.0f);
-        float startY = y - (size / 2.0f);
-
-        SDL_Texture* currentTexture = isBlood ? bloodP : hitP;
-
-        if (currentTexture != nullptr) {
-            Emit(currentTexture, startX, startY, vx, vy, life, size, true, 0.0f);
-        }
-        else {
-            SDL_Color color = isBlood ? SDL_Color{ 255, 30, 30, 255 } : SDL_Color{ 255, 200, 50, 255 };
-            Emit(startX, startY, vx, vy, life, color, 16.0f, true);
-        }
-    }
+    (void)isBlood;
+    EmitAttack(x, y, (rand() % 2) == 0);
 }
 
 void ParticleManager::EmitItemPickup(float x, float y) {
@@ -357,7 +358,7 @@ void ParticleManager::EmitItemPickup(float x, float y) {
 }
 
 // ---------------------------------------------------------
-// LÃ“GICA DE POOL
+// L¨®GICA DE POOL
 // ---------------------------------------------------------
 
 int ParticleManager::FindNextDeadParticle() {
@@ -379,17 +380,15 @@ int ParticleManager::FindNextDeadParticle() {
 
 void ParticleManager::EmitAttack(float x, float y, bool lookingRight) {
     float life = 200.0f;
-    float scale = 2.0f;
+    float scale = 3.2f;
 
     if (attackSpriteSheet != nullptr) {
         int randomChoice = rand() % 2;
         Animation* selectedAnim = (randomChoice == 0) ? &animAttack1 : &animAttack2;
         if (selectedAnim->GetFrameCount() > 0) {
             SDL_FlipMode flip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-
-        
             Emit(attackSpriteSheet, *selectedAnim, x, y, 0, 0,
-                life, 150.0f, true, 0.0f, flip, scale);
+                life, 150.0f, true, 0.0f, flip, scale, selectedAnim == &animAttack2);
         }
     }
 }

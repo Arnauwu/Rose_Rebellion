@@ -13,6 +13,9 @@
 #include "HealthBarManager.h"
 #include "Hud.h"
 #include "Physics.h"
+#include "Keys.h"
+
+#include "GameManager.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -51,7 +54,7 @@ bool KnightBoss::Start() {
 	gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
 	hurtFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
 
-	// AÒadir fÌsicas al enemigo - hitbox m·s grande para un boss
+	// A√±adir f√≠sicas al enemigo - hitbox m√°s grande para un boss
 	texW = 256;
 	texH = 256;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 4, bodyType::DYNAMIC);
@@ -64,7 +67,7 @@ bool KnightBoss::Start() {
 	pathfinding->ResetPath(GetTilePos());
 	pathFindingCooldown.Start();
 
-	// EstadÌsticas del Boss
+	// Estad√≠sticas del Boss
 	vision = 15;
 	speed = 1.5f;
 	knockbackForce = 1.0f;
@@ -207,11 +210,20 @@ bool KnightBoss::Update(float dt)
 			healthOrb->position.setY(this->position.getY());
 			healthOrb->Start();
 		}
+
+		std::shared_ptr<Keys> bossKey = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));
+		if (bossKey != nullptr) {
+			bossKey->position.setX(this->position.getX() + 150.0f);
+			bossKey->position.setY(this->position.getY());
+			bossKey->SetKeyType(KeyType::BOSS);
+			bossKey->Start();
+		}
 	}
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())
 	{
 		pendingToDelete = true;
+		GameManager::GetInstance().gameState.knightBossKilled = true;
 		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 	}
 
@@ -259,11 +271,11 @@ void KnightBoss::Move()
 		return;
 	}
 
-	// Mientras estÈ en plena animaciÛn de presentaciÛn...
+	// Mientras est√© en plena animaci√≥n de presentaci√≥n...
 	if (isSpawning) {
 		velocity.x = 0;
 
-		// Ajusta los 1200ms al tiempo real que tarde tu animaciÛn 'jump2' en terminar
+		// Ajusta los 1200ms al tiempo real que tarde tu animaci√≥n 'jump2' en terminar
 		if (spawnTimer.ReadMSec() > 2000) {
 			isSpawning = false;
 			anims.SetCurrent("idle");
@@ -274,7 +286,7 @@ void KnightBoss::Move()
 	// 0. Si est?descansando (3 segundos)
 	if (isResting) {
 		velocity.x = 0; // No se mueve
-		anims.SetCurrent("idle"); // Puedes poner una animaciÛn de "cansado" aqu?si la tienes
+		anims.SetCurrent("idle"); // Puedes poner una animaci√≥n de "cansado" aqu?si la tienes
 
 		if (restTimer.ReadMSec() >= restDuration) {
 			isResting = false; // Termina el descanso
@@ -295,7 +307,7 @@ void KnightBoss::Move()
 		return;
 	}
 
-	// 3. Tomar decisiÛn si est·s muy cerca
+	// 3. Tomar decisi√≥n si est√°s muy cerca
 	if (playerTileDist <= 2 && !isKnockedback) {
 
 		// Mirar hacia el jugador
@@ -317,7 +329,7 @@ void KnightBoss::Move()
 		return;
 	}
 
-	// 4. Movimiento de persecuciÛn normal (si est·s lejos)
+	// 4. Movimiento de persecuci√≥n normal (si est√°s lejos)
 	if (pathfinding->pathTiles.empty() && isKnockedback == false)
 	{
 		if (anims.GetCurrentName() == "walk") Engine::GetInstance().audio->StopFx(caminarFx);
@@ -447,23 +459,23 @@ void KnightBoss::SwordAttack()
 			Engine::GetInstance().audio->PlayFx(atacarFx);
 			anims.SetCurrent("attack");
 		}
-		velocity.x = 0;
+		velocity .x = 0;
 		damage = 30;
 
 		// 1. CREAR HITBOX: En el momento del impacto visual (ej: a los 500ms)
 		if (startAttack.ReadMSec() > 500 && swordHitbox == nullptr) {
 
-			// Calculamos dÛnde aparece la espada dependiendo de a dÛnde mire
+			// Calculamos d√≥nde aparece la espada dependiendo de a d√≥nde mire
 			int attW = 120,  attH = 160;
 			int hX = lookingRight ? position.getX() + texW /2: position.getX() - texW / 2;
 			int hY = position.getY();
 
-			// Creamos un rect·ngulo fÌsico
+			// Creamos un rect√°ngulo f√≠sico
 			swordHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
 			swordHitbox->listener = this;
 			swordHitbox->ctype = ColliderType::ENEMY_ATTACK;
 
-			// (LÌnea de SetSensor eliminada por incompatibilidad con Box2D v3)
+			// (L√≠nea de SetSensor eliminada por incompatibilidad con Box2D v3)
 		}
 
 		// 2. DESTRUIR HITBOX: Al terminar el ataque
@@ -473,11 +485,11 @@ void KnightBoss::SwordAttack()
 			anims.SetCurrent("idle");
 			attackStep++;
 
-			// Si la espada existe, la borramos del mundo de fÌsicas
+			// Si la espada existe, la borramos del mundo de f√≠sicas
 			if (swordHitbox != nullptr) {
-				// SOLUCI”N BOX2D V3:
+				// SOLUCI√ìN BOX2D V3:
 				b2DestroyBody(swordHitbox->body);
-				swordHitbox = nullptr; // Lo volvemos a poner a null para el prÛximo ataque
+				swordHitbox = nullptr; // Lo volvemos a poner a null para el pr√≥ximo ataque
 			}
 		}
 	}
@@ -495,7 +507,7 @@ void KnightBoss::ShieldDash() // TO DO: MAKE IT WORK (doesnt work because pbody 
 		// Terminar embestida
 		if (dashTimer.ReadMSec() >= dashCooldown) {
 			isDashing = false;
-			damage = 30; // Restaurar el daÒo normal
+			damage = 30; // Restaurar el da√±o normal
 			anims.SetCurrent("idle");
 
 			// Al terminar la embestida, se cansa por 3 segundos
@@ -532,6 +544,9 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 	case ColliderType::PLAYER_ATTACK:
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
+		break;
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
 		break;
 
 	default:

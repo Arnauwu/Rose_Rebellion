@@ -43,6 +43,7 @@ enum class EntityType
 	NINFA_MARE,
 	WAVE,
 	GWELL_BOSS,
+	GWELL_PROJECTILE,
 	DRAGON,
 	DRAGON_PROJECTILE,
 
@@ -51,6 +52,7 @@ enum class EntityType
 	KEY_GATE,
 
 	SPECIALFLOOR,
+	BREAKABLE_ROCK,
 
 	UNKNOWN
 };

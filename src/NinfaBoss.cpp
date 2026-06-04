@@ -15,6 +15,8 @@
 #include "HealthOrb.h"
 #include <cmath>
 
+#include "GameManager.h"
+
 #include "tracy/Tracy.hpp"
 
 NinfaMare::NinfaMare() : Enemy(EntityType::NINFA_MARE) // O EntityType::BOSS si tienes uno
@@ -231,6 +233,7 @@ bool NinfaMare::Update(float dt)
                 hOrb->Start();
                 Engine::GetInstance().entityManager->AddEntity(hOrb);
             }
+            GameManager::GetInstance().gameState.ninfaBossKilled = true;
             pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame
         }
     }
@@ -481,6 +484,35 @@ void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
     }
 
     if (physB->ctype == ColliderType::PLAYER_ATTACK) {
+        Engine::GetInstance().audio->PlayFx(hurtFX);
+        // 1. Aplicar daño
+        TakeDamage(physB->listener->damage);
+
+        if (currentHealth <= 0 && !isdead) {
+            isdead = true;
+            currentHealth = 0;
+            Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+            return; // Salir de la función para que no pase a estado HURT
+        }
+
+        // 2. Cambiar estado inmediatamente (esto bloquea nuevas entradas aquí)
+        currentState = NinfaMareState::HURT;
+
+        // 3. Resetear y poner la animación una sola vez
+        anims.SetCurrent("hurt");
+        if (anims.GetAnim("hurt") != nullptr) {
+            anims.GetAnim("hurt")->Reset();
+        }
+
+        // 4. Iniciar el contador de tiempo de la animación (400ms)
+        stateTimer.Start();
+
+        // 5. Knockback opcional
+        isKnockedback = true;
+        knockbackTime = 200.0f;
+    }
+
+        if (physB->ctype == ColliderType::PLAYER_PROJECTILE) {
         Engine::GetInstance().audio->PlayFx(hurtFX);
         // 1. Aplicar daño
         TakeDamage(physB->listener->damage);

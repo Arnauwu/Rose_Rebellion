@@ -605,7 +605,7 @@ bool GameScene::PostUpdate() {
 		if (p != nullptr && p->interactuableBody != nullptr) {
 			nextMapName = Engine::GetInstance().map->DoorInfo(p->interactuableBody);
 
-			if (p->interactuableBody->ctype == ColliderType::PATH) {
+			if (p->interactuableBody->ctype == ColliderType::PATH || p->interactuableBody->ctype == ColliderType::DOOR) {
 				targetSpawnID = Engine::GetInstance().map->GetPathSpawnID(p->interactuableBody);
 			}
 			else {
