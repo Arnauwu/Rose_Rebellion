@@ -15,14 +15,19 @@ CameraController::~CameraController()
 
 void CameraController::Update(float dt, Vector2D entityPos)
 {
-	int screenW = Engine::GetInstance().render->camera.w;
-	int screenH = Engine::GetInstance().render->camera.h;
+	
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
 	float mapWidth = mapSize.getX();
 	float mapHeight = mapSize.getY();
 
 	float dtSeconds = dt / 1000.0f;
 
+	if (abs(targetZoom - currentZoom) > 0.001f) {
+		currentZoom += (targetZoom - currentZoom) * 3.0f * dtSeconds;
+		Engine::GetInstance().render->SetZoom(currentZoom);
+	}
+	int screenW = Engine::GetInstance().render->camera.w;
+	int screenH = Engine::GetInstance().render->camera.h;
 	// Calcular posicion objetivo: centrar en el jugador con offset vertical minimo
 	targetX = -entityPos.getX() + (screenW / 2.0f);
 	targetY = -entityPos.getY() + (screenH / yDivisor) - verticalOffset;
@@ -76,6 +81,9 @@ void CameraController::StartShake(float duration, float intensity)
 	shakeDuration = duration;
 	shakeTimeRemaining = duration;
 	shakeIntensity = intensity;
+}
+void CameraController::SetTargetZoom(float newZoom) {
+	targetZoom = newZoom;
 }
 
 void CameraController::GetCameraPosition(float& outX, float& outY) const

@@ -11,6 +11,8 @@
 #include "Map.h"
 #include "Timer.h"
 #include "HealthBarManager.h"
+#include "Hud.h"
+#include "Physics.h"
 #include "Keys.h"
 
 #include "GameManager.h"
@@ -31,20 +33,28 @@ bool KnightBoss::Awake() {
 }
 
 bool KnightBoss::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"jump"},{24,"jump2"},{48,"hurt"},{72,"dead"},{84,"start_assault"},{96,"assault"},{108,"attack"},{120,"idle"},{132,"walk"} }; // TO DO: Add new_anims (0-48) & start asssault
+	std::unordered_map<int, std::string> aliases = { {0,"scream"},{29,"jump2"},{36,"land"},{48,"hurt"},{72,"dead"},{84,"start_assault"},{96,"assault"},{108,"attack"},{120,"idle"},{132,"walk"} }; // TO DO: Add new_anims (0-48) & start asssault
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
+	//Intro Boss
+	portraitTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/BossPresentation/KnightFrame.png");
+
+	std::unordered_map<int, std::string> frameAliases = { {0, "play"} };
+	portraitAnim.LoadFromTSX("Assets/Textures/UI/BossPresentation/KnightFrame.tsx", frameAliases);
+	portraitAnim.SetCurrent("play");
+
+	//Audios
 	morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
 	caminarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
 	atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
 	gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
 	hurtFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
 
-	// AÒadir fÌsicas al enemigo - hitbox m·s grande para un boss
+	// A√±adir f√≠sicas al enemigo - hitbox m√°s grande para un boss
 	texW = 256;
 	texH = 256;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 4, bodyType::DYNAMIC);
@@ -57,7 +67,7 @@ bool KnightBoss::Start() {
 	pathfinding->ResetPath(GetTilePos());
 	pathFindingCooldown.Start();
 
-	// EstadÌsticas del Boss
+	// Estad√≠sticas del Boss
 	vision = 15;
 	speed = 1.5f;
 	knockbackForce = 1.0f;
@@ -78,59 +88,87 @@ bool KnightBoss::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
-	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
-	{
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 100, 0, 400)){
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+
 		return true;
 	}
 
 	if (introDone != 4)
 	{
+		Engine::GetInstance().hud->isHidden = true;
+
 		Player* player = Engine::GetInstance().entityManager->GetPlayer();
 		player->isFrozen = true;
 		
 		GetPhysicsValues();
 
-		if (anims.GetCurrentName() != "jump" && introDone == 0)
-		{
-			anims.SetCurrent("jump");
-			anims.GetAnim("jump")->SetLoop(false);
-		}
-		else if (anims.GetAnim("jump")->HasFinishedOnce() && introDone == 0)
-		{
-			introDone = 1;
-			anims.SetCurrent("jump2");
-			anims.GetAnim("jump2")->SetLoop(false);
-
-		}
-		else if(anims.GetAnim("jump2")->HasFinishedOnce() && introDone == 1)
-		{
-			introDone = 2;
-		}
-
 		if (introDone == 0)
 		{
-			velocity.y = -10;
+			velocity.x = 0.0f;
+			velocity.y = 0.0f;
+
+			if (anims.GetCurrentName() != "scream")
+			{
+				anims.SetCurrent("scream");
+				anims.GetAnim("scream")->SetLoop(false);
+			}
+
+			if (anims.GetAnim("scream")->HasFinishedOnce())
+			{
+				introDone = 1;    
+				velocity.y = -16.0f;
+				velocity.x = 4.5f; 
+
+				anims.SetCurrent("jump2");
+				anims.GetAnim("jump2")->SetLoop(false); 
+			}
 		}
+		
 		else if (introDone == 1)
 		{
-			velocity.y = 10;
+			velocity.x = 10.5f; 
 		}
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
-
 		player->cameraController.Update(dt, this->GetPosition());
-
+	
 		if (introDone == 2)
 		{
-			player->cameraController.StartShake(3000, 25);
+			player->cameraController.StartShake(3000, 30); 
+			Engine::GetInstance().hud->TriggerBossIntro(portraitTex, &portraitAnim, 3.0f); 
+
+			if (anims.GetCurrentName() != "land") {
+				anims.SetCurrent("land");
+				if (anims.GetAnim("land") != nullptr) {
+					anims.GetAnim("land")->SetLoop(false); 
+				}
+			}
+
+			velocity.x = 0.0f;
+			velocity.y = 0.0f;
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+
 			introDone = 3;
 		}
 
-		if (introDone == 3 && player->cameraController.GetRemainingShakeTime() < 0)
+		
+		if (introDone == 3)
 		{
-			introDone = 4;
-			player->isFrozen = false;
+			velocity.x = 0.0f;
+			if (anims.GetCurrentName() == "land" && anims.GetAnim("land") != nullptr) {
+				if (anims.GetAnim("land")->HasFinishedOnce()) {
+					anims.SetCurrent("idle");
+				}
+			}
+			if (player->cameraController.GetRemainingShakeTime() < 0)
+			{
+				introDone = 4;
+				player->isFrozen = false;
+				Engine::GetInstance().hud->isHidden = false;
+
+			}
 		}
 
 		Draw(dt);
@@ -149,11 +187,6 @@ bool KnightBoss::Update(float dt)
 		{
 			// Si nos detecta, le pasamos este boss al manager para mostrar la barra
 			Engine::GetInstance().healthBarManager->SetBoss(this);
-		}
-		else
-		{
-			// Si el jugador se aleja, ocultamos la barra
-			Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 		}
 
 		GetPhysicsValues();
@@ -227,32 +260,22 @@ void KnightBoss::Move()
 	Vector2D playerPos = player->GetPosition();
 	Vector2D tilePos = GetTilePos();
 
-	if (!hasAppeared) {
-		velocity.x = 0; // Se queda completamente quieto
+	if (isResting) {
+		velocity.x = 0;
+		anims.SetCurrent("idle"); 
 
-		// Si el jugador entra en rango visual, el Boss "despierta"
-		if (playerTileDist <= vision) {
-			hasAppeared = true;
-			isSpawning = true;
-			spawnTimer.Start();
-
-			anims.SetCurrent("jump2");
-			if (anims.GetAnim("jump2") != nullptr) anims.GetAnim("jump2")->Reset();
-
-			// Que mire dram·ticamente hacia el jugador al despertar
-			lookingRight = (playerPos.getX() > position.getX());
+		if (restTimer.ReadMSec() >= restDuration) {
+			isResting = false;
+			attackStep = 0;
 		}
-		else {
-			anims.SetCurrent("idle"); // Espera agachado o quieto
-		}
-		return; // IMPORTANTE: Evita que eval˙e ataques o movimiento
+		return;
 	}
 
-	// Mientras estÈ en plena animaciÛn de presentaciÛn...
+	// Mientras est√© en plena animaci√≥n de presentaci√≥n...
 	if (isSpawning) {
 		velocity.x = 0;
 
-		// Ajusta los 1200ms al tiempo real que tarde tu animaciÛn 'jump2' en terminar
+		// Ajusta los 1200ms al tiempo real que tarde tu animaci√≥n 'jump2' en terminar
 		if (spawnTimer.ReadMSec() > 2000) {
 			isSpawning = false;
 			anims.SetCurrent("idle");
@@ -263,7 +286,7 @@ void KnightBoss::Move()
 	// 0. Si est?descansando (3 segundos)
 	if (isResting) {
 		velocity.x = 0; // No se mueve
-		anims.SetCurrent("idle"); // Puedes poner una animaciÛn de "cansado" aqu?si la tienes
+		anims.SetCurrent("idle"); // Puedes poner una animaci√≥n de "cansado" aqu?si la tienes
 
 		if (restTimer.ReadMSec() >= restDuration) {
 			isResting = false; // Termina el descanso
@@ -284,7 +307,7 @@ void KnightBoss::Move()
 		return;
 	}
 
-	// 3. Tomar decisiÛn si est·s muy cerca
+	// 3. Tomar decisi√≥n si est√°s muy cerca
 	if (playerTileDist <= 2 && !isKnockedback) {
 
 		// Mirar hacia el jugador
@@ -306,7 +329,7 @@ void KnightBoss::Move()
 		return;
 	}
 
-	// 4. Movimiento de persecuciÛn normal (si est·s lejos)
+	// 4. Movimiento de persecuci√≥n normal (si est√°s lejos)
 	if (pathfinding->pathTiles.empty() && isKnockedback == false)
 	{
 		if (anims.GetCurrentName() == "walk") Engine::GetInstance().audio->StopFx(caminarFx);
@@ -442,17 +465,17 @@ void KnightBoss::SwordAttack()
 		// 1. CREAR HITBOX: En el momento del impacto visual (ej: a los 500ms)
 		if (startAttack.ReadMSec() > 500 && swordHitbox == nullptr) {
 
-			// Calculamos dÛnde aparece la espada dependiendo de a dÛnde mire
+			// Calculamos d√≥nde aparece la espada dependiendo de a d√≥nde mire
 			int attW = 120,  attH = 160;
 			int hX = lookingRight ? position.getX() + texW /2: position.getX() - texW / 2;
 			int hY = position.getY();
 
-			// Creamos un rect·ngulo fÌsico
+			// Creamos un rect√°ngulo f√≠sico
 			swordHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
 			swordHitbox->listener = this;
 			swordHitbox->ctype = ColliderType::ENEMY_ATTACK;
 
-			// (LÌnea de SetSensor eliminada por incompatibilidad con Box2D v3)
+			// (L√≠nea de SetSensor eliminada por incompatibilidad con Box2D v3)
 		}
 
 		// 2. DESTRUIR HITBOX: Al terminar el ataque
@@ -462,11 +485,11 @@ void KnightBoss::SwordAttack()
 			anims.SetCurrent("idle");
 			attackStep++;
 
-			// Si la espada existe, la borramos del mundo de fÌsicas
+			// Si la espada existe, la borramos del mundo de f√≠sicas
 			if (swordHitbox != nullptr) {
-				// SOLUCI”N BOX2D V3:
+				// SOLUCI√ìN BOX2D V3:
 				b2DestroyBody(swordHitbox->body);
-				swordHitbox = nullptr; // Lo volvemos a poner a null para el prÛximo ataque
+				swordHitbox = nullptr; // Lo volvemos a poner a null para el pr√≥ximo ataque
 			}
 		}
 	}
@@ -484,7 +507,7 @@ void KnightBoss::ShieldDash() // TO DO: MAKE IT WORK (doesnt work because pbody 
 		// Terminar embestida
 		if (dashTimer.ReadMSec() >= dashCooldown) {
 			isDashing = false;
-			damage = 30; // Restaurar el daÒo normal
+			damage = 30; // Restaurar el da√±o normal
 			anims.SetCurrent("idle");
 
 			// Al terminar la embestida, se cansa por 3 segundos
@@ -501,6 +524,12 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 	}
 
 	if (isSpawning || isdead) {
+		return;
+	}
+
+	if (introDone == 1 && physB->ctype == ColliderType::MAP)
+	{
+		introDone = 2; 
 		return;
 	}
 
@@ -539,6 +568,12 @@ void KnightBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shap
 bool KnightBoss::CleanUp() 
 {
 	active = false;
+
+	if (portraitTex != nullptr) {
+		Engine::GetInstance().textures->UnLoad(portraitTex);
+		portraitTex = nullptr;
+	}
+
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	if (swordHitbox != nullptr) {

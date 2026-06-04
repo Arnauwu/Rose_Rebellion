@@ -22,7 +22,8 @@
 NinfaMare::NinfaMare() : Enemy(EntityType::NINFA_MARE) // O EntityType::BOSS si tienes uno
 {
     name = "NinfaMare";
-    currentState = NinfaMareState::SPAWNING;
+    currentState = NinfaMareState::CHASE;
+    hasAppeared = false;
     active = true;
 }
 
@@ -39,9 +40,15 @@ bool NinfaMare::Start()
     gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Grito.wav");
     hurtFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
 
+    portraitTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/BossPresentation/KnightFrame.png");
+
+    std::unordered_map<int, std::string> frameAliases = { {0, "play"} };
+    portraitAnim.LoadFromTSX("Assets/Textures/UI/BossPresentation/KnightFrame.tsx", frameAliases);
+    portraitAnim.SetCurrent("play");
+
     // Animaciones (Usando el sistema de aliases de la ninfa base)[cite: 1]
     std::unordered_map<int, std::string> aliases = {
-        {0, "idle"}, {20, "appear"}, {40, "attack_shot"},
+        {0, "idle"}, {20, "appear"},{21, "waiting"},{36, "scream"}, {40, "attack_shot"},
         {60, "attack_rain"}, {60, "attack_wave"}, {80, "fly"},{100, "hurt"}, {120, "dead"}
     };
     anims.LoadFromTSX("Assets/Textures/Entities/Enemies/NinfaBoss/NinfaMadre_spritesheet.tsx", aliases);
@@ -49,7 +56,6 @@ bool NinfaMare::Start()
 
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/NinfaBoss/NinfaMadre_spritesheet.png");
 
-    currentState = NinfaMareState::SPAWNING;
     // Especificaciones físicas: Más grande (128x128 o similar)[cite: 1]
     texW = 128;
     texH = 128;
@@ -71,6 +77,7 @@ bool NinfaMare::Start()
     speed = 1.8f; // Más lenta pero imponente
     maxHealth = 150;
     currentHealth = 150;
+    hasAppeared = false;
 
     return true;
 }
@@ -82,7 +89,87 @@ bool NinfaMare::Update(float dt)
 
     ZoneScoped;
 
+    if (introDone != 5) 
+    {
+        Player* player = Engine::GetInstance().entityManager->GetPlayer();
+        float distToPlayer = (player->GetPosition() - GetPosition()).magnitude();
 
+        if (introDone == 0) {
+
+            if (anims.GetCurrentName() != "waiting") {
+                anims.SetCurrent("waiting");
+            }
+
+            float triggerIntroDist = 1300;
+
+            if (distToPlayer <= triggerIntroDist) {
+                introDone = 1;
+                player->isFrozen = true;
+                Engine::GetInstance().hud->isHidden = true;
+
+                player->cameraController.SetTargetZoom(0.65);
+                stateTimer.Start();
+            }
+        }
+        //  Zoom ninfa
+        else if (introDone == 1) {
+         
+            player->cameraController.Update(dt, this->GetPosition());
+
+            if (stateTimer.ReadMSec() > 2500) {
+                introDone = 2;
+
+                player->cameraController.SetTargetZoom(0.9);
+
+                anims.SetCurrent("appear");
+                if (anims.GetAnim("appear") != nullptr) {
+                    anims.GetAnim("appear")->SetLoop(false);
+                }
+            }
+        }
+        // Reproduciendo "appear" con Zoom cercano
+        else if (introDone == 2) {
+            player->cameraController.Update(dt, this->GetPosition());
+
+            if (anims.GetAnim("appear") != nullptr && anims.GetAnim("appear")->HasFinishedOnce()) {
+                introDone = 3;
+                anims.SetCurrent("Scream");
+
+                Engine::GetInstance().audio->PlayFx(gritoFx);
+                player->cameraController.StartShake(3000, 30); 
+
+                //Engine::GetInstance().hud->TriggerBossIntro(portraitTex, &portraitAnim, 3.0f);
+            }
+        }
+        // Esperando a que acabe el temblor
+        else if (introDone == 3) {
+            player->cameraController.Update(dt, this->GetPosition());
+
+            if (player->cameraController.GetRemainingShakeTime() <= 0) {
+                introDone = 4;
+
+                player->cameraController.SetTargetZoom(0.5);
+
+                stateTimer.Start();
+            }
+        }
+        else if (introDone == 4) {
+          
+            if (stateTimer.ReadMSec() > 2500) {
+                introDone = 5; 
+
+                player->isFrozen = false;
+                Engine::GetInstance().hud->isHidden = false;
+
+                currentState = NinfaMareState::CHASE;
+                hasAppeared = true;
+                stateTimer.Start();
+            }
+        }
+
+        Draw(dt);
+        return true;
+    }
     if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
     {
         Player* player = Engine::GetInstance().entityManager->GetPlayer();
@@ -180,38 +267,6 @@ void NinfaMare::Move() {
 
     // IA del Boss
     switch (currentState) {
-    case NinfaMareState::SPAWNING: // <-- Tu estado asignado
-        velocity = { 0, 0 }; // Completamente quieta durante la presentación
-
-        if (!hasAppeared) {
-            // Si el jugador entra en rango, el Boss "despierta"
-            if (distToPlayer <= attackRange) {
-                hasAppeared = true;
-                Engine::GetInstance().audio->PlayFx(gritoFx); // Grito cinematográfico
-                anims.SetCurrent("appear"); // <-- Pon aquí el nombre exacto de tu animación en el .tsx
-                if (anims.GetAnim("appear") != nullptr) anims.GetAnim("appear")->Reset();
-                stateTimer.Start();
-            }
-        }
-        else {
-            // Una vez activada, esperamos a que termine el tiempo de spawn existente
-            if (stateTimer.ReadMSec() >= spawnDurationMs) { // <-- Usamos tus 3000ms configurados
-                currentState = NinfaMareState::CHASE; // Al acabar, empieza a perseguir
-                anims.SetCurrent("fly");
-            }
-        }
-        break;
-    case NinfaMareState::HURT:
-        velocity = { 0, 0 }; // Se queda quieta por el impacto
-
-        if (stateTimer.ReadMSec() >= hurtDurationMs) {
-            // Al terminar el tiempo, volvemos a CHASE. 
-            // Hasta este momento, OnCollision no dejaba entrar nuevos golpes.
-            currentState = NinfaMareState::CHASE;
-            anims.SetCurrent("fly");
-        }
-        break;
-
     case NinfaMareState::CHASE:
         anims.SetCurrent("fly");
         velocity.x = moveDir.getX() * speed;
@@ -225,6 +280,16 @@ void NinfaMare::Move() {
 
             velocity = { 0, 0 };
             stateTimer.Start();
+        }
+        break;
+
+    case NinfaMareState::HURT:
+        velocity = { 0, 0 }; // Se queda quieta por el impacto
+
+        if (stateTimer.ReadMSec() >= hurtDurationMs) {
+         
+            currentState = NinfaMareState::CHASE;
+            anims.SetCurrent("fly");
         }
         break;
 

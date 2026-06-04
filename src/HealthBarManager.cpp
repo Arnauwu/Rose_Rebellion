@@ -4,6 +4,8 @@
 #include "Render.h"
 #include "Window.h"
 #include "Enemy.h" 
+#include "sceneManager.h" 
+
 #include "Log.h"
 #include "tracy/Tracy.hpp"
 
@@ -37,7 +39,14 @@ bool HealthBarManager::Start() {
 bool HealthBarManager::Update(float dt)
 {
     ZoneScoped;
+    return true;
+}
 
+bool HealthBarManager::PostUpdate() {
+
+    if (Engine::GetInstance().sceneManager->IsGamePaused() || currentBoss == nullptr || currentBoss->isdead) {
+        return true;
+    }
     if (currentBoss == nullptr || currentBoss->isdead) {
         return true;
     }
@@ -113,9 +122,7 @@ bool HealthBarManager::Update(float dt)
         Engine::GetInstance().render->DrawTexture(activeExtra, extraPosX, extraPosY, &srcRectExtra, 0.0f);
     }
 
-    return true;
 }
-
 bool HealthBarManager::CleanUp() {
     if (knightBaseTexture) Engine::GetInstance().textures->UnLoad(knightBaseTexture);
     if (knightVidaTexture) Engine::GetInstance().textures->UnLoad(knightVidaTexture);
@@ -127,7 +134,6 @@ bool HealthBarManager::CleanUp() {
     return true;
 }
 
-bool HealthBarManager::PostUpdate() { return true; }
 
 void HealthBarManager::SetBoss(Enemy* boss) {
     currentBoss = boss;

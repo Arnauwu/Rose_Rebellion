@@ -75,4 +75,9 @@ public:
     // Control de ataques
     bool canDoSpecial = true;
     Timer specialTimer;
+
+    //Intro 
+    int introDone = 0;
+    SDL_Texture* portraitTex = nullptr;
+    AnimationSet portraitAnim;
 };

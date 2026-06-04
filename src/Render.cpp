@@ -174,6 +174,32 @@ bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin)
 	return result;
 }
 
+bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int marginX, int marginTop, int marginBottom) const
+{
+	bool result = false;
+
+	// Límite izquierdo y superior reales
+	float camLeft = -camera.x - marginX;
+	float camTop = -camera.y - marginTop;
+
+	// Límite derecho e inferior reales (corregido)
+	float camRight = -camera.x + camera.w + marginX;
+	float camBott = -camera.y + camera.h + marginBottom;
+
+	float objRight = x + w;
+	float objBott = y + h;
+
+	if (objRight >= camLeft && x <= camRight)
+	{
+		if (objBott >= camTop && y <= camBott)
+		{
+			result = true;
+		}
+	}
+
+	return result;
+}
+
 void Render::SetViewPort(const SDL_Rect& rect)
 {
 	SDL_SetRenderViewport(renderer, &rect);
@@ -216,10 +242,13 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 	SDL_FRect srcRect;
 	if (section != NULL)
 	{
-		srcRect.x = (float)section->x;
-		srcRect.y = (float)section->y;
-		srcRect.w = (float)section->w;
-		srcRect.h = (float)section->h;
+		const float epsilon = 0.01f; // Un valor pequeñísimo
+
+		srcRect.x = (float)section->x + epsilon;
+		srcRect.y = (float)section->y + epsilon;
+		srcRect.w = (float)section->w - (epsilon * 2.0f);
+		srcRect.h = (float)section->h - (epsilon * 2.0f);
+
 		src = &srcRect;
 	}
 
@@ -281,10 +310,13 @@ bool Render::DrawRotatedTexture(SDL_Texture* texture, int x, int y, const SDL_Re
 	SDL_FRect srcRect;
 	if (section != NULL)
 	{
-		srcRect.x = (float)section->x;
-		srcRect.y = (float)section->y;
-		srcRect.w = (float)section->w;
-		srcRect.h = (float)section->h;
+		const float epsilon = 0.01f; // Un valor pequeñísimo
+
+		srcRect.x = (float)section->x + epsilon;
+		srcRect.y = (float)section->y + epsilon;
+		srcRect.w = (float)section->w - (epsilon * 2.0f);
+		srcRect.h = (float)section->h - (epsilon * 2.0f);
+
 		src = &srcRect;
 	}
 
@@ -392,8 +424,8 @@ bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const 
 
 	// SDL3 uses float rects for rendering
 	SDL_FRect rect;
-	rect.x = (float)((camera.x + dest->x) * scale) * zoomLevel;
-	rect.y = (float)((camera.y + dest->y) * scale) * zoomLevel;
+	rect.x = std::round((float)((camera.x + dest->x) * scale) * zoomLevel);
+	rect.y = std::round((float)((camera.y + dest->y) * scale) * zoomLevel);
 	rect.w = (float)(dest->w * scale * adjustableScale) * zoomLevel;
 	rect.h = (float)(dest->h * scale * adjustableScale) * zoomLevel;
 
@@ -403,10 +435,13 @@ bool Render::DrawRotatedImage(SDL_Texture* texture, const SDL_Rect* dest, const 
 	SDL_FRect srcRect;
 	if (section != NULL)
 	{
-		srcRect.x = (float)section->x;
-		srcRect.y = (float)section->y;
-		srcRect.w = (float)section->w;
-		srcRect.h = (float)section->h;
+		const float epsilon = 0.01f; // Un valor pequeñísimo
+
+		srcRect.x = (float)section->x + epsilon;
+		srcRect.y = (float)section->y + epsilon;
+		srcRect.w = (float)section->w - (epsilon * 2.0f);
+		srcRect.h = (float)section->h - (epsilon * 2.0f);
+
 		src = &srcRect;
 	}
 
@@ -844,7 +879,8 @@ void Render::SetZoom(float zoomValue)
 {
 	zoomLevel = zoomValue;
 	int w, h;
-	Engine::GetInstance().window->GetWindowSize(w,h);
+	w = Engine::GetInstance().window->windowWidth;
+	h = Engine::GetInstance().window->windowHeight;
 
 	camera.w =  w / zoomLevel;
 	camera.h = h / zoomLevel;
