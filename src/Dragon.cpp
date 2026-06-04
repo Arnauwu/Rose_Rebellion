@@ -686,6 +686,9 @@ void Dragon::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			}
 		}
 		break;
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
+		break;
 
 	default:
 		break;

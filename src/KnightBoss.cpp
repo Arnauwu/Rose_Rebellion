@@ -516,6 +516,9 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 		TakeDamage(physB->listener->damage);
 		isKnockedback = true;
 		break;
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
+		break;
 
 	default:
 		break;

@@ -30,9 +30,11 @@ bool Projectile::Start()
 		(int)position.getX(), (int)position.getY(), projectileRadius, bodyType::KINEMATIC);
 	
 	pbody->listener = this;
-	pbody->ctype = ColliderType::PLAYER_ATTACK;
+	pbody->ctype = ColliderType::PLAYER_PROJECTILE;
 
 	lifeTimer.Start();
+
+	this->damage = 20;
 	
 	return true;
 }

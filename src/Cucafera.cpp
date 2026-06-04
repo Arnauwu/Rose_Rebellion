@@ -347,6 +347,9 @@ void Cucafera::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b
 		isKnockedback = true;
 		break;
 
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
+		break;
 	default:
 		break;
 	}

@@ -446,6 +446,35 @@ void NinfaMare::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
         isKnockedback = true;
         knockbackTime = 200.0f;
     }
+
+        if (physB->ctype == ColliderType::PLAYER_PROJECTILE) {
+        Engine::GetInstance().audio->PlayFx(hurtFX);
+        // 1. Aplicar daño
+        TakeDamage(physB->listener->damage);
+
+        if (currentHealth <= 0 && !isdead) {
+            isdead = true;
+            currentHealth = 0;
+            Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+            return; // Salir de la función para que no pase a estado HURT
+        }
+
+        // 2. Cambiar estado inmediatamente (esto bloquea nuevas entradas aquí)
+        currentState = NinfaMareState::HURT;
+
+        // 3. Resetear y poner la animación una sola vez
+        anims.SetCurrent("hurt");
+        if (anims.GetAnim("hurt") != nullptr) {
+            anims.GetAnim("hurt")->Reset();
+        }
+
+        // 4. Iniciar el contador de tiempo de la animación (400ms)
+        stateTimer.Start();
+
+        // 5. Knockback opcional
+        isKnockedback = true;
+        knockbackTime = 200.0f;
+    }
 }
 
 void NinfaMare::StartRainAttack() {

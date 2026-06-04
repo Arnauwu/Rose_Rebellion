@@ -510,6 +510,13 @@ void GwellBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 			}
 		}
 		break;
+	case ColliderType::PLAYER_PROJECTILE:
+		TakeDamage(physB->listener->damage);
+		break;
+
+	default:
+		break;
+
 	}
 }
 

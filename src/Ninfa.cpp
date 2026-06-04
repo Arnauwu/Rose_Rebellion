@@ -396,6 +396,9 @@ void Ninfa::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Sh
         isKnockedback = true;
         knockbackTime = 500.0f;
         break;
+    case ColliderType::PLAYER_PROJECTILE:
+        TakeDamage(physB->listener->damage);
+        break;
 
     default:
         break;
