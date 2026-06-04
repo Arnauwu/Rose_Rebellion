@@ -30,7 +30,7 @@ bool KnightBoss::Awake() {
 }
 
 bool KnightBoss::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"jump"},{24,"jump2"},{48,"hurt"},{72,"dead"},{84,"start_assault"},{96,"assault"},{108,"attack"},{120,"idle"},{132,"walk"} }; // TO DO: Add new_anims (0-48) & start asssault
+	std::unordered_map<int, std::string> aliases = { {0,"scream"},{29,"jump2"},{36,"land"},{48,"hurt"},{72,"dead"},{84,"start_assault"},{96,"assault"},{108,"attack"},{120,"idle"},{132,"walk"} }; // TO DO: Add new_anims (0-48) & start asssault
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
 	anims.SetCurrent("idle");
 
@@ -99,47 +99,69 @@ bool KnightBoss::Update(float dt)
 		
 		GetPhysicsValues();
 
-		if (anims.GetCurrentName() != "jump" && introDone == 0)
-		{
-			anims.SetCurrent("jump");
-			anims.GetAnim("jump")->SetLoop(false);
-		}
-		else if (anims.GetAnim("jump")->HasFinishedOnce() && introDone == 0)
-		{
-			introDone = 1;
-			anims.SetCurrent("jump2");
-			anims.GetAnim("jump2")->SetLoop(false);
-
-		}
-		else if(anims.GetAnim("jump2")->HasFinishedOnce() && introDone == 1)
-		{
-			introDone = 2;
-		}
-
 		if (introDone == 0)
 		{
-			velocity.y = -10;
+			velocity.x = 0.0f;
+			velocity.y = 0.0f;
+
+			if (anims.GetCurrentName() != "scream")
+			{
+				anims.SetCurrent("scream");
+				anims.GetAnim("scream")->SetLoop(false);
+			}
+
+			if (anims.GetAnim("scream")->HasFinishedOnce())
+			{
+				introDone = 1;    
+				velocity.y = -16.0f;
+				velocity.x = 4.5f; 
+
+				anims.SetCurrent("jump2");
+				anims.GetAnim("jump2")->SetLoop(false); 
+			}
 		}
+		
 		else if (introDone == 1)
 		{
-			velocity.y = 10;
+			velocity.x = 10.5f; 
 		}
 
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
-
 		player->cameraController.Update(dt, this->GetPosition());
-
+	
 		if (introDone == 2)
 		{
-			player->cameraController.StartShake(3000, 25);
-			Engine::GetInstance().hud->TriggerBossIntro(portraitTex, &portraitAnim, 3.0f);
+			player->cameraController.StartShake(3000, 30); 
+			Engine::GetInstance().hud->TriggerBossIntro(portraitTex, &portraitAnim, 3.0f); 
+
+			if (anims.GetCurrentName() != "land") {
+				anims.SetCurrent("land");
+				if (anims.GetAnim("land") != nullptr) {
+					anims.GetAnim("land")->SetLoop(false); 
+				}
+			}
+
+			velocity.x = 0.0f;
+			velocity.y = 0.0f;
+			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+
 			introDone = 3;
 		}
 
-		if (introDone == 3 && player->cameraController.GetRemainingShakeTime() < 0)
+		
+		if (introDone == 3)
 		{
-			introDone = 4;
-			player->isFrozen = false;
+			velocity.x = 0.0f;
+			if (anims.GetCurrentName() == "land" && anims.GetAnim("land") != nullptr) {
+				if (anims.GetAnim("land")->HasFinishedOnce()) {
+					anims.SetCurrent("idle");
+				}
+			}
+			if (player->cameraController.GetRemainingShakeTime() < 0)
+			{
+				introDone = 4;
+				player->isFrozen = false;
+			}
 		}
 
 		Draw(dt);
@@ -222,25 +244,15 @@ void KnightBoss::Move()
 	Vector2D playerPos = player->GetPosition();
 	Vector2D tilePos = GetTilePos();
 
-	if (!hasAppeared) {
-		velocity.x = 0; // Se queda completamente quieto
+	if (isResting) {
+		velocity.x = 0;
+		anims.SetCurrent("idle"); 
 
-		// Si el jugador entra en rango visual, el Boss "despierta"
-		if (playerTileDist <= vision) {
-			hasAppeared = true;
-			isSpawning = true;
-			spawnTimer.Start();
-
-			anims.SetCurrent("jump2");
-			if (anims.GetAnim("jump2") != nullptr) anims.GetAnim("jump2")->Reset();
-
-			// Que mire dramáticamente hacia el jugador al despertar
-			lookingRight = (playerPos.getX() > position.getX());
+		if (restTimer.ReadMSec() >= restDuration) {
+			isResting = false;
+			attackStep = 0;
 		}
-		else {
-			anims.SetCurrent("idle"); // Espera agachado o quieto
-		}
-		return; // IMPORTANTE: Evita que evalúe ataques o movimiento
+		return;
 	}
 
 	// Mientras esté en plena animación de presentación...
@@ -496,6 +508,12 @@ void KnightBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA,
 	}
 
 	if (isSpawning || isdead) {
+		return;
+	}
+
+	if (introDone == 1 && physB->ctype == ColliderType::MAP)
+	{
+		introDone = 2; 
 		return;
 	}
 

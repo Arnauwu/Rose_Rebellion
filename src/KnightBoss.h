@@ -51,8 +51,8 @@ public:
 	// NUEVO: Variables del Combo Fijo
 	int attackStep = 0;         // 0 = Ataque 1, 1 = Ataque 2, 2 = Embestida
 	bool isResting = false;     // Si est?cansado
-	Timer restTimer;            // Reloj para contar los 3 segundos
-	float restDuration = 3000.0f;
+	Timer restTimer;            
+	float restDuration = 2000.0f;
 
 	bool hasAppeared = false;
 	bool isSpawning = false;
