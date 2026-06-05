@@ -1147,7 +1147,7 @@ void Player::ApplyPhysics() {
 		int maxFallSpeed = 2;
 		if (velocity.y >= maxFallSpeed)
 		{
-			LOG("Gliding");
+			//LOG("Gliding");
 			velocity.y = maxFallSpeed;
 		}
 	}
@@ -1673,6 +1673,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
     Engine::GetInstance().sceneManager->setNewMap = true;
     break;
 	case ColliderType::ITEM:
+
 		LOG("Collision ITEM");
 		//efecto Particula
 		int itemX, itemY;
@@ -1681,21 +1682,29 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 		if (physB->listener->name == "Manta") {
 			LOG("Collision ITEM (Manta Picked Up)");
-			//Engine::GetInstance().hud->ShowNotification("You have obtained the Cape.");
+			UnlockCape(); 
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::GLIDE);
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
-
-			AddItem(ItemID::KEY, 1);
-
 			Engine::GetInstance().hud->ShowNotification("You have obtained a Key.");
-
 		}
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
-			//Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle.");
+			UnlockSickle();
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::ATTACK);
+		}
+		else if (physB->listener->name == "DashObj") {
+			LOG("Collision ITEM (Dash Picked Up)");
+			UnlockDash();
+		}
+		else if (physB->listener->name == "DoubleJumpObj") {
+			LOG("Collision ITEM (Double Jump Picked Up)");
+			UnlockDoubleJump();
+		}
+		else if (physB->listener->name == "WallJumpObj") {
+			LOG("Collision ITEM (Wall Jump Picked Up)");
+			UnlockWallJump();
 		}
 		Engine::GetInstance().audio->PlayFx(pickItemFx);
 		physB->listener->Destroy();

@@ -68,6 +68,7 @@ enum class GameUI_ID {
 
 	BTN_SKILL_BUY = 250,
 	BTN_SKILL_BACK,
+	BTN_SKILL_OK,
 	PANEL_SKILL_POPUP
 };
 
@@ -81,8 +82,8 @@ struct ItemLore {
 };
 
 struct Skillinfo {
-	std::string name;
-	std::string description;
+	std::string nameKey;
+	std::string descKey;
 	int cost;
 };
 

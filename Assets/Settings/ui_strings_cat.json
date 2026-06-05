@@ -19,6 +19,11 @@
     "BTN_PAUSE_OPTIONS": "Opcions",
     "BTN_PAUSE_MAINMENU": "Menú Principal",
 
+"// --- SKILL TREE ---": "",
+    "BTN_SKILL_BUY": "Desbloquejar",
+    "BTN_SKILL_BACK": "Cancelar",
+    "BTN_SKILL_OK": "Aceptar",
+
 "// --- LOADING LEVELS ---": "",
     "TXT_LOADING": "Carregant",
     "INTRO_FOREST": "BOSC",
@@ -60,5 +65,28 @@
     "ITEM_KEY_MOUNTAIN_DESC": "Forjada amb escates de drac. Et permetrà obrir el pas cap a la cova principal de la muntanya.",
     
     "ITEM_KEY_CATACOMBS_NAME": "Clau de les Catacumbes",
-    "ITEM_KEY_CATACOMBS_DESC": "Forjada en pedra i minerals. Obre les pesades portes cap a la foscor subterrània."
+    "ITEM_KEY_CATACOMBS_DESC": "Forjada en pedra i minerals. Obre les pesades portes cap a la foscor subterrània.",
+
+"// --- SKILL TREE ---": "",
+    "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
+    "TXT_COST": "Cost de transcripció: ",
+    "TXT_ORBS": " Orbe(s)",
+
+    "SKILL_HEALTH_NAME": "Manual de medicina",
+    "SKILL_HEALTH_DESC": "Coneixements sobre medicina i cures. Proporciona una major salut màxima.",
+    
+    "SKILL_IFRAMES_NAME": "Grimori dels Ecos Temporals",
+    "SKILL_IFRAMES_DESC": "Pàgines impregnades de tècniques d'evasió. Augmenta el temps d'invulnerabilitat després de rebre un cop, permetent-te fluir entre atacs.",
+    
+    "SKILL_SPEED_NAME": "Guia de supervivència",
+    "SKILL_SPEED_DESC": "Una guia per a aventurers, amb ella aprendràs a moure't amb velocitat per zones inexplorades.",
+    
+    "SKILL_FASTDASH_NAME": "Apòcrifs del desplaçament",
+    "SKILL_FASTDASH_DESC": "Escrits prohibits que ensenyen a doblegar l'espai. Millora dràsticament la força i distància del teu Impuls d'Ombra.",
+    
+    "SKILL_UPATTACK_NAME": "Volum I Tècniques de combat: Aire",
+    "SKILL_UPATTACK_DESC": "Llibre de combat contra enemics aeris escrit pels generals del castell, desbloqueja un àgil atac ascendent.",
+    
+    "SKILL_DOWNATTACK_NAME": "Volum II Tècniques de combat: Terrestre",
+    "SKILL_DOWNATTACK_DESC": "Volum extens d'atac cos a cos, atorga el coneixement per realitzar un atac descendent."
 }

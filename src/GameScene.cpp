@@ -218,12 +218,12 @@ void GameScene::LoadSkillsinfo() {
 
 	for (auto& element : j.items()) {
 		std::string key = element.key();
-		Skillinfo text;
-		text.name = element.value()["name"].get<std::string>();
-		text.description = element.value()["description"].get<std::string>();
-		text.cost = element.value()["cost"].get<int>();
+		Skillinfo info;
+		info.nameKey = element.value()["name_key"].get<std::string>();
+		info.descKey = element.value()["desc_key"].get<std::string>();
+		info.cost = element.value()["cost"].get<int>();
 
-		skillsLoreDB[key] = text;
+		skillsLoreDB[key] = info;
 	}
 	LOG("Lore de habilidades cargado correctamente.");
 }
@@ -409,9 +409,17 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
-	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
-	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
-	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+	if (!inSkillPopUp) {
+		if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
+		if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
+		if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+
+		if (input->IsGamepadConnected() &&
+			input->GetGamepadButton(GAMEPAD_BACK) == KEY_DOWN)
+		{
+			ToggleGameMenu(GameMenuTab::INVENTORY);
+		}
+	}
 
 	// AÑADIR ESTO - SELECT button para Inventory
 	if (input->IsGamepadConnected() &&
@@ -499,7 +507,11 @@ bool GameScene::Update(float dt) {
 	}
 
 	if (pauseInput) {
-		if (currentMenuTab != GameMenuTab::NONE) {
+		if (inSkillPopUp) {
+			SetUIGroupVisible(skillPopupUI, false);
+			inSkillPopUp = false;
+		}
+		else if (currentMenuTab != GameMenuTab::NONE) {
 			ToggleGameMenu(GameMenuTab::NONE);
 		}
 		else {
@@ -802,28 +814,72 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 		};
 
 	auto updateSkillPopup = [&](const std::string& skillKey, SkillTree skillEnum)
-		{
-			selectedSkillToBuy = skillEnum;
-			selectedSkillKey = skillKey;
+	{
+		selectedSkillToBuy = skillEnum;
+		selectedSkillKey = skillKey;
 
-			if (skillsLoreDB.find(skillKey) != skillsLoreDB.end())
-			{
-				const auto& lore = skillsLoreDB[skillKey];
-				skillPopupText->text = lore.name + "\n\n" + lore.description + "\nCosto: " + std::to_string(lore.cost) + " Orbe(s)";
+		auto langMgr = Engine::GetInstance().languageManager;
+		auto& state = GameManager::GetInstance().gameState;
+
+		// 1. Comprobar si la habilidad ya está comprada
+		bool isUnlocked = false;
+		switch (skillEnum) {
+			case SkillTree::HEALTH_UP:   isUnlocked = state.stHealthUp; break;
+			case SkillTree::IFRAMES_UP:  isUnlocked = state.stIframesUp; break;
+			case SkillTree::SPEED_UP:    isUnlocked = state.stSpeedUp; break;
+			case SkillTree::FAST_DASH:   isUnlocked = state.stFastDash; break;
+			case SkillTree::UP_ATTACK:   isUnlocked = state.stUpAttack; break;
+			case SkillTree::DOWN_ATTACK: isUnlocked = state.stDownAttack; break;
+		}
+
+		// 2. Cargar textos
+		if (skillsLoreDB.find(skillKey) != skillsLoreDB.end())
+		{
+			const auto& info = skillsLoreDB[skillKey];
+			std::string translatedName = langMgr->GetString(info.nameKey);
+			std::string translatedDesc = langMgr->GetString(info.descKey);
+
+			if (!isUnlocked) {
+				std::string costText = langMgr->GetString("TXT_COST");
+				std::string orbsText = langMgr->GetString("TXT_ORBS");
+				skillPopupText->text = translatedName + "\n\n" + translatedDesc + "\n\n" + costText + std::to_string(info.cost) + orbsText;
+			} else {
+				// Si ya la tienes, no mostramos el coste
+				skillPopupText->text = translatedName + "\n\n" + translatedDesc; 
 			}
-			else
-			{
-				skillPopupText->text = "???\n\nHabilidad desconocida.";
+		}
+		else
+		{
+			skillPopupText->text = "???\n\n" + langMgr->GetString("SKILL_UNKNOWN");
+		}
+
+		// 3. Activar el popup visualmente
+		SetUIGroupVisible(skillPopupUI, true);
+		inSkillPopUp = true;
+
+		// 4. Apagar/Encender los botones adecuados
+		for (auto& ui : skillPopupUI) {
+			if (ui->id == (int)GameUI_ID::BTN_SKILL_BUY || ui->id == (int)GameUI_ID::BTN_SKILL_BACK) {
+				ui->visible = !isUnlocked;
+				ui->state = !isUnlocked ? UIElementState::NORMAL : UIElementState::DISABLED;
 			}
-			SetUIGroupVisible(skillPopupUI, true);
-			inSkillPopUp = true;
-		};
+			if (ui->id == (int)GameUI_ID::BTN_SKILL_OK) {
+				ui->visible = isUnlocked;
+				ui->state = isUnlocked ? UIElementState::NORMAL : UIElementState::DISABLED;
+			}
+		}
+	};
 
 	switch (uiElement->id) {
-	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
-	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
-	case (int)GameUI_ID::BTN_TAB_SKILLS: ToggleGameMenu(GameMenuTab::SKILL_TREE); break;
-
+	case (int)GameUI_ID::BTN_TAB_INVENTORY:
+		if (!inSkillPopUp) ToggleGameMenu(GameMenuTab::INVENTORY);
+		break;
+	case (int)GameUI_ID::BTN_TAB_MAP:
+		if (!inSkillPopUp) ToggleGameMenu(GameMenuTab::MAP);
+		break;
+	case (int)GameUI_ID::BTN_TAB_SKILLS:
+		if (!inSkillPopUp) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+		break;
 	case (int)GameUI_ID::BTN_PAUSE_RESUME:
 		ToggleGameMenu(GameMenuTab::NONE);
 		break;
@@ -929,8 +985,14 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 			int cost = skillsLoreDB[selectedSkillKey].cost;
 
 			p->UnlockSkill(selectedSkillToBuy, cost);
+			SetUIGroupVisible(skillPopupUI, false);
+			inSkillPopUp = false;
 			UpdateSkillVisuals();
 		}
+		break;
+	case (int)GameUI_ID::BTN_SKILL_OK:
+		SetUIGroupVisible(skillPopupUI, false);
+		inSkillPopUp = false;
 		break;
 	}
 	return true;
@@ -1093,20 +1155,25 @@ void GameScene::CreateSkillPopupUI() {
 		UIElementType::ITEM_INFO_BOX,
 		(int)GameUI_ID::PANEL_SKILL_POPUP,
 		"",
-		0.5f, 0.4f, 0.3f, 0.4f, sceneObserver);
+		0.5f, 0.38f, 0.4f, 0.45f, sceneObserver);
 
 	skillPopupText->SetBgTexture(textBgUI);
 	skillPopupUI.push_back(skillPopupText);
 
+
 	// Botón Comprar
-	auto btnBuy = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BUY, "Desbloquejar", 0.4f, 0.65f, 0.1f, 0.05f, sceneObserver);
+	auto btnBuy = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BUY, Engine::GetInstance().languageManager->GetString("BTN_SKILL_BUY").c_str(), 0.40f, 0.68f, 0.12f, 0.06f, sceneObserver);
 	btnBuy->SetBgTexture(buttonUI);
 	skillPopupUI.push_back(btnBuy);
 
-	// Botón Atrás
-	auto btnBack = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BACK, "Cancelar", 0.6f, 0.65f, 0.1f, 0.05f, sceneObserver);
+	auto btnBack = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BACK, Engine::GetInstance().languageManager->GetString("BTN_SKILL_BACK").c_str(), 0.60f, 0.68f, 0.12f, 0.06f, sceneObserver);
 	btnBack->SetBgTexture(buttonUI);
 	skillPopupUI.push_back(btnBack);
+
+	// 3. NUEVO BOTÓN ACEPTAR (Centrado en la X: 0.5f)
+	auto btnOk = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_OK, Engine::GetInstance().languageManager->GetString("BTN_SKILL_OK").c_str(), 0.5f, 0.68f, 0.12f, 0.06f, sceneObserver);
+	btnOk->SetBgTexture(buttonUI);
+	skillPopupUI.push_back(btnOk);
 
 	SetUIGroupVisible(skillPopupUI, false);
 }
@@ -1197,6 +1264,12 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 
 	if (currentMenuTab == tab || tab == GameMenuTab::NONE) {
 		if (currentMenuTab != GameMenuTab::NONE && currentMenuTab != GameMenuTab::PAUSE_MENU && currentMenuTab != GameMenuTab::PAUSE_OPTIONS) {
+			
+			if (inSkillPopUp) {
+				SetUIGroupVisible(skillPopupUI, false);
+				inSkillPopUp = false;
+			}
+
 			isMenuClosing = true;
 
 			// Reproducir la animación en reversa al cerrar submenús animados
