@@ -199,8 +199,8 @@ void GameScene::LoadItemsLore() {
 	for (auto& element : j.items()) {
 		std::string key = element.key();
 		ItemLore lore;
-		lore.name = element.value()["name"].get<std::string>();
-		lore.description = element.value()["description"].get<std::string>();
+		lore.nameKey = element.value()["name_key"].get<std::string>();
+		lore.descKey = element.value()["desc_key"].get<std::string>();
 
 		itemsLoreDB[key] = lore;
 	}
@@ -271,6 +271,7 @@ bool GameScene::Start() {
 
 	//Load Items
 	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
+	LoadTextureIfNull(texItemKeyDoorCastle, "Assets/Textures/UI/Items/castleKeyDoorUI.png");
 	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forestKeyUI.png");
 	LoadTextureIfNull(texItemKeyMountain, "Assets/Textures/UI/Items/mountainKeyUI.png");
 	LoadTextureIfNull(texItemKeyCatacumbs, "Assets/Textures/UI/Items/catacumbsKeyUI.png");
@@ -716,6 +717,7 @@ bool GameScene::CleanUp() {
 
 	//Load Items
 	UnloadTexture(texItemKeyCastle);
+	UnloadTexture(texItemKeyDoorCastle);
 	UnloadTexture(texItemKeyForest);
 	UnloadTexture(texItemKeyMountain);
 	UnloadTexture(texItemKeyCatacumbs);
@@ -779,17 +781,23 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 
 	Engine::GetInstance().audio->PlayFx(uiClick);
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
+
 	auto updateLorePanel = [&](const std::string& itemKey, bool hasItem)
 		{
+			auto langMgr = Engine::GetInstance().languageManager;
+
 			if (hasItem && itemsLoreDB.find(itemKey) != itemsLoreDB.end())
 			{
 				const auto& lore = itemsLoreDB[itemKey];
-				// Formatamos Título + Descripción
-				descPanel->text = lore.name + "\n\n" + lore.description;
+
+				std::string translatedName = langMgr->GetString(lore.nameKey);
+				std::string translatedDesc = langMgr->GetString(lore.descKey);
+
+				descPanel->text = translatedName + "\n\n" + translatedDesc;
 			}
 			else
 			{
-				descPanel->text = "???\n\nObjeto desconocido, dicen que esta perdido por el reino.";
+				descPanel->text = "???\n\n" + langMgr->GetString("INV_UNKNOWN_ITEM");
 			}
 		};
 
@@ -837,14 +845,37 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
 		updateLorePanel("WEAPON", p && p->HasItem(ItemID::WEAPON));
 		break;
-
 	case (int)GameUI_ID::INV_ITEM_GLIDE:
 		updateLorePanel("GLIDE", p && p->HasItem(ItemID::GLIDE));
 		break;
-
-	case (int)GameUI_ID::INV_ITEM_ORB:
-		updateLorePanel("STRENGTH_ORB", p && p->HasItem(ItemID::STRENGTH_ORB));
+	case (int)GameUI_ID::INV_ITEM_DASH:
+		updateLorePanel("DASH", p && p->HasItem(ItemID::DASH_OBJ));
 		break;
+	case (int)GameUI_ID::INV_ITEM_WALL_JUMP:
+		updateLorePanel("WALLJUMP", p && p->HasItem(ItemID::WALLJUMP_OBJ));
+		break;
+	case (int)GameUI_ID::INV_ITEM_DOUBLE_JUMP:
+		updateLorePanel("DOUBLE_JUMP", p && p->HasItem(ItemID::DOUBLEJUMP_OBJ));
+		break;
+
+		//LLaves
+	case (int)GameUI_ID::INV_ITEM_KEY:
+		updateLorePanel("KEY_CASTLE", p && p->HasKey(KeyType::CASTLE));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYCASTLE:
+		updateLorePanel("KEY_CASTLEDOOR", p && p->HasKey(KeyType::BOSS));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYFOREST:
+		updateLorePanel("KEY_FOREST", p && p->HasKey(KeyType::FOREST));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYMOUNTAIN:
+		updateLorePanel("KEY_MOUNTAIN", p && p->HasKey(KeyType::MOUNTAIN));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYCATACUMBS:
+		updateLorePanel("KEY_CATACOMBS", p && p->HasKey(KeyType::CATACUMBA));
+		break;
+
+		// Upgrades
 	case (int)GameUI_ID::SKILL_BOOK_1_1:
 		if (!inSkillPopUp)
 		{
@@ -971,7 +1002,7 @@ void GameScene::CreateInventoryUI() {
 
 		// ITEMS
 		{ GameUI_ID::INV_ITEM_KEY, "", centerXKey - offsetXKey, centerY + offsetYKey,						   baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle},
-		{ GameUI_ID::INV_ITEM_KEYCASTLE, "", centerXKey - offsetXKey + float(0.08),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle },
+		{ GameUI_ID::INV_ITEM_KEYCASTLE, "", centerXKey - offsetXKey + float(0.08),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyDoorCastle },
 		{ GameUI_ID::INV_ITEM_KEYFOREST, "", centerXKey - offsetXKey + float(0.16),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyForest },
 		{ GameUI_ID::INV_ITEM_KEYMOUNTAIN, "", centerXKey - offsetXKey + float(0.24),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyMountain },
 		{ GameUI_ID::INV_ITEM_KEYCATACUMBS, "", centerXKey - offsetXKey + float(0.32),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCatacumbs },
@@ -995,7 +1026,7 @@ void GameScene::CreateInventoryUI() {
 	descPanel = uiManager->CreateUIElement(
 		UIElementType::ITEM_INFO_BOX, // Nuevo tipo dedicado
 		(int)GameUI_ID::INV_DESC_TEXT,
-		"Selecciona un objeto para ver su historia...",
+		Engine::GetInstance().languageManager->GetString("INV_DEFAULT_SELECT").c_str(),
 		0.72f, 0.55f, 0.20f, 0.60f,
 		sceneObserver
 	);
@@ -1196,6 +1227,10 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 					menuAnimSet.GetAnim("open")->Reset();
 				}
 			}
+
+			if (tab == GameMenuTab::INVENTORY && descPanel != nullptr) {
+				descPanel->text = Engine::GetInstance().languageManager->GetString("INV_DEFAULT_SELECT");
+			}
 		}
 
 		Engine::GetInstance().sceneManager->SetGamePaused(true);
@@ -1219,17 +1254,38 @@ void GameScene::UpdateInventoryVisuals() {
 
 		// We check which item this button is and ask the Player if they have it
 		switch (btn->id) {
+			//Habilidades
 		case (int)GameUI_ID::INV_ITEM_WEAPON:
 			hasItem = p->HasItem(ItemID::WEAPON);
 			break;
 		case (int)GameUI_ID::INV_ITEM_GLIDE:
 			hasItem = p->HasItem(ItemID::GLIDE);
 			break;
-		case (int)GameUI_ID::INV_ITEM_KEY:
-			hasItem = p->HasItem(ItemID::KEY);
+		case (int)GameUI_ID::INV_ITEM_DASH:
+			hasItem = p->HasItem(ItemID::DASH_OBJ);
 			break;
-		case (int)GameUI_ID::INV_ITEM_ORB:
-			hasItem = p->HasItem(ItemID::STRENGTH_ORB);
+		case (int)GameUI_ID::INV_ITEM_DOUBLE_JUMP:
+			hasItem = p->HasItem(ItemID::DOUBLEJUMP_OBJ);
+			break;
+		case (int)GameUI_ID::INV_ITEM_WALL_JUMP:
+			hasItem = p->HasItem(ItemID::WALLJUMP_OBJ);
+			break;
+
+			// LLAVES
+		case (int)GameUI_ID::INV_ITEM_KEY:
+			hasItem = p->HasKey(KeyType::CASTLE);
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYCASTLE:
+			hasItem = p->HasKey(KeyType::BOSS); 
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYFOREST:
+			hasItem = p->HasKey(KeyType::FOREST);
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYMOUNTAIN:
+			hasItem = p->HasKey(KeyType::MOUNTAIN);
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYCATACUMBS:
+			hasItem = p->HasKey(KeyType::CATACUMBA);
 			break;
 
 		default:
@@ -1239,13 +1295,12 @@ void GameScene::UpdateInventoryVisuals() {
 			btn->color = { 255, 255, 255, 255 }; // White tint --> Normal texture
 		}
 		else {
-			btn->color = { 110, 110, 110, 255 };    // Gray tint
+			btn->color = { 100, 100, 100, 255 };    // Gray tint
 		}
 	}
 }
 
 void GameScene::RefreshMenuUI() {
-	if (descPanel != nullptr) descPanel->text = "Select an item...";
 
 	bool isAnimFinished = menuAnimSet.GetAnim("open") ? menuAnimSet.GetAnim("open")->HasFinishedOnce() : true;
 

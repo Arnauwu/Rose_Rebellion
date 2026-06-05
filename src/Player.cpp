@@ -71,6 +71,23 @@ bool Player::Awake()
 
 bool Player::Start()
 {
+
+	// Sincronización del inventario
+	auto& state = GameManager::GetInstance().gameState;
+	if (state.hasSickle) AddItem(ItemID::WEAPON, 1);
+	if (state.glideUnlocked) AddItem(ItemID::GLIDE, 1);
+	if (state.dashUnlocked) AddItem(ItemID::DASH_OBJ, 1);
+	if (state.doubleJumpUnlocked) AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
+	if (state.wallJumpUnlocked) AddItem(ItemID::WALLJUMP_OBJ, 1);
+
+	// Sincronizar llaves y orbes
+	if (state.hasCastleKey) heldKeys.insert(KeyType::CASTLE);
+	if (state.hasForestKey) heldKeys.insert(KeyType::FOREST);
+	if (state.hasMountainKey) heldKeys.insert(KeyType::MOUNTAIN);
+	if (state.hasCatacombsKey) heldKeys.insert(KeyType::CATACUMBA);
+	if (state.hasBossKey) heldKeys.insert(KeyType::BOSS);
+
+	if (state.currentForceOrbs > 0) AddItem(ItemID::STRENGTH_ORB, state.currentForceOrbs);
 	// Initialize Player parameters
 	auto engine = &Engine::GetInstance();
 	auto audio = engine->audio;
@@ -955,7 +972,7 @@ void Player::Interact()
 				if (gate->requiredKey == KeyType::NONE || this->HasKey(gate->requiredKey))
 				{
 					Engine::GetInstance().audio->PlayFx(openDoor);
-					if (gate->requiredKey != KeyType::NONE) this->heldKeys.erase(gate->requiredKey);
+					//if (gate->requiredKey != KeyType::NONE) this->heldKeys.erase(gate->requiredKey);
 					isFrozen = true;
 					gate->OpenGate();
 					interactuableBody = nullptr;
@@ -1034,7 +1051,7 @@ void Player::Interact()
 
 				if (this->HasKey(requiredKey))
 				{
-					this->heldKeys.erase(requiredKey);
+					//this->heldKeys.erase(requiredKey);
 
 					std::string doorId = Engine::GetInstance().map->GetDoorUniqueId(interactuableBody);
 					if (!doorId.empty()) {
@@ -1496,6 +1513,20 @@ void Player::AddItem(ItemID id, int amount) {
 	inventory[id] += amount;
 }
 
+void Player::AddKey(KeyType type) {
+	heldKeys.insert(type); // O heldKeys.push_back(type) dependiendo de tu estructura
+
+	// Sincronizamos con el GameState al momento
+	auto& state = GameManager::GetInstance().gameState;
+	switch (type) {
+	case KeyType::CASTLE: state.hasCastleKey = true; break;
+	case KeyType::FOREST: state.hasForestKey = true; break;
+	case KeyType::MOUNTAIN: state.hasMountainKey = true; break;
+	case KeyType::CATACUMBA: state.hasCatacombsKey = true; break;
+	case KeyType::BOSS: state.hasBossKey = true; break;
+	}
+}
+
 bool Player::HasItem(ItemID id) {
 	return inventory[id] > 0;
 }
@@ -1655,11 +1686,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
-			GameManager::GetInstance().gameState.keyCount++;
 
 			AddItem(ItemID::KEY, 1);
 
-			LOG("KeyNum: %d", GameManager::GetInstance().gameState.keyCount);
 			Engine::GetInstance().hud->ShowNotification("You have obtained a Key.");
 
 		}
@@ -1951,11 +1980,35 @@ void Player::DevTools(float dt)
 	{
 		UnlockCape();
 		UnlockSickle();
+		UnlockDash();
+		UnlockDoubleJump();
+		UnlockWallJump();
+
+		// Sincronización redundante de seguridad para el GameManager
 		GameManager::GetInstance().gameState.hasSickle = true;
 		GameManager::GetInstance().gameState.dashUnlocked = true;
 		GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 		GameManager::GetInstance().gameState.wallJumpUnlocked = true;
+
+		// Añadir Orbes
 		GameManager::GetInstance().gameState.currentForceOrbs += 10;
+		AddItem(ItemID::STRENGTH_ORB, 10); 
+
+		// Desbloquear TODAS las llaves en el Player
+		AddKey(KeyType::CASTLE);
+		AddKey(KeyType::BOSS);
+		AddKey(KeyType::FOREST);
+		AddKey(KeyType::MOUNTAIN);
+		AddKey(KeyType::CATACUMBA);
+
+		// Sincronizar TODAS las llaves con el GameManager (Guardado)
+		GameManager::GetInstance().gameState.hasCastleKey = true;
+		GameManager::GetInstance().gameState.hasBossKey = true;
+		GameManager::GetInstance().gameState.hasForestKey = true;
+		GameManager::GetInstance().gameState.hasMountainKey = true;
+		GameManager::GetInstance().gameState.hasCatacombsKey = true;
+
+		LOG("DEBUG: Todas las habilidades, orbes y llaves han sido desbloqueadas.");
 	}
 }
 

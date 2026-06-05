@@ -5,7 +5,13 @@
 #include "Vector2D.h" 
 
 struct GameState {
-    int keyCount = 0;
+    //Keys
+    bool hasCastleKey = false;
+    bool hasForestKey = false;
+    bool hasMountainKey = false;
+    bool hasCatacombsKey = false;
+    bool hasBossKey = false;
+
     bool hasSickle = false;
     bool glideUnlocked = false;
     int currentForceOrbs = 0;
@@ -25,7 +31,7 @@ struct GameState {
     bool stDownAttack = false;
 
     // World
-    std::string currentMap = "Forest_03.tmx";
+    std::string currentMap = "Castle_Room_Princess.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     // Bosses

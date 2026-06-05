@@ -1,14 +1,42 @@
 {
   "WEAPON": {
-    "name": "Hoz de la Guarda",
-    "description": "Una hoja afilada forjada en los albores del castillo. Permite abrirse paso entre la maleza y defenderse de los intrusos."
+    "name_key": "ITEM_WEAPON_NAME",
+    "desc_key": "ITEM_WEAPON_DESC"
   },
   "GLIDE": {
-    "name": "Manto de Viento",
-    "description": "Tejido con plumas etéreas. Mantén pulsado LSHIFT en el aire para planear suavemente."
+    "name_key": "ITEM_GLIDE_NAME",
+    "desc_key": "ITEM_GLIDE_DESC"
   },
-  "STRENGTH_ORB": {
-    "name": "Orbe de Fuerza",
-    "description": "Contiene la esencia de un antiguo guerrero. Utilízalo en el árbol de habilidades para desbloquear nuevos poderes."
+  "DASH": {
+    "name_key": "ITEM_DASH_NAME",
+    "desc_key": "ITEM_DASH_DESC"
+  },
+  "WALLJUMP": {
+    "name_key": "ITEM_WALLJUMP_NAME",
+    "desc_key": "ITEM_WALLJUMP_DESC"
+  },
+  "DOUBLE_JUMP": {
+    "name_key": "ITEM_DOUBLEJUMP_NAME",
+    "desc_key": "ITEM_DOUBLEJUMP_DESC"
+  },
+  "KEY_CASTLE": {
+    "name_key": "ITEM_KEY_CASTLE_NAME",
+    "desc_key": "ITEM_KEY_CASTLE_DESC"
+  },
+  "KEY_CASTLEDOOR": {
+    "name_key": "ITEM_KEY_CASTLEDOOR_NAME",
+    "desc_key": "ITEM_KEY_CASTLEDOOR_DESC"
+  },
+  "KEY_FOREST": {
+    "name_key": "ITEM_KEY_FOREST_NAME",
+    "desc_key": "ITEM_KEY_FOREST_DESC"
+  },
+  "KEY_MOUNTAIN": {
+    "name_key": "ITEM_KEY_MOUNTAIN_NAME",
+    "desc_key": "ITEM_KEY_MOUNTAIN_DESC"
+  },
+  "KEY_CATACOMBS": {
+    "name_key": "ITEM_KEY_CATACOMBS_NAME",
+    "desc_key": "ITEM_KEY_CATACOMBS_DESC"
   }
 }

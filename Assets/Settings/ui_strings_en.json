@@ -26,6 +26,39 @@
     "INTRO_CATACOMBS": "CATACOMBS",
 
 "// --- INTERACT TEXT ---": "",
-    "INTERACT_NPC": "TALK {E}"
+    "INTERACT_NPC": "TALK {E}",
 
+"// --- INVENTORY LORE ---": "",
+    "INV_DEFAULT_SELECT": "Information notes, select an item to learn about it.",
+    "INV_UNKNOWN_ITEM": "Unknown item. They say it is lost in the corners of this kingdom.",
+    
+    "ITEM_WEAPON_NAME": "Guardian's Sickle",
+    "ITEM_WEAPON_DESC": "A sharp blade forged at the foot of the castle. Press J to clear the path through the thicket and defend yourself against intruders.",
+    
+    "ITEM_GLIDE_NAME": "Wind Cape",
+    "ITEM_GLIDE_DESC": "Old fabric found in the storage, so soft and light it makes you fly. Hold LSHIFT in mid-air to glide smoothly.",
+    
+    "ITEM_DASH_NAME": "Shadow Dash",
+    "ITEM_DASH_DESC": "Magic amulet that allows you to travel short distances at high speed to dodge attacks and cross impossible areas. Press K to use it.",
+    
+    "ITEM_WALLJUMP_NAME": "Climbing Skills",
+    "ITEM_WALLJUMP_DESC": "A strange amulet that allows you to cling to walls and jump from them to reach inaccessible places. Press L to grab on.",
+    
+    "ITEM_DOUBLEJUMP_NAME": "Divine Jump",
+    "ITEM_DOUBLEJUMP_DESC": "Amulet used to propel yourself a second time in mid-air, allowing you to reach new heights. Use SPACE in mid-air.",
+        
+    "ITEM_KEY_CASTLE_NAME": "Storage Key",
+    "ITEM_KEY_CASTLE_DESC": "A sturdy key from the cleaning staff. It unlocks the royal storage door, what could they be keeping there?",
+    
+    "ITEM_KEY_CASTLEDOOR_NAME": "Castle Key",
+    "ITEM_KEY_CASTLEDOOR_DESC": "A large key capable of opening the main castle door, guarded by General Roc of the army.",
+    
+    "ITEM_KEY_FOREST_NAME": "Forest Key",
+    "ITEM_KEY_FOREST_DESC": "A moss-covered key, they say it grants access to the depths of the forest.",
+    
+    "ITEM_KEY_MOUNTAIN_NAME": "Mountain Key",
+    "ITEM_KEY_MOUNTAIN_DESC": "Forged with dragon scales. It will allow you to open the path to the main mountain cave.",
+    
+    "ITEM_KEY_CATACOMBS_NAME": "Catacombs Key",
+    "ITEM_KEY_CATACOMBS_DESC": "Forged in stone and minerals. Unlocks the heavy doors to the underground darkness."
 }

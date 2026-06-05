@@ -76,8 +76,8 @@ struct ButtonDef { int id; const char* keyId; };
 struct SDL_Texture;
 
 struct ItemLore {
-	std::string name;
-	std::string description;
+	std::string nameKey;
+	std::string descKey;
 };
 
 struct Skillinfo {
@@ -135,6 +135,7 @@ public:
 
 	//Items Textures
 	SDL_Texture* texItemKeyCastle = nullptr;
+	SDL_Texture* texItemKeyDoorCastle = nullptr;
 	SDL_Texture* texItemKeyForest = nullptr;
 	SDL_Texture* texItemKeyMountain = nullptr;
 	SDL_Texture* texItemKeyCatacumbs = nullptr;
