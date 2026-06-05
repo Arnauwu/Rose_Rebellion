@@ -122,6 +122,15 @@ bool Map::Update(float dt)
 
 	if (mapLoaded)
 	{
+
+		for (auto& tileset : mapData.tilesets)
+		{
+			for (auto it = tileset->animations.begin(); it != tileset->animations.end(); ++it)
+			{
+				it->second.Update(dt);
+			}
+		}
+
 		for (const auto& objectGroup : mapData.objectGroups)
 		{
 			if (objectGroup->properties.GetProperty("Draw") != NULL && objectGroup->properties.GetProperty("Draw")->value == true
@@ -170,8 +179,27 @@ bool Map::Update(float dt)
 						if (tileSet != nullptr)
 						{
 							SDL_Rect tileRect = { (int)obj->x, (int)obj->y, (int)obj->width, (int)obj->height };
-							SDL_Rect dstRect = { tileSet->GetRect(tileId).x, tileSet->GetRect(tileId).y, tileSet->GetRect(tileId).w, tileSet->GetRect(tileId).h };
-							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+							SDL_Rect dstRect;
+
+							int localId = tileId - tileSet->firstGid;
+
+							// Comprobar si el GID del objeto tiene una animación en el TileSet
+							if (tileSet->animations.count(localId))
+							{
+								dstRect.x = tileSet->animations[localId].GetCurrentFrame().x;
+								dstRect.y = tileSet->animations[localId].GetCurrentFrame().y;
+								dstRect.w = tileSet->animations[localId].GetCurrentFrame().w;
+								dstRect.h = tileSet->animations[localId].GetCurrentFrame().h;
+							}
+							else
+							{
+								dstRect.x = tileSet->GetRect(tileId).x;
+								dstRect.y = tileSet->GetRect(tileId).y;
+								dstRect.w = tileSet->GetRect(tileId).w;
+								dstRect.h = tileSet->GetRect(tileId).h;
+							}
+
+							SDL_FPoint center = { tileRect.w / 2.0f, tileRect.h / 2.0f };
 
 							//Parallax
 							float paralax = 1.0f;
@@ -187,14 +215,6 @@ bool Map::Update(float dt)
 						}
 					}
 				}
-			}
-		}
-
-		for (auto& tileset : mapData.tilesets)
-		{
-			for (auto it = tileset->animations.begin(); it != tileset->animations.end(); ++it)
-			{
-				it->second.Update(dt);
 			}
 		}
 
@@ -560,6 +580,7 @@ bool Map::Load(std::string path, std::string fileName)
 			{
 				int tileId = tileNode.attribute("id").as_int();
 				pugi::xml_node animNode = tileNode.child("animation");
+
 
 				if (animNode)
 				{
