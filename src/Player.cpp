@@ -698,14 +698,14 @@ void Player::Attack(float dt)
 			if (comboStep == 0)
 			{
 				damage = 10 + dmgbuff;
-				currentAttackWidth = 60;
-				currentAttackHeight = 64;
+				currentAttackWidth = 120;
+				currentAttackHeight = 90;
 			}
 			else
 			{
 				damage = 20 + dmgbuff;
-				currentAttackWidth = 120;
-				currentAttackHeight = 90;
+				currentAttackWidth = 150;
+				currentAttackHeight = 110;
 			}
 
 			if (lookUp && GameManager::GetInstance().gameState.stUpAttack) {
@@ -1208,7 +1208,7 @@ void Player::Draw(float dt)
 		};
 
 		// Draw diferent color combo
-		if (currentAttackWidth == 20) {
+		if (currentAttackWidth == 40) {
 			// fisrt attack red
 			Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
 		}
