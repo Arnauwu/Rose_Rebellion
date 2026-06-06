@@ -14,7 +14,7 @@ MenuScene::MenuScene() : SceneBase() {}
 MenuScene::~MenuScene() {}
 
 bool MenuScene::Start() {
-
+	SDL_ShowCursor();
 	Engine::GetInstance().cinematics->CloseVideo();
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaInteriorCastillo.wav");
 	uiClick = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UI/clicButton.wav"); 

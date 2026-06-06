@@ -13,7 +13,7 @@ GameOverScene::~GameOverScene() {}
 
 bool GameOverScene::Start() {
     timer = 0.0f;
-
+    SDL_HideCursor();
     // Puedes mantener esto si tu LoadGame sobrescribe completamente la gameState después.
     GameManager::GetInstance().gameState.collectedItems.clear();
     GameManager::GetInstance().gameState.openedDoors.clear();

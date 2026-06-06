@@ -233,6 +233,7 @@ void GameScene::LoadSkillsinfo() {
 }
 
 bool GameScene::Start() {
+	SDL_HideCursor();
 	Engine::GetInstance().cinematics->CloseVideo();
 	LoadItemsLore();
 	LoadSkillsinfo();
@@ -1346,8 +1347,16 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 	Engine::GetInstance().sceneManager->SetGamePaused(shouldPause);
 	RefreshMenuUI();
 
-	// ESTO ES LO IMPORTANTE: Activar/desactivar según si hay menú abierto
-	Engine::GetInstance().input->SetNavigationEnabled(currentMenuTab != GameMenuTab::NONE);
+	bool isMenuActive = (currentMenuTab != GameMenuTab::NONE) && !isMenuClosing;
+
+	Engine::GetInstance().input->SetNavigationEnabled(isMenuActive);
+
+	if (isMenuActive) {
+		SDL_ShowCursor();
+	}
+	else {
+		SDL_HideCursor();
+	}
 }
 
 void GameScene::UpdateInventoryVisuals() {

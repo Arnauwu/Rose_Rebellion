@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Log.h"
 #include "Engine.h"
+#include <SDL3_image/SDL_image.h>
 
 Window::Window() : Module()
 {
@@ -16,6 +17,7 @@ Window::~Window()
 // Called before render is available
 bool Window::Awake()
 {
+
 	LOG("Init SDL window & surface");
 	bool ret = true;
 
@@ -63,6 +65,9 @@ bool Window::Awake()
 		}
 	}
 
+	Engine::GetInstance().window->SetWindowIcon("Assets/Window/icon.png");
+
+	Engine::GetInstance().window->SetCustomCursor("Assets/Window/cursor.png", 0, 0);
 	return ret;
 }
 
@@ -70,6 +75,12 @@ bool Window::Awake()
 bool Window::CleanUp()
 {
 	LOG("Destroying SDL window and quitting all SDL systems");
+
+	if (customCursor != nullptr)
+	{
+		SDL_DestroyCursor(customCursor);
+		customCursor = nullptr;
+	}
 
 	// Destroy window
 	if (window != NULL)
@@ -132,4 +143,83 @@ void Window::SetFullscreen(bool enabled, SDL_Renderer* renderer)
 
 
 	SDL_SetRenderLogicalPresentation(renderer, windowWidth, windowHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+
+}
+
+bool Window::SetWindowIcon(const char* imagePath)
+{
+	bool ret = true;
+	SDL_Surface* iconSurface = IMG_Load(imagePath);
+
+	if (iconSurface == NULL)
+	{
+		LOG("No se pudo cargar el icono %s. IMG_Error: %s\n", imagePath, SDL_GetError());
+		ret = false;
+	}
+	else
+	{
+		if (!SDL_SetWindowIcon(window, iconSurface))
+		{
+			LOG("Error al establecer el icono de la ventana: %s\n", SDL_GetError());
+			ret = false;
+		}
+		SDL_DestroySurface(iconSurface);
+	}
+
+	return ret;
+}
+
+// Cargar y establecer un cursor personalizado
+bool Window::SetCustomCursor(const char* imagePath, int hot_x, int hot_y)
+{
+	bool ret = true;
+
+	// 1. Cargamos la imagen desde la ruta del sistema de archivos
+	SDL_Surface* tempSurface = IMG_Load(imagePath);
+
+	if (tempSurface == NULL)
+	{
+		LOG("No se pudo cargar el cursor %s. SDL_Error: %s\n", imagePath, SDL_GetError());
+		ret = false;
+	}
+	else
+	{
+		// 2. Convertimos estrictamente la superficie a RGBA32
+		SDL_Surface* cursorSurface = SDL_ConvertSurface(tempSurface, SDL_PIXELFORMAT_RGBA32);
+
+		// 3. Destruimos la superficie temporal inmediatamente
+		SDL_DestroySurface(tempSurface);
+
+		if (cursorSurface == NULL)
+		{
+			LOG("Error al convertir la superficie del cursor. SDL_Error: %s\n", SDL_GetError());
+			ret = false;
+		}
+		else
+		{
+			if (customCursor != nullptr)
+			{
+				SDL_DestroyCursor(customCursor);
+			}
+
+			// 4. Creamos el cursor con la superficie formateada correctamente
+			customCursor = SDL_CreateColorCursor(cursorSurface, hot_x, hot_y);
+
+			if (customCursor == NULL)
+			{
+				LOG("No se pudo crear el cursor de color. SDL_Error: %s\n", SDL_GetError());
+				ret = false;
+			}
+			else
+			{
+				SDL_SetCursor(customCursor);
+				SDL_ShowCursor(); // Forzamos a que se muestre
+			}
+
+			// 5. Limpiamos la superficie final
+			SDL_DestroySurface(cursorSurface);
+		}
+	}
+
+	return ret;
 }

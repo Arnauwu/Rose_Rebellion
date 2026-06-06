@@ -15,7 +15,7 @@ bool IntroScene::Awake() {
 	return true;
 }
 bool IntroScene::Start() {
-	
+	SDL_HideCursor();
 	Engine::GetInstance().audio->PlayMusic(nullptr);
 
 	if (!Engine::GetInstance().cinematics->PlayVideo("Assets/Cinematics/GameIntro.mp4")) {

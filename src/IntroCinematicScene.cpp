@@ -20,6 +20,7 @@ bool IntroCinematicScene::Awake() {
 }
 
 bool IntroCinematicScene::Start() {
+    SDL_HideCursor();
     LOG("Playing intro cinematic...");
     isFadingOut = false;
 

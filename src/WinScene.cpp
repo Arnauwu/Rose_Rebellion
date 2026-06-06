@@ -14,6 +14,7 @@ WinScene::~WinScene() {
 }
 
 bool WinScene::Awake() {
+    SDL_HideCursor();
     LOG("Win Scene Awake");
     return true;
 }
