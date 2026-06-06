@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="127" height="60" tilewidth="128" tileheight="128" infinite="0" nextlayerid="27" nextobjectid="567">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="127" height="60" tilewidth="128" tileheight="128" infinite="0" nextlayerid="27" nextobjectid="569">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -42,14 +42,14 @@
  <tileset firstgid="138" name="Atl_Cueva" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Montain/Atl_Cueva.png" trans="ffffff" width="1024" height="1024"/>
  </tileset>
- <objectgroup id="23" name="Fondo_01">
+ <objectgroup id="23" name="Fondo_01" visible="0">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <object id="430" gid="131" x="0" y="7680" width="16256" height="7680"/>
  </objectgroup>
- <objectgroup id="24" name="Fondo_02">
+ <objectgroup id="24" name="Fondo_02" visible="0">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -65,7 +65,7 @@
   <object id="540" gid="2147483781" x="13696" y="2432" width="2304" height="2304"/>
   <object id="541" gid="2147483781" x="7552" y="2560" width="2304" height="2304" rotation="180"/>
  </objectgroup>
- <objectgroup id="25" name="Fondo_04">
+ <objectgroup id="25" name="Fondo_04" visible="0">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -7706,7 +7706,7 @@
    <tile gid="174"/>
   </data>
  </layer>
- <objectgroup color="#000000" id="20" name="Map" visible="0">
+ <objectgroup color="#000000" id="20" name="Map">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -7733,24 +7733,24 @@
   <object id="469" x="768" y="7040" width="128" height="128"/>
   <object id="470" x="1280" y="7296" width="128" height="128"/>
   <object id="471" x="4992" y="7296" width="128" height="128"/>
-  <object id="472" x="4480" y="6528" width="128" height="128"/>
-  <object id="473" x="3200" y="5760" width="256" height="128"/>
-  <object id="474" x="3584" y="6144" width="384" height="128"/>
+  <object id="472" x="4480" y="6528" width="128" height="60"/>
+  <object id="473" x="3200" y="5760" width="256" height="61.3333"/>
+  <object id="474" x="3584" y="6144" width="384" height="60"/>
   <object id="475" x="5376" y="5632" width="3072" height="128"/>
   <object id="476" x="8448" y="5760" width="2688" height="128"/>
   <object id="477" x="7168" y="7296" width="128" height="128"/>
-  <object id="478" x="8448" y="7040" width="256" height="128"/>
-  <object id="479" x="9600" y="7040" width="1664" height="128"/>
-  <object id="480" x="11904" y="5888" width="128" height="128"/>
-  <object id="481" x="13056" y="5632" width="128" height="128"/>
-  <object id="482" x="14080" y="5888" width="128" height="128"/>
+  <object id="478" x="8448" y="7040" width="256" height="60"/>
+  <object id="479" x="9600" y="7040" width="1664" height="64"/>
+  <object id="480" x="11904" y="5888" width="128" height="64"/>
+  <object id="481" x="13056" y="5632" width="128" height="66"/>
+  <object id="482" x="14080" y="5888" width="128" height="62"/>
   <object id="483" x="13440" y="7296" width="128" height="128"/>
-  <object id="484" x="15232" y="6912" width="128" height="128"/>
-  <object id="485" x="15744" y="6528" width="128" height="128"/>
-  <object id="486" x="14592" y="5248" width="128" height="128"/>
-  <object id="487" x="12288" y="7040" width="256" height="128"/>
-  <object id="488" x="15872" y="4608" width="256" height="128"/>
-  <object id="489" x="13824" y="4608" width="256" height="128"/>
+  <object id="484" x="15232" y="6912" width="128" height="63"/>
+  <object id="485" x="15744" y="6528" width="128" height="61"/>
+  <object id="486" x="14592" y="5248" width="128" height="62"/>
+  <object id="487" x="12288" y="7040" width="256" height="64"/>
+  <object id="488" x="15872" y="4608" width="256" height="61"/>
+  <object id="489" x="13824" y="4608" width="256" height="64"/>
   <object id="490" x="15104" y="4224" width="256" height="1664"/>
   <object id="491" x="14336" y="4096" width="1280" height="128"/>
   <object id="492" x="8320" y="3584" width="5504" height="1408"/>
@@ -7764,8 +7764,8 @@
   <object id="500" x="4864" y="4608" width="128" height="512"/>
   <object id="501" x="4992" y="4992" width="256" height="128"/>
   <object id="502" x="5248" y="4224" width="128" height="128"/>
-  <object id="503" x="6144" y="3968" width="128" height="128"/>
-  <object id="504" x="7552" y="3840" width="128" height="128"/>
+  <object id="503" x="6144" y="3968" width="128" height="62.6667"/>
+  <object id="504" x="7552" y="3840" width="128" height="62.6667"/>
   <object id="505" x="8192" y="3584" width="128" height="128"/>
   <object id="506" x="8192" y="4224" width="128" height="128"/>
   <object id="507" x="3712" y="2816" width="1280" height="768"/>
@@ -7788,6 +7788,8 @@
   <object id="528" x="5376" y="7680" width="128" height="384"/>
   <object id="529" x="0" y="0" width="128" height="7680"/>
   <object id="530" x="128" y="0" width="8320" height="128"/>
+  <object id="567" x="8320" y="2816" width="4864" height="256"/>
+  <object id="568" x="4992" y="2816" width="3328" height="128"/>
  </objectgroup>
  <objectgroup color="#aa0000" id="21" name="Spikes" visible="0">
   <properties>
