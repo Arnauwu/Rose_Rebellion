@@ -1202,12 +1202,26 @@ void Map::SpawnEntities()
 						npc->position = Vector2D(x, y);
 						Properties npcProps;
 						LoadProperties(objectNode, npcProps);
+						std::string texPath = "Assets/Textures/Entities/NPCs/Npc1.png";
+						std::string dialogID = "Default_Dialogue";
+						std::string tsxPath = "";
+						if (npcProps.GetProperty("TexturePath") != nullptr)
+						{
+							texPath = npcProps.GetProperty("TexturePath")->value2;
+						}
 
 						if (npcProps.GetProperty("DialogueID") != nullptr)
 						{
-							std::string idLeido = npcProps.GetProperty("DialogueID")->value2;
-							npc->SetDialogueID(idLeido);
+							dialogID = npcProps.GetProperty("DialogueID")->value2;
 						}
+
+						if (npcProps.GetProperty("TsxPath") != nullptr) {
+							tsxPath = npcProps.GetProperty("TsxPath")->value2;
+						}
+						int npcWidth = (w > 0) ? (int)w : 128;
+						int npcHeight = (h > 0) ? (int)h : 128;
+
+						npc->ConfigNPC(texPath, dialogID, npcWidth, npcHeight, tsxPath);
 					}
 				}
 				else if (entityType == std::string("HorizontalFloor"))

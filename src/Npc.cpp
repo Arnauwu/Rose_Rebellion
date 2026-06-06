@@ -25,17 +25,31 @@ bool Npc::Awake() {
     return true;
 }
 
+void Npc::ConfigNPC(const std::string& texPath, const std::string& dialogID, int width, int height, const std::string& tsx) {
+    this->texturePath = texPath;
+    this->dialogueID = dialogID;
+    this->texW = width;
+    this->texH = height;
+
+    this->tsxPath = tsx;
+}
+
 bool Npc::Start() {
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/NPCs/Npc1.png");
+
+    if (!tsxPath.empty()) {
+        std::unordered_map<int, std::string> aliases = { {0, "idle"} };
+
+        anims.LoadFromTSX(tsxPath.c_str(), aliases);
+        anims.SetCurrent("idle");
+    }
     //TO DO: CAMBIAR TEXTURA
     interactIcon = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/Flecha.png");
     zOrder = -1;
     glowTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Glow.png");
-    texW = 128;
-    texH = 128;
+   
 
     pbody = Engine::GetInstance().physics->CreateRectangleSensor((int)position.getX() - texW /2, (int)position.getY() - texH /2, texW * 2, texH * 2, bodyType::STATIC);
-    // TODO ponerlo bien
 
     pbody->listener = this;
     pbody->ctype = ColliderType::NPC;
@@ -64,10 +78,16 @@ bool Npc::Update(float dt) {
 
     // Dibujamos el NPC 
     if (texture != nullptr) {
-        Engine::GetInstance().render->DrawTexture(texture, x - (texW), y - (texH / 2), nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
-    }
-    if (texture != nullptr) {
-        Engine::GetInstance().render->DrawTexture(texture, x - (texW), y - (texH / 2), nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
+        if (!tsxPath.empty()) {
+            anims.Update(dt);
+
+            const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+            Engine::GetInstance().render->DrawRotatedTexture(texture, x - (texW), y - (texH / 2), &animFrame, SDL_FLIP_NONE, 1.0f);
+        }
+        else {
+            Engine::GetInstance().render->DrawTexture(texture, x - (texW), y - (texH / 2), nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
+        }
     }
 
     if (isPlayerInRange && Engine::GetInstance().dialogueManager->CanInteract()) {

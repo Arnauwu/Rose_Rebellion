@@ -17,7 +17,7 @@ public:
     void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
     void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
 
-    // Asignación de dialogo y acceso al dialogo
+    void ConfigNPC(const std::string& texPath, const std::string& dialogID, int width = 128, int height = 128, const std::string& tsxPath = ""); 
     void SetDialogueID(const std::string& id) { dialogueID = id; }
     std::string GetDialogueID() const { return dialogueID; }
 
@@ -27,8 +27,11 @@ private:
     PhysBody* pbody;
 
     // Variables visuales
+    std::string texturePath = "Assets/Textures/Entities/NPCs/Npc1.png";
     SDL_Texture* texture = nullptr;
     int texW, texH;
+
+    std::string tsxPath;
     AnimationSet anims;
     SDL_Texture* interactIcon = nullptr;
     SDL_Texture* glowTex = nullptr;
