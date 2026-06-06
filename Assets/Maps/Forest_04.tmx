@@ -35,7 +35,7 @@
  <tileset firstgid="134" name="F_Bosque_V6_04" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
   <image source="Forest/Fondo_Vigente/06_F_Ninfas/F_Bosque_V6_04.png" width="2304" height="1444"/>
  </tileset>
- <objectgroup id="18" name="Fondo1" visible="0">
+ <objectgroup id="18" name="Fondo1">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -51,7 +51,7 @@
   <object id="728" gid="131" x="19584" y="1792" width="2304" height="1444"/>
   <object id="729" gid="131" x="21888" y="1792" width="2304" height="1444"/>
  </objectgroup>
- <objectgroup id="20" name="Fondo2" visible="0">
+ <objectgroup id="20" name="Fondo2">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -69,7 +69,7 @@
   <object id="629" gid="1073741956" x="-1664" y="5632" width="7040" height="3584"/>
   <object id="726" gid="1073741956" x="18176" y="6016" width="3200" height="4096"/>
  </objectgroup>
- <objectgroup id="21" name="Fondo3" visible="0">
+ <objectgroup id="21" name="Fondo3">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -84,7 +84,7 @@
   <object id="634" gid="133" x="-896" y="1792" width="2304" height="2048"/>
   <object id="637" gid="133" x="4096" y="1920" width="4264" height="4676"/>
  </objectgroup>
- <objectgroup id="22" name="Fondo4" visible="0">
+ <objectgroup id="22" name="Fondo4">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -3010,14 +3010,14 @@
    <tile gid="40"/>
   </data>
  </layer>
- <objectgroup id="28" name="Fondo5    " visible="0">
+ <objectgroup id="28" name="Fondo5    ">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
    <property name="Paralax" type="float" value="1.1"/>
   </properties>
  </objectgroup>
- <objectgroup color="#aa0000" id="19" name="Spikes">
+ <objectgroup color="#aa0000" id="19" name="Spikes" visible="0">
   <properties>
    <property name="Danger" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -3039,7 +3039,7 @@
   <object id="717" x="1792" y="2048" width="74" height="240.333"/>
   <object id="719" x="14976" y="1792" width="96" height="385.333"/>
  </objectgroup>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -3066,7 +3066,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#000000" id="8" name="Map">
+ <objectgroup color="#000000" id="8" name="Map" visible="0">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -3140,7 +3140,7 @@
   <object id="746" x="18432" y="1408" width="125.333" height="87.2731"/>
   <object id="747" x="8704" y="1152" width="896" height="128"/>
  </objectgroup>
- <objectgroup id="33" name="Rampas">
+ <objectgroup id="33" name="Rampas" visible="0">
   <properties>
    <property name="Polygon" type="bool" value="true"/>
   </properties>
@@ -9031,7 +9031,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns">
+ <objectgroup id="15" name="PlayerSpawns" visible="0">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

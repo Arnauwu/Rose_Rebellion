@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="715">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="715">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -1785,7 +1785,7 @@
   </properties>
   <object id="700" gid="132" x="8192" y="2432" width="2944" height="3328"/>
  </objectgroup>
- <objectgroup id="33" name="Rampas">
+ <objectgroup id="33" name="Rampas" visible="0">
   <properties>
    <property name="Polygon" type="bool" value="true"/>
   </properties>
@@ -1796,7 +1796,7 @@
    <polygon points="0,0 0,-128 256,0"/>
   </object>
  </objectgroup>
- <objectgroup color="#aa0000" id="19" name="Spikes">
+ <objectgroup color="#aa0000" id="19" name="Spikes" visible="0">
   <properties>
    <property name="Danger" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -1807,7 +1807,7 @@
   <object id="704" x="2048" y="1536" width="384" height="128"/>
   <object id="705" x="2688" y="1152" width="384" height="128"/>
  </objectgroup>
- <objectgroup id="13" name="Path">
+ <objectgroup id="13" name="Path" visible="0">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -1829,7 +1829,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#000000" id="8" name="Map">
+ <objectgroup color="#000000" id="8" name="Map" visible="0">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -1861,7 +1861,7 @@
   <object id="381" x="6528" y="0" width="2560" height="256"/>
   <object id="702" x="3584" y="768" width="128" height="128"/>
  </objectgroup>
- <layer id="31" name="GroundNavLayer" width="88" height="19">
+ <layer id="31" name="GroundNavLayer" width="88" height="19" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -3541,7 +3541,7 @@
    <tile gid="129"/>
   </data>
  </layer>
- <layer id="32" name="AirNavLayer" width="88" height="19">
+ <layer id="32" name="AirNavLayer" width="88" height="19" visible="0">
   <properties>
    <property name="Air" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -5221,7 +5221,7 @@
    <tile gid="129"/>
   </data>
  </layer>
- <objectgroup id="11" name="EntitiesSpawnPoints">
+ <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="526" name="Ninfa" type="Ninfa" x="4832.36" y="1398.91">
    <point/>
   </object>
@@ -5241,7 +5241,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns">
+ <objectgroup id="15" name="PlayerSpawns" visible="0">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

@@ -159,13 +159,6 @@
   <object id="734" gid="134" x="22400" y="2560" width="4864" height="2560"/>
   <object id="745" gid="138" x="1152" y="4608" width="4264" height="4676"/>
  </objectgroup>
- <objectgroup id="37" name="Cascada">
-  <properties>
-   <property name="BG" type="bool" value="true"/>
-   <property name="Draw" type="bool" value="true"/>
-   <property name="Front" type="bool" value="false"/>
-  </properties>
- </objectgroup>
  <layer id="1" name="Map" width="176" height="21">
   <properties>
    <property name="Draw" type="bool" value="true"/>
@@ -3869,7 +3862,7 @@
    <tile gid="39"/>
   </data>
  </layer>
- <layer id="33" name="Front" width="176" height="21">
+ <layer id="33" name="Agua-Front" width="176" height="21">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
@@ -7582,7 +7575,7 @@
   <object id="699" gid="135" x="19849.1" y="2688" width="2304" height="2688"/>
   <object id="704" gid="135" x="7220" y="2936" width="2291.05" height="2936"/>
  </objectgroup>
- <objectgroup id="35" name="Rampas">
+ <objectgroup id="35" name="Rampas" visible="0">
   <properties>
    <property name="Polygon" type="bool" value="true"/>
   </properties>
@@ -7596,7 +7589,7 @@
    <polygon points="0,0 0,-256 512,0"/>
   </object>
  </objectgroup>
- <objectgroup color="#aa0000" id="19" name="Spikes">
+ <objectgroup color="#aa0000" id="19" name="Spikes" visible="0">
   <properties>
    <property name="Danger" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -15144,7 +15137,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns">
+ <objectgroup id="15" name="PlayerSpawns" visible="0">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
