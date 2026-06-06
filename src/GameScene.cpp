@@ -301,13 +301,18 @@ bool GameScene::Start() {
 	// Dialogue UI Load
 	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
 	LoadTextureIfNull(princessPortrait, "Assets/Textures/UI/Dialogues/princess_portrait.png");
-	LoadTextureIfNull(npcPortrait, "Assets/Textures/UI/Dialogues/npc_portrait1.png");
-	//LoadTextureIfNull(npcPortrait2, "Assets/Textures/UI/Dialogues/npc_portrait2.png");
-	//LoadTextureIfNull(npcPortrait3, "Assets/Textures/UI/Dialogues/npc_portrait3.png");
-	//LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png");
+	LoadTextureIfNull(princessCaplessPortrait, "Assets/Textures/UI/Dialogues/princessCapless_portrait.png");
+			//	-Bosses
+	LoadTextureIfNull(bossNinfaPortrait, "Assets/Textures/UI/Dialogues/bossNinfa_portrait.png");
+	LoadTextureIfNull(bossDracPortrait, "Assets/Textures/UI/Dialogues/bossDrac_portrait.png");
+			//	-Npcs
+	LoadTextureIfNull(npcPortrait1, "Assets/Textures/UI/Dialogues/npc_portrait1.png"); // Cerdo
+	LoadTextureIfNull(npcPortrait2, "Assets/Textures/UI/Dialogues/npc_portrait2.png"); // Paloma
+	LoadTextureIfNull(npcPortrait3, "Assets/Textures/UI/Dialogues/npc_portrait3.png"); // Oveja
+	LoadTextureIfNull(npcPortrait4, "Assets/Textures/UI/Dialogues/npc_portrait4.png"); // Vaca
 
 	// Load Loading Screen 
-	//LoadTextureIfNull(Rose_Sleep, "Assets/Textures/UI/LoadingScreen/Rose_Sleep.png");
+	
 
 	//Load level intro textures
 	LoadTextureIfNull(introFrameTex, "Assets/Textures/UI/Buttons/frameTex.png");
@@ -745,10 +750,15 @@ bool GameScene::CleanUp() {
 	//Unload Dialogue UI
 	UnloadTexture(UIDialogueBoxTex);
 	UnloadTexture(princessPortrait);
-	UnloadTexture(npcPortrait);
-	//UnloadTexture(npcPortrait2);
-	//UnloadTexture(npcPortrait3);
-	//UnloadTexture(npcPortrait4);
+	UnloadTexture(princessCaplessPortrait);
+
+	UnloadTexture(bossNinfaPortrait);
+	UnloadTexture(bossDracPortrait);
+
+	UnloadTexture(npcPortrait1);
+	UnloadTexture(npcPortrait2);
+	UnloadTexture(npcPortrait3);
+	UnloadTexture(npcPortrait4);
 
 	// Skill upgrade Unload
 	UnloadTexture(books_1_1);
@@ -1246,7 +1256,12 @@ void GameScene::CreateDialogueUI() {
 		dBox->SetBackgroundTexture(UIDialogueBoxTex);
 
 		dBox->AddPortrait("Rose", princessPortrait);
-		dBox->AddPortrait("Pep", npcPortrait);
+		dBox->AddPortrait("Rose-", princessCaplessPortrait);
+
+		dBox->AddPortrait("Pep", npcPortrait1);
+		dBox->AddPortrait("Colomet", npcPortrait2);
+		dBox->AddPortrait("BeEa", npcPortrait3);
+		dBox->AddPortrait("Paca", npcPortrait4);
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);

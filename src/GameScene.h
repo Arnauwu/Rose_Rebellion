@@ -170,11 +170,13 @@ public:
 	SDL_Texture* UIDialogueBoxTex = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
 	SDL_Texture* princessPortrait = nullptr;
-	SDL_Texture* npcPortrait = nullptr;
-	//SDL_Texture* npcPortrait1 = nullptr;
-	//SDL_Texture* npcPortrait2 = nullptr;
-	//SDL_Texture* npcPortrait3 = nullptr;
-	//SDL_Texture* npcPortrait4 = nullptr;
+	SDL_Texture* princessCaplessPortrait = nullptr;
+	SDL_Texture* bossNinfaPortrait = nullptr;
+	SDL_Texture* bossDracPortrait = nullptr;
+	SDL_Texture* npcPortrait1 = nullptr;
+	SDL_Texture* npcPortrait2 = nullptr;
+	SDL_Texture* npcPortrait3 = nullptr;
+	SDL_Texture* npcPortrait4 = nullptr;
 
 	// Level intro textures
 	SDL_Texture* introFrameTex = nullptr;

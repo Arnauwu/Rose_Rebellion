@@ -1,9 +1,132 @@
 {
-  "npc_01": [
-    { "speaker": "Pep", "text": "GEALDA GLAWEOADA." },
-    { "speaker": "Rose", "text": "GLAWEOADAafecta?" },
-{ "speaker": "Pep", "text": "Veus que sigui unaGLAWEOADAac no se’m cruspirà hahaha." },
-{ "speaker": "Rose", "text": "... A costa de la mort GLAWEOADAGLAWEOADAGLAWEOADAja no quedi ningú que faràs?" },
-{ "speaker": "Pep", "text": "El GLAWEOADAEOADAúltim cop. No és problema meu." }
+  "Inici": [
+    { "speaker": "Villager 1", "text": "We are under attack!" },
+    { "speaker": "Villager 2", "text": "The western wall has fallen!" },
+  { "speaker": "Villager 3", "text": "Someone HELP!" },
+{ "speaker": "Villager 4", "text": "Monsters… They became monsters… They were the ones supposed to save us…" }
   ]
 }
+
+{
+  "Diàleg 1: vaca": [
+    { "speaker": "Paca", "text": "How peaceful!" },
+    { "speaker": "Rose", "text": "What do you mean, the dragon is still near" },
+{ "speaker": "Paca", "text": "I haven’t been chosen yet, and if I am, well… I hope I’m the tastiest of them all!" }
+  ]
+}
+
+{
+  "Diàleg 2: porc": [
+    { "speaker": "Pep", "text": "Which maiden shall be next? Not that I care." },
+    { "speaker": "Rose", "text": "What do you mean you don’t care?" },
+{ "speaker": "Pep", "text": "Do you see me as a maiden? My name won’t be chosen. I won’t be eaten hahaha." },
+{ "speaker": "Rose", "text": "Yet lots of maidens will die. What will you do when there’s no one left?" },
+{ "speaker": "Pep", "text": "Our king will think of something again when the time comes. It’s not my problem" }
+  ]
+}
+
+{
+  "Diàleg 3: ovella": [
+    { "speaker": "BeEa", "text": "There’s nothing I can do if I’m next?" },
+    { "speaker": "Rose", "text": "Don’t you want to fight it?" },
+{ "speaker": "BeEa", "text": “Fight it? Me? Don’t be stupid, it is what it is. When it comes, it comes." },
+{ "speaker": "Rose", "text": "..." }
+  ]
+}
+
+{ 
+ "Diàleg 4: Colom": [
+    { "speaker": "Colomet", "text": "There are no letters for me to deliver, I can walk in peace." },
+    { "speaker": "Rose", "text": "In peace?" },
+{ "speaker": "Colomet", "text": “Who would want to send a letter knowing the dragon will eat all the maidens? Love is dead. Those who cared enough sacrificed themselves with their loved ones. What a stupid thing to do. Well, now I'm free thanks to them" },
+{ "speaker": "Rose", "text": "What will you live off now then" },
+{ "speaker": "Colomet", "text": ”Is your brain working properly? With all the dead maidens we have lots of food left now!” }
+  ]
+}
+
+
+//Frases sueltas:
+{ 
+ "Diàleg suelta 1": [
+    { "speaker": "NPC","text": "Someone saved the western wall" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 2": [
+    { "speaker": "NPC", "text": "They say no one has seen the princess since the sacrifice of the queen" }
+  ]
+}
+
+
+{ 
+ "Diàleg suelta 3": [
+    { "speaker": "NPC", "text": "Your face feels familiar…" }
+  ]
+}
+
+
+{ 
+ "Diàleg suelta 4": [
+    { "speaker": "NPC", "text": "I like your coat. I see, so I can make one with a blanket…" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 5": [
+    { "speaker": "NPC", "text": "Be careful with the sickle! You are gonna kill somebody!" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 6": [
+    { "speaker": "NPC", "text": "Last full moon the dragon made a fuzz… " },
+{ "speaker": "NPC", "text": "The maiden must have tasted horrible because he ate half of our harvest." }
+  ]
+}
+
+{ 
+ "Diàleg suelta 7": [
+    { "speaker": "NPC", "text": "I’ve been writing poetry lately… " },
+{ "speaker": "NPC", "text": “Let’s see: 
+“full moon, full belly”
+from the dragon’s perspective, of course, hahaha" }
+  ]
+}
+
+//Quan la Rose arriba al bosc
+{ 
+ "Quan la Rose arriba al bosc 1": [
+    { "speaker": "Rose", "text": "There’s no saving to these people…" }
+  ]
+}
+
+{ 
+ "Quan la Rose arriba al bosc 2": [
+    { "speaker": "Rose", "text": "Wow... What a beautiful place!" }
+  ]
+}
+
+//Quan la Rose arriba a la muntanya
+{ 
+ "Quan la Rose arriba a la muntanya": [
+    { "speaker": "Rose", "text": “The dragon cave is at the top of this mountain…" }
+  ]
+}
+
+//Quan la Rose arriba a la cova
+{ 
+ "Quan la Rose arriba a la cova": [
+    { "speaker": "Rose", "text": “Echoooo… " },
+ {"speaker": "Echo", "text": “(Echooo - Echoo - Echo…)" }
+  ]
+}
+
+//Quan la Rose arriba a les Catacumbes
+{ 
+ "Quan la Rose arriba a les Catacumbes": [
+    { "speaker": "Rose", "text": “Green are the plants that let us breathe… So I hope this green air doesn’t kill me…" }
+  ]
+}
+
+

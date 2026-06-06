@@ -84,6 +84,11 @@ bool GameManager::SaveGame(const std::string& filename) {
 		itemNode.append_attribute("id").set_value(itemId.c_str());
 	}
 
+	pugi::xml_node dialogues = root.append_child("TriggeredDialogues");
+	for (const auto& diagId : gameState.triggeredDialogues) {
+		pugi::xml_node diagNode = dialogues.append_child("Dialogue");
+		diagNode.append_attribute("id").set_value(diagId.c_str());
+	}
 	// Save the file
 	bool success = doc.save_file(filename.c_str());
 
@@ -206,6 +211,10 @@ bool GameManager::LoadGame(const std::string& filename) {
 			tempState.collectedItems.insert(itemNode.attribute("id").as_string());
 		}
 
+		pugi::xml_node dialogues = root.child("TriggeredDialogues");
+		for (pugi::xml_node diagNode = dialogues.child("Dialogue"); diagNode; diagNode = diagNode.next_sibling("Dialogue")) {
+			tempState.triggeredDialogues.push_back(diagNode.attribute("id").as_string());
+		}
 		// If everything is correct, we set the status to “loaded?
 		gameState = tempState;
 		LOG("Partida XML cargada correctamente.");

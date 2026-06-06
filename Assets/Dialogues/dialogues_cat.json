@@ -1,5 +1,22 @@
 {
-  "npc_01": [
+  "Inici": [
+    { "speaker": "Aldeano 1", "text": "Ens ataquen!" },
+    { "speaker": "Aldeano 2", "text": "El mur de l’oest ha caigut!" },
+    { "speaker": "Aldeano 3", "text": "AJUDA!" },
+{ "speaker": "Aldeano 4", "text": "Monstres… S’han convertit en monstres… I ens havien de salvar…" }
+  ]
+}
+
+{
+  "Diàleg 1: vaca": [
+    { "speaker": "Paca", "text": "Quina pau, oi?" },
+    { "speaker": "Rose", "text": "Pau? Però si el drac segueix aquí al costat" },
+{ "speaker": "Paca", "text": "A mi no m’han escollit encara i si surto, doncs mira, espero ser la més sabrosa" }
+  ]
+}
+
+{
+  "Diàleg 2: porc": [
     { "speaker": "Pep", "text": "Qui serà la següent donzella? Bé, tampoc m’afecta." },
     { "speaker": "Rose", "text": "Què vols dir que no t’afecta?" },
 { "speaker": "Pep", "text": "Veus que sigui una donzella? El meu nom no sortirà pas. El drac no se’m cruspirà hahaha." },
@@ -7,3 +24,107 @@
 { "speaker": "Pep", "text": "El nostre rei ja pensarà alguna cosa tal i com va fer l’últim cop. No és problema meu." }
   ]
 }
+
+{
+  "Diàleg 3: ovella": [
+    { "speaker": "BeEa", "text": "Si soc la següent, que hi farem?" },
+    { "speaker": "Rose", "text": "No vols lluitar contra aquesta injustícia?" },
+{ "speaker": "BeEa", "text": “Lluitar? Jo? No diguis bajanades, es el que hi ha. Quan m’arribi, ja m’arribarà." },
+{ "speaker": "Rose", "text": "..." }
+  ]
+}
+
+{ 
+ "Diàleg 4: Colom": [
+    { "speaker": "Colomet", "text": "Ja no tinc cap carta per ningú, puc passejar tranquilament" },
+    { "speaker": "Rose", "text": "Tranquilament?" },
+{ "speaker": "Colomet", "text": “Qui voldrà enviar cap carta sabent que el drac es cruspirà totes les donzelles? L’amor ja no importa. I aquells que els importava es van sacrificar amb la seva estimada. Quina ximpleria més gran. Però bé, ara sóc lliure gràcies a aquests ximplets." },
+{ "speaker": "Rose", "text": "I ara de què viuràs?" },
+{ "speaker": "Colomet", "text": "T’has tornat orni? Amb tota la gent que es cruspeix el drac tenim provisions de sobres!" }
+  ]
+}
+
+
+//Frases sueltas:
+{ 
+ "Diàleg suelta 1": [
+    { "speaker": "NPC","text": "Algú ha salvat el mur de l’oest" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 2": [
+    { "speaker": "NPC", "text": "Diuen que ningú ha vist a la princesa des que van sacrificar a la reina" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 3": [
+    { "speaker": "NPC", "text": "Ei tu… Em sona haver-te vist algun cop" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 4": [
+    { "speaker": "NPC", "text": "M’agrada la teva capa. Així que amb una manta jo també podria fer-me’n una…" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 5": [
+    { "speaker": "NPC", "text": "Compte amb la falç! A treballar al camp, acabarás matant a algú!" }
+  ]
+}
+
+{ 
+ "Diàleg suelta 6": [
+    { "speaker": "NPC", "text": "L’última lluna plena el drac va fer molt de soroll… " },
+{ "speaker": "NPC", "text": "La donzella debia saber horrible perquè es va cruspir també la meitat de les collites." }
+  ]
+}
+
+{ 
+ "Diàleg suelta 7": [
+    { "speaker": "NPC", "text": "M’ha donat per la poesia últimament… " },
+{ "speaker": "NPC", "text": Vejam: 
+“Lluna plena, panxa plena”
+pel drac esclar, hahaha" }
+  ]
+}
+
+//Quan la Rose arriba al bosc
+{ 
+ "Quan la Rose arriba al bosc 1": [
+    { "speaker": "Rose", "text": "Aquest poble no té salvació…" }
+  ]
+}
+
+{ 
+ "Quan la Rose arriba al bosc 2": [
+    { "speaker": "Rose", "text": "Uaa... Què bonic és aquest lloc!" }
+  ]
+}
+
+//Quan la Rose arriba a la muntanya
+{ 
+ "Quan la Rose arriba a la muntanya": [
+    { "speaker": "Rose", "text": “La cova del drac està al damunt d’aquesta muntanya…" }
+  ]
+}
+
+//Quan la Rose arriba a la cova
+{ 
+ "Quan la Rose arriba a la cova": [
+    { "speaker": "Rose", "text": “Ecoooo…" },
+ {"speaker": "Eco", "text": “(Ecooo - Ecoo - Eco…)" }
+  ]
+}
+
+//Quan la Rose arriba a les Catacumbes
+{ 
+ "Quan la Rose arriba a les Catacumbes": [
+    { "speaker": "Rose", "text": “Verdes son les plantes i les plantes ens donen vida… Així que espero que aquest aire verd no em mati…" }
+  ]
+}
+
+
