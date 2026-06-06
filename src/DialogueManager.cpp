@@ -73,8 +73,7 @@ void DialogueManager::LoadDialogues(Language lang) {
 	isDialoguesLoaded = true;
 }
 
-void DialogueManager::StartDialogue(const std::string& dialogueID) {
-	// 1. MAGIA DEL LAZY LOADING: Comprobar el idioma actual
+void DialogueManager::StartDialogue(const std::string& dialogueID, bool isMonologue) {
 	Language currentLang = Engine::GetInstance().languageManager->GetCurrentLanguage();
 
 	// Si no hemos cargado nada aún, o si el idioma del juego ha cambiado desde la última vez...
@@ -92,7 +91,10 @@ void DialogueManager::StartDialogue(const std::string& dialogueID) {
 		currentConversation = &dialogueDB[dialogueID];
 		currentLineIndex = 0;
 		isActive = true;
-		inputLocked = true;
+		inputLocked = !currentIsMonologue;
+
+		currentIsMonologue = isMonologue;
+		monologueReadTimer = 0.0f;
 
 		charIndex = 0;
 		typeTimer = 0.0f;
@@ -104,7 +106,7 @@ void DialogueManager::StartDialogue(const std::string& dialogueID) {
 
 		Player* player = Engine::GetInstance().entityManager->GetPlayer();
 
-		if (player != nullptr && !player->onGround) {
+		if (player != nullptr && !player->onGround && !currentIsMonologue) {
 			isWaitingForLanding = true;
 			if (uiBox) uiBox->visible = false;
 		}
@@ -114,7 +116,10 @@ void DialogueManager::StartDialogue(const std::string& dialogueID) {
 				uiBox->SetSpeakerName((*currentConversation)[0].speaker);
 				uiBox->SetDialogueText("");
 			}
-			Engine::GetInstance().sceneManager->isGamePaused = true;
+
+			if (!currentIsMonologue) {
+				Engine::GetInstance().sceneManager->isGamePaused = true;
+			}
 		}
 	}
 }
@@ -143,16 +148,19 @@ bool DialogueManager::Update(float dt) {
 			return true;
 		}
 	}
-	if (inputLocked) {
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_UP ||
-			Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_IDLE) {
-			inputLocked = false;
+	if (!currentIsMonologue) {
+		// Lógica antigua: Esperar a que el jugador pulse 'E'
+		if (inputLocked) {
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_UP ||
+				Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_IDLE) {
+				inputLocked = false;
+			}
 		}
-	}
-	else {
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
-			NextLine();
-			return true;
+		else {
+			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
+				NextLine();
+				return true;
+			}
 		}
 	}
 
@@ -168,12 +176,18 @@ bool DialogueManager::Update(float dt) {
 			displayedText += fullText[charIndex];
 
 			charIndex++;
-
-			if (uiBox) {
-				uiBox->SetDialogueText(displayedText);
-			}
+			if (uiBox) uiBox->SetDialogueText(displayedText);
 		}
 	}
+	else if (currentIsMonologue) {
+		monologueReadTimer += dt / 1000.0f;
+
+		if (monologueReadTimer >= timeToRead) {
+			monologueReadTimer = 0.0f;
+			NextLine();
+		}
+	}
+
 	return true;
 }
 

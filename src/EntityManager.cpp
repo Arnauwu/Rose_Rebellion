@@ -17,6 +17,7 @@
 #include "DoubleJumpObj.h"
 #include "WallJumpObj.h"
 #include "BreakableRock.h"
+#include "DialogueTrigger.h"
 
 #include "SavePoint.h"
 #include "Door.h"
@@ -129,6 +130,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::SAVEPOINT:
 		entity = std::make_shared<SavePoint>();
+		break;
+	case EntityType::DIALOGUE_TRIGGER:
+		entity = std::make_shared<DialogueTrigger>();
 		break;
 	case EntityType::SPECIALFLOOR:
 		entity = std::make_shared<SpecialFloor>();

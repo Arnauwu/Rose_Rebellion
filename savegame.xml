@@ -1,13 +1,25 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="40" maxHealth="100" keyCount="0" currentForceOrbs="20" />
+	<PlayerStats currentHealth="100" maxHealth="100" currentForceOrbs="20" />
+	<Keys castle="false" forest="false" mountain="false" catacombs="false" boss="false" />
 	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="true" />
+	<SkillTree stHealthUp="false" stIframesUp="false" stSpeedUp="false" stFastDash="false" stUpAttack="false" stDownAttack="false" />
 	<WorldState currentMap="Forest_01.tmx">
 		<Position x="11200" y="2174" />
 	</WorldState>
+	<Bosses>
+		<KnightBossKilled bool="true" />
+		<NinfaBossKilled bool="true" />
+		<LizardBossKilled bool="true" />
+		<DragonBossKilled bool="true" />
+	</Bosses>
 	<OpenedDoors />
 	<CollectedItems>
 		<Item id="Nexo.tmx_Sickle_3876_1118" />
 		<Item id="Forest_01.tmx_HealthOrbs_11033_2563" />
+		<Item id="Forest_01.tmx_HealthOrbs_12614_2563" />
 	</CollectedItems>
+	<TriggeredDialogues>
+		<Dialogue id="Inici" />
+	</TriggeredDialogues>
 </SaveGame>

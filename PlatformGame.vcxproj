@@ -154,6 +154,7 @@
     <ClCompile Include="src\BreakableRock.cpp" />
     <ClCompile Include="src\CameraController.cpp" />
     <ClCompile Include="src\Correfoc.cpp" />
+    <ClCompile Include="src\DialogueTrigger.cpp" />
     <ClCompile Include="src\GwellProjectile.cpp" />
     <ClCompile Include="src\KeyGate.cpp" />
     <ClCompile Include="src\Cinematics.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="src\BreakableRock.h" />
     <ClInclude Include="src\CameraController.h" />
     <ClInclude Include="src\Correfoc.h" />
+    <ClInclude Include="src\DialogueTrigger.h" />
     <ClInclude Include="src\GwellProjectile.h" />
     <ClInclude Include="src\KeyGate.h" />
     <ClInclude Include="src\Cinematics.h" />

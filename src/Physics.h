@@ -36,6 +36,8 @@ enum class ColliderType {
     //Player
     PLAYER,
     NPC,
+    DIALOGUE_TRIGGER,
+
     PLAYER_ATTACK,
     PLAYER_PROJECTILE,
 

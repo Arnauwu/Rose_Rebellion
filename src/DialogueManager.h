@@ -23,7 +23,9 @@ public:
     bool Update(float dt) override;
     bool CleanUp() override;
 
-    void StartDialogue(const std::string& dialogueID);
+    void StartDialogue(const std::string& dialogueID, bool isMonologue = false);
+    bool IsBlockingDialogueActive() const { return isActive && !currentIsMonologue; }
+
     void NextLine();
     bool IsDialogueActive() const { return isActive; }
     bool CanInteract() const { return !isActive && interactionCooldown <= 0.0f; }
@@ -46,6 +48,11 @@ private:
     bool inputLocked = false;
     float interactionCooldown = 0.0f;
     bool isWaitingForLanding = false;
+
+    // Monologos
+    bool currentIsMonologue = false;
+    float monologueReadTimer = 0.0f; 
+    float timeToRead = 3.0f;
 
     // Efecto Typewriter
     std::string displayedText;
