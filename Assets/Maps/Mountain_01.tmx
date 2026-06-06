@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="702">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="704">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -14836,9 +14836,6 @@
   <object id="687" x="18560" y="4352" width="1792" height="128"/>
   <object id="692" x="18048" y="3840" width="128" height="384"/>
   <object id="693" x="3328" y="8704" width="128" height="128"/>
-  <object id="694" x="3200" y="8704">
-   <polygon points="0,0 128,0 128,128"/>
-  </object>
   <object id="695" x="10112" y="4096" width="128" height="128"/>
  </objectgroup>
  <objectgroup id="28" name="Rampa">
@@ -14868,6 +14865,9 @@
   </object>
   <object id="697" x="10112" y="4352">
    <polygon points="0,0 128,-128 0,-128"/>
+  </object>
+  <object id="703" x="3200" y="8704">
+   <polygon points="0,0 128,0 128,128"/>
   </object>
  </objectgroup>
  <objectgroup color="#aa0000" id="21" name="Spikes">
