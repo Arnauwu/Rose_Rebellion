@@ -130,6 +130,10 @@ void GameScene::FinishMapLoad()
 	minimap.CreateRoom(asyncMapFile);
 	minimap.SetCurrentRoom(asyncMapFile);
 
+	auto& exploredRooms = GameManager::GetInstance().gameState.exploredRooms;
+	if (std::find(exploredRooms.begin(), exploredRooms.end(), asyncMapFile) == exploredRooms.end()) {
+		exploredRooms.push_back(asyncMapFile);
+	}
 	// Camara mode
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player != nullptr)
@@ -242,6 +246,10 @@ bool GameScene::Start() {
 
 	std::string mapToLoad = GameManager::GetInstance().gameState.currentMap;
 	LoadMap(mapToLoad);
+
+	for (const auto& room : GameManager::GetInstance().gameState.exploredRooms) {
+		minimap.CreateRoom(room);
+	}
 	// Buttons and Bg
 	LoadTextureIfNull(buttonUI, "Assets/Textures/UI/Buttons/buttonUI.png");
 	LoadTextureIfNull(skillFrameUI, "Assets/Textures/UI/Buttons/skillFrameUI.png");
@@ -413,16 +421,22 @@ bool GameScene::Update(float dt) {
 			}
 		}
 	}
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	bool isCinematicActive = (player != nullptr && player->isFrozen);
+	bool isMapTransitioning = (mapState != MapTransitionState::NONE);
 
-	if (!inSkillPopUp) {
-		if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
-		if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
-		if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE) 
+	{
+		if (!inSkillPopUp) {
+			if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
+			if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
+			if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
 
-		if (input->IsGamepadConnected() &&
-			input->GetGamepadButton(GAMEPAD_BACK) == KEY_DOWN)
-		{
-			ToggleGameMenu(GameMenuTab::INVENTORY);
+			if (input->IsGamepadConnected() &&
+				input->GetGamepadButton(GAMEPAD_BACK) == KEY_DOWN)
+			{
+				ToggleGameMenu(GameMenuTab::INVENTORY);
+			}
 		}
 	}
 
@@ -503,24 +517,27 @@ bool GameScene::Update(float dt) {
 	}
 
 	// Pause Menu - ESC o START del gamepad
-	bool pauseInput = input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
-
-	if (input->IsGamepadConnected() &&
-		input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
+	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE) 
 	{
-		pauseInput = true;
-	}
+		bool pauseInput = input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
 
-	if (pauseInput) {
-		if (inSkillPopUp) {
-			SetUIGroupVisible(skillPopupUI, false);
-			inSkillPopUp = false;
+		if (input->IsGamepadConnected() &&
+			input->GetGamepadButton(GAMEPAD_START) == KEY_DOWN)
+		{
+			pauseInput = true;
 		}
-		else if (currentMenuTab != GameMenuTab::NONE) {
-			ToggleGameMenu(GameMenuTab::NONE);
-		}
-		else {
-			ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+
+		if (pauseInput) {
+			if (inSkillPopUp) {
+				SetUIGroupVisible(skillPopupUI, false);
+				inSkillPopUp = false;
+			}
+			else if (currentMenuTab != GameMenuTab::NONE) {
+				ToggleGameMenu(GameMenuTab::NONE);
+			}
+			else {
+				ToggleGameMenu(GameMenuTab::PAUSE_MENU);
+			}
 		}
 	}
 

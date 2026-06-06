@@ -5,6 +5,8 @@
 #include "Input.h"
 #include "Render.h"
 #include "SceneManager.h"
+#include "DialogueManager.h"
+
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
@@ -40,12 +42,12 @@ bool KnightBoss::Start() {
 	// Initialize parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
 
-	//Intro Boss
-	portraitTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/BossPresentation/KnightFrame.png");
+	////Intro Boss
+	//portraitTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/BossPresentation/KnightFrame.png");
 
-	std::unordered_map<int, std::string> frameAliases = { {0, "play"} };
-	portraitAnim.LoadFromTSX("Assets/Textures/UI/BossPresentation/KnightFrame.tsx", frameAliases);
-	portraitAnim.SetCurrent("play");
+	//std::unordered_map<int, std::string> frameAliases = { {0, "play"} };
+	//portraitAnim.LoadFromTSX("Assets/Textures/UI/BossPresentation/KnightFrame.tsx", frameAliases);
+	//portraitAnim.SetCurrent("play");
 
 	//Audios
 	morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
@@ -95,7 +97,7 @@ bool KnightBoss::Update(float dt)
 		return true;
 	}
 
-	if (introDone != 4)
+	if (introDone != 5) 
 	{
 		Engine::GetInstance().hud->isHidden = true;
 
@@ -137,7 +139,7 @@ bool KnightBoss::Update(float dt)
 		if (introDone == 2)
 		{
 			player->cameraController.StartShake(3000, 30); 
-			Engine::GetInstance().hud->TriggerBossIntro(portraitTex, &portraitAnim, 3.0f); 
+			//Engine::GetInstance().hud->TriggerBossIntro(portraitTex, &portraitAnim, 3.0f); 
 
 			if (anims.GetCurrentName() != "land") {
 				anims.SetCurrent("land");
@@ -165,12 +167,31 @@ bool KnightBoss::Update(float dt)
 			if (player->cameraController.GetRemainingShakeTime() < 0)
 			{
 				introDone = 4;
+				spawnTimer.Start();
+			}
+		}
+		else if (introDone == 4)
+		{
+			velocity.x = 0.0f;
+
+			player->cameraController.Update(dt, player->GetPosition());
+
+			if (spawnTimer.ReadMSec() > 500)
+			{
+				introDone = 5; 
 				player->isFrozen = false;
 				Engine::GetInstance().hud->isHidden = false;
 
+				Engine::GetInstance().dialogueManager->StartDialogue("Inici", false);
 			}
 		}
 
+		Draw(dt);
+		return true;
+	}
+	if (Engine::GetInstance().dialogueManager->IsDialogueActive()) {
+		velocity.x = 0.0f;
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.x, velocity.y });
 		Draw(dt);
 		return true;
 	}

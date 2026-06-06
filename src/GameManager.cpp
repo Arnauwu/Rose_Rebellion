@@ -89,6 +89,13 @@ bool GameManager::SaveGame(const std::string& filename) {
 		pugi::xml_node diagNode = dialogues.append_child("Dialogue");
 		diagNode.append_attribute("id").set_value(diagId.c_str());
 	}
+
+	//Minimap
+	pugi::xml_node minimapNode = root.append_child("Minimap");
+	for (const auto& room : gameState.exploredRooms) {
+		pugi::xml_node roomNode = minimapNode.append_child("Room");
+		roomNode.append_attribute("id").set_value(room.c_str());
+	}
 	// Save the file
 	bool success = doc.save_file(filename.c_str());
 
@@ -177,25 +184,25 @@ bool GameManager::LoadGame(const std::string& filename) {
 			pugi::xml_node knightBossKilled = bosses.child("KnightBossKilled");
 			if (knightBossKilled)
 			{
-				tempState.knightBossKilled = knightBossKilled.attribute("bool");
+				tempState.knightBossKilled = knightBossKilled.attribute("bool").as_bool(false);
 			}
 
 			pugi::xml_node ninfaBossKilled = bosses.child("NinfaBossKilled");
 			if (ninfaBossKilled)
 			{
-				tempState.ninfaBossKilled = ninfaBossKilled.attribute("bool");
+				tempState.ninfaBossKilled = ninfaBossKilled.attribute("bool").as_bool(false);
 			}
 
 			pugi::xml_node lizardBossKilled = bosses.child("LizardBossKilled");
 			if (lizardBossKilled)
 			{
-				tempState.lizardBossKilled = lizardBossKilled.attribute("bool");
+				tempState.lizardBossKilled = lizardBossKilled.attribute("bool").as_bool(false);
 			}
 
 			pugi::xml_node dragonBossKilled = bosses.child("DragonBossKilled");
 			if (dragonBossKilled)
 			{
-				tempState.dragonBossKilled = dragonBossKilled.attribute("bool");
+				tempState.dragonBossKilled = dragonBossKilled.attribute("bool").as_bool(false);
 			}
 		}
 
@@ -215,6 +222,15 @@ bool GameManager::LoadGame(const std::string& filename) {
 		for (pugi::xml_node diagNode = dialogues.child("Dialogue"); diagNode; diagNode = diagNode.next_sibling("Dialogue")) {
 			tempState.triggeredDialogues.push_back(diagNode.attribute("id").as_string());
 		}
+
+		// Minimap
+		pugi::xml_node minimapNode = root.child("Minimap");
+		if (minimapNode) {
+			for (pugi::xml_node roomNode = minimapNode.child("Room"); roomNode; roomNode = roomNode.next_sibling("Room")) {
+				tempState.exploredRooms.push_back(roomNode.attribute("id").as_string());
+			}
+		}
+
 		// If everything is correct, we set the status to “loaded?
 		gameState = tempState;
 		LOG("Partida XML cargada correctamente.");

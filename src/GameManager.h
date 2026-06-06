@@ -31,7 +31,7 @@ struct GameState {
     bool stDownAttack = false;
 
     // World
-    std::string currentMap = "Castle_Inside.tmx";
+    std::string currentMap = "Nexo.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     // Bosses
@@ -43,6 +43,7 @@ struct GameState {
     std::vector<std::string> triggeredDialogues;
     std::vector<std::string> openedDoors;
     std::unordered_set<std::string> collectedItems;
+    std::vector<std::string> exploredRooms;
 };
 
 class GameManager {

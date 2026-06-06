@@ -181,7 +181,6 @@
     <None Include=".gitignore">
       <Filter>Configuration FIles</Filter>
     </None>
-    <None Include="src\Input" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Animation.cpp">

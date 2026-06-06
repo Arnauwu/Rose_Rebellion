@@ -51,7 +51,6 @@ bool ParticleManager::Start() {
 bool ParticleManager::Update(float dt) {
     ZoneScoped;
 
-    // Actualizamos SOLO las articulas encendidas
     for (auto& particles : pool) {
         if (particles.active) {
 
@@ -71,11 +70,6 @@ bool ParticleManager::Update(float dt) {
             }
         }
     }
-    return true;
-}
-
-bool ParticleManager::PostUpdate() {
-    ZoneScoped;
 
     for (const auto& particle : pool) {
         if (particle.active) {
@@ -93,11 +87,9 @@ bool ParticleManager::PostUpdate() {
                     srcRect = particle.anim.GetCurrentFrame();
                 }
 
-            
                 SDL_SetTextureColorMod(particle.texture, 0, 0, 0);
-                
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha / 2);
-               
+
                 float drawX = particle.x;
                 float drawY = particle.y;
                 if (particle.centerFrameContent && particle.isAnimated) {
@@ -125,7 +117,8 @@ bool ParticleManager::PostUpdate() {
                     drawY -= visualOffsetY * particle.scale;
                 }
 
-                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, drawX + 3.0f, drawY + 3.0f, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
+                Engine::GetInstance().render->DrawRotatedTexture(particle.texture, drawX + 3.0f, drawY + 3.0f, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);
+                SDL_SetTextureColorMod(particle.texture, particle.color.r, particle.color.g, particle.color.b);
                 SDL_SetTextureAlphaMod(particle.texture, currentAlpha);
 
                 Engine::GetInstance().render->DrawRotatedTexture(particle.texture, drawX, drawY, particle.isAnimated ? &srcRect : nullptr, particle.flipMode, particle.scale, particle.angle);
@@ -133,12 +126,16 @@ bool ParticleManager::PostUpdate() {
                 SDL_SetTextureColorMod(particle.texture, 255, 255, 255);
             }
             else {
-                
                 SDL_Rect rect = { (int)particle.x, (int)particle.y, (int)particle.size, (int)particle.size };
                 Engine::GetInstance().render->DrawRectangle(rect, particle.color.r, particle.color.g, particle.color.b, currentAlpha, true, particle.useCamera);
             }
         }
     }
+
+    return true;
+}
+
+bool ParticleManager::PostUpdate() {
     return true;
 }
 
