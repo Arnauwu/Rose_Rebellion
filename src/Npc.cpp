@@ -48,8 +48,7 @@ bool Npc::Update(float dt) {
     ZoneScoped;
 
     // Si el jugador está cerca y no está activo
-    if (isPlayerInRange && !Engine::GetInstance().dialogueManager->IsDialogueActive()) {
-
+    if (isPlayerInRange && Engine::GetInstance().dialogueManager->CanInteract()) {
         // Si el jugador pulsa 'E' 
         if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
             Engine::GetInstance().dialogueManager->StartDialogue(dialogueID);
@@ -71,7 +70,7 @@ bool Npc::Update(float dt) {
         Engine::GetInstance().render->DrawTexture(texture, x - (texW), y - (texH / 2), nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
     }
 
-    if (isPlayerInRange && !Engine::GetInstance().dialogueManager->IsDialogueActive()) {
+    if (isPlayerInRange && Engine::GetInstance().dialogueManager->CanInteract()) {
         if (interactIcon != nullptr) {
             iconTimer += dt / 1000.0f;
 

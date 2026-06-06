@@ -1,5 +1,7 @@
 #pragma once
 #include "Module.h"
+#include "LanguageManager.h"
+
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -17,23 +19,32 @@ public:
     ~DialogueManager();
 
     bool Awake() override;
+    bool Start() override;
     bool Update(float dt) override;
     bool CleanUp() override;
 
     void StartDialogue(const std::string& dialogueID);
     void NextLine();
     bool IsDialogueActive() const { return isActive; }
+    bool CanInteract() const { return !isActive && interactionCooldown <= 0.0f; }
     void EndDialogue();
     // Conectamos la UI al Manager
     void SetDialogueUI(UIDialogueBox* uiBox) { this->uiBox = uiBox; }
 
 private:
-    std::unordered_map<std::string, std::vector<DialogueLine>> dialogueDB;
-    UIDialogueBox* uiBox = nullptr;
+    void LoadDialogues(Language lang);
 
+    Language lastLoadedLanguage;
+    bool isDialoguesLoaded = false;
+
+    std::map<std::string, std::vector<DialogueLine>> dialogueDB;
+    UIDialogueBox* uiBox = nullptr;
     const std::vector<DialogueLine>* currentConversation = nullptr;
+
     int currentLineIndex = 0;
     bool isActive = false;
+    bool inputLocked = false;
+    float interactionCooldown = 0.0f;
     bool isWaitingForLanding = false;
 
     // Efecto Typewriter

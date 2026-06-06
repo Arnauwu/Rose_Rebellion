@@ -958,7 +958,7 @@ void Player::Dash()
 void Player::Interact()
 {
 	bool interactPressed = false;
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) interactPressed = true;
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) interactPressed = true;
 	if (Engine::GetInstance().input->IsGamepadConnected() && Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_DOWN) interactPressed = true;
 
 	if (canInteract && interactuableBody != nullptr && interactPressed)
@@ -1069,16 +1069,6 @@ void Player::Interact()
 			else
 			{
 				openDoorAndTransition();
-			}
-		}
-
-		else if (interactuableBody->ctype == ColliderType::NPC)
-		{
-			Npc* npc = (Npc*)interactuableBody->listener;
-			if (npc != nullptr)
-			{
-				Engine::GetInstance().dialogueManager->StartDialogue(npc->GetDialogueID());
-				Engine::GetInstance().input->ClearMouseInput();
 			}
 		}
 	}
