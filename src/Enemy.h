@@ -25,6 +25,7 @@ public:
 	void SetPosition(Vector2D pos);
 	Vector2D GetPosition();
 	bool Destroy();
+	void SpawnHealthOrb(int chance, Vector2D positionModification = {0,0});
 
 protected:
 	void PerformPathfinding();

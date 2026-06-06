@@ -137,6 +137,8 @@ bool Dip::Update(float dt)
 
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 			pbody->ctype = ColliderType::UNKNOWN; // Hacerlo fantasma
+
+			SpawnHealthOrb(40);
 		}
 
 		// Desaparecer cuando termine la animación de muerte

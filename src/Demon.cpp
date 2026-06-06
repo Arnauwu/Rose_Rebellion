@@ -121,11 +121,7 @@ bool Demon::Update(float dt)
 			pbody->ctype = ColliderType::UNKNOWN;
 			isKnockedback = false;
 
-			//Create Health Orb //To do: Change to 20%
-			std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
-			healthOrb->position.setX(this->position.getX());
-			healthOrb->position.setY(this->position.getY() - 100);
-			healthOrb->Start();
+			SpawnHealthOrb(20);
 		}
 
 		if (anims.GetAnim("dead")->HasFinishedOnce())

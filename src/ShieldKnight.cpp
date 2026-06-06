@@ -120,6 +120,8 @@ bool ShieldKnight::Update(float dt)
 		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 		isKnockedback = false;
+
+		SpawnHealthOrb(50);
 	}
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())

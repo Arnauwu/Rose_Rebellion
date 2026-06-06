@@ -126,6 +126,8 @@ bool Minairon::Update(float dt)
 		anims.SetCurrent("dead");
 		isKnockedback = false;
 		pbody->ctype = ColliderType::UNKNOWN;
+
+		SpawnHealthOrb(30);
 	}
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())

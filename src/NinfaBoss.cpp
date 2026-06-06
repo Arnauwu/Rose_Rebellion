@@ -219,19 +219,10 @@ bool NinfaMare::Update(float dt)
             // 4. Inicializamos el orbe y lo metemos en el juego
             orb->Start();
             Engine::GetInstance().entityManager->AddEntity(orb);
+
+            //Health Orbs
             for (int i = 0; i < 3; ++i) {
-                auto hOrb = std::make_shared<HealthOrb>();
-
-                // Calculamos un desplazamiento para separarlos: 
-                // i=0 (-40px), i=1 (0px, centro), i=2 (+40px)
-                float offsetX = (i - 1) * 80.0f;
-
-                // Los ponemos un poquito más arriba que el orbe del dash para que formen un arco
-                float offsetY = 100.0f;
-
-                hOrb->position = Vector2D(dropPos.getX() + offsetX, dropPos.getY() + offsetY);
-                hOrb->Start();
-                Engine::GetInstance().entityManager->AddEntity(hOrb);
+                SpawnHealthOrb(100, { (i - 1) * 80.0f, 100 });
             }
             GameManager::GetInstance().gameState.ninfaBossKilled = true;
             pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame

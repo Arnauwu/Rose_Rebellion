@@ -133,6 +133,8 @@ bool Bat::Update(float dt)
 
             isKnockedback = false;
             pbody->ctype = ColliderType::UNKNOWN;
+
+            SpawnHealthOrb(100);
         }
 
 

@@ -133,6 +133,8 @@ bool SwordKnight::Update(float dt)
 		anims.SetCurrent("dead");
 		isKnockedback = false;
 		pbody->ctype = ColliderType::UNKNOWN;
+
+		SpawnHealthOrb(75);
 	}
 
 	if (anims.GetAnim("dead")->HasFinishedOnce())

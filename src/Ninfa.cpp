@@ -132,6 +132,8 @@ bool Ninfa::Update(float dt)
 
             isKnockedback = false;
             pbody->ctype = ColliderType::UNKNOWN;
+
+            SpawnHealthOrb(15);
         }
 
 

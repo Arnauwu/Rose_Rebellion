@@ -226,10 +226,7 @@ bool KnightBoss::Update(float dt)
 
 		// Crear orbes como recompensa al vencer al boss
 		for (int i = 0; i < 3; i++) {
-			std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
-			healthOrb->position.setX(this->position.getX() + (i * 100));
-			healthOrb->position.setY(this->position.getY());
-			healthOrb->Start();
+			SpawnHealthOrb(100, { i * 100,0 });
 		}
 
 		std::shared_ptr<Keys> bossKey = std::dynamic_pointer_cast<Keys>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY));

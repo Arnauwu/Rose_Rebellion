@@ -10,6 +10,8 @@
 #include "EntityManager.h"
 #include "Map.h"
 
+#include <random>
+
 bool Enemy::Update(float dt)
 {
 	if (!active) { return true; }
@@ -124,3 +126,21 @@ bool Enemy::Destroy()
 	return true;
 }
 
+void Enemy::SpawnHealthOrb(int chance, Vector2D positionModification)
+{
+	//Randomness (From a StackOverflow forum)
+	std::random_device rd;
+	std::mt19937 gen(rd()); // Mersenne Twister engine
+	std::uniform_int_distribution<> dist(1, 100);
+	int randomNumber = dist(gen);
+
+	if (chance >= randomNumber)
+	{
+		//Create Health Orb 
+		std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
+		healthOrb->position.setX(this->position.getX() + positionModification.getX());
+		healthOrb->position.setY(this->position.getY() + positionModification.getY());
+		healthOrb->Start();
+	}
+	return;
+}
