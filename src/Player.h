@@ -88,7 +88,7 @@ public:
 	CameraMode GetCameraMode() const { return currentCameraMode; }
 
 	//Key
-	void AddKey(KeyType type) { heldKeys.insert(type); }
+	void AddKey(KeyType type);
 	bool HasKey(KeyType type) const { return heldKeys.find(type) != heldKeys.end(); }
 
 private:

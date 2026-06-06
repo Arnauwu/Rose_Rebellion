@@ -199,8 +199,8 @@ void GameScene::LoadItemsLore() {
 	for (auto& element : j.items()) {
 		std::string key = element.key();
 		ItemLore lore;
-		lore.name = element.value()["name"].get<std::string>();
-		lore.description = element.value()["description"].get<std::string>();
+		lore.nameKey = element.value()["name_key"].get<std::string>();
+		lore.descKey = element.value()["desc_key"].get<std::string>();
 
 		itemsLoreDB[key] = lore;
 	}
@@ -218,12 +218,12 @@ void GameScene::LoadSkillsinfo() {
 
 	for (auto& element : j.items()) {
 		std::string key = element.key();
-		Skillinfo text;
-		text.name = element.value()["name"].get<std::string>();
-		text.description = element.value()["description"].get<std::string>();
-		text.cost = element.value()["cost"].get<int>();
+		Skillinfo info;
+		info.nameKey = element.value()["name_key"].get<std::string>();
+		info.descKey = element.value()["desc_key"].get<std::string>();
+		info.cost = element.value()["cost"].get<int>();
 
-		skillsLoreDB[key] = text;
+		skillsLoreDB[key] = info;
 	}
 	LOG("Lore de habilidades cargado correctamente.");
 }
@@ -271,6 +271,7 @@ bool GameScene::Start() {
 
 	//Load Items
 	LoadTextureIfNull(texItemKeyCastle, "Assets/Textures/UI/Items/castleKeyUI.png");
+	LoadTextureIfNull(texItemKeyDoorCastle, "Assets/Textures/UI/Items/castleKeyDoorUI.png");
 	LoadTextureIfNull(texItemKeyForest, "Assets/Textures/UI/Items/forestKeyUI.png");
 	LoadTextureIfNull(texItemKeyMountain, "Assets/Textures/UI/Items/mountainKeyUI.png");
 	LoadTextureIfNull(texItemKeyCatacumbs, "Assets/Textures/UI/Items/catacumbsKeyUI.png");
@@ -408,9 +409,17 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
-	if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
-	if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
-	if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+	if (!inSkillPopUp) {
+		if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
+		if (input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) ToggleGameMenu(GameMenuTab::MAP);
+		if (input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+
+		if (input->IsGamepadConnected() &&
+			input->GetGamepadButton(GAMEPAD_BACK) == KEY_DOWN)
+		{
+			ToggleGameMenu(GameMenuTab::INVENTORY);
+		}
+	}
 
 	// AÑADIR ESTO - SELECT button para Inventory
 	if (input->IsGamepadConnected() &&
@@ -498,7 +507,11 @@ bool GameScene::Update(float dt) {
 	}
 
 	if (pauseInput) {
-		if (currentMenuTab != GameMenuTab::NONE) {
+		if (inSkillPopUp) {
+			SetUIGroupVisible(skillPopupUI, false);
+			inSkillPopUp = false;
+		}
+		else if (currentMenuTab != GameMenuTab::NONE) {
 			ToggleGameMenu(GameMenuTab::NONE);
 		}
 		else {
@@ -716,6 +729,7 @@ bool GameScene::CleanUp() {
 
 	//Load Items
 	UnloadTexture(texItemKeyCastle);
+	UnloadTexture(texItemKeyDoorCastle);
 	UnloadTexture(texItemKeyForest);
 	UnloadTexture(texItemKeyMountain);
 	UnloadTexture(texItemKeyCatacumbs);
@@ -779,43 +793,93 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 
 	Engine::GetInstance().audio->PlayFx(uiClick);
 	Player* p = Engine::GetInstance().entityManager->GetPlayer();
+
 	auto updateLorePanel = [&](const std::string& itemKey, bool hasItem)
 		{
+			auto langMgr = Engine::GetInstance().languageManager;
+
 			if (hasItem && itemsLoreDB.find(itemKey) != itemsLoreDB.end())
 			{
 				const auto& lore = itemsLoreDB[itemKey];
-				// Formatamos Título + Descripción
-				descPanel->text = lore.name + "\n\n" + lore.description;
+
+				std::string translatedName = langMgr->GetString(lore.nameKey);
+				std::string translatedDesc = langMgr->GetString(lore.descKey);
+
+				descPanel->text = translatedName + "\n\n" + translatedDesc;
 			}
 			else
 			{
-				descPanel->text = "???\n\nObjeto desconocido, dicen que esta perdido por el reino.";
+				descPanel->text = "???\n\n" + langMgr->GetString("INV_UNKNOWN_ITEM");
 			}
 		};
 
 	auto updateSkillPopup = [&](const std::string& skillKey, SkillTree skillEnum)
-		{
-			selectedSkillToBuy = skillEnum;
-			selectedSkillKey = skillKey;
+	{
+		selectedSkillToBuy = skillEnum;
+		selectedSkillKey = skillKey;
 
-			if (skillsLoreDB.find(skillKey) != skillsLoreDB.end())
-			{
-				const auto& lore = skillsLoreDB[skillKey];
-				skillPopupText->text = lore.name + "\n\n" + lore.description + "\nCosto: " + std::to_string(lore.cost) + " Orbe(s)";
+		auto langMgr = Engine::GetInstance().languageManager;
+		auto& state = GameManager::GetInstance().gameState;
+
+		// 1. Comprobar si la habilidad ya está comprada
+		bool isUnlocked = false;
+		switch (skillEnum) {
+			case SkillTree::HEALTH_UP:   isUnlocked = state.stHealthUp; break;
+			case SkillTree::IFRAMES_UP:  isUnlocked = state.stIframesUp; break;
+			case SkillTree::SPEED_UP:    isUnlocked = state.stSpeedUp; break;
+			case SkillTree::FAST_DASH:   isUnlocked = state.stFastDash; break;
+			case SkillTree::UP_ATTACK:   isUnlocked = state.stUpAttack; break;
+			case SkillTree::DOWN_ATTACK: isUnlocked = state.stDownAttack; break;
+		}
+
+		// 2. Cargar textos
+		if (skillsLoreDB.find(skillKey) != skillsLoreDB.end())
+		{
+			const auto& info = skillsLoreDB[skillKey];
+			std::string translatedName = langMgr->GetString(info.nameKey);
+			std::string translatedDesc = langMgr->GetString(info.descKey);
+
+			if (!isUnlocked) {
+				std::string costText = langMgr->GetString("TXT_COST");
+				std::string orbsText = langMgr->GetString("TXT_ORBS");
+				skillPopupText->text = translatedName + "\n\n" + translatedDesc + "\n\n" + costText + std::to_string(info.cost) + orbsText;
+			} else {
+				// Si ya la tienes, no mostramos el coste
+				skillPopupText->text = translatedName + "\n\n" + translatedDesc; 
 			}
-			else
-			{
-				skillPopupText->text = "???\n\nHabilidad desconocida.";
+		}
+		else
+		{
+			skillPopupText->text = "???\n\n" + langMgr->GetString("SKILL_UNKNOWN");
+		}
+
+		// 3. Activar el popup visualmente
+		SetUIGroupVisible(skillPopupUI, true);
+		inSkillPopUp = true;
+
+		// 4. Apagar/Encender los botones adecuados
+		for (auto& ui : skillPopupUI) {
+			if (ui->id == (int)GameUI_ID::BTN_SKILL_BUY || ui->id == (int)GameUI_ID::BTN_SKILL_BACK) {
+				ui->visible = !isUnlocked;
+				ui->state = !isUnlocked ? UIElementState::NORMAL : UIElementState::DISABLED;
 			}
-			SetUIGroupVisible(skillPopupUI, true);
-			inSkillPopUp = true;
-		};
+			if (ui->id == (int)GameUI_ID::BTN_SKILL_OK) {
+				ui->visible = isUnlocked;
+				ui->state = isUnlocked ? UIElementState::NORMAL : UIElementState::DISABLED;
+			}
+		}
+	};
 
 	switch (uiElement->id) {
-	case (int)GameUI_ID::BTN_TAB_INVENTORY: ToggleGameMenu(GameMenuTab::INVENTORY); break;
-	case (int)GameUI_ID::BTN_TAB_MAP: ToggleGameMenu(GameMenuTab::MAP); break;
-	case (int)GameUI_ID::BTN_TAB_SKILLS: ToggleGameMenu(GameMenuTab::SKILL_TREE); break;
-
+	case (int)GameUI_ID::BTN_TAB_INVENTORY:
+		if (!inSkillPopUp) ToggleGameMenu(GameMenuTab::INVENTORY);
+		break;
+	case (int)GameUI_ID::BTN_TAB_MAP:
+		if (!inSkillPopUp) ToggleGameMenu(GameMenuTab::MAP);
+		break;
+	case (int)GameUI_ID::BTN_TAB_SKILLS:
+		if (!inSkillPopUp) ToggleGameMenu(GameMenuTab::SKILL_TREE);
+		break;
 	case (int)GameUI_ID::BTN_PAUSE_RESUME:
 		ToggleGameMenu(GameMenuTab::NONE);
 		break;
@@ -837,14 +901,37 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::INV_ITEM_WEAPON:
 		updateLorePanel("WEAPON", p && p->HasItem(ItemID::WEAPON));
 		break;
-
 	case (int)GameUI_ID::INV_ITEM_GLIDE:
 		updateLorePanel("GLIDE", p && p->HasItem(ItemID::GLIDE));
 		break;
-
-	case (int)GameUI_ID::INV_ITEM_ORB:
-		updateLorePanel("STRENGTH_ORB", p && p->HasItem(ItemID::STRENGTH_ORB));
+	case (int)GameUI_ID::INV_ITEM_DASH:
+		updateLorePanel("DASH", p && p->HasItem(ItemID::DASH_OBJ));
 		break;
+	case (int)GameUI_ID::INV_ITEM_WALL_JUMP:
+		updateLorePanel("WALLJUMP", p && p->HasItem(ItemID::WALLJUMP_OBJ));
+		break;
+	case (int)GameUI_ID::INV_ITEM_DOUBLE_JUMP:
+		updateLorePanel("DOUBLE_JUMP", p && p->HasItem(ItemID::DOUBLEJUMP_OBJ));
+		break;
+
+		//LLaves
+	case (int)GameUI_ID::INV_ITEM_KEY:
+		updateLorePanel("KEY_CASTLE", p && p->HasKey(KeyType::CASTLE));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYCASTLE:
+		updateLorePanel("KEY_CASTLEDOOR", p && p->HasKey(KeyType::BOSS));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYFOREST:
+		updateLorePanel("KEY_FOREST", p && p->HasKey(KeyType::FOREST));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYMOUNTAIN:
+		updateLorePanel("KEY_MOUNTAIN", p && p->HasKey(KeyType::MOUNTAIN));
+		break;
+	case (int)GameUI_ID::INV_ITEM_KEYCATACUMBS:
+		updateLorePanel("KEY_CATACOMBS", p && p->HasKey(KeyType::CATACUMBA));
+		break;
+
+		// Upgrades
 	case (int)GameUI_ID::SKILL_BOOK_1_1:
 		if (!inSkillPopUp)
 		{
@@ -898,8 +985,14 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 			int cost = skillsLoreDB[selectedSkillKey].cost;
 
 			p->UnlockSkill(selectedSkillToBuy, cost);
+			SetUIGroupVisible(skillPopupUI, false);
+			inSkillPopUp = false;
 			UpdateSkillVisuals();
 		}
+		break;
+	case (int)GameUI_ID::BTN_SKILL_OK:
+		SetUIGroupVisible(skillPopupUI, false);
+		inSkillPopUp = false;
 		break;
 	}
 	return true;
@@ -971,7 +1064,7 @@ void GameScene::CreateInventoryUI() {
 
 		// ITEMS
 		{ GameUI_ID::INV_ITEM_KEY, "", centerXKey - offsetXKey, centerY + offsetYKey,						   baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle},
-		{ GameUI_ID::INV_ITEM_KEYCASTLE, "", centerXKey - offsetXKey + float(0.08),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCastle },
+		{ GameUI_ID::INV_ITEM_KEYCASTLE, "", centerXKey - offsetXKey + float(0.08),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyDoorCastle },
 		{ GameUI_ID::INV_ITEM_KEYFOREST, "", centerXKey - offsetXKey + float(0.16),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyForest },
 		{ GameUI_ID::INV_ITEM_KEYMOUNTAIN, "", centerXKey - offsetXKey + float(0.24),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyMountain },
 		{ GameUI_ID::INV_ITEM_KEYCATACUMBS, "", centerXKey - offsetXKey + float(0.32),	centerY + offsetYKey, baseSize - float(0.01), squareH - float(0.02), texItemKeyCatacumbs },
@@ -995,7 +1088,7 @@ void GameScene::CreateInventoryUI() {
 	descPanel = uiManager->CreateUIElement(
 		UIElementType::ITEM_INFO_BOX, // Nuevo tipo dedicado
 		(int)GameUI_ID::INV_DESC_TEXT,
-		"Selecciona un objeto para ver su historia...",
+		Engine::GetInstance().languageManager->GetString("INV_DEFAULT_SELECT").c_str(),
 		0.72f, 0.55f, 0.20f, 0.60f,
 		sceneObserver
 	);
@@ -1062,20 +1155,25 @@ void GameScene::CreateSkillPopupUI() {
 		UIElementType::ITEM_INFO_BOX,
 		(int)GameUI_ID::PANEL_SKILL_POPUP,
 		"",
-		0.5f, 0.4f, 0.3f, 0.4f, sceneObserver);
+		0.5f, 0.38f, 0.4f, 0.45f, sceneObserver);
 
 	skillPopupText->SetBgTexture(textBgUI);
 	skillPopupUI.push_back(skillPopupText);
 
+
 	// Botón Comprar
-	auto btnBuy = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BUY, "Desbloquejar", 0.4f, 0.65f, 0.1f, 0.05f, sceneObserver);
+	auto btnBuy = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BUY, Engine::GetInstance().languageManager->GetString("BTN_SKILL_BUY").c_str(), 0.40f, 0.68f, 0.12f, 0.06f, sceneObserver);
 	btnBuy->SetBgTexture(buttonUI);
 	skillPopupUI.push_back(btnBuy);
 
-	// Botón Atrás
-	auto btnBack = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BACK, "Cancelar", 0.6f, 0.65f, 0.1f, 0.05f, sceneObserver);
+	auto btnBack = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_BACK, Engine::GetInstance().languageManager->GetString("BTN_SKILL_BACK").c_str(), 0.60f, 0.68f, 0.12f, 0.06f, sceneObserver);
 	btnBack->SetBgTexture(buttonUI);
 	skillPopupUI.push_back(btnBack);
+
+	// 3. NUEVO BOTÓN ACEPTAR (Centrado en la X: 0.5f)
+	auto btnOk = uiManager->CreateUIElement(UIElementType::BUTTON, (int)GameUI_ID::BTN_SKILL_OK, Engine::GetInstance().languageManager->GetString("BTN_SKILL_OK").c_str(), 0.5f, 0.68f, 0.12f, 0.06f, sceneObserver);
+	btnOk->SetBgTexture(buttonUI);
+	skillPopupUI.push_back(btnOk);
 
 	SetUIGroupVisible(skillPopupUI, false);
 }
@@ -1166,6 +1264,12 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 
 	if (currentMenuTab == tab || tab == GameMenuTab::NONE) {
 		if (currentMenuTab != GameMenuTab::NONE && currentMenuTab != GameMenuTab::PAUSE_MENU && currentMenuTab != GameMenuTab::PAUSE_OPTIONS) {
+			
+			if (inSkillPopUp) {
+				SetUIGroupVisible(skillPopupUI, false);
+				inSkillPopUp = false;
+			}
+
 			isMenuClosing = true;
 
 			// Reproducir la animación en reversa al cerrar submenús animados
@@ -1196,6 +1300,10 @@ void GameScene::ToggleGameMenu(GameMenuTab tab) {
 					menuAnimSet.GetAnim("open")->Reset();
 				}
 			}
+
+			if (tab == GameMenuTab::INVENTORY && descPanel != nullptr) {
+				descPanel->text = Engine::GetInstance().languageManager->GetString("INV_DEFAULT_SELECT");
+			}
 		}
 
 		Engine::GetInstance().sceneManager->SetGamePaused(true);
@@ -1219,17 +1327,38 @@ void GameScene::UpdateInventoryVisuals() {
 
 		// We check which item this button is and ask the Player if they have it
 		switch (btn->id) {
+			//Habilidades
 		case (int)GameUI_ID::INV_ITEM_WEAPON:
 			hasItem = p->HasItem(ItemID::WEAPON);
 			break;
 		case (int)GameUI_ID::INV_ITEM_GLIDE:
 			hasItem = p->HasItem(ItemID::GLIDE);
 			break;
-		case (int)GameUI_ID::INV_ITEM_KEY:
-			hasItem = p->HasItem(ItemID::KEY);
+		case (int)GameUI_ID::INV_ITEM_DASH:
+			hasItem = p->HasItem(ItemID::DASH_OBJ);
 			break;
-		case (int)GameUI_ID::INV_ITEM_ORB:
-			hasItem = p->HasItem(ItemID::STRENGTH_ORB);
+		case (int)GameUI_ID::INV_ITEM_DOUBLE_JUMP:
+			hasItem = p->HasItem(ItemID::DOUBLEJUMP_OBJ);
+			break;
+		case (int)GameUI_ID::INV_ITEM_WALL_JUMP:
+			hasItem = p->HasItem(ItemID::WALLJUMP_OBJ);
+			break;
+
+			// LLAVES
+		case (int)GameUI_ID::INV_ITEM_KEY:
+			hasItem = p->HasKey(KeyType::CASTLE);
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYCASTLE:
+			hasItem = p->HasKey(KeyType::BOSS); 
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYFOREST:
+			hasItem = p->HasKey(KeyType::FOREST);
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYMOUNTAIN:
+			hasItem = p->HasKey(KeyType::MOUNTAIN);
+			break;
+		case (int)GameUI_ID::INV_ITEM_KEYCATACUMBS:
+			hasItem = p->HasKey(KeyType::CATACUMBA);
 			break;
 
 		default:
@@ -1239,13 +1368,12 @@ void GameScene::UpdateInventoryVisuals() {
 			btn->color = { 255, 255, 255, 255 }; // White tint --> Normal texture
 		}
 		else {
-			btn->color = { 110, 110, 110, 255 };    // Gray tint
+			btn->color = { 100, 100, 100, 255 };    // Gray tint
 		}
 	}
 }
 
 void GameScene::RefreshMenuUI() {
-	if (descPanel != nullptr) descPanel->text = "Select an item...";
 
 	bool isAnimFinished = menuAnimSet.GetAnim("open") ? menuAnimSet.GetAnim("open")->HasFinishedOnce() : true;
 

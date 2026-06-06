@@ -1,32 +1,32 @@
 {
   "HEALTH_UP": {
-    "name": "Aumento de Vida",
-    "description": "INFO",
+    "name_key": "SKILL_HEALTH_NAME",
+    "desc_key": "SKILL_HEALTH_DESC",
     "cost": 1
   },
   "IFRAMES_UP": {
-    "name": "Aumento de Iframes",
-    "description": "INFO.",
-    "cost": 1
+    "name_key": "SKILL_IFRAMES_NAME",
+    "desc_key": "SKILL_IFRAMES_DESC",
+    "cost": 2
   },
   "SPEED_UP": {
-    "name": "Velocidad Base",
-    "description": "INFO",
+    "name_key": "SKILL_SPEED_NAME",
+    "desc_key": "SKILL_SPEED_DESC",
     "cost": 1
   },
   "FAST_DASH": {
-    "name": "Dash Dinámico",
-    "description": "INFO",
+    "name_key": "SKILL_FASTDASH_NAME",
+    "desc_key": "SKILL_FASTDASH_DESC",
     "cost": 2
   },
   "UP_ATTACK": {
-    "name": "Corte Ascendente",
-    "description": "INFO",
+    "name_key": "SKILL_UPATTACK_NAME",
+    "desc_key": "SKILL_UPATTACK_DESC",
     "cost": 1
   },
   "DOWN_ATTACK": {
-    "name": "Corte Descendente",
-    "description": "INFO",
-    "cost": 1
+    "name_key": "SKILL_DOWNATTACK_NAME",
+    "desc_key": "SKILL_DOWNATTACK_DESC",
+    "cost": 2
   }
 }

@@ -68,6 +68,7 @@ enum class GameUI_ID {
 
 	BTN_SKILL_BUY = 250,
 	BTN_SKILL_BACK,
+	BTN_SKILL_OK,
 	PANEL_SKILL_POPUP
 };
 
@@ -76,13 +77,13 @@ struct ButtonDef { int id; const char* keyId; };
 struct SDL_Texture;
 
 struct ItemLore {
-	std::string name;
-	std::string description;
+	std::string nameKey;
+	std::string descKey;
 };
 
 struct Skillinfo {
-	std::string name;
-	std::string description;
+	std::string nameKey;
+	std::string descKey;
 	int cost;
 };
 
@@ -135,6 +136,7 @@ public:
 
 	//Items Textures
 	SDL_Texture* texItemKeyCastle = nullptr;
+	SDL_Texture* texItemKeyDoorCastle = nullptr;
 	SDL_Texture* texItemKeyForest = nullptr;
 	SDL_Texture* texItemKeyMountain = nullptr;
 	SDL_Texture* texItemKeyCatacumbs = nullptr;

@@ -15,42 +15,84 @@ DialogueManager::DialogueManager() : Module() { name = "dialogue_manager"; }
 DialogueManager::~DialogueManager() {}
 
 bool DialogueManager::Awake() {
-	std::ifstream file("Assets/Dialogues/dialogues.json");
+
+	LOG("DialogueManager: Awake completado.");
+	return true;
+}
+
+bool DialogueManager::Start() {
+	Language currentLang = Engine::GetInstance().languageManager->GetCurrentLanguage();
+	LoadDialogues(currentLang);
+
+	Engine::GetInstance().languageManager->RegisterLanguageChangeCallback(
+		[this](Language lang) { this->LoadDialogues(lang); }
+	);
+	return true;
+}
+
+void DialogueManager::LoadDialogues(Language lang) {
+	dialogueDB.clear();
+
+	std::string filePath;
+	if (lang == Language::CATALAN) {
+		filePath = "Assets/Dialogues/dialogues_cat.json";
+	}
+	else {
+		filePath = "Assets/Dialogues/dialogues_en.json";
+	}
+
+	std::ifstream file(filePath);
 	if (!file.is_open()) {
-		LOG("Error: No se pudo abrir dialogues.json");
-		return true;
+		LOG("Error: No se pudo abrir %s", filePath.c_str());
+		return;
 	}
 
 	json j;
 	file >> j;
 
 	for (auto& element : j.items()) {
-
 		std::string dialogueID = element.key();
 		auto linesArray = element.value();
-
 		std::vector<DialogueLine> lines;
-
 		for (auto& lineObj : linesArray) {
 			DialogueLine dl;
-			dl.speaker = lineObj["speaker"].get<std::string>();
-			dl.text = lineObj["text"].get<std::string>();
+
+			// CORRECCIÓN SINTAXIS: Usamos asignación directa para no confundir a Visual Studio
+			dl.speaker = lineObj["speaker"];
+			dl.text = lineObj["text"];
+
 			lines.push_back(dl);
 		}
-
 		dialogueDB[dialogueID] = lines;
 	}
 
-	LOG("DialogueManager: Dialogos cargados correctamente.");
-	return true;
+	LOG("DialogueManager: Dialogos cargados correctamente desde %s", filePath.c_str());
+
+	// NUEVO: Guardamos el estado para el Lazy Loading
+	lastLoadedLanguage = lang;
+	isDialoguesLoaded = true;
 }
 
 void DialogueManager::StartDialogue(const std::string& dialogueID) {
+	// 1. MAGIA DEL LAZY LOADING: Comprobar el idioma actual
+	Language currentLang = Engine::GetInstance().languageManager->GetCurrentLanguage();
+
+	// Si no hemos cargado nada aún, o si el idioma del juego ha cambiado desde la última vez...
+	if (!isDialoguesLoaded || currentLang != lastLoadedLanguage) {
+		LoadDialogues(currentLang);
+	}
+
+	// 2. Evitar reiniciar una conversación ya activa
+	if (isActive) { return; }
+
 	LOG("Intentando cargar el dialogo con ID: '[%s]'", dialogueID.c_str());
 	if (dialogueDB.find(dialogueID) != dialogueDB.end()) {
+
+		// Ya no necesitamos guardar activeDialogueID
 		currentConversation = &dialogueDB[dialogueID];
 		currentLineIndex = 0;
 		isActive = true;
+		inputLocked = true;
 
 		charIndex = 0;
 		typeTimer = 0.0f;
@@ -76,9 +118,13 @@ void DialogueManager::StartDialogue(const std::string& dialogueID) {
 		}
 	}
 }
-
 bool DialogueManager::Update(float dt) {
-	if (!isActive) return true;
+	if (!isActive) {
+		if (interactionCooldown > 0.0f) {
+			interactionCooldown -= dt / 1000.0f;
+		}
+		return true;
+	}
 
 	if (isWaitingForLanding) {
 		Player* player = Engine::GetInstance().entityManager->GetPlayer();
@@ -97,9 +143,17 @@ bool DialogueManager::Update(float dt) {
 			return true;
 		}
 	}
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
-		NextLine();
-		return true;
+	if (inputLocked) {
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_UP ||
+			Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_IDLE) {
+			inputLocked = false;
+		}
+	}
+	else {
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
+			NextLine();
+			return true;
+		}
 	}
 
 	const std::string& fullText = (*currentConversation)[currentLineIndex].text;
@@ -148,6 +202,7 @@ void DialogueManager::NextLine() {
 		}
 		else {
 			isActive = false;
+			interactionCooldown = 1.0f;
 			if (uiBox) uiBox->visible = false;
 			Engine::GetInstance().sceneManager->isGamePaused = false;
 		}
