@@ -167,6 +167,9 @@
     <Filter Include="Source Files\Game\Entity\Enemies\Dip">
       <UniqueIdentifier>{f7ecc5db-b91f-43c4-989e-88edd0e9103e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Entity\Dialogos">
+      <UniqueIdentifier>{bdd260d3-693a-49ef-84ce-925e9ed29d4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -415,6 +418,9 @@
     <ClCompile Include="src\GwellProjectile.cpp">
       <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
     </ClCompile>
+    <ClCompile Include="src\DialogueTrigger.cpp">
+      <Filter>Source Files\Game\Entity\Dialogos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h">
@@ -642,6 +648,9 @@
     <ClInclude Include="src\WaveProjectile.h" />
     <ClInclude Include="src\GwellProjectile.h">
       <Filter>Source Files\Game\Entity\Bosses\GwellBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueTrigger.h">
+      <Filter>Source Files\Game\Entity\Dialogos</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

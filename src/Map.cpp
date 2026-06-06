@@ -49,6 +49,7 @@
 #include "DoubleJumpObj.h"
 #include "WallJumpObj.h"
 #include "BreakableRock.h"
+#include "DialogueTrigger.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -1192,6 +1193,22 @@ void Map::SpawnEntities()
 					if (rock != nullptr) {
 						rock->position = Vector2D(x + w / 2.0f, y + h / 2.0f);
 						rock->SetSize((int)w, (int)h);
+					}
+				}
+				else if (entityType == std::string("DialogueTrigger")) {
+					std::shared_ptr<DialogueTrigger> trigger = std::dynamic_pointer_cast<DialogueTrigger>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DIALOGUE_TRIGGER));
+					if (trigger != nullptr)
+					{
+						trigger->position = Vector2D(x + w / 2.0f, y + h / 2.0f);
+						trigger->width = (int)w;
+						trigger->height = (int)h;
+
+						Properties triggerProps;
+						LoadProperties(objectNode, triggerProps);
+
+						if (triggerProps.GetProperty("DialogueID") != nullptr) {
+							trigger->dialogueID = triggerProps.GetProperty("DialogueID")->value2;
+						}
 					}
 				}
 				else if (entityType == std::string("Npc"))

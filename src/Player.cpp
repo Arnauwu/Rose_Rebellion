@@ -211,7 +211,7 @@ bool Player::Update(float dt)
 
 
 
-	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
+	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsBlockingDialogueActive();
 
 	if (isDialogueActive) 
 	{

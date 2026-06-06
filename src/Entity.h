@@ -8,6 +8,7 @@ enum class EntityType
 {
 	PLAYER,
 	NPC,
+	DIALOGUE_TRIGGER,
 
 	PROJECTILE,
 	ITEM,
