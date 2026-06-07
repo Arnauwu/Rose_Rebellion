@@ -1000,7 +1000,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="36"/>
+   <tile gid="44"/>
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="39"/>
@@ -1677,7 +1677,7 @@
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="37"/>
-   <tile gid="31"/>
+   <tile gid="2147483655"/>
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
@@ -2242,7 +2242,7 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="29"/>
+   <tile gid="2147483654"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2257,7 +2257,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="26"/>
+   <tile gid="2147483662"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2345,7 +2345,7 @@
    <tile gid="37"/>
    <tile gid="32"/>
    <tile gid="39"/>
-   <tile gid="40"/>
+   <tile gid="2147483649"/>
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
@@ -2356,11 +2356,11 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="1"/>
+   <tile gid="9"/>
    <tile gid="67"/>
    <tile gid="68"/>
    <tile gid="69"/>
-   <tile gid="36"/>
+   <tile gid="2147483657"/>
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
@@ -2525,7 +2525,7 @@
    <tile gid="32"/>
    <tile gid="39"/>
    <tile gid="31"/>
-   <tile gid="37"/>
+   <tile gid="2147483655"/>
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
@@ -2545,7 +2545,7 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="37"/>
+   <tile gid="7"/>
    <tile gid="31"/>
    <tile gid="40"/>
    <tile gid="32"/>
@@ -2663,7 +2663,7 @@
   <object id="850" gid="151" x="5732" y="3120" width="816" height="816"/>
   <object id="851" gid="143" x="2824" y="1616" width="3222.4" height="1074.13"/>
   <object id="853" gid="144" x="-768" y="1832" width="4008.29" height="1391.41"/>
-  <object id="854" gid="1073741967" x="-856" y="440" width="7102.4" height="2367.46"/>
+  <object id="854" gid="1073741967" x="-844" y="472" width="7102.4" height="2367.46"/>
   <object id="864" gid="1073741967" x="2712.8" y="752.27" width="7102.4" height="2367.46"/>
   <object id="867" gid="156" x="-640" y="2176" width="1396" height="1396"/>
   <object id="869" gid="156" x="2195.33" y="2242" width="1356" height="1396"/>
