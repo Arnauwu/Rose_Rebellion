@@ -2,31 +2,31 @@
   "HEALTH_UP": {
     "name_key": "SKILL_HEALTH_NAME",
     "desc_key": "SKILL_HEALTH_DESC",
-    "cost": 1
+    "cost": 2
   },
   "IFRAMES_UP": {
     "name_key": "SKILL_IFRAMES_NAME",
     "desc_key": "SKILL_IFRAMES_DESC",
-    "cost": 2
+    "cost": 5
   },
   "SPEED_UP": {
     "name_key": "SKILL_SPEED_NAME",
     "desc_key": "SKILL_SPEED_DESC",
-    "cost": 1
+    "cost": 4
   },
   "FAST_DASH": {
     "name_key": "SKILL_FASTDASH_NAME",
     "desc_key": "SKILL_FASTDASH_DESC",
-    "cost": 2
+    "cost": 5
   },
   "UP_ATTACK": {
     "name_key": "SKILL_UPATTACK_NAME",
     "desc_key": "SKILL_UPATTACK_DESC",
-    "cost": 1
+    "cost": 3
   },
   "DOWN_ATTACK": {
     "name_key": "SKILL_DOWNATTACK_NAME",
     "desc_key": "SKILL_DOWNATTACK_DESC",
-    "cost": 2
+    "cost": 3
   }
 }
