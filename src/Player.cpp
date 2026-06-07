@@ -698,13 +698,13 @@ void Player::Attack(float dt)
 			if (comboStep == 0)
 			{
 				damage = 10 + dmgbuff;
-				currentAttackWidth = 120;
-				currentAttackHeight = 90;
+				currentAttackWidth = 140;
+				currentAttackHeight = 100;
 			}
 			else
 			{
 				damage = 20 + dmgbuff;
-				currentAttackWidth = 150;
+				currentAttackWidth = 170;
 				currentAttackHeight = 110;
 			}
 
@@ -1195,29 +1195,29 @@ void Player::Draw(float dt)
 		}
 	}
 
-	if (isAttacking && attackCollider != nullptr)
-	{
-		int attackX, attackY;
-		attackCollider->GetPosition(attackX, attackY);
+	//if (isAttacking && attackCollider != nullptr)
+	//{
+	//	int attackX, attackY;
+	//	attackCollider->GetPosition(attackX, attackY);
 
-		SDL_Rect attackRect = {
-			attackX - (currentAttackWidth / 2),
-			attackY - (currentAttackHeight / 2),
-			currentAttackWidth,
-			currentAttackHeight
-		};
+	//	SDL_Rect attackRect = {
+	//		attackX - (currentAttackWidth / 2),
+	//		attackY - (currentAttackHeight / 2),
+	//		currentAttackWidth,
+	//		currentAttackHeight
+	//	};
 
-		// Draw diferent color combo
-		if (currentAttackWidth == 40) {
-			// fisrt attack red
-			Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
-		}
-		else {
-			// second attack blue
-			Engine::GetInstance().render->DrawRectangle(attackRect, 0, 150, 255, 150);
-		}
+	//	// Draw diferent color combo
+	//	if (currentAttackWidth == 40) {
+	//		// fisrt attack red
+	//		Engine::GetInstance().render->DrawRectangle(attackRect, 255, 0, 0, 150);
+	//	}
+	//	else {
+	//		// second attack blue
+	//		Engine::GetInstance().render->DrawRectangle(attackRect, 0, 150, 255, 150);
+	//	}
 
-	}
+	//}
 }
 
 void Player::CameraFollows()

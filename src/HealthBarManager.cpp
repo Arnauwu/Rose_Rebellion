@@ -57,8 +57,8 @@ bool HealthBarManager::PostUpdate() {
     SDL_Texture* activeExtra = nullptr;
     int activeWidth = 1448;
     int activeHeight = 69;
-    int activeMargenIzq = 35;
-    int activeMargenDer = 35;
+    int activeMargenIzq = 123;
+    int activeMargenDer = 123;
     int extraWidth = 0;
     int extraHeight = 0;
     int extraOffsetX = 0;
@@ -73,8 +73,8 @@ bool HealthBarManager::PostUpdate() {
         // TODO: Pon aquí las medidas reales de la barra del Dragón
         activeWidth = 1519;
         activeHeight = 98;
-        activeMargenIzq = 20;
-        activeMargenDer = 20;
+        activeMargenIzq = 130;
+        activeMargenDer = 130;
         extraWidth = 1519;
         extraHeight = 98;
         extraOffsetX = 0;
@@ -86,8 +86,8 @@ bool HealthBarManager::PostUpdate() {
         // TODO: Pon aquí las medidas reales de la barra de la Ninfa
         activeWidth = 1448;
         activeHeight = 98;
-        activeMargenIzq = 30;
-        activeMargenDer = 30;
+        activeMargenIzq = 123;
+        activeMargenDer = 123;
     }
 
     // --- 1. POSICIÓN: Arriba y centrado ---
