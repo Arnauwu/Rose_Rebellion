@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="37" nextobjectid="1115">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="37" nextobjectid="1117">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -1843,7 +1843,7 @@
   <object id="863" gid="152" x="4111.15" y="1428.61" width="1359.64" height="572.727"/>
   <object id="865" gid="150" x="4120.12" y="864.727" width="1523.39" height="532.485"/>
   <object id="866" gid="2147483795" x="4962.24" y="807.693" width="645.221" height="645.221"/>
-  <object id="868" gid="138" x="-444" y="912" width="1572" height="524"/>
+  <object id="868" gid="138" x="-1280" y="1145.33" width="2436" height="812"/>
   <object id="869" gid="1073741962" x="-784" y="404" width="1920" height="640"/>
   <object id="877" gid="1073741970" x="7755.64" y="1204.54" width="439.16" height="439.16"/>
   <object id="878" gid="147" x="6657.27" y="781.032" width="645.221" height="645.221"/>
@@ -1938,6 +1938,8 @@
   <object id="1095" gid="144" x="9519.27" y="540.697" width="435.515" height="471.879"/>
   <object id="1096" gid="145" x="9711" y="541.333" width="384" height="384"/>
   <object id="1097" gid="1073741975" x="9559" y="866.333" width="465" height="336"/>
+  <object id="1115" gid="1073741970" x="385.333" y="1114.67" width="636" height="636"/>
+  <object id="1116" gid="1073741962" x="-1056.97" y="296.97" width="1920" height="640"/>
  </objectgroup>
  <objectgroup id="28" name="Fondo5-F    ">
   <properties>
@@ -5392,7 +5394,7 @@
    <tile gid="129"/>
   </data>
  </layer>
- <objectgroup id="11" name="EntitiesSpawnPoints">
+ <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="526" name="Ninfa" type="Ninfa" x="3584" y="1536">
    <point/>
   </object>
@@ -5412,7 +5414,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns">
+ <objectgroup id="15" name="PlayerSpawns" visible="0">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>

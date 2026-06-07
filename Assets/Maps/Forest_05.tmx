@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="37" nextobjectid="750">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="37" nextobjectid="769">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -47,7 +47,7 @@
  <tileset firstgid="75" name="Tiles_Agua" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Forest/Tiles_Agua.png" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="139" name="SS_cascada_prueva" tilewidth="384" tileheight="384" tilecount="6" columns="3">
+ <tileset firstgid="139" name="SS_cascada_prueva" tilewidth="384" tileheight="384" tilecount="1" columns="3">
   <image source="Forest/SS_cascada_prueva.png" width="1531" height="768"/>
   <tile id="0">
    <animation>
@@ -59,6 +59,9 @@
     <frame tileid="5" duration="150"/>
    </animation>
   </tile>
+ </tileset>
+ <tileset firstgid="140" name="t_Sueltos_Arbustos_Esquinas" tilewidth="384" tileheight="384" tilecount="12" columns="3">
+  <image source="Forest/Fondo_Vigente/Arbustos/t_Sueltos_Arbustos_Esquinas.png" width="1152" height="1536"/>
  </tileset>
  <objectgroup id="18" name="Fondo1">
   <properties>

@@ -4,8 +4,8 @@
 	<Keys castle="true" forest="true" mountain="true" catacombs="true" boss="true" />
 	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="true" />
 	<SkillTree stHealthUp="false" stIframesUp="false" stSpeedUp="false" stFastDash="false" stUpAttack="false" stDownAttack="false" />
-	<WorldState currentMap="Forest_03.tmx">
-		<Position x="15928" y="896" />
+	<WorldState currentMap="Forest_04.tmx">
+		<Position x="2559" y="2176" />
 	</WorldState>
 	<Bosses>
 		<KnightBossKilled bool="false" />
@@ -17,8 +17,8 @@
 	<CollectedItems />
 	<TriggeredDialogues />
 	<Minimap>
-		<Room id="Forest_01.tmx" />
+		<Room id="Forest_04.tmx" />
 		<Room id="Forest_02.tmx" />
-		<Room id="Forest_03.tmx" />
+		<Room id="Forest_05.tmx" />
 	</Minimap>
 </SaveGame>

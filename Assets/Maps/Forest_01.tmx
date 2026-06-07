@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="35" nextobjectid="907">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="35" nextobjectid="908">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -59,7 +59,7 @@
  <tileset firstgid="145" name="t_Sueltos_Arbustos_Esquinas" tilewidth="384" tileheight="384" tilecount="12" columns="3">
   <image source="Forest/Fondo_Vigente/Arbustos/t_Sueltos_Arbustos_Esquinas.png" width="1152" height="1536"/>
  </tileset>
- <objectgroup id="18" name="Fondo1" visible="0">
+ <objectgroup id="18" name="Fondo1">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -76,7 +76,7 @@
   <object id="720" gid="131" x="5888" y="2829.71" width="2447.43" height="1677.71"/>
   <object id="721" gid="1073741955" x="5888" y="1161.09" width="2447.43" height="1686.8"/>
  </objectgroup>
- <objectgroup id="20" name="Fondo2" visible="0">
+ <objectgroup id="20" name="Fondo2">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -92,7 +92,7 @@
   <object id="732" gid="136" x="10240" y="2688" width="2427.43" height="1497.79"/>
   <object id="783" gid="1073741961" x="-906.545" y="862.667" width="1166" height="896"/>
  </objectgroup>
- <objectgroup id="21" name="Fondo3" visible="0">
+ <objectgroup id="21" name="Fondo3">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -2677,7 +2677,7 @@
   <object id="873" gid="151" x="-552.545" y="1800.18" width="893.212" height="893.212"/>
   <object id="874" gid="156" x="-383.273" y="2040.08" width="741.455" height="1117.21"/>
  </objectgroup>
- <objectgroup id="28" name="Fondo5-F    " visible="0">
+ <objectgroup id="28" name="Fondo5-F    ">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
@@ -2687,6 +2687,7 @@
   <object id="688" gid="138" x="5760" y="3072" width="2304" height="3072"/>
   <object id="700" gid="2147483786" x="1408" y="3072" width="2304" height="3072"/>
   <object id="779" gid="138" x="9472" y="3072" width="3648" height="2286.33"/>
+  <object id="907" gid="1073741962" x="9484.12" y="816.485" width="3648" height="2286.33"/>
  </objectgroup>
  <objectgroup color="#aa0000" id="19" name="Spikes" visible="0">
   <properties>
