@@ -1938,8 +1938,6 @@
   <object id="1095" gid="144" x="9519.27" y="540.697" width="435.515" height="471.879"/>
   <object id="1096" gid="145" x="9711" y="541.333" width="384" height="384"/>
   <object id="1097" gid="1073741975" x="9559" y="866.333" width="465" height="336"/>
-  <object id="1099" gid="143" x="10265.3" y="753.975" width="561.309" height="561.309"/>
-  <object id="1100" gid="3221225615" x="10290.2" y="1313.52" width="561.309" height="561.309"/>
  </objectgroup>
  <objectgroup id="28" name="Fondo5-F    ">
   <properties>
@@ -2000,7 +1998,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#000000" id="8" name="Map">
+ <objectgroup color="#000000" id="8" name="Map" visible="0">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>

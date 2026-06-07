@@ -458,8 +458,27 @@ bool Map::PostUpdate()
 						if (tileSet != nullptr)
 						{
 							SDL_Rect tileRect = { (int)obj->x, (int)obj->y, (int)obj->width, (int)obj->height };
-							SDL_Rect dstRect = { tileSet->GetRect(tileId).x, tileSet->GetRect(tileId).y, tileSet->GetRect(tileId).w, tileSet->GetRect(tileId).h };
-							SDL_FPoint center = { tileRect.w / 2, tileRect.h / 2 };
+							SDL_Rect dstRect;
+
+							int localId = tileId - tileSet->firstGid;
+
+							// Comprobar si el GID del objeto tiene una animación en el TileSet (igual que en Update)
+							if (tileSet->animations.count(localId))
+							{
+								dstRect.x = tileSet->animations[localId].GetCurrentFrame().x;
+								dstRect.y = tileSet->animations[localId].GetCurrentFrame().y;
+								dstRect.w = tileSet->animations[localId].GetCurrentFrame().w;
+								dstRect.h = tileSet->animations[localId].GetCurrentFrame().h;
+							}
+							else
+							{
+								dstRect.x = tileSet->GetRect(tileId).x;
+								dstRect.y = tileSet->GetRect(tileId).y;
+								dstRect.w = tileSet->GetRect(tileId).w;
+								dstRect.h = tileSet->GetRect(tileId).h;
+							}
+
+							SDL_FPoint center = { tileRect.w / 2.0f, tileRect.h / 2.0f };
 
 							//Parallax
 							float paralax = 1.0f;
