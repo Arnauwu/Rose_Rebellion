@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="35" nextobjectid="865">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="35" nextobjectid="875">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -122,6 +122,8 @@
   <object id="861" gid="148" x="5037.45" y="2374.42" width="620.364" height="620.364"/>
   <object id="862" gid="149" x="4352" y="2048" width="384" height="384"/>
   <object id="863" gid="152" x="3641.33" y="1843.52" width="520.364" height="520.364"/>
+  <object id="871" gid="152" x="2892.85" y="1604.12" width="402.182" height="402.182"/>
+  <object id="872" gid="152" x="3077.7" y="1598.91" width="402.182" height="402.182"/>
  </objectgroup>
  <layer id="1" name="Map" width="103" height="24">
   <properties>
@@ -1696,7 +1698,7 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="40"/>
+   <tile gid="7"/>
    <tile gid="37"/>
    <tile gid="39"/>
    <tile gid="38"/>
@@ -2251,7 +2253,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="26"/>
+   <tile gid="14"/>
    <tile/>
    <tile/>
    <tile/>
@@ -2354,7 +2356,7 @@
    <tile gid="29"/>
    <tile gid="29"/>
    <tile gid="29"/>
-   <tile gid="38"/>
+   <tile gid="1"/>
    <tile gid="67"/>
    <tile gid="68"/>
    <tile gid="69"/>
@@ -2624,14 +2626,14 @@
   <object id="754" gid="151" x="389.782" y="2432" width="1147.42" height="1147.42"/>
   <object id="755" gid="151" x="1664" y="2560" width="1592" height="1592"/>
   <object id="756" gid="151" x="1404.58" y="2432" width="1147.42" height="1147.42"/>
-  <object id="757" gid="148" x="256" y="2176" width="1470.18" height="1470.18"/>
-  <object id="760" gid="148" x="1792" y="2176" width="1470.18" height="1470.18"/>
+  <object id="757" gid="148" x="288" y="2176" width="1470.18" height="1470.18"/>
+  <object id="760" gid="148" x="1788" y="2176" width="1470.18" height="1470.18"/>
   <object id="761" gid="151" x="768" y="2560" width="1147.42" height="1147.42"/>
   <object id="762" gid="1073741975" x="952.509" y="3667.06" width="1147.42" height="1147.42"/>
   <object id="763" gid="1073741975" x="1782.8" y="3667.06" width="1147.42" height="1147.42"/>
   <object id="764" gid="1073741975" x="2428.58" y="3667.06" width="1147.42" height="1147.42"/>
   <object id="765" gid="151" x="1413.78" y="2560" width="1147.42" height="1147.42"/>
-  <object id="766" gid="151" x="2428.58" y="2560" width="1147.42" height="1147.42"/>
+  <object id="766" gid="151" x="2480.58" y="2532" width="1147.42" height="1291.42"/>
   <object id="768" gid="151" x="2048" y="3072" width="1632" height="1632"/>
   <object id="774" gid="153" x="3910.06" y="3123.76" width="768" height="768"/>
   <object id="775" gid="156" x="4523.03" y="3126.79" width="792" height="792"/>
@@ -2663,8 +2665,13 @@
   <object id="853" gid="144" x="-768" y="1832" width="4008.29" height="1391.41"/>
   <object id="854" gid="1073741967" x="-856" y="440" width="7102.4" height="2367.46"/>
   <object id="864" gid="1073741967" x="2712.8" y="752.27" width="7102.4" height="2367.46"/>
+  <object id="867" gid="156" x="-640" y="2176" width="1396" height="1396"/>
+  <object id="869" gid="156" x="2195.33" y="2242" width="1356" height="1396"/>
+  <object id="870" gid="148" x="2816" y="2176" width="850.18" height="850.18"/>
+  <object id="873" gid="151" x="-552.545" y="1800.18" width="893.212" height="893.212"/>
+  <object id="874" gid="156" x="-383.273" y="2040.08" width="741.455" height="1117.21"/>
  </objectgroup>
- <objectgroup id="28" name="Fondo5-F    " visible="0">
+ <objectgroup id="28" name="Fondo5-F    ">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
@@ -7682,7 +7689,7 @@
    <tile gid="129"/>
   </data>
  </layer>
- <objectgroup id="11" name="EntitiesSpawnPoints">
+ <objectgroup id="11" name="EntitiesSpawnPoints" visible="0">
   <object id="52" name="Player" type="Player" x="12326.3" y="2418.3">
    <point/>
   </object>

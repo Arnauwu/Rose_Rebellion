@@ -1120,7 +1120,7 @@ void Map::SpawnEntities()
 
 					if (toxicBallProps.GetProperty("Jump") != nullptr) toxicBall->jumpDistanceTiles = toxicBallProps.GetProperty("Jump")->value;
 				}
-				else if (entityType == std::string("KnightBoss"))
+			/*	else if (entityType == std::string("KnightBoss"))
 				{
 					if (GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
@@ -1131,7 +1131,7 @@ void Map::SpawnEntities()
 					if (GameManager::GetInstance().gameState.ninfaBossKilled) { continue; }
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					if (ninfaBoss != nullptr) ninfaBoss->position = Vector2D(x, y);
-				}
+				}*/
 				else if (entityType == std::string("GwellBoss"))
 				{
 					if (GameManager::GetInstance().gameState.lizardBossKilled) { continue; }
