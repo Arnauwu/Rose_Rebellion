@@ -33,71 +33,36 @@
   "// --- INTERACT TEXT ---": "",
   "INTERACT_NPC": "TALK {E}",
 
+  "// --- GAMEPLAY TUTORIALS ---": "",
+  "TUTORIAL_WALK": "Move left and right\nA / D",
+  "TUTORIAL_JUMP": "Jump\nSPACE",
+  "TUTORIAL_GLIDE": "Cape obtained! Hold to glide\nLEFT SHIFT",
+  "TUTORIAL_DASH": "Dash unlocked! Dash forward\nK",
+  "TUTORIAL_ATTACK": "Sickle obtained! Attack\nJ",
+  "TUTORIAL_DOUBLE_JUMP": "Double jump unlocked! Press twice\nSPACE x2",
+  "TUTORIAL_WALL_JUMP": "Wall jump unlocked! Jump from a wall\nL + SPACE",
+  "TUTORIAL_CONFIRM": "Press E when you understand.",
 
-"// --- GAMEPLAY TUTORIALS ---": "",
-    "TUTORIAL_WALK": "Move left and right",
-    "TUTORIAL_JUMP": "Jump",
-    "TUTORIAL_GLIDE": "Cape obtained! Hold to glide",
-    "TUTORIAL_DASH": "Dash unlocked! Dash forward",
-    "TUTORIAL_ATTACK": "Sickle obtained! Attack",
-    "TUTORIAL_DOUBLE_JUMP": "Double jump unlocked! Press twice",
-    "TUTORIAL_WALL_JUMP": "Wall jump unlocked! Jump from a wall",
-
-"// --- GAMEPLAY NOTIFICATIONS ---": "",
-    "NOTIFY_NEED_FOREST_KEY": "You need to find the Forest Key.",
-    "NOTIFY_NEED_MOUNTAIN_KEY": "You need to find the Mountain Key.",
-    "NOTIFY_NEED_CATACOMBS_KEY": "You need to find the Catacombs Key.",
-    "NOTIFY_NEED_CASTLE_KEY": "You need to find the Castle Key.",
-    "NOTIFY_NEED_DOOR_KEY": "You need to find the key for this door.",
-    "NOTIFY_NEED_DOUBLE_JUMP": "You need to unlock Double Jump to enter.",
-    "NOTIFY_ROOM_MAINTENANCE": "The room is under maintenance. You cannot enter.",
-    "NOTIFY_ROOM_CLOSED": "The room is closed. You cannot enter.",
-    "NOTIFY_DOOR_CONFIG_ERROR": "The door is locked. Configuration error.",
-    "NOTIFY_NEED_GLIDE": "You need the cape to cross this area safely.",
-    "NOTIFY_KEY_OBTAINED": "You have obtained a Key.",
-    "NOTIFY_HEALTH_RECOVERED": "You have recovered your health.",
-    "NOTIFY_ORB_OBTAINED": "You have obtained an Orb of Power.",
-    "NOTIFY_GAME_SAVED": "Game saved.",
-    "NOTIFY_SAVE_ERROR": "The game could not be saved.",
-
-"// --- INVENTORY LORE ---": "",
-    "INV_DEFAULT_SELECT": "Information notes, select an item to learn about it.",
-    "INV_UNKNOWN_ITEM": "Unknown item. They say it is lost in the corners of this kingdom.",
-    
-    "ITEM_WEAPON_NAME": "Guardian's Sickle",
-    "ITEM_WEAPON_DESC": "A sharp blade forged at the foot of the castle. Press J to clear the path through the thicket and defend yourself against intruders.",
-    
-    "ITEM_GLIDE_NAME": "Wind Cape",
-    "ITEM_GLIDE_DESC": "Old fabric found in the storage, so soft and light it makes you fly. Hold LSHIFT in mid-air to glide smoothly.",
-    
-    "ITEM_DASH_NAME": "Shadow Dash",
-    "ITEM_DASH_DESC": "Magic amulet that allows you to travel short distances at high speed to dodge attacks and cross impossible areas. Press K to use it.",
-    
-    "ITEM_WALLJUMP_NAME": "Climbing Skills",
-    "ITEM_WALLJUMP_DESC": "A strange amulet that allows you to cling to walls and jump from them to reach inaccessible places. Press L to grab on.",
-    
-    "ITEM_DOUBLEJUMP_NAME": "Divine Jump",
-    "ITEM_DOUBLEJUMP_DESC": "Amulet used to propel yourself a second time in mid-air, allowing you to reach new heights. Use SPACE in mid-air.",
-        
-    "ITEM_KEY_CASTLE_NAME": "Storage Key",
-    "ITEM_KEY_CASTLE_DESC": "A sturdy key from the cleaning staff. It unlocks the royal storage door, what could they be keeping there?",
-    
-    "ITEM_KEY_CASTLEDOOR_NAME": "Castle Key",
-    "ITEM_KEY_CASTLEDOOR_DESC": "A large key capable of opening the main castle door, guarded by General Roc of the army.",
-    
-    "ITEM_KEY_FOREST_NAME": "Forest Key",
-    "ITEM_KEY_FOREST_DESC": "A moss-covered key, they say it grants access to the depths of the forest.",
-    
-    "ITEM_KEY_MOUNTAIN_NAME": "Mountain Key",
-    "ITEM_KEY_MOUNTAIN_DESC": "Forged with dragon scales. It will allow you to open the path to the main mountain cave.",
-    
-    "ITEM_KEY_CATACOMBS_NAME": "Catacombs Key",
-    "ITEM_KEY_CATACOMBS_DESC": "Forged in stone and minerals. Unlocks the heavy doors to the underground darkness.",
+  "// --- GAMEPLAY NOTIFICATIONS ---": "",
+  "NOTIFY_NEED_FOREST_KEY": "You need to find the Forest Key.",
+  "NOTIFY_NEED_MOUNTAIN_KEY": "You need to find the Mountain Key.",
+  "NOTIFY_NEED_CATACOMBS_KEY": "You need to find the Catacombs Key.",
+  "NOTIFY_NEED_CASTLE_KEY": "You need to find the Castle Key.",
+  "NOTIFY_NEED_DOOR_KEY": "You need to find the key for this door.",
+  "NOTIFY_NEED_DOUBLE_JUMP": "You need to unlock Double Jump to enter.",
+  "NOTIFY_ROOM_MAINTENANCE": "The room is under maintenance. You cannot enter.",
+  "NOTIFY_ROOM_CLOSED": "The room is closed. You cannot enter.",
+  "NOTIFY_DOOR_CONFIG_ERROR": "The door is locked. Configuration error.",
+  "NOTIFY_NEED_GLIDE": "You need the cape to cross this area safely.",
+  "NOTIFY_KEY_OBTAINED": "You have obtained a Key.",
+  "NOTIFY_HEALTH_RECOVERED": "You have recovered your health.",
+  "NOTIFY_ORB_OBTAINED": "You have obtained an Orb of Power.",
+  "NOTIFY_GAME_SAVED": "Game saved.",
+  "NOTIFY_SAVE_ERROR": "The game could not be saved.",
 
   "// --- INVENTORY LORE ---": "",
   "INV_DEFAULT_SELECT": "Information notes, select an item to learn about it.",
   "INV_UNKNOWN_ITEM": "Unknown item. They say it is lost in the corners of this kingdom.",
-
 
   "ITEM_WEAPON_NAME": "Guardian's Sickle",
   "ITEM_WEAPON_DESC": "A sharp blade forged at the foot of the castle. Press J to clear the path through the thicket and defend yourself against intruders.",
@@ -132,7 +97,7 @@
   "// --- SKILL TREE ---": "",
   "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
   "TXT_COST": "Cost de transcripció: ",
-  "TXT_ORBS": " Orbs(s)",
+  "TXT_ORBS": " Orbe(s)",
 
   "SKILL_HEALTH_NAME": "Medical Manual",
   "SKILL_HEALTH_DESC": "Knowledge about medicine and healing. Provides greater maximum health.",
@@ -146,9 +111,9 @@
   "SKILL_FASTDASH_NAME": "Apocrypha of Displacement",
   "SKILL_FASTDASH_DESC": "Forbidden writings that teach how to bend space. Drastically improves the force and distance of your Shadow Dash.",
 
-  "SKILL_UPDOWNATTACK_NAME": "Volume I Combat Techniques: Air and Earth",
-  "SKILL_UPDOWNATTACK_DESC": "A combat book that delves into the omnidirectional control of the weapon, written by the castle generals, unlocks agile ascending and descending attacks.",
+  "SKILL_UPATTACK_NAME": "Volume I Combat Techniques: Air",
+  "SKILL_UPATTACK_DESC": "Combat book against aerial enemies written by the castle generals, unlocks an agile ascending attack.",
 
-  "SKILL_RANGEDATTACK_NAME": "Volume II Combat Techniques: Hawk Eye",
-  "SKILL_RANGEDATTACK_DESC": "Extensive volume on the launch and control of spear weapons, grants the knowledge to perform a ranged attack in exchange for reducing your vitality."
+  "SKILL_DOWNATTACK_NAME": "Volume II Combat Techniques: Ground",
+  "SKILL_DOWNATTACK_DESC": "Extensive volume of melee combat, grants the knowledge to perform a descending attack."
 }

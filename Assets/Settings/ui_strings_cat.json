@@ -33,65 +33,32 @@
   "// --- INTERACT TEXT ---": "",
   "INTERACT_NPC": "PARLAR {E}",
 
-"// --- GAMEPLAY TUTORIALS ---": "",
-    "TUTORIAL_WALK": "Mou-te cap a l'esquerra i la dreta",
-    "TUTORIAL_JUMP": "Salta",
-    "TUTORIAL_GLIDE": "Has obtingut la capa! Mantén premut per planejar",
-    "TUTORIAL_DASH": "Impuls desbloquejat! Avança ràpidament",
-    "TUTORIAL_ATTACK": "Has obtingut la falç! Ataca",
-    "TUTORIAL_DOUBLE_JUMP": "Doble salt desbloquejat! Prem dues vegades",
-    "TUTORIAL_WALL_JUMP": "Salt de paret desbloquejat! Salta des d'una paret",
+  "// --- GAMEPLAY TUTORIALS ---": "",
+  "TUTORIAL_WALK": "Mou-te cap a l'esquerra i la dreta\nA / D",
+  "TUTORIAL_JUMP": "Salta\nESPAI",
+  "TUTORIAL_GLIDE": "Has obtingut la capa! Mantén premut per planejar\nSHIFT ESQUERRE",
+  "TUTORIAL_DASH": "Impuls desbloquejat! Avança ràpidament\nK",
+  "TUTORIAL_ATTACK": "Has obtingut la falç! Ataca\nJ",
+  "TUTORIAL_DOUBLE_JUMP": "Doble salt desbloquejat! Prem dues vegades\nESPAI x2",
+  "TUTORIAL_WALL_JUMP": "Salt de paret desbloquejat! Salta des d'una paret\nL + ESPAI",
+  "TUTORIAL_CONFIRM": "Prem E quan ho hagis entès.",
 
-"// --- GAMEPLAY NOTIFICATIONS ---": "",
-    "NOTIFY_NEED_FOREST_KEY": "Has de trobar la clau del bosc.",
-    "NOTIFY_NEED_MOUNTAIN_KEY": "Has de trobar la clau de la muntanya.",
-    "NOTIFY_NEED_CATACOMBS_KEY": "Has de trobar la clau de les catacumbes.",
-    "NOTIFY_NEED_CASTLE_KEY": "Has de trobar la clau del castell.",
-    "NOTIFY_NEED_DOOR_KEY": "Has de trobar la clau d'aquesta porta.",
-    "NOTIFY_NEED_DOUBLE_JUMP": "Has de desbloquejar el doble salt per entrar.",
-    "NOTIFY_ROOM_MAINTENANCE": "La sala està en manteniment. No hi pots entrar.",
-    "NOTIFY_ROOM_CLOSED": "La sala està tancada. No hi pots entrar.",
-    "NOTIFY_DOOR_CONFIG_ERROR": "La porta està bloquejada. Error de configuració.",
-    "NOTIFY_NEED_GLIDE": "Necessites la capa per travessar aquesta zona amb seguretat.",
-    "NOTIFY_KEY_OBTAINED": "Has obtingut una clau.",
-    "NOTIFY_HEALTH_RECOVERED": "Has recuperat la salut.",
-    "NOTIFY_ORB_OBTAINED": "Has obtingut un orbe de poder.",
-    "NOTIFY_GAME_SAVED": "Partida desada.",
-    "NOTIFY_SAVE_ERROR": "No s'ha pogut desar la partida.",
-
-"// --- INVENTORY LORE ---": "",
-    "INV_DEFAULT_SELECT": "Anotacions d'informació, selecciona un objecte per aprendre sobre ell.",
-    "INV_UNKNOWN_ITEM": "Objecte desconegut. Diuen que està perdut pels racons d'aquest regne.",
-    
-    "ITEM_WEAPON_NAME": "Hoz de la Guarda",
-    "ITEM_WEAPON_DESC": "Una fulla esmolada forjada als peus del castell. J per obrir-se pas entre la malesa i defensar-se dels intrusos.",
-    
-    "ITEM_GLIDE_NAME": "Capa de Vent",
-    "ITEM_GLIDE_DESC": "Teixit vell situat al magatzem, tan suau i lleuger que et fa volar. Mantingues LSHIFT a l'aire per planejar suaument.",
-    
-    "ITEM_DASH_NAME": "Impuls d'Ombra",
-    "ITEM_DASH_DESC": "Amulet màgic que permet recórrer curtes distàncies a gran velocitat per esquivar atacs i creuar zones impossibles. Prem K per utilitzar-lo.",
-    
-    "ITEM_WALLJUMP_NAME": "Habilitats d'Escalada",
-    "ITEM_WALLJUMP_DESC": "Un estrany amulet que permet agafar-se a les parets i saltar des d'elles per arribar a llocs inaccessibles. Prem L per enganxar-te.",
-    
-    "ITEM_DOUBLEJUMP_NAME": "Salt Diví",
-    "ITEM_DOUBLEJUMP_DESC": "Amulet que serveix per impulsar-te una segona vegada mentre ets a l'aire, permet assolir noves altures. Utilitza SPACE en l'aire.",
-        
-    "ITEM_KEY_CASTLE_NAME": "Clau del Magatzem",
-    "ITEM_KEY_CASTLE_DESC": "Una clau robusta del personal de neteja. Obre la porta del magatzem reial, què hi guardaran?",
-    
-    "ITEM_KEY_CASTLEDOOR_NAME": "Clau del Castell",
-    "ITEM_KEY_CASTLEDOOR_DESC": "Gran clau capaç d'obrir la porta principal del castell, resguardada pel general Roc de l'exèrcit.",
-    
-    "ITEM_KEY_FOREST_NAME": "Clau del Bosc",
-    "ITEM_KEY_FOREST_DESC": "Una clau coberta de molsa, diuen que dona accés a les profunditats del bosc.",
-    
-    "ITEM_KEY_MOUNTAIN_NAME": "Clau de la Muntanya",
-    "ITEM_KEY_MOUNTAIN_DESC": "Forjada amb escates de drac. Et permetrà obrir el pas cap a la cova principal de la muntanya.",
-    
-    "ITEM_KEY_CATACOMBS_NAME": "Clau de les Catacumbes",
-  "ITEM_KEY_CATACOMBS_DESC": "Forjada en pedra i minerals. Obre les pesades portes cap a la foscor subterrània.",
+  "// --- GAMEPLAY NOTIFICATIONS ---": "",
+  "NOTIFY_NEED_FOREST_KEY": "Has de trobar la clau del bosc.",
+  "NOTIFY_NEED_MOUNTAIN_KEY": "Has de trobar la clau de la muntanya.",
+  "NOTIFY_NEED_CATACOMBS_KEY": "Has de trobar la clau de les catacumbes.",
+  "NOTIFY_NEED_CASTLE_KEY": "Has de trobar la clau del castell.",
+  "NOTIFY_NEED_DOOR_KEY": "Has de trobar la clau d'aquesta porta.",
+  "NOTIFY_NEED_DOUBLE_JUMP": "Has de desbloquejar el doble salt per entrar.",
+  "NOTIFY_ROOM_MAINTENANCE": "La sala està en manteniment. No hi pots entrar.",
+  "NOTIFY_ROOM_CLOSED": "La sala està tancada. No hi pots entrar.",
+  "NOTIFY_DOOR_CONFIG_ERROR": "La porta està bloquejada. Error de configuració.",
+  "NOTIFY_NEED_GLIDE": "Necessites la capa per travessar aquesta zona amb seguretat.",
+  "NOTIFY_KEY_OBTAINED": "Has obtingut una clau.",
+  "NOTIFY_HEALTH_RECOVERED": "Has recuperat la salut.",
+  "NOTIFY_ORB_OBTAINED": "Has obtingut un orbe de poder.",
+  "NOTIFY_GAME_SAVED": "Partida desada.",
+  "NOTIFY_SAVE_ERROR": "No s'ha pogut desar la partida.",
 
   "// --- INVENTORY LORE ---": "",
   "INV_DEFAULT_SELECT": "Anotacions d'informació, selecciona un objecte per aprendre sobre ell.",
@@ -100,24 +67,6 @@
   "ITEM_WEAPON_NAME": "Hoz de la Guarda",
   "ITEM_WEAPON_DESC": "Una fulla esmolada forjada als peus del castell. J per obrir-se pas entre la malesa i defensar-se dels intrusos.",
 
-    "SKILL_HEALTH_NAME": "Manual de medicina",
-    "SKILL_HEALTH_DESC": "Coneixements sobre medicina i cures. Proporciona una major salut màxima.",
-    
-    "SKILL_IFRAMES_NAME": "Grimori dels Ecos Temporals",
-    "SKILL_IFRAMES_DESC": "Pàgines impregnades de tècniques d'evasió. Augmenta el temps d'invulnerabilitat després de rebre un cop, permetent-te fluir entre atacs.",
-    
-    "SKILL_SPEED_NAME": "Guia de supervivència",
-    "SKILL_SPEED_DESC": "Una guia per a aventurers, amb ella aprendràs a moure't amb velocitat per zones inexplorades.",
-    
-    "SKILL_FASTDASH_NAME": "Apòcrifs del desplaçament",
-    "SKILL_FASTDASH_DESC": "Escrits prohibits que ensenyen a doblegar l'espai. Millora dràsticament la força i distància del teu Impuls d'Ombra.",
-    
-    "SKILL_UPATTACK_NAME": "Volum I Tècniques de combat: Aire",
-    "SKILL_UPATTACK_DESC": "Llibre de combat contra enemics aeris escrit pels generals del castell, desbloqueja un àgil atac ascendent.",
-    
-    "SKILL_DOWNATTACK_NAME": "Volum II Tècniques de combat: Terrestre",
-    "SKILL_DOWNATTACK_DESC": "Volum extens d'atac cos a cos, atorga el coneixement per realitzar un atac descendent."
-}
   "ITEM_GLIDE_NAME": "Capa de Vent",
   "ITEM_GLIDE_DESC": "Teixit vell situat al magatzem, tan suau i lleuger que et fa volar. Mantingues LSHIFT a l'aire per planejar suaument.",
 
@@ -148,7 +97,7 @@
   "// --- SKILL TREE ---": "",
   "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
   "TXT_COST": "Cost de transcripció: ",
-  "TXT_ORBS": " Orb(s)",
+  "TXT_ORBS": " Orbe(s)",
 
   "SKILL_HEALTH_NAME": "Manual de medicina",
   "SKILL_HEALTH_DESC": "Coneixements sobre medicina i cures. Proporciona una major salut màxima.",
@@ -162,10 +111,9 @@
   "SKILL_FASTDASH_NAME": "Apòcrifs del desplaçament",
   "SKILL_FASTDASH_DESC": "Escrits prohibits que ensenyen a doblegar l'espai. Millora dràsticament la força i distància del teu Impuls d'Ombra.",
 
-  "SKILL_UPDOWNATTACK_NAME": "Volum I Tècniques de combat: Aire i Terra",
-  "SKILL_UPDOWNATTACK_DESC": "Llibre de combat que profunditza en el control omnidireccional de l'arma, escrit pels generals del castell, desbloqueja àgils atacs ascendents i descendents.",
+  "SKILL_UPATTACK_NAME": "Volum I Tècniques de combat: Aire",
+  "SKILL_UPATTACK_DESC": "Llibre de combat contra enemics aeris escrit pels generals del castell, desbloqueja un àgil atac ascendent.",
 
-  "SKILL_RANGEDATTACK_NAME": "Volum II Tècniques de combat: Ull del Falcó",
-  "SKILL_RANGEDATTACK_DESC": "Volum extens sobre el llançament i control d'armes llancívoles, atorga el coneixement per realitzar un atac a distància a canvi de disminuir la teva vitalitat."
+  "SKILL_DOWNATTACK_NAME": "Volum II Tècniques de combat: Terrestre",
+  "SKILL_DOWNATTACK_DESC": "Volum extens d'atac cos a cos, atorga el coneixement per realitzar un atac descendent."
 }
-
