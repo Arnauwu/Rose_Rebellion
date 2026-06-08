@@ -36,8 +36,8 @@ enum class SkillTree {
 	IFRAMES_UP,
 	SPEED_UP,
 	FAST_DASH,
-	UP_ATTACK,
-	DOWN_ATTACK
+	UPDOWN_ATTACK,
+	RANGED_ATTACK
 };
 
 struct SDL_Texture;

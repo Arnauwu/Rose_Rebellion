@@ -19,14 +19,14 @@
     "desc_key": "SKILL_FASTDASH_DESC",
     "cost": 5
   },
-  "UP_ATTACK": {
-    "name_key": "SKILL_UPATTACK_NAME",
-    "desc_key": "SKILL_UPATTACK_DESC",
+  "UPDOWN_ATTACK": {
+    "name_key": "SKILL_UPDOWNATTACK_NAME",
+    "desc_key": "SKILL_UPDOWNATTACK_DESC",
     "cost": 3
   },
-  "DOWN_ATTACK": {
-    "name_key": "SKILL_DOWNATTACK_NAME",
-    "desc_key": "SKILL_DOWNATTACK_DESC",
+  "RANGED_ATTACK": {
+    "name_key": "SKILL_RANGEDATTACK_NAME",
+    "desc_key": "SKILL_RANGEDATTACK_DESC",
     "cost": 3
   }
 }

@@ -1254,8 +1254,8 @@ void Map::SpawnEntities()
 						if (npcProps.GetProperty("TsxPath") != nullptr) {
 							tsxPath = npcProps.GetProperty("TsxPath")->value2;
 						}
-						int npcWidth = (w > 0) ? (int)w : 128;
-						int npcHeight = (h > 0) ? (int)h : 128;
+						int npcWidth = (w > 0) ? (int)w : 256;
+						int npcHeight = (h > 0) ? (int)h : 256;
 
 						npc->ConfigNPC(texPath, dialogID, npcWidth, npcHeight, tsxPath);
 					}

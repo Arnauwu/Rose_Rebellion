@@ -27,11 +27,11 @@ struct GameState {
     bool stIframesUp = false;
     bool stSpeedUp = false;
     bool stFastDash = false;
-    bool stUpAttack = false;
-    bool stDownAttack = false;
+    bool stUpDownAttack = false;
+    bool stRangedAttack = false;
 
     // World
-    std::string currentMap = "Mountain_01.tmx";
+    std::string currentMap = "Nexo.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     // Bosses

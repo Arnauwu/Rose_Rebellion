@@ -1,37 +1,38 @@
 {
-"// --- MAIN MENU ---": "",
-    "BTN_PLAY": "Start Game",
-    "BTN_CONTINUE": "Load Game",
-    "BTN_SETTINGS": "Settings",
-    "BTN_EXIT": "Quit Game",
+  "// --- MAIN MENU ---": "",
+  "BTN_PLAY": "Start Game",
+  "BTN_CONTINUE": "Load Game",
+  "BTN_SETTINGS": "Settings",
+  "BTN_EXIT": "Quit Game",
 
-"// --- MAIN MENU SETTINGS---": "",
-    "SLD_MUSIC": "Music Volume",
-    "SLD_FX": "FX Volume",
-    "CHK_FULLSCREEN": "Fullscreen",
-    "BTN_BACK": "BACK",
+  "// --- MAIN MENU SETTINGS---": "",
+  "SLD_MUSIC": "Music Volume",
+  "SLD_FX": "FX Volume",
+  "CHK_FULLSCREEN": "Fullscreen",
+  "BTN_BACK": "BACK",
 
-    "BTN_ENGLISH": "English",
-    "BTN_CATALAN": "Catalan",
+  "BTN_ENGLISH": "English",
+  "BTN_CATALAN": "Catalan",
 
-"// --- MAIN PAUSE MENU ---": "",
-    "BTN_PAUSE_RESUME": "Resume",
-    "BTN_PAUSE_OPTIONS": "Options",
-    "BTN_PAUSE_MAINMENU": "Main Menu",
+  "// --- MAIN PAUSE MENU ---": "",
+  "BTN_PAUSE_RESUME": "Resume",
+  "BTN_PAUSE_OPTIONS": "Options",
+  "BTN_PAUSE_MAINMENU": "Main Menu",
 
-"// --- SKILL TREE ---": "",
-    "BTN_SKILL_BUY": "Unlok",
-    "BTN_SKILL_BACK": "Cancel",
-    "BTN_SKILL_OK": "Accept",
+  "// --- SKILL TREE ---": "",
+  "BTN_SKILL_BUY": "Unlok",
+  "BTN_SKILL_BACK": "Cancel",
+  "BTN_SKILL_OK": "Accept",
 
-"// --- LOADING LEVELS ---": "",
-    "TXT_LOADING": "Loading",
-    "INTRO_FOREST": "FOREST",
-    "INTRO_MOUNTAIN": "MOUNTAIN",
-    "INTRO_CATACOMBS": "CATACOMBS",
+  "// --- LOADING LEVELS ---": "",
+  "TXT_LOADING": "Loading",
+  "INTRO_FOREST": "FOREST",
+  "INTRO_MOUNTAIN": "MOUNTAIN",
+  "INTRO_CATACOMBS": "CATACOMBS",
 
-"// --- INTERACT TEXT ---": "",
-    "INTERACT_NPC": "TALK {E}",
+  "// --- INTERACT TEXT ---": "",
+  "INTERACT_NPC": "TALK {E}",
+
 
 "// --- GAMEPLAY TUTORIALS ---": "",
     "TUTORIAL_WALK": "Move left and right",
@@ -93,26 +94,61 @@
     "ITEM_KEY_CATACOMBS_NAME": "Catacombs Key",
     "ITEM_KEY_CATACOMBS_DESC": "Forged in stone and minerals. Unlocks the heavy doors to the underground darkness.",
 
-"// --- SKILL TREE ---": "",
-    "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
-    "TXT_COST": "Cost de transcripció: ",
-    "TXT_ORBS": " Orbe(s)",
+  "// --- INVENTORY LORE ---": "",
+  "INV_DEFAULT_SELECT": "Information notes, select an item to learn about it.",
+  "INV_UNKNOWN_ITEM": "Unknown item. They say it is lost in the corners of this kingdom.",
 
-    "SKILL_HEALTH_NAME": "Medical Manual",
-    "SKILL_HEALTH_DESC": "Knowledge about medicine and healing. Provides greater maximum health.",
-    
-    "SKILL_IFRAMES_NAME": "Grimoire of Temporal Echoes",
-    "SKILL_IFRAMES_DESC": "Pages imbued with evasion techniques. Increases your invulnerability time after taking a hit, allowing you to flow between attacks.",
-    
-    "SKILL_SPEED_NAME": "Survival Guide",
-    "SKILL_SPEED_DESC": "A guide for adventurers, with it you will learn to move with speed in unexplored areas.",
-    
-    "SKILL_FASTDASH_NAME": "Apocrypha of Displacement",
-    "SKILL_FASTDASH_DESC": "Forbidden writings that teach how to bend space. Drastically improves the force and distance of your Shadow Dash.",
-    
-    "SKILL_UPATTACK_NAME": "Volume I Combat Techniques: Air",
-    "SKILL_UPATTACK_DESC": "Combat book against aerial enemies written by the castle generals, unlocks an agile ascending attack.",
-    
-    "SKILL_DOWNATTACK_NAME": "Volume II Combat Techniques: Ground",
-    "SKILL_DOWNATTACK_DESC": "Extensive volume of melee combat, grants the knowledge to perform a descending attack."
+
+  "ITEM_WEAPON_NAME": "Guardian's Sickle",
+  "ITEM_WEAPON_DESC": "A sharp blade forged at the foot of the castle. Press J to clear the path through the thicket and defend yourself against intruders.",
+
+  "ITEM_GLIDE_NAME": "Wind Cape",
+  "ITEM_GLIDE_DESC": "Old fabric found in the storage, so soft and light it makes you fly. Hold LSHIFT in mid-air to glide smoothly.",
+
+  "ITEM_DASH_NAME": "Shadow Dash",
+  "ITEM_DASH_DESC": "Magic amulet that allows you to travel short distances at high speed to dodge attacks and cross impossible areas. Press K to use it.",
+
+  "ITEM_WALLJUMP_NAME": "Climbing Skills",
+  "ITEM_WALLJUMP_DESC": "A strange amulet that allows you to cling to walls and jump from them to reach inaccessible places. Press L to grab on.",
+
+  "ITEM_DOUBLEJUMP_NAME": "Divine Jump",
+  "ITEM_DOUBLEJUMP_DESC": "Amulet used to propel yourself a second time in mid-air, allowing you to reach new heights. Use SPACE in mid-air.",
+
+  "ITEM_KEY_CASTLE_NAME": "Storage Key",
+  "ITEM_KEY_CASTLE_DESC": "A sturdy key from the cleaning staff. It unlocks the royal storage door, what could they be keeping there?",
+
+  "ITEM_KEY_CASTLEDOOR_NAME": "Castle Key",
+  "ITEM_KEY_CASTLEDOOR_DESC": "A large key capable of opening the main castle door, guarded by General Roc of the army.",
+
+  "ITEM_KEY_FOREST_NAME": "Forest Key",
+  "ITEM_KEY_FOREST_DESC": "A moss-covered key, they say it grants access to the depths of the forest.",
+
+  "ITEM_KEY_MOUNTAIN_NAME": "Mountain Key",
+  "ITEM_KEY_MOUNTAIN_DESC": "Forged with dragon scales. It will allow you to open the path to the main mountain cave.",
+
+  "ITEM_KEY_CATACOMBS_NAME": "Catacombs Key",
+  "ITEM_KEY_CATACOMBS_DESC": "Forged in stone and minerals. Unlocks the heavy doors to the underground darkness.",
+
+  "// --- SKILL TREE ---": "",
+  "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
+  "TXT_COST": "Cost de transcripció: ",
+  "TXT_ORBS": " Orbs(s)",
+
+  "SKILL_HEALTH_NAME": "Medical Manual",
+  "SKILL_HEALTH_DESC": "Knowledge about medicine and healing. Provides greater maximum health.",
+
+  "SKILL_IFRAMES_NAME": "Grimoire of Temporal Echoes",
+  "SKILL_IFRAMES_DESC": "Pages imbued with evasion techniques. Increases your invulnerability time after taking a hit, allowing you to flow between attacks.",
+
+  "SKILL_SPEED_NAME": "Survival Guide",
+  "SKILL_SPEED_DESC": "A guide for adventurers, with it you will learn to move with speed in unexplored areas.",
+
+  "SKILL_FASTDASH_NAME": "Apocrypha of Displacement",
+  "SKILL_FASTDASH_DESC": "Forbidden writings that teach how to bend space. Drastically improves the force and distance of your Shadow Dash.",
+
+  "SKILL_UPDOWNATTACK_NAME": "Volume I Combat Techniques: Air and Earth",
+  "SKILL_UPDOWNATTACK_DESC": "A combat book that delves into the omnidirectional control of the weapon, written by the castle generals, unlocks agile ascending and descending attacks.",
+
+  "SKILL_RANGEDATTACK_NAME": "Volume II Combat Techniques: Hawk Eye",
+  "SKILL_RANGEDATTACK_DESC": "Extensive volume on the launch and control of spear weapons, grants the knowledge to perform a ranged attack in exchange for reducing your vitality."
 }

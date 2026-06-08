@@ -1,37 +1,37 @@
 {
-"// --- MAIN MENU ---": "",
-    "BTN_PLAY": "Començar Joc",
-    "BTN_CONTINUE": "Carregar Joc",
-    "BTN_SETTINGS": "Configuració",
-    "BTN_EXIT": "Sortir",
+  "// --- MAIN MENU ---": "",
+  "BTN_PLAY": "Començar Joc",
+  "BTN_CONTINUE": "Carregar Joc",
+  "BTN_SETTINGS": "Configuració",
+  "BTN_EXIT": "Sortir",
 
-"// --- MAIN MENU SETTINGS---": "",
-    "SLD_MUSIC": "Volum Música",
-    "SLD_FX": "Volum Efectes",
-    "CHK_FULLSCREEN": "Pantalla Completa",
-    "BTN_BACK": "ENRERE",
+  "// --- MAIN MENU SETTINGS---": "",
+  "SLD_MUSIC": "Volum Música",
+  "SLD_FX": "Volum Efectes",
+  "CHK_FULLSCREEN": "Pantalla Completa",
+  "BTN_BACK": "ENRERE",
 
-    "BTN_ENGLISH": "English",
-    "BTN_CATALAN": "Català",
+  "BTN_ENGLISH": "English",
+  "BTN_CATALAN": "Català",
 
-"// --- MAIN PAUSE MENU ---": "",
-    "BTN_PAUSE_RESUME": "Continuar",
-    "BTN_PAUSE_OPTIONS": "Opcions",
-    "BTN_PAUSE_MAINMENU": "Menú Principal",
+  "// --- MAIN PAUSE MENU ---": "",
+  "BTN_PAUSE_RESUME": "Continuar",
+  "BTN_PAUSE_OPTIONS": "Opcions",
+  "BTN_PAUSE_MAINMENU": "Menú Principal",
 
-"// --- SKILL TREE ---": "",
-    "BTN_SKILL_BUY": "Desbloquejar",
-    "BTN_SKILL_BACK": "Cancelar",
-    "BTN_SKILL_OK": "Aceptar",
+  "// --- SKILL TREE ---": "",
+  "BTN_SKILL_BUY": "Desbloquejar",
+  "BTN_SKILL_BACK": "Cancelar",
+  "BTN_SKILL_OK": "Aceptar",
 
-"// --- LOADING LEVELS ---": "",
-    "TXT_LOADING": "Carregant",
-    "INTRO_FOREST": "BOSC",
-    "INTRO_MOUNTAIN": "MUNTANYA",
-    "INTRO_CATACOMBS": "CATACUMBES",
+  "// --- LOADING LEVELS ---": "",
+  "TXT_LOADING": "Carregant",
+  "INTRO_FOREST": "BOSC",
+  "INTRO_MOUNTAIN": "MUNTANYA",
+  "INTRO_CATACOMBS": "CATACUMBES",
 
-"// --- INTERACT TEXT ---": "",
-    "INTERACT_NPC": "PARLAR {E}",
+  "// --- INTERACT TEXT ---": "",
+  "INTERACT_NPC": "PARLAR {E}",
 
 "// --- GAMEPLAY TUTORIALS ---": "",
     "TUTORIAL_WALK": "Mou-te cap a l'esquerra i la dreta",
@@ -91,12 +91,14 @@
     "ITEM_KEY_MOUNTAIN_DESC": "Forjada amb escates de drac. Et permetrà obrir el pas cap a la cova principal de la muntanya.",
     
     "ITEM_KEY_CATACOMBS_NAME": "Clau de les Catacumbes",
-    "ITEM_KEY_CATACOMBS_DESC": "Forjada en pedra i minerals. Obre les pesades portes cap a la foscor subterrània.",
+  "ITEM_KEY_CATACOMBS_DESC": "Forjada en pedra i minerals. Obre les pesades portes cap a la foscor subterrània.",
 
-"// --- SKILL TREE ---": "",
-    "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
-    "TXT_COST": "Cost de transcripció: ",
-    "TXT_ORBS": " Orbe(s)",
+  "// --- INVENTORY LORE ---": "",
+  "INV_DEFAULT_SELECT": "Anotacions d'informació, selecciona un objecte per aprendre sobre ell.",
+  "INV_UNKNOWN_ITEM": "Objecte desconegut. Diuen que està perdut pels racons d'aquest regne.",
+
+  "ITEM_WEAPON_NAME": "Hoz de la Guarda",
+  "ITEM_WEAPON_DESC": "Una fulla esmolada forjada als peus del castell. J per obrir-se pas entre la malesa i defensar-se dels intrusos.",
 
     "SKILL_HEALTH_NAME": "Manual de medicina",
     "SKILL_HEALTH_DESC": "Coneixements sobre medicina i cures. Proporciona una major salut màxima.",
@@ -116,3 +118,54 @@
     "SKILL_DOWNATTACK_NAME": "Volum II Tècniques de combat: Terrestre",
     "SKILL_DOWNATTACK_DESC": "Volum extens d'atac cos a cos, atorga el coneixement per realitzar un atac descendent."
 }
+  "ITEM_GLIDE_NAME": "Capa de Vent",
+  "ITEM_GLIDE_DESC": "Teixit vell situat al magatzem, tan suau i lleuger que et fa volar. Mantingues LSHIFT a l'aire per planejar suaument.",
+
+  "ITEM_DASH_NAME": "Impuls d'Ombra",
+  "ITEM_DASH_DESC": "Amulet màgic que permet recórrer curtes distàncies a gran velocitat per esquivar atacs i creuar zones impossibles. Prem K per utilitzar-lo.",
+
+  "ITEM_WALLJUMP_NAME": "Habilitats d'Escalada",
+  "ITEM_WALLJUMP_DESC": "Un estrany amulet que permet agafar-se a les parets i saltar des d'elles per arribar a llocs inaccessibles. Prem L per enganxar-te.",
+
+  "ITEM_DOUBLEJUMP_NAME": "Salt Diví",
+  "ITEM_DOUBLEJUMP_DESC": "Amulet que serveix per impulsar-te una segona vegada mentre ets a l'aire, permet assolir noves altures. Utilitza SPACE en l'aire.",
+
+  "ITEM_KEY_CASTLE_NAME": "Clau del Magatzem",
+  "ITEM_KEY_CASTLE_DESC": "Una clau robusta del personal de neteja. Obre la porta del magatzem reial, què hi guardaran?",
+
+  "ITEM_KEY_CASTLEDOOR_NAME": "Clau del Castell",
+  "ITEM_KEY_CASTLEDOOR_DESC": "Gran clau capaç d'obrir la porta principal del castell, resguardada pel general Roc de l'exèrcit.",
+
+  "ITEM_KEY_FOREST_NAME": "Clau del Bosc",
+  "ITEM_KEY_FOREST_DESC": "Una clau coberta de molsa, diuen que dona accés a les profunditats del bosc.",
+
+  "ITEM_KEY_MOUNTAIN_NAME": "Clau de la Muntanya",
+  "ITEM_KEY_MOUNTAIN_DESC": "Forjada amb escates de drac. Et permetrà obrir el pas cap a la cova principal de la muntanya.",
+
+  "ITEM_KEY_CATACOMBS_NAME": "Clau de les Catacumbes",
+  "ITEM_KEY_CATACOMBS_DESC": "Forjada en pedra i minerals. Obre les pesades portes cap a la foscor subterrània.",
+
+  "// --- SKILL TREE ---": "",
+  "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
+  "TXT_COST": "Cost de transcripció: ",
+  "TXT_ORBS": " Orb(s)",
+
+  "SKILL_HEALTH_NAME": "Manual de medicina",
+  "SKILL_HEALTH_DESC": "Coneixements sobre medicina i cures. Proporciona una major salut màxima.",
+
+  "SKILL_IFRAMES_NAME": "Grimori dels Ecos Temporals",
+  "SKILL_IFRAMES_DESC": "Pàgines impregnades de tècniques d'evasió. Augmenta el temps d'invulnerabilitat després de rebre un cop, permetent-te fluir entre atacs.",
+
+  "SKILL_SPEED_NAME": "Guia de supervivència",
+  "SKILL_SPEED_DESC": "Una guia per a aventurers, amb ella aprendràs a moure't amb velocitat per zones inexplorades.",
+
+  "SKILL_FASTDASH_NAME": "Apòcrifs del desplaçament",
+  "SKILL_FASTDASH_DESC": "Escrits prohibits que ensenyen a doblegar l'espai. Millora dràsticament la força i distància del teu Impuls d'Ombra.",
+
+  "SKILL_UPDOWNATTACK_NAME": "Volum I Tècniques de combat: Aire i Terra",
+  "SKILL_UPDOWNATTACK_DESC": "Llibre de combat que profunditza en el control omnidireccional de l'arma, escrit pels generals del castell, desbloqueja àgils atacs ascendents i descendents.",
+
+  "SKILL_RANGEDATTACK_NAME": "Volum II Tècniques de combat: Ull del Falcó",
+  "SKILL_RANGEDATTACK_DESC": "Volum extens sobre el llançament i control d'armes llancívoles, atorga el coneixement per realitzar un atac a distància a canvi de disminuir la teva vitalitat."
+}
+

@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="100" maxHealth="100" currentForceOrbs="10" />
+	<PlayerStats currentHealth="100" maxHealth="100" currentForceOrbs="14" />
 	<Keys castle="true" forest="true" mountain="true" catacombs="true" boss="true" />
 	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="true" />
-	<SkillTree stHealthUp="false" stIframesUp="false" stSpeedUp="false" stFastDash="false" stUpAttack="false" stDownAttack="false" />
-	<WorldState currentMap="Forest_04.tmx">
-		<Position x="2380" y="1421" />
+	<SkillTree stHealthUp="false" stIframesUp="false" stSpeedUp="false" stFastDash="false" stUpDownAttack="true" stRangedAttack="true" />
+	<WorldState currentMap="Forest_01.tmx">
+		<Position x="11448" y="2562" />
 	</WorldState>
 	<Bosses>
 		<KnightBossKilled bool="false" />
@@ -17,6 +17,7 @@
 	<CollectedItems />
 	<TriggeredDialogues />
 	<Minimap>
-		<Room id="Forest_04.tmx" />
+		<Room id="Nexo.tmx" />
+		<Room id="Forest_01.tmx" />
 	</Minimap>
 </SaveGame>

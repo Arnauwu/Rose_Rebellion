@@ -303,7 +303,7 @@ bool Player::Update(float dt)
 
 				if (space && borderR && borderL)
 				{
-					LOG("lastSafePosition saved");
+					//LOG("lastSafePosition saved");
 					lastSafePosition = { position.getX(), position.getY() - 32 };
 					safePositionTimer.Start();
 				}
@@ -719,7 +719,7 @@ void Player::Attack(float dt)
 				currentAttackHeight = 110;
 			}
 
-			if (lookUp && GameManager::GetInstance().gameState.stUpAttack) {
+			if (lookUp && GameManager::GetInstance().gameState.stUpDownAttack) {
 				int temp = currentAttackWidth;
 				currentAttackWidth = currentAttackHeight;
 				currentAttackHeight = temp;
@@ -730,7 +730,7 @@ void Player::Attack(float dt)
 				anims.GetAnim(lookingRight ? "attack_up_right" : "attack_up_left")->SetLoop(false);
 				anims.SetCurrent(lookingRight ? "attack_up_right" : "attack_up_left");
 			}
-			else if (lookDown && GameManager::GetInstance().gameState.stDownAttack) {
+			else if (lookDown && GameManager::GetInstance().gameState.stUpDownAttack) {
 				int temp = currentAttackWidth;
 				currentAttackWidth = currentAttackHeight;
 				currentAttackHeight = temp;
@@ -800,16 +800,16 @@ void Player::Attack(float dt)
 void Player::RangedAttack(float dt)
 {
 	bool rangedPressed = false;
+	if (GameManager::GetInstance().gameState.stRangedAttack) {
+		// Keyboard H
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+			rangedPressed = true;
 
-	// Keyboard H
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
-		rangedPressed = true;
-
-	// Gamepad - B button (círculo)
-	if (Engine::GetInstance().input->IsGamepadConnected() &&
-		Engine::GetInstance().input->GetGamepadButton(GAMEPAD_B) == KEY_DOWN)
-		rangedPressed = true;
-
+		// Gamepad - B button (círculo)
+		if (Engine::GetInstance().input->IsGamepadConnected() &&
+			Engine::GetInstance().input->GetGamepadButton(GAMEPAD_B) == KEY_DOWN)
+			rangedPressed = true;
+	}
 	if (!rangedPressed || isGliding) return;
 
 	// Verificar si hay cooldown activo o mana insuficiente
@@ -825,25 +825,37 @@ void Player::RangedAttack(float dt)
 		return;
 	}
 
+	anims.GetAnim(lookingRight ? "ranged_attack_right" : "ranged_attack_left")->SetLoop(false);
+	anims.SetCurrent(lookingRight ? "ranged_attack_right" : "ranged_attack_left");
+	currentAnimPriority = 4;
+
 	// Gastar mana
 	currentHealth -= hpCostPerShot;
 
-	// Determinar dirección
+	// Determinar dirección base
 	float dirX = lookingRight ? 1.0f : -1.0f;
 	float dirY = 0.0f;
 
-	// Detectar si hay entrada hacia arriba
+	//Input vertical
 	bool lookUp = Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT;
+	bool lookDown = Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && !onGround;
+
 	if (Engine::GetInstance().input->IsGamepadConnected())
 	{
 		float lstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
 		if (lstickY < -0.5f) lookUp = true;
+		else if (lstickY > 0.5f && !onGround) lookDown = true;
 	}
 
-	if (lookUp)
+	if (lookUp && GameManager::GetInstance().gameState.stUpDownAttack)
 	{
 		dirX = 0.0f;
 		dirY = -1.0f;
+	}
+	else if (lookDown && GameManager::GetInstance().gameState.stUpDownAttack)
+	{
+		dirX = 0.0f;
+		dirY = 1.0f;
 	}
 
 	// Crear projectile
@@ -1364,7 +1376,9 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 										 {276,"onWall_left" },
 										 {277,"wall_jump_left" },
 										 {288,"attack_up_right" },
-										 {300,"attack_up_left" }
+										 {300,"attack_up_left" },
+										 {384,"ranged_attack_right" },
+										 {396,"ranged_attack_left" }
 		};
 	}
 	return aliases;
@@ -1468,17 +1482,17 @@ void Player::UnlockSkill(SkillTree skill, int cost)
 		}
 		break;
 
-	case SkillTree::UP_ATTACK:
-		if (!state.stUpAttack) {
-			state.stUpAttack = true;
+	case SkillTree::UPDOWN_ATTACK:
+		if (!state.stUpDownAttack) {
+			state.stUpDownAttack = true;
 			state.currentForceOrbs -= cost;
 			AddItem(ItemID::STRENGTH_ORB, -cost);
 		}
 		break;
 
-	case SkillTree::DOWN_ATTACK:
-		if (!state.stDownAttack) {
-			state.stDownAttack = true;
+	case SkillTree::RANGED_ATTACK:
+		if (!state.stRangedAttack) {
+			state.stRangedAttack = true;
 			state.currentForceOrbs -= cost;
 			AddItem(ItemID::STRENGTH_ORB, -cost);
 		}
@@ -1927,58 +1941,6 @@ void Player::DevTools(float dt)
 
 		LOG("Skill Point Added. Current Orbs in GameState: %d", GameManager::GetInstance().gameState.currentForceOrbs);
 	}
-
-	//// Unlock Skills
-	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	//{
-	//	if (currentForceOrbs > 0)
-	//	{
-	//		if (OffensiveSkills[2] == false)
-	//		{
-	//			LOG("Unlocking Offensive Skill:");
-	//			if (OffensiveSkills[1] == true) { OffensiveSkills[2] = true; LOG("Offensive Skill 3 Unlocked"); }
-	//			else if (OffensiveSkills[0] == true) { OffensiveSkills[1] = true; LOG("Offensive Skill 2 Unlocked"); }
-	//			else { OffensiveSkills[0] = true; LOG("Offensive Skill 1 Unlocked"); }
-	//			currentForceOrbs--;
-	//		}
-	//		else { LOG("Offensive Tree Maxed"); }
-	//	}
-	//	else { LOG("Not Enough Skill Points"); }
-	//}
-
-	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	//{
-	//	if (currentForceOrbs > 0)
-	//	{
-	//		if (DefensiveSkills[2] == false)
-	//		{
-	//			LOG("Unlocking Defensive Skill:");
-	//			if (DefensiveSkills[1] == true) { DefensiveSkills[2] = true; LOG("Defensive Skill 3 Unlocked"); }
-	//			else if (DefensiveSkills[0] == true) { DefensiveSkills[1] = true; LOG("Defensive Skill 2 Unlocked"); }
-	//			else { DefensiveSkills[0] = true; LOG("Defensive Skill 1 Unlocked"); }
-	//			currentForceOrbs--;
-	//		}
-	//		else { LOG("Defensive Tree Maxed"); }
-	//	}
-	//	else { LOG("Not Enough Skill Points"); }
-	//}
-
-	//if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	//{
-	//	if (currentForceOrbs > 0)
-	//	{
-	//		if (UtilitySkills[2] == false)
-	//		{
-	//			LOG("Unlocking Utility Skill:");
-	//			if (UtilitySkills[1] == true) { UtilitySkills[2] = true; LOG("Utility Skill 3 Unlocked"); }
-	//			else if (UtilitySkills[0] == true) { UtilitySkills[1] = true; LOG("Utility Skill 2 Unlocked"); }
-	//			else { UtilitySkills[0] = true; LOG("Utility  Skill 1 Unlocked"); }
-	//			currentForceOrbs--;
-	//		}
-	//		else { LOG("Utility Tree Maxed"); }
-	//	}
-	//	else { LOG("Not Enough Skill Points"); }
-	//}
 
 	if (godMode)
 	{

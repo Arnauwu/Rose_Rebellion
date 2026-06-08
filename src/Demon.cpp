@@ -89,7 +89,7 @@ bool Demon::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
-	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 5))
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH,10))
 	{
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
 		return true;

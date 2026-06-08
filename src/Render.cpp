@@ -3,6 +3,8 @@
 #include "Render.h"
 #include "Log.h"
 
+#include "Map.h"
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -152,20 +154,22 @@ void Render::SetColorMod(SDL_Texture* texture, Uint8* r, Uint8* g, Uint8* b, Uin
 
 bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin) const
 {
+	int tileSize = Engine::GetInstance().map->GetTileHeight();
+
 	bool result = false;
 
-	float camLeft = -camera.x - margin;
-	float camTop = -camera.y - margin;
+	float camLeft = -camera.x - margin * tileSize;
+	float camTop = -camera.y - margin * tileSize;
 
-	float camRight = camLeft + camera.w + margin;
-	float camBott = camTop + camera.h + margin;
+	float camRight = camLeft + camera.w + margin * tileSize;
+	float camBott = camTop + camera.h + margin * tileSize;
 
 	float objRight = x + w;
 	float objBott = y + h;
 
-	if (objRight >= camLeft && x <= camRight)
+	if (objRight >= camLeft && (x-w) <= camRight)
 	{
-		if (objBott >= camTop && y <= camBott)
+		if (objBott >= camTop && (y-h) <= camBott)
 		{
 			result = true;
 		}
