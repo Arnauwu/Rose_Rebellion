@@ -70,7 +70,7 @@
   "// --- SKILL TREE ---": "",
   "SKILL_UNKNOWN": "Llibre il·legible o perdut.",
   "TXT_COST": "Cost de transcripció: ",
-  "TXT_ORBS": " Orbe(s)",
+  "TXT_ORBS": " Orbs(s)",
 
   "SKILL_HEALTH_NAME": "Medical Manual",
   "SKILL_HEALTH_DESC": "Knowledge about medicine and healing. Provides greater maximum health.",
