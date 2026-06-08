@@ -122,7 +122,6 @@
    <frame tileid="132" duration="150"/>
    <frame tileid="133" duration="150"/>
    <frame tileid="134" duration="150"/>
-   <frame tileid="135" duration="150"/>
   </animation>
  </tile>
  <tile id="144">
