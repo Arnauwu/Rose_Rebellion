@@ -303,7 +303,7 @@ bool Player::Update(float dt)
 
 				if (space && borderR && borderL)
 				{
-					LOG("lastSafePosition saved");
+					//LOG("lastSafePosition saved");
 					lastSafePosition = { position.getX(), position.getY() - 32 };
 					safePositionTimer.Start();
 				}
