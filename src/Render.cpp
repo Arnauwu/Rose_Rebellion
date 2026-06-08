@@ -174,17 +174,16 @@ bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin)
 	return result;
 }
 
-bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int marginX, int marginTop, int marginBottom) const
-{
+bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int marginX, int marginTop, int marginBottom) const {
 	bool result = false;
 
 	// Límite izquierdo y superior reales
 	float camLeft = -camera.x - marginX;
-	float camTop = -camera.y - marginTop;
+	float camTop = -camera.y - marginBottom; 
 
 	// Límite derecho e inferior reales (corregido)
 	float camRight = -camera.x + camera.w + marginX;
-	float camBott = -camera.y + camera.h + marginBottom;
+	float camBott = -camera.y + camera.h + marginTop;
 
 	float objRight = x + w;
 	float objBott = y + h;

@@ -31,7 +31,7 @@ struct GameState {
     bool stDownAttack = false;
 
     // World
-    std::string currentMap = "Forest_04.tmx";
+    std::string currentMap = "Mountain_01.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     // Bosses

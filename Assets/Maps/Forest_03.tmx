@@ -7895,7 +7895,7 @@
   <object id="1347" gid="213" x="1160" y="2716" width="384" height="384"/>
   <object id="1350" gid="213" x="2177.21" y="2704.97" width="724" height="724"/>
  </objectgroup>
- <objectgroup id="28" name="Fondo5-F" visible="0">
+ <objectgroup id="28" name="Fondo5-F">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
