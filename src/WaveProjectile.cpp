@@ -1,149 +1,125 @@
 #include "WaveProjectile.h"
-
 #include "Engine.h"
-#include "Physics.h"
 #include "Textures.h"
 #include "SceneManager.h"
 #include "EntityManager.h"
-
-//#include "Audio.h"
+#include "Player.h"
 #include "Render.h"
 #include "Log.h"
-
-
-
-#include "Render.h"
-
 #include "tracy/Tracy.hpp"
+#include <cmath> // Necesario para calcular colisiones manualmente
 
-WaveProjectile::WaveProjectile() : Entity(EntityType::WAVE)
-{
+// 1. Constructores
+WaveProjectile::WaveProjectile() : Entity(EntityType::WAVE) {
     name = "Wave";
+    lookingRight = true;
+    speed = 6.0f;
+    damage = 10;
+}
 
-    speed = 6.0f;         // Movement Speed
-    damage = 10;          // Damage
+WaveProjectile::WaveProjectile(Vector2D spawnPos) : Entity(EntityType::WAVE) {
+    name = "Wave";
+    position = spawnPos;
+    lookingRight = true;
+    speed = 6.0f;
+    damage = 10;
+    active = true;
 }
 
 WaveProjectile::~WaveProjectile() {}
 
-bool WaveProjectile::Start()
-{
-    //TODO: WAVE SPRITE
+// 2. Start
+bool WaveProjectile::Start() {
     std::unordered_map<int, std::string> aliases = {
         {0, "bullet"}
     };
     anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.tsx", aliases);
     anims.SetCurrent("bullet");
 
-
-    // Textura temporal
     texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.png");
 
-    //Fisica
-    int height = 20, width = 10;
-    
-
-    pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), width, height, bodyType::DYNAMIC);
-
-    pbody->listener = this;
-    pbody->ctype = ColliderType::ENEMY_ATTACK;
-
-    // Elimina la gravedad para que la bala no caiga mientras vuela
-    if (pbody != nullptr && !B2_IS_NULL(pbody->body)) {
-        Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
-    }
-
+    // IMPORTANTE: No creamos 'pbody'. Al no tener cuerpo físico, 
+    // Box2D lo ignorará por completo. ¡Es un fantasma que no empuja a nadie!
+    pbody = nullptr;
 
     return true;
 }
 
-bool WaveProjectile::Update(float dt)
-{
+// 3. Update (Movimiento y colisión matemática)
+bool WaveProjectile::Update(float dt) {
     if (!active || pendingToDelete) return true;
     ZoneScoped;
 
+    // A. Mover la ola manualmente hacia la derecha
+    position.setX(position.getX() + speed);
 
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    if (player != nullptr) {
+        Vector2D playerPos = player->GetPosition();
 
-    // Read current velocity
-    velocity.setY(Engine::GetInstance().physics->GetLinearVelocity(pbody).y);
-    
-    if (lookingRight)
-    {
-        velocity.setX(speed);
+        // Calculamos la distancia entre la ola y el jugador
+        float distX = std::abs(playerPos.getX() - position.getX());
+        float distY = std::abs(playerPos.getY() - position.getY());
+
+        // AUMENTAMOS ESTOS VALORES:
+        // distX < 60.0f para que te dé si te roza de lado
+        // distY < 100.0f para que te dé independientemente de si va por arriba o por abajo
+        if (distX < 60.0f && distY < 100.0f) {
+
+            // Opcional: imprimir en consola para asegurarte de que entra
+            LOG("¡Ola golpea al jugador!");
+
+            player->TakeDamage(damage); // Aplica el daño
+            Destroy();                  // Destruye la ola al golpear
+        }
     }
-    else
-    {
-        velocity.setX(-speed);
-    }
 
-    Engine::GetInstance().physics->SetLinearVelocity(pbody, { velocity.getX(), velocity.getY() });
+    // C. (Opcional) Autodestruir si se aleja mucho para no sobrecargar memoria
+    if (player != nullptr && (position.getX() - player->GetPosition().getX()) > 2000.0f) {
+        Destroy();
+    }
 
     Draw(dt);
     return true;
 }
 
-void WaveProjectile::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
-{
-    if (pendingToDelete) return;
-
-    switch (physB->ctype)
-    {
-    case ColliderType::PLAYER:
-        if (physB->listener != nullptr) {
-            physB->listener->TakeDamage(damage);
-        }
-        Destroy();
-        break;
-    case ColliderType::MAP:
-        Destroy();
-        break;
-    case ColliderType::ENEMY:
-    default:
-        break;
-    }
+// 4. OnCollision (Vacío porque ya no usamos físicas)
+void WaveProjectile::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) {
+    // No hace falta nada aquí
 }
 
-void WaveProjectile::Draw(float dt)
-{
-    if (Engine::GetInstance().sceneManager->isGamePaused == false) {
-
+// 5. Draw
+void WaveProjectile::Draw(float dt) {
+    if (!Engine::GetInstance().sceneManager->isGamePaused) {
         anims.Update(dt);
     }
     const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-    int x, y;
-    pbody->GetPosition(x, y);
-    position.setX((float)x);
-    position.setY((float)y);
+    // Como no hay Box2D, pintamos directamente en nuestra 'position'
+    int x = (int)position.getX();
+    int y = (int)position.getY();
 
-    // Flip Sprite
     SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
     Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1, 0, animFrame.w / 2, animFrame.h / 2);
 }
 
-Vector2D WaveProjectile::GetPosition()
-{
-    int x, y;
-    pbody->GetPosition(x, y);
-    return Vector2D((float)x, (float)y);
+// 6. GetPosition
+Vector2D WaveProjectile::GetPosition() {
+    return position; // Leemos directo de la variable, no del pbody
 }
 
-bool WaveProjectile::CleanUp()
-{
+// 7. CleanUp
+bool WaveProjectile::CleanUp() {
     active = false;
 
-    //Elimina la textura
     if (texture != nullptr) {
         Engine::GetInstance().textures->UnLoad(texture);
         texture = nullptr;
     }
 
-    // Elimina la fisica
-    if (pbody != nullptr) {
-        Engine::GetInstance().physics->DeletePhysBody(pbody);
-        pbody = nullptr;
-    }
+    // Ya no hay físicas que borrar, así que quitamos la parte del physics->DeletePhysBody
+    pbody = nullptr;
 
     return Entity::CleanUp();
 }
