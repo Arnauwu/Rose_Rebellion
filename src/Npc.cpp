@@ -61,7 +61,7 @@ bool Npc::Update(float dt) {
     if (!active) return true;
     ZoneScoped;
 
-    // Si el jugador está cerca y no está activo
+    // Si el jugador est?cerca y no est?activo
     if (isPlayerInRange && Engine::GetInstance().dialogueManager->CanInteract()) {
         // Si el jugador pulsa 'E' 
         if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
