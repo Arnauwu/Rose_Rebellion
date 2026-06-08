@@ -54,14 +54,15 @@ private:
     SDL_Texture* tutGlideTex = nullptr;
     SDL_Texture* tutDashTex = nullptr;
     SDL_Texture* tutAttackTex = nullptr;
+    SDL_Texture* notificationBgTexture = nullptr;
 
     TutorialType currentTutorial = TutorialType::NONE;
     float tutorialTimer = 0.0f;
     const float TUTORIAL_DURATION = 4.0f;
 
     // Dimensiones de un solo frame de la imagen Vides_V1.png
-    int sectionWidth = 100;  // Ajusta según el ancho real de tu PNG
-    int sectionHeight = 25;  // Ajusta según (Alto total del PNG / 8)
+    int sectionWidth = 100;  // Ajusta segun el ancho real de tu PNG
+    int sectionHeight = 25;  // Ajusta segun (Alto total del PNG / 8)
 
     int targetStateFrame = 0;   // El frame al que queremos llegar
     int currentVisualFrame = 0; // El frame que se dibuja actualmente
@@ -69,7 +70,7 @@ private:
     bool isAnimating = false;
     Timer transitionTimer;
 
-    // Configuración ventana TODO: Revisar parametros
+    // Configuracion ventana TODO: Revisar parametros
     const float BASE_SCREEN_WIDTH = 1280.0f;
     const float UI_SCALE_FACTOR = 4.0f;
     const float UI_MARGIN = 20.0f;

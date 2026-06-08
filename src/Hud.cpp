@@ -1,4 +1,4 @@
-﻿#include "Hud.h"
+#include "Hud.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Render.h"
@@ -30,6 +30,7 @@ bool Hud::Start() {
 	tutGlideTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Planear_V1.png");
 	tutDashTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Dash_V1.png");
 	tutAttackTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Atacar-V1.png");
+	notificationBgTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Feebback_V2.png");
 
 	float imagenAnchoReal = 6144.0f;
 	float imagenAltoReal = 5109.0f;
@@ -231,6 +232,10 @@ bool Hud::CleanUp() {
 	if (tutGlideTex != nullptr) Engine::GetInstance().textures->UnLoad(tutGlideTex);
 	if (tutDashTex != nullptr) Engine::GetInstance().textures->UnLoad(tutDashTex);
 	if (tutAttackTex != nullptr) Engine::GetInstance().textures->UnLoad(tutAttackTex);
+	if (notificationBgTexture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(notificationBgTexture);
+		notificationBgTexture = nullptr;
+	}
 	return true;
 }
 
@@ -241,24 +246,38 @@ void Hud::ShowNotification(const std::string& message) {
 
 void Hud::DrawNotification() {
 	if (notificationTimer > 0.0f && !notificationText.empty()) {
-		Uint8 alphaText = 255;
-		Uint8 alphaBg = 160;
+		Uint8 alpha = 255;
 
 		// Desapareciendo lentamente
 		if (notificationTimer < 1.0f) {
-			alphaText = (Uint8)(255.0f * notificationTimer);
-			alphaBg = (Uint8)(160.0f * notificationTimer);
+			alpha = (Uint8)(255.0f * notificationTimer);
 		}
 
 		// Tamaño de pantalla
-		int screenW, screenH;
-		screenW = Engine::GetInstance().window->windowWidth;
+		int screenW = Engine::GetInstance().window->windowWidth;
+		int screenH = Engine::GetInstance().window->windowHeight;
 
-		screenH = Engine::GetInstance().window->windowHeight;
+		const int rectH = 90;
+		const int horizontalPadding = 45;
+		const int screenMargin = 40;
 
-		// Tamaño del cuadro de solicitud
-		int rectW = 600;
-		int rectH = 70;
+		SDL_Rect measurementBounds = {
+			0,
+			0,
+			screenW - (screenMargin + horizontalPadding) * 2,
+			rectH - 30
+		};
+		SDL_Rect measuredText = Engine::GetInstance().render->GetTextRenderedBounds(
+			notificationText.c_str(),
+			measurementBounds,
+			FontType::MENU
+		);
+
+		int rectW = measuredText.w + horizontalPadding * 2;
+		const int minRectW = 260;
+		const int maxRectW = screenW - screenMargin * 2;
+		if (rectW < minRectW) rectW = minRectW;
+		if (rectW > maxRectW) rectW = maxRectW;
 
 		// Ubicación del aviso
 		int posY = screenH / 8;
@@ -270,12 +289,24 @@ void Hud::DrawNotification() {
 			rectH
 		};
 
-		// Draw
-		Engine::GetInstance().render->DrawRectangleUnscaled(bgRect, 220, 220, 220, alphaBg, true, false);
+		if (notificationBgTexture != nullptr) {
+			SDL_SetTextureBlendMode(notificationBgTexture, SDL_BLENDMODE_BLEND);
+			SDL_SetTextureAlphaMod(notificationBgTexture, alpha);
+			Engine::GetInstance().render->DrawTextureScaled(notificationBgTexture, bgRect);
+			SDL_SetTextureAlphaMod(notificationBgTexture, 255);
+		}
+		else {
+			Engine::GetInstance().render->DrawRectangleUnscaled(bgRect, 220, 220, 220, alpha, true, false);
+		}
 
-		// Draw txto
-		SDL_Color color = { 0, 0, 0, alphaText }; // color negro
-		SDL_Rect textBounds = { bgRect.x + 10, bgRect.y + 5, bgRect.w - 20, bgRect.h - 10 };
+		// Draw texto
+		SDL_Color color = { 45, 24, 16, alpha };
+		SDL_Rect textBounds = {
+			bgRect.x + horizontalPadding,
+			bgRect.y + 8,
+			bgRect.w - horizontalPadding * 2,
+			bgRect.h - 22
+		};
 
 		Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color, FontType::MENU);
 	}

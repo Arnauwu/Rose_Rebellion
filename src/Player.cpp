@@ -1693,6 +1693,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
 			UnlockSickle();
+			Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle.");
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::ATTACK);
 		}
 		else if (physB->listener->name == "DashObj") {
