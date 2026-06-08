@@ -399,9 +399,6 @@
     <ClCompile Include="src\WinScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="src\Projectile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Correfoc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -419,6 +416,9 @@
     </ClCompile>
     <ClCompile Include="src\DialogueTrigger.cpp">
       <Filter>Source Files\Game\Entity\Dialogos</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Projectile.cpp">
+      <Filter>Source Files\Game\Entity\Princess</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -639,7 +639,6 @@
     <ClInclude Include="src\WinScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="src\Projectile.h" />
     <ClCompile Include="src\Projectile.cpp" />
     <ClInclude Include="src\Correfoc.h" />
     <ClInclude Include="src\KeyGate.h" />
@@ -650,6 +649,9 @@
     </ClInclude>
     <ClInclude Include="src\DialogueTrigger.h">
       <Filter>Source Files\Game\Entity\Dialogos</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Projectile.h">
+      <Filter>Source Files\Game\Entity\Princess</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

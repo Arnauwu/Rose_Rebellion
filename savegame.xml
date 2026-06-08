@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="100" maxHealth="100" currentForceOrbs="11" />
+	<PlayerStats currentHealth="100" maxHealth="100" currentForceOrbs="10" />
 	<Keys castle="true" forest="true" mountain="true" catacombs="true" boss="true" />
 	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="true" />
 	<SkillTree stHealthUp="false" stIframesUp="false" stSpeedUp="false" stFastDash="false" stUpAttack="false" stDownAttack="false" />
@@ -14,13 +14,9 @@
 		<DragonBossKilled bool="false" />
 	</Bosses>
 	<OpenedDoors />
-	<CollectedItems>
-		<Item id="Forest_04.tmx_SkillPointOrb_5628_445" />
-	</CollectedItems>
+	<CollectedItems />
 	<TriggeredDialogues />
 	<Minimap>
 		<Room id="Forest_04.tmx" />
-		<Room id="Forest_03.tmx" />
-		<Room id="Forest_05.tmx" />
 	</Minimap>
 </SaveGame>
