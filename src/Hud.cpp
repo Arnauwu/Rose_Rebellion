@@ -242,6 +242,7 @@ void Hud::ShowNotification(const std::string& message) {
 
 void Hud::DrawNotification() {
 	if (notificationTimer > 0.0f && !notificationText.empty()) {
+		std::string localizedText = Engine::GetInstance().languageManager->GetString(notificationText);
 		Uint8 alpha = 255;
 
 		// Desapareciendo lentamente
@@ -253,20 +254,13 @@ void Hud::DrawNotification() {
 		int screenW = Engine::GetInstance().window->windowWidth;
 		int screenH = Engine::GetInstance().window->windowHeight;
 
-		const int rectH = 90;
+		const int rectH = 110;
 		const int horizontalPadding = 45;
 		const int screenMargin = 40;
 
-		SDL_Rect measurementBounds = {
-			0,
-			0,
-			screenW - (screenMargin + horizontalPadding) * 2,
-			rectH - 30
-		};
-		SDL_Rect measuredText = Engine::GetInstance().render->GetTextRenderedBounds(
-			notificationText.c_str(),
-			measurementBounds,
-			FontType::MENU
+		SDL_Rect measuredText = Engine::GetInstance().render->MeasureText(
+			localizedText.c_str(),
+			FontType::DIALOGUE
 		);
 
 		int rectW = measuredText.w + horizontalPadding * 2;
@@ -304,7 +298,12 @@ void Hud::DrawNotification() {
 			bgRect.h - 22
 		};
 
-		Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color, FontType::MENU);
+		Engine::GetInstance().render->DrawTextCenteredWrapped(
+			localizedText.c_str(),
+			textBounds,
+			color,
+			FontType::DIALOGUE
+		);
 	}
 }
 
@@ -387,7 +386,7 @@ void Hud::DrawTutorial() {
 		boxRect.w - 130,
 		70
 	};
-	Engine::GetInstance().render->DrawTextCentered(
+	Engine::GetInstance().render->DrawTextCenteredWrapped(
 		instruction.c_str(),
 		instructionBounds,
 		textColor,

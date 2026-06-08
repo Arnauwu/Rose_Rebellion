@@ -61,6 +61,8 @@ public:
 	// Method DrawText to render text on screen. Uses SDL3_ttf
 	bool DrawText(const char* text, int x, int y, int w, int h, SDL_Color color, FontType fontType = FontType::MENU) const;
 	bool DrawTextCentered(const char* text, const SDL_Rect& bounds, SDL_Color color, FontType fontType) const;
+	bool DrawTextCenteredWrapped(const char* text, const SDL_Rect& bounds, SDL_Color color, FontType fontType) const;
+	SDL_Rect MeasureText(const char* text, FontType fontType) const;
 	SDL_Rect GetTextRenderedBounds(const char* text, const SDL_Rect& bounds, FontType fontType) const;
 
 	// Set background color
