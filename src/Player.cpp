@@ -286,14 +286,25 @@ bool Player::Update(float dt)
 
 			if (safePositionTimer.ReadMSec() >= safePositionInterval)
 			{
-
+				//Space that occupies the player
 				Vector2D start = position;
 				Vector2D end = { position.getX(), position.getY() + (texH / 2) + 5 };
+				bool space = Engine::GetInstance().physics->Raycast(start, end);
 
-				if (Engine::GetInstance().physics->Raycast(start, end))
+				//Check if near borders
+				Vector2D start3 = { position.getX() + 64, position.getY() - 64};
+				Vector2D end3 = { position.getX() + 64, position.getY() + 64};
+				bool borderR = Engine::GetInstance().physics->Raycast(start3, end3);
+
+				Vector2D start4 = { position.getX() - 64, position.getY() - 64};
+				Vector2D end4 = { position.getX() - 64, position.getY() + 64};
+				bool borderL = Engine::GetInstance().physics->Raycast(start4, end4);
+
+
+				if (space && borderR && borderL)
 				{
-					//LOG("lastSafePosition saved");
-					lastSafePosition = position;
+					LOG("lastSafePosition saved");
+					lastSafePosition = { position.getX(), position.getY() - 32 };
 					safePositionTimer.Start();
 				}
 			}
