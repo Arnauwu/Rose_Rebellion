@@ -4,6 +4,8 @@
 #include "Textures.h"
 
 #include "LOG.h"
+#include <algorithm>
+#include <vector>
 
 UIDialogueBox::UIDialogueBox(int id, float anchorX, float anchorY, float wPercent, float hPercent, const char* text)
 	: UIElement(UIElementType::DIALOGUE_BOX, id, anchorX, anchorY, wPercent, hPercent, text) {
@@ -12,7 +14,8 @@ UIDialogueBox::UIDialogueBox(int id, float anchorX, float anchorY, float wPercen
 
 UIDialogueBox::~UIDialogueBox() {}
 void UIDialogueBox::SetBackgroundTexture(SDL_Texture* bgTex) {
-backgroundTex = bgTex;}
+	backgroundTex = bgTex;
+}
 
 bool UIDialogueBox::Update(float dt) {
 	if (!visible) return true;
@@ -60,7 +63,7 @@ void UIDialogueBox::Draw() const {
 		SDL_Rect nameBox;
 		nameBox.w = (int)(mainBox.w * 0.25f);
 		nameBox.h = (int)(mainBox.h * 0.30f);
-		nameBox.y = mainBox.y - nameBox.h ; 
+		nameBox.y = mainBox.y - nameBox.h;
 
 		// LÓGICA DE POSICIÓN
 		if (currentSpeaker == "Rose" || currentSpeaker == "Rose-") {
@@ -81,21 +84,26 @@ void UIDialogueBox::Draw() const {
 
 	// CAJA DEL DIÁLOGO
 	if (!currentText.empty()) {
-		int textX = 0;
-		int textY = mainBox.y + (int)(mainBox.h * 0.2f); 
-		int maxW = 0;
-		int maxH = (int)(mainBox.h * 0.85f);
-
-		if (currentSpeaker == "Rose" || currentSpeaker == "Rose-") {
-			textX = mainBox.x + (int)(mainBox.w * 0.15f);
-			maxW = (int)(mainBox.w * 0.8f);
+		if (tutorialMode) {
+			DrawTutorialContent(mainBox);
 		}
 		else {
-			textX = mainBox.x + (int)(mainBox.w * 0.05f);
-			maxW = (int)(mainBox.w * 0.8f);
-		}
+			int textX = 0;
+			int textY = mainBox.y + (int)(mainBox.h * 0.2f);
+			int maxW = 0;
+			int maxH = (int)(mainBox.h * 0.85f);
 
-		Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::CUERPO);
+			if (currentSpeaker == "Rose" || currentSpeaker == "Rose-") {
+				textX = mainBox.x + (int)(mainBox.w * 0.15f);
+				maxW = (int)(mainBox.w * 0.8f);
+			}
+			else {
+				textX = mainBox.x + (int)(mainBox.w * 0.05f);
+				maxW = (int)(mainBox.w * 0.8f);
+			}
+
+			Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::CUERPO);
+		}
 	}
 
 	// TEXTURA PORTRAIT
@@ -133,3 +141,124 @@ bool UIDialogueBox::CleanUp() {
 }
 
 void UIDialogueBox::SetDialogueText(const std::string& text) { currentText = text; }
+
+void UIDialogueBox::SetTutorialMode(bool enabled) {
+	tutorialMode = enabled;
+}
+
+void UIDialogueBox::DrawTutorialContent(const SDL_Rect& mainBox) const {
+	std::string instruction = currentText;
+	std::string keyText;
+	std::string confirmation;
+
+	size_t firstBreak = currentText.find('\n');
+	if (firstBreak != std::string::npos) {
+		instruction = currentText.substr(0, firstBreak);
+		size_t confirmationBreak = currentText.find("\n\n", firstBreak + 1);
+
+		if (confirmationBreak == std::string::npos) {
+			keyText = currentText.substr(firstBreak + 1);
+		}
+		else {
+			keyText = currentText.substr(firstBreak + 1, confirmationBreak - firstBreak - 1);
+			confirmation = currentText.substr(confirmationBreak + 2);
+		}
+	}
+
+	SDL_Rect instructionBounds = {
+		mainBox.x + (int)(mainBox.w * 0.10f),
+		mainBox.y + (int)(mainBox.h * 0.10f),
+		(int)(mainBox.w * 0.80f),
+		(int)(mainBox.h * 0.34f)
+	};
+	Engine::GetInstance().render->DrawTextCenteredWrapped(
+		instruction.c_str(), instructionBounds, textColor, FontType::CUERPO);
+
+	if (!keyText.empty()) {
+		SDL_Rect keyBounds = {
+			mainBox.x + (int)(mainBox.w * 0.10f),
+			mainBox.y + (int)(mainBox.h * 0.45f),
+			(int)(mainBox.w * 0.80f),
+			(int)(mainBox.h * 0.27f)
+		};
+		DrawTutorialKeys(keyText, keyBounds);
+	}
+
+	if (!confirmation.empty()) {
+		SDL_Rect confirmationBounds = {
+			mainBox.x + (int)(mainBox.w * 0.10f),
+			mainBox.y + (int)(mainBox.h * 0.76f),
+			(int)(mainBox.w * 0.80f),
+			(int)(mainBox.h * 0.16f)
+		};
+		Engine::GetInstance().render->DrawTextCentered(
+			confirmation.c_str(), confirmationBounds, textColor, FontType::CUERPO);
+	}
+}
+
+void UIDialogueBox::DrawTutorialKeys(const std::string& keyText, const SDL_Rect& bounds) const {
+	struct KeyPart {
+		std::string text;
+		bool isKey;
+		int width;
+	};
+
+	std::vector<KeyPart> parts;
+	auto addKey = [&parts](const std::string& text) {
+		int width = std::max(58, (int)text.length() * 13 + 28);
+		parts.push_back({ text, true, width });
+		};
+	auto addSeparator = [&parts](const std::string& text) {
+		parts.push_back({ text, false, 34 });
+		};
+
+	size_t plusPos = keyText.find(" + ");
+	size_t slashPos = keyText.find(" / ");
+	size_t repeatPos = keyText.rfind(" x");
+
+	if (plusPos != std::string::npos) {
+		addKey(keyText.substr(0, plusPos));
+		addSeparator("+");
+		addKey(keyText.substr(plusPos + 3));
+	}
+	else if (slashPos != std::string::npos) {
+		addKey(keyText.substr(0, slashPos));
+		addSeparator("/");
+		addKey(keyText.substr(slashPos + 3));
+	}
+	else if (repeatPos != std::string::npos) {
+		addKey(keyText.substr(0, repeatPos));
+		addSeparator(keyText.substr(repeatPos + 1));
+	}
+	else {
+		addKey(keyText);
+	}
+
+	const int spacing = 10;
+	int totalWidth = 0;
+	for (const KeyPart& part : parts) totalWidth += part.width;
+	totalWidth += spacing * ((int)parts.size() - 1);
+
+	int currentX = bounds.x + (bounds.w - totalWidth) / 2;
+	int keyHeight = std::min(52, bounds.h - 8);
+	int keyY = bounds.y + (bounds.h - keyHeight) / 2;
+	auto render = Engine::GetInstance().render;
+
+	for (const KeyPart& part : parts) {
+		SDL_Rect partRect = { currentX, keyY, part.width, keyHeight };
+		if (part.isKey) {
+			SDL_Rect shadowRect = { partRect.x + 3, partRect.y + 4, partRect.w, partRect.h };
+			render->DrawRectangleUnscaled(shadowRect, 55, 25, 18, 255, true, false);
+			render->DrawRectangleUnscaled(partRect, 116, 58, 42, 255, true, false);
+			render->DrawRectangleUnscaled(partRect, 238, 205, 148, 255, false, false);
+
+			SDL_Rect textBounds = { partRect.x + 6, partRect.y + 3, partRect.w - 12, partRect.h - 6 };
+			SDL_Color keyColor = { 255, 239, 196, 255 };
+			render->DrawTextCentered(part.text.c_str(), textBounds, keyColor, FontType::CUERPO);
+		}
+		else {
+			render->DrawTextCentered(part.text.c_str(), partRect, textColor, FontType::CUERPO);
+		}
+		currentX += part.width + spacing;
+	}
+}
