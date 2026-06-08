@@ -15,7 +15,9 @@ enum class TutorialType {
     JUMP,
     GLIDE,
     DASH,
-    ATTACK
+    ATTACK,
+    DOUBLE_JUMP,
+    WALL_JUMP
 };
 
 class Hud : public Module
@@ -43,22 +45,19 @@ private:
     void DrawMineralIndicator();
     void DrawNotification();
     void DrawTutorial();
+    void DrawTutorialKey(const std::string& key, int centerX, int y, Uint8 alpha);
 
 private:
 
     SDL_Texture* lifeBarTexture = nullptr;
     std::vector<SDL_Rect> lifeFrames;
 
-    SDL_Texture* tutWalkTex = nullptr;
-    SDL_Texture* tutJumpTex = nullptr;
-    SDL_Texture* tutGlideTex = nullptr;
-    SDL_Texture* tutDashTex = nullptr;
-    SDL_Texture* tutAttackTex = nullptr;
+    SDL_Texture* tutorialBoxTexture = nullptr;
     SDL_Texture* notificationBgTexture = nullptr;
 
     TutorialType currentTutorial = TutorialType::NONE;
     float tutorialTimer = 0.0f;
-    const float TUTORIAL_DURATION = 4.0f;
+    const float TUTORIAL_DURATION = 5.0f;
 
     // Dimensiones de un solo frame de la imagen Vides_V1.png
     int sectionWidth = 100;  // Ajusta segun el ancho real de tu PNG

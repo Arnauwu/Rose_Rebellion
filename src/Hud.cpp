@@ -25,11 +25,7 @@ bool Hud::Start() {
 	LOG("Loading HUD");
 	lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
 
-	tutWalkTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Caminar_V1.png");
-	tutJumpTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Saltar_V1.png");
-	tutGlideTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Planear_V1.png");
-	tutDashTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Dash_V1.png");
-	tutAttackTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Atacar-V1.png");
+	tutorialBoxTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Tutorial_BoxLarge.png");
 	notificationBgTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Feebback_V2.png");
 
 	float imagenAnchoReal = 6144.0f;
@@ -227,11 +223,10 @@ bool Hud::CleanUp() {
 		Engine::GetInstance().textures->UnLoad(lifeBarTexture);
 		lifeBarTexture = nullptr;
 	}
-	if (tutWalkTex != nullptr) Engine::GetInstance().textures->UnLoad(tutWalkTex);
-	if (tutJumpTex != nullptr) Engine::GetInstance().textures->UnLoad(tutJumpTex);
-	if (tutGlideTex != nullptr) Engine::GetInstance().textures->UnLoad(tutGlideTex);
-	if (tutDashTex != nullptr) Engine::GetInstance().textures->UnLoad(tutDashTex);
-	if (tutAttackTex != nullptr) Engine::GetInstance().textures->UnLoad(tutAttackTex);
+	if (tutorialBoxTexture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(tutorialBoxTexture);
+		tutorialBoxTexture = nullptr;
+	}
 	if (notificationBgTexture != nullptr) {
 		Engine::GetInstance().textures->UnLoad(notificationBgTexture);
 		notificationBgTexture = nullptr;
@@ -320,50 +315,126 @@ void Hud::ShowTutorial(TutorialType type) {
 void Hud::DrawTutorial() {
 	if (currentTutorial == TutorialType::NONE || tutorialTimer <= 0.0f) return;
 
-	SDL_Texture* textureToDraw = nullptr;
+	std::string instruction;
+	std::vector<std::string> keys;
 
 	switch (currentTutorial) {
-	case TutorialType::WALK:   textureToDraw = tutWalkTex; break;
-	case TutorialType::JUMP:   textureToDraw = tutJumpTex; break;
-	case TutorialType::GLIDE:  textureToDraw = tutGlideTex; break;
-	case TutorialType::DASH:   textureToDraw = tutDashTex; break;
-	case TutorialType::ATTACK: textureToDraw = tutAttackTex; break;
-	default: return;
+	case TutorialType::WALK:
+		instruction = "Move left and right";
+		keys = { "A", "D" };
+		break;
+	case TutorialType::JUMP:
+		instruction = "Jump";
+		keys = { "SPACE" };
+		break;
+	case TutorialType::GLIDE:
+		instruction = "Cape obtained! Hold to glide";
+		keys = { "LSHIFT" };
+		break;
+	case TutorialType::DASH:
+		instruction = "Dash unlocked! Dash forward";
+		keys = { "K" };
+		break;
+	case TutorialType::ATTACK:
+		instruction = "Sickle obtained! Attack";
+		keys = { "J" };
+		break;
+	case TutorialType::DOUBLE_JUMP:
+		instruction = "Double jump unlocked! Press twice";
+		keys = { "SPACE", "SPACE" };
+		break;
+	case TutorialType::WALL_JUMP:
+		instruction = "Wall jump unlocked! Jump from a wall";
+		keys = { "L", "+", "SPACE" };
+		break;
+	default:
+		return;
 	}
 
-	if (textureToDraw == nullptr) return;
+	if (tutorialBoxTexture == nullptr) return;
 
 	// Calcular el nivel de transparencia para el desvanecimiento final (el último segundo se borra poco a poco)
 	Uint8 alpha = 255;
 	if (tutorialTimer < 1.0f) {
 		alpha = (Uint8)(255.0f * tutorialTimer);
 	}
-	SDL_SetTextureAlphaMod(textureToDraw, alpha);
+	SDL_SetTextureAlphaMod(tutorialBoxTexture, alpha);
 
 	// Obtener dimensiones reales de la textura
-	float texW, texH;
-	SDL_GetTextureSize(textureToDraw, &texW, &texH);
+	int screenW = Engine::GetInstance().window->windowWidth;
+	const int boxW = 520;
+	const int boxH = 260;
+	SDL_Rect boxRect = { (screenW - boxW) / 2, 45, boxW, boxH };
 
 	// Dónde y a qué tamaño dibujarlo
-	SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
-	int screenW = Engine::GetInstance().window->windowWidth;
-	int screenH = Engine::GetInstance().window->windowHeight;
+	SDL_SetTextureBlendMode(tutorialBoxTexture, SDL_BLENDMODE_BLEND);
 
 	// Puedes multiplicar el texW y texH por un factor si la imagen es muy grande o pequeña
-	float scale = 0.8f;
-
-	SDL_FRect dstFRect;
-	dstFRect.w = texW * scale;
-	dstFRect.h = texH * scale;
+	Engine::GetInstance().render->DrawTextureScaled(tutorialBoxTexture, boxRect);
 	// Centrado horizontal
-	dstFRect.x = (screenW - dstFRect.w) / 2.0f;
 	// Posicionado en la parte inferior de la pantalla (a 100 px del borde)
-	dstFRect.y = 60.0f;
-
-	SDL_RenderTexture(renderer, textureToDraw, nullptr, &dstFRect);
 
 	// Restaurar el alpha a 255 por seguridad
-	SDL_SetTextureAlphaMod(textureToDraw, 255);
+	SDL_SetTextureAlphaMod(tutorialBoxTexture, 255);
+
+	SDL_Color textColor = { 55, 27, 20, alpha };
+	SDL_Rect instructionBounds = {
+		boxRect.x + 65,
+		boxRect.y + 55,
+		boxRect.w - 130,
+		70
+	};
+	Engine::GetInstance().render->DrawTextCentered(
+		instruction.c_str(),
+		instructionBounds,
+		textColor,
+		FontType::DIALOGUE
+	);
+
+	int totalWidth = 0;
+	for (const std::string& key : keys) {
+		if (key == "+") totalWidth += 28;
+		else if (key == "SPACE") totalWidth += 116;
+		else if (key.size() > 2) totalWidth += 96;
+		else totalWidth += 58;
+	}
+	totalWidth += (int)(keys.size() - 1) * 14;
+
+	int currentX = screenW / 2 - totalWidth / 2;
+	const int keyY = boxRect.y + 150;
+	for (const std::string& key : keys) {
+		int keyWidth = 58;
+		if (key == "+") keyWidth = 28;
+		else if (key == "SPACE") keyWidth = 116;
+		else if (key.size() > 2) keyWidth = 96;
+
+		if (key == "+") {
+			SDL_Rect plusBounds = { currentX, keyY, keyWidth, 50 };
+			Engine::GetInstance().render->DrawTextCentered("+", plusBounds, textColor, FontType::DIALOGUE);
+		}
+		else {
+			DrawTutorialKey(key, currentX + keyWidth / 2, keyY, alpha);
+		}
+		currentX += keyWidth + 14;
+	}
+}
+
+void Hud::DrawTutorialKey(const std::string& key, int centerX, int y, Uint8 alpha) {
+	int keyWidth = 58;
+	if (key == "SPACE") keyWidth = 116;
+	else if (key.size() > 2) keyWidth = 96;
+
+	SDL_Rect shadowRect = { centerX - keyWidth / 2 + 3, y + 4, keyWidth, 50 };
+	SDL_Rect keyRect = { centerX - keyWidth / 2, y, keyWidth, 50 };
+
+	auto render = Engine::GetInstance().render;
+	render->DrawRectangleUnscaled(shadowRect, 55, 25, 18, alpha, true, false);
+	render->DrawRectangleUnscaled(keyRect, 116, 58, 42, alpha, true, false);
+	render->DrawRectangleUnscaled(keyRect, 238, 205, 148, alpha, false, false);
+
+	SDL_Color keyColor = { 255, 239, 196, alpha };
+	SDL_Rect keyTextBounds = { keyRect.x + 6, keyRect.y + 4, keyRect.w - 12, keyRect.h - 8 };
+	render->DrawTextCentered(key.c_str(), keyTextBounds, keyColor, FontType::CUERPO);
 }
 
 void Hud::TriggerBossIntro(SDL_Texture* portraitTex, AnimationSet* anim, float duration) {

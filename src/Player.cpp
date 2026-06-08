@@ -1396,7 +1396,7 @@ void Player::UnlockSickle()
 void Player::UnlockDoubleJump() {
 	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
-	Engine::GetInstance().hud->ShowNotification("You have unlocked DoubleJump!");
+	Engine::GetInstance().hud->ShowTutorial(TutorialType::DOUBLE_JUMP);
 	LOG("Double Jump Unlocked! You can do a double jump");
 
 }
@@ -1413,7 +1413,7 @@ void Player::UnlockDash() {
 void Player::UnlockWallJump() {
 	GameManager::GetInstance().gameState.wallJumpUnlocked = true;
 	AddItem(ItemID::WALLJUMP_OBJ, 1);
-	Engine::GetInstance().hud->ShowNotification("You have unlocked Wall Jump!");
+	Engine::GetInstance().hud->ShowTutorial(TutorialType::WALL_JUMP);
 	LOG("Wall Jump Unlocked! You can now wall jump");
 }
 
@@ -1693,7 +1693,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
 			UnlockSickle();
-			Engine::GetInstance().hud->ShowNotification("You have obtained the Sickle.");
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::ATTACK);
 		}
 		else if (physB->listener->name == "DashObj") {
