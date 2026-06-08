@@ -15020,7 +15020,7 @@
    <properties>
     <property name="DoorClosed" type="bool" value="true"/>
     <property name="NoAnimation" type="bool" value="true"/>
-    <property name="TeleportTo" type="file" value="Castle.tmx"/>
+    <property name="TeleportTo" type="file" value="Nexo.tmx"/>
    </properties>
   </object>
   <object id="23" x="2693.18" y="1941.19" width="425.576" height="618.727">
