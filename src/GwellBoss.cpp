@@ -16,7 +16,7 @@
 
 #include <random>
 
-//#include "GwellBossProjectile.h"
+#include "GameManager.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -97,6 +97,18 @@ bool GwellBoss::Update(float dt)
 		Knockback();
 		ApplyPhysics();
 	}
+
+	if (isdead && anims.GetCurrentName() != "dead")
+	{
+		isKnockedback = false;
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
+		anims.GetAnim("dead")->SetLoop(false);
+		anims.SetCurrent("dead");
+		pbody->ctype = ColliderType::UNKNOWN;
+		Engine::GetInstance().physics->SetBodyType(pbody, bodyType::STATIC);
+	}
+
+	GameManager::GetInstance().gameState.lizardBossKilled = true;
 
 	Draw(dt);
 

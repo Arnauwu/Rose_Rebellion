@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="104" height="72" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="708">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="104" height="72" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="708">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -11,7 +11,7 @@
   <image source="Pathfinding/MapMetadata.png" trans="ffffff" width="256" height="128"/>
  </tileset>
  <tileset firstgid="67" name="Atl_Montaña" tilewidth="128" tileheight="128" tilecount="64" columns="8">
-  <image source="Montain/Atl_Montaña.png" width="1024" height="1024"/>
+  <image source="Montain/Tiles/Atl_Montaña.png" width="1024" height="1024"/>
   <wangsets>
    <wangset name="Mixes" type="mixed" tile="-1">
     <wangcolor name="MixTierra" color="#ff0000" tile="-1" probability="1"/>
@@ -45,226 +45,182 @@
    </wangset>
   </wangsets>
  </tileset>
- <tileset firstgid="131" name="Atl_Montaña_Fondo" tilewidth="2304" tileheight="2304" tilecount="1" columns="1">
-  <image source="Montain/Atl_Montaña_Fondo.png" width="2304" height="2304"/>
+ <tileset firstgid="131" name="Atl_Cueva" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Montain/Tiles/Atl_Cueva.png" trans="ffffff" width="1024" height="1024"/>
  </tileset>
- <tileset firstgid="132" name="Barricada_" tilewidth="1156" tileheight="264" tilecount="1" columns="1">
-  <image source="Montain/Barricada_.PNG" width="1156" height="264"/>
+ <tileset firstgid="195" name="T_Arbustos" tilewidth="384" tileheight="307" tilecount="35" columns="7">
+  <image source="Montain/Arbustos y Rocas/T_Arbustos.png" width="2688" height="1536"/>
  </tileset>
- <tileset firstgid="133" name="Atl_Montaña_Arboles" tilewidth="2304" tileheight="2304" tilecount="1" columns="1">
-  <image source="Montain/Atl_Montaña_Arboles.png" width="2304" height="2304"/>
+ <tileset firstgid="230" name="Sol" tilewidth="2048" tileheight="2048" tilecount="1" columns="1">
+  <image source="Montain/Fondos/Sol.png" width="2048" height="2048"/>
  </tileset>
- <tileset firstgid="134" name="Atl_Montaña_Suelo" tilewidth="2304" tileheight="512" tilecount="4" columns="1">
-  <image source="Montain/Atl_Montaña_Suelo.png" trans="ffffff" width="2304" height="2304"/>
+ <tileset firstgid="231" name="T_Montaña" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
+  <image source="Montain/Fondos/T_Montaña.png" width="4096" height="3025"/>
  </tileset>
- <tileset firstgid="138" name="Atl_Cueva" tilewidth="128" tileheight="128" tilecount="64" columns="8">
-  <image source="Montain/Atl_Cueva.png" trans="ffffff" width="1024" height="1024"/>
+ <tileset firstgid="232" name="T_Montaña_2" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
+  <image source="Montain/Fondos/T_Montaña_2.png" width="4096" height="3025"/>
  </tileset>
- <tileset firstgid="202" name="Atl_Montaña_Rocas_01" tilewidth="512" tileheight="512" tilecount="4" columns="2">
-  <image source="Montain/Atl_Montaña_Rocas_01.png" trans="ffffff" width="1024" height="1024"/>
+ <tileset firstgid="233" name="T_Montaña_Castillo" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
+  <image source="Montain/Fondos/T_Montaña_Castillo.png" width="4096" height="3025"/>
  </tileset>
- <tileset firstgid="206" name="Atl_Montaña_Rocas_02" tilewidth="512" tileheight="512" tilecount="4" columns="2">
-  <image source="Montain/Atl_Montaña_Rocas_02.png" trans="ffffff" width="1024" height="1024"/>
+ <tileset firstgid="234" name="Atl_Montaña_Arboles" tilewidth="2304" tileheight="2304" tilecount="1" columns="1">
+  <image source="Montain/Fondos/Atl_Montaña_Arboles.png" width="2304" height="2304"/>
  </tileset>
- <tileset firstgid="210" name="Atl_Montaña_1rPlano_Superior" tilewidth="512" tileheight="512" tilecount="4" columns="2">
-  <image source="Montain/Atl_Montaña_1rPlano_Superior.png" trans="ffffff" width="1024" height="1024"/>
+ <tileset firstgid="235" name="T_Nubes" tilewidth="1152" tileheight="384" tilecount="4" columns="1">
+  <image source="Montain/Fondos/T_Nubes.png" width="1152" height="1536"/>
  </tileset>
- <tileset firstgid="214" name="Atl_Montaña_1rPlano_Inferior" tilewidth="512" tileheight="512" tilecount="4" columns="2">
-  <image source="Montain/Atl_Montaña_1rPlano_Inferior.png" trans="ffffff" width="1024" height="1024"/>
+ <tileset firstgid="239" name="Atl_Montaña_Fondo" tilewidth="2304" tileheight="2304" tilecount="1" columns="1">
+  <image source="Montain/Fondos/Atl_Montaña_Fondo.png" width="2304" height="2304"/>
+ </tileset>
+ <tileset firstgid="240" name="T_Luz (1)" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
+  <image source="Montain/luces/T_Luz (1).png" width="4096" height="3025"/>
+ </tileset>
+ <tileset firstgid="241" name="T_Luz_2" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
+  <image source="Montain/luces/T_Luz_2.png" width="4096" height="3025"/>
  </tileset>
  <objectgroup id="23" name="Fondo_01">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="430" gid="131" x="0" y="9216" width="13312" height="9216"/>
  </objectgroup>
  <objectgroup id="24" name="Fondo_02">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="554" gid="133" x="1792" y="7040" width="2432" height="2816"/>
-  <object id="555" gid="2147483781" x="4176" y="-128" width="2380" height="4316" rotation="180"/>
-  <object id="556" gid="133" x="8704" y="8192" width="2304" height="2304"/>
-  <object id="557" gid="133" x="10624" y="8192" width="2304" height="2304"/>
-  <object id="558" gid="133" x="10496" y="2432" width="2304" height="2304"/>
-  <object id="559" gid="133" x="-1024" y="8064" width="2304" height="3968"/>
-  <object id="560" gid="2147483781" x="-1024" y="1408" width="2304" height="2304"/>
  </objectgroup>
  <objectgroup id="26" name="Fondo_03">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="636" gid="202" x="128" y="8192" width="1280" height="1536"/>
-  <object id="637" gid="204" x="1792" y="7040" width="2176" height="1280"/>
-  <object id="638" gid="203" x="9216" y="8192" width="1280" height="1152"/>
-  <object id="639" gid="208" x="10496" y="8192" width="1280" height="1152"/>
-  <object id="640" gid="205" x="6016" y="8192" width="1408" height="1536"/>
-  <object id="641" gid="206" x="9728" y="7296" width="512" height="512"/>
-  <object id="642" gid="208" x="10240" y="6656" width="512" height="512"/>
-  <object id="643" gid="209" x="11264" y="6656" width="512" height="512"/>
-  <object id="644" gid="209" x="11008" y="7296" width="512" height="512"/>
-  <object id="645" gid="208" x="12800" y="8192" width="512" height="512"/>
-  <object id="646" gid="209" x="10368" y="4864" width="512" height="512"/>
-  <object id="647" gid="209" x="9216" y="4864" width="512" height="512"/>
-  <object id="648" gid="204" x="4352" y="4096" width="512" height="512"/>
-  <object id="649" gid="202" x="2304" y="4096" width="512" height="512"/>
  </objectgroup>
  <objectgroup id="25" name="Fondo_04">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="614" gid="135" x="6016" y="8320" width="2304" height="512"/>
-  <object id="615" gid="135" x="8320" y="8448" width="2304" height="512"/>
-  <object id="616" gid="136" x="10624" y="8320" width="2304" height="512"/>
-  <object id="617" gid="135" x="12672" y="8320" width="2304" height="512"/>
-  <object id="618" gid="136" x="8704" y="7424" width="2304" height="512"/>
-  <object id="619" gid="2147483784" x="9984" y="7424" width="2304" height="512"/>
-  <object id="620" gid="2147483784" x="9216" y="6784" width="2304" height="512"/>
-  <object id="621" gid="136" x="10496" y="6784" width="2304" height="512"/>
-  <object id="622" gid="136" x="8704" y="5760" width="2304" height="512"/>
-  <object id="623" gid="135" x="11008" y="5760" width="2304" height="512"/>
-  <object id="624" gid="135" x="13568" y="5760" width="2304" height="512" rotation="180"/>
-  <object id="625" gid="135" x="8704" y="4992" width="2304" height="512"/>
-  <object id="626" gid="136" x="11008" y="4864" width="2304" height="512"/>
-  <object id="627" gid="2147483784" x="13184" y="4864" width="2304" height="512" rotation="180"/>
-  <object id="628" gid="2147483784" x="10880" y="4992" width="2304" height="512" rotation="180"/>
-  <object id="629" gid="135" x="11008" y="5760" width="2304" height="512" rotation="180"/>
-  <object id="630" gid="135" x="1792" y="7168" width="2304" height="512"/>
-  <object id="631" gid="135" x="-384" y="8064" width="2304" height="512"/>
-  <object id="632" gid="136" x="2560" y="4096" width="2304" height="512"/>
-  <object id="633" gid="2147483784" x="256" y="4096" width="2304" height="512"/>
-  <object id="634" gid="136" x="-1024" y="1408" width="2304" height="512"/>
-  <object id="635" gid="135" x="9216" y="1920" width="2048" height="512"/>
  </objectgroup>
  <layer id="1" name="Map" width="104" height="72">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
   <data>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="183"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="176"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="165"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483813"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="158"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483806"/>
    <tile/>
    <tile/>
    <tile/>
@@ -313,15 +269,21 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="165"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="167"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="158"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="160"/>
    <tile/>
    <tile/>
    <tile/>
@@ -353,16 +315,16 @@
    <tile/>
    <tile gid="1610612757"/>
    <tile gid="102"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483814"/>
-   <tile gid="2147483813"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483807"/>
+   <tile gid="2147483806"/>
    <tile/>
    <tile/>
    <tile/>
@@ -417,15 +379,15 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="165"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="167"/>
+   <tile gid="158"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="160"/>
    <tile/>
    <tile/>
    <tile/>
@@ -457,16 +419,16 @@
    <tile/>
    <tile gid="1610612756"/>
    <tile gid="102"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483822"/>
-   <tile gid="2147483813"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483815"/>
+   <tile gid="2147483806"/>
    <tile/>
    <tile/>
    <tile/>
@@ -521,15 +483,15 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="165"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="166"/>
-   <tile gid="167"/>
+   <tile gid="158"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="159"/>
+   <tile gid="160"/>
    <tile/>
    <tile/>
    <tile/>
@@ -561,16 +523,16 @@
    <tile/>
    <tile gid="1610612755"/>
    <tile gid="102"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483830"/>
-   <tile gid="2147483829"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483823"/>
+   <tile gid="2147483822"/>
    <tile/>
    <tile/>
    <tile/>
@@ -625,15 +587,15 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="165"/>
-   <tile gid="174"/>
-   <tile gid="174"/>
-   <tile gid="174"/>
-   <tile gid="174"/>
-   <tile gid="174"/>
-   <tile gid="174"/>
-   <tile gid="174"/>
-   <tile gid="174"/>
+   <tile gid="158"/>
+   <tile gid="167"/>
+   <tile gid="167"/>
+   <tile gid="167"/>
+   <tile gid="167"/>
+   <tile gid="167"/>
+   <tile gid="167"/>
+   <tile gid="167"/>
+   <tile gid="167"/>
    <tile gid="1610612836"/>
    <tile gid="1610612844"/>
    <tile/>
@@ -655,9 +617,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="157"/>
-   <tile gid="158"/>
-   <tile gid="159"/>
+   <tile gid="150"/>
+   <tile gid="151"/>
+   <tile gid="152"/>
    <tile gid="2684354577"/>
    <tile/>
    <tile/>
@@ -729,14 +691,14 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="181"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
+   <tile gid="174"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
    <tile gid="104"/>
    <tile gid="3221225493"/>
    <tile gid="3221225491"/>
@@ -760,8 +722,8 @@
    <tile/>
    <tile/>
    <tile gid="1610612765"/>
-   <tile gid="165"/>
-   <tile gid="167"/>
+   <tile gid="158"/>
+   <tile gid="160"/>
    <tile gid="2684354578"/>
    <tile/>
    <tile/>
@@ -864,8 +826,8 @@
    <tile/>
    <tile/>
    <tile gid="1610612764"/>
-   <tile gid="165"/>
-   <tile gid="167"/>
+   <tile gid="158"/>
+   <tile gid="160"/>
    <tile/>
    <tile/>
    <tile/>
@@ -968,8 +930,8 @@
    <tile/>
    <tile/>
    <tile gid="1610612762"/>
-   <tile gid="165"/>
-   <tile gid="167"/>
+   <tile gid="158"/>
+   <tile gid="160"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1072,8 +1034,8 @@
    <tile/>
    <tile/>
    <tile gid="1610612761"/>
-   <tile gid="165"/>
-   <tile gid="167"/>
+   <tile gid="158"/>
+   <tile gid="160"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1175,9 +1137,9 @@
    <tile gid="27"/>
    <tile gid="28"/>
    <tile gid="29"/>
-   <tile gid="173"/>
-   <tile gid="174"/>
-   <tile gid="175"/>
+   <tile gid="166"/>
+   <tile gid="167"/>
+   <tile gid="168"/>
    <tile gid="2684354577"/>
    <tile/>
    <tile/>
@@ -1273,15 +1235,15 @@
    <tile/>
    <tile gid="1610612757"/>
    <tile gid="2684354670"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="182"/>
-   <tile gid="183"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="175"/>
+   <tile gid="176"/>
    <tile gid="2684354578"/>
    <tile/>
    <tile/>
@@ -7640,37 +7602,6 @@
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
   </properties>
-  <object id="672" gid="213" x="8704" y="5504" width="512" height="512"/>
-  <object id="673" gid="211" x="9088" y="5504" width="512" height="512"/>
-  <object id="674" gid="211" x="11776" y="5504" width="512" height="512"/>
-  <object id="675" gid="210" x="11264" y="5504" width="512" height="512"/>
-  <object id="676" gid="212" x="9984" y="5504" width="512" height="512"/>
-  <object id="678" gid="213" x="10112" y="2432" width="512" height="512"/>
-  <object id="679" gid="212" x="11392" y="3200" width="512" height="512"/>
-  <object id="680" gid="211" x="11008" y="3200" width="512" height="512"/>
-  <object id="681" gid="211" x="10496" y="5504" width="512" height="512"/>
-  <object id="682" gid="2147483859" x="10880" y="5504" width="512" height="512"/>
-  <object id="683" gid="2147483859" x="9600" y="5504" width="512" height="512"/>
-  <object id="684" gid="2147483859" x="12160" y="6528" width="512" height="512"/>
-  <object id="685" gid="213" x="8704" y="6528" width="512" height="512"/>
-  <object id="686" gid="211" x="9216" y="6528" width="512" height="512"/>
-  <object id="687" gid="2147483859" x="9600" y="6528" width="512" height="512"/>
-  <object id="688" gid="210" x="10496" y="6528" width="512" height="512"/>
-  <object id="689" gid="210" x="11264" y="6528" width="512" height="512"/>
-  <object id="693" gid="214" x="7808" y="8192" width="512" height="512"/>
-  <object id="694" gid="2147483864" x="6144" y="8192" width="372" height="372"/>
-  <object id="695" gid="217" x="2688" y="7040" width="512" height="512"/>
-  <object id="696" gid="214" x="128" y="8064" width="384" height="384"/>
-  <object id="697" gid="217" x="1024" y="8064" width="256" height="256"/>
-  <object id="698" gid="214" x="3584" y="7040" width="512" height="512"/>
-  <object id="699" gid="214" x="1792" y="7040" width="512" height="512"/>
-  <object id="700" gid="217" x="3072" y="4096" width="512" height="512"/>
-  <object id="701" gid="215" x="1664" y="4096" width="512" height="512"/>
-  <object id="702" gid="214" x="2432" y="4096" width="512" height="512"/>
-  <object id="703" gid="2147483862" x="3968" y="4096" width="512" height="512"/>
-  <object id="704" gid="2147483862" x="9984" y="1792" width="768" height="512"/>
-  <object id="705" gid="2147483862" x="9344" y="7296" width="384" height="384"/>
-  <object id="706" gid="217" x="8704" y="5760" width="384" height="256"/>
  </objectgroup>
  <objectgroup color="#000000" id="20" name="Map" visible="0">
   <properties>
