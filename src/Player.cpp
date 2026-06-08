@@ -844,7 +844,7 @@ void Player::RangedAttack(float dt)
 	{
 		float lstickY = Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LSTICK_Y);
 		if (lstickY < -0.5f) lookUp = true;
-		else if (lstickY > 0.5f) lookDown = true;
+		else if (lstickY > 0.5f && !onGround) lookDown = true;
 	}
 
 	if (lookUp && GameManager::GetInstance().gameState.stUpDownAttack)
