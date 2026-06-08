@@ -12,6 +12,12 @@
  <tileset firstgid="193" name="Atlas_Castillo_Extra_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Castillo_Extra_01.png" width="1024" height="1024"/>
  </tileset>
+ <tileset firstgid="257" name="Atlas_Hab_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Castle/Interior/Atlas_Hab_01.png" width="1024" height="1024"/>
+ </tileset>
+ <tileset firstgid="321" name="Atlas_cuadros" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Castle/Interior/Atlas_cuadros.png" width="1024" height="1024"/>
+ </tileset>
  <layer id="1" name="Muro" width="25" height="11">
   <properties>
    <property name="Draw" type="bool" value="true"/>
@@ -1155,8 +1161,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="263"/>
+   <tile gid="264"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1180,8 +1186,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="271"/>
+   <tile gid="272"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1205,8 +1211,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="279"/>
+   <tile gid="280"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1253,7 +1259,7 @@
    <tile gid="143"/>
    <tile gid="144"/>
    <tile/>
-   <tile/>
+   <tile gid="381"/>
    <tile/>
    <tile gid="193"/>
    <tile gid="194"/>
