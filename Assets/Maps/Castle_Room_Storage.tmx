@@ -27,6 +27,9 @@
  <tileset firstgid="450" name="Atlas_Castillo_Extra_01" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Interior/Atlas_Castillo_Extra_01.png" width="1024" height="1024"/>
  </tileset>
+ <tileset firstgid="514" name="Atlas_cuadros" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Castle/Interior/Atlas_cuadros.png" width="1024" height="1024"/>
+ </tileset>
  <objectgroup id="12" name="BG">
   <properties>
    <property name="BG" type="bool" value="true"/>
@@ -1512,7 +1515,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="181"/>
+   <tile gid="571"/>
    <tile/>
    <tile/>
    <tile gid="103"/>
@@ -1525,11 +1528,11 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="545"/>
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile gid="181"/>
+   <tile gid="565"/>
    <tile gid="103"/>
    <tile gid="104"/>
    <tile/>
@@ -1555,7 +1558,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="176"/>
+   <tile gid="553"/>
    <tile/>
    <tile gid="175"/>
    <tile/>
@@ -1585,7 +1588,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="184"/>
+   <tile/>
    <tile gid="182"/>
    <tile gid="183"/>
    <tile/>
