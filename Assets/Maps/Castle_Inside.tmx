@@ -15021,6 +15021,7 @@
     <property name="DoorClosed" type="bool" value="true"/>
     <property name="NoAnimation" type="bool" value="true"/>
     <property name="TeleportTo" type="file" value="Nexo.tmx"/>
+    <property name="UnlockID" value="CastleNexoBossDoor"/>
    </properties>
   </object>
   <object id="23" x="2693.18" y="1941.19" width="425.576" height="618.727">
@@ -15082,7 +15083,8 @@
   </object>
   <object id="37" name="PlayerSpawns" x="6718.67" y="3838.67">
    <properties>
-    <property name="FromRoom" type="file" value="Castle.tmx"/>
+    <property name="FromRoom" type="file" value="Nexo.tmx"/>
+    <property name="SpawnID" value="NexoCastleBossDoor"/>
    </properties>
    <point/>
   </object>
