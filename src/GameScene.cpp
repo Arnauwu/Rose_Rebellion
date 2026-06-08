@@ -856,8 +856,8 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 			case SkillTree::IFRAMES_UP:  isUnlocked = state.stIframesUp; break;
 			case SkillTree::SPEED_UP:    isUnlocked = state.stSpeedUp; break;
 			case SkillTree::FAST_DASH:   isUnlocked = state.stFastDash; break;
-			case SkillTree::UP_ATTACK:   isUnlocked = state.stUpAttack; break;
-			case SkillTree::DOWN_ATTACK: isUnlocked = state.stDownAttack; break;
+			case SkillTree::UPDOWN_ATTACK:   isUnlocked = state.stUpDownAttack; break;
+			case SkillTree::RANGED_ATTACK: isUnlocked = state.stRangedAttack; break;
 		}
 
 		// 2. Cargar textos
@@ -991,14 +991,14 @@ bool GameScene::OnUIMouseClickEvent(UIElement* uiElement) {
 	case (int)GameUI_ID::SKILL_BOOK_3_1:
 		if (!inSkillPopUp)
 		{
-			updateSkillPopup("UP_ATTACK", SkillTree::UP_ATTACK);
+			updateSkillPopup("UPDOWN_ATTACK", SkillTree::UPDOWN_ATTACK);
 		}
 		break;
 
 	case (int)GameUI_ID::SKILL_BOOK_3_2:
 		if (!inSkillPopUp)
 		{
-			updateSkillPopup("DOWN_ATTACK", SkillTree::DOWN_ATTACK);
+			updateSkillPopup("RANGED_ATTACK", SkillTree::RANGED_ATTACK);
 		}
 		break;
 
@@ -1460,10 +1460,10 @@ void GameScene::UpdateSkillVisuals() {
 			btn->SetTexture(gameState.stFastDash ? books_2_2_active : books_2_2);
 			break;
 		case (int)GameUI_ID::SKILL_BOOK_3_1:
-			btn->SetTexture(gameState.stUpAttack ? books_3_1_active : books_3_1);
+			btn->SetTexture(gameState.stUpDownAttack ? books_3_1_active : books_3_1);
 			break;
 		case (int)GameUI_ID::SKILL_BOOK_3_2:
-			btn->SetTexture(gameState.stDownAttack ? books_3_2_active : books_3_2);
+			btn->SetTexture(gameState.stRangedAttack ? books_3_2_active : books_3_2);
 			break;
 		}
 	}

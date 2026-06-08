@@ -27,8 +27,8 @@ struct GameState {
     bool stIframesUp = false;
     bool stSpeedUp = false;
     bool stFastDash = false;
-    bool stUpAttack = false;
-    bool stDownAttack = false;
+    bool stUpDownAttack = false;
+    bool stRangedAttack = false;
 
     // World
     std::string currentMap = "Nexo.tmx";

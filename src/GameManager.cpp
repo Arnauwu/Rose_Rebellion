@@ -43,8 +43,8 @@ bool GameManager::SaveGame(const std::string& filename) {
 	skills.append_attribute("stIframesUp").set_value(gameState.stIframesUp);
 	skills.append_attribute("stSpeedUp").set_value(gameState.stSpeedUp);
 	skills.append_attribute("stFastDash").set_value(gameState.stFastDash);
-	skills.append_attribute("stUpAttack").set_value(gameState.stUpAttack);
-	skills.append_attribute("stDownAttack").set_value(gameState.stDownAttack);
+	skills.append_attribute("stUpDownAttack").set_value(gameState.stUpDownAttack);
+	skills.append_attribute("stRangedAttack").set_value(gameState.stRangedAttack);
 
 	// World Status and Position
 	pugi::xml_node world = root.append_child("WorldState");
@@ -161,8 +161,8 @@ bool GameManager::LoadGame(const std::string& filename) {
 			tempState.stIframesUp = skills.attribute("stIframesUp").as_bool(false);
 			tempState.stSpeedUp = skills.attribute("stSpeedUp").as_bool(false);
 			tempState.stFastDash = skills.attribute("stFastDash").as_bool(false);
-			tempState.stUpAttack = skills.attribute("stUpAttack").as_bool(false);
-			tempState.stDownAttack = skills.attribute("stDownAttack").as_bool(false);
+			tempState.stUpDownAttack = skills.attribute("stUpDownAttack").as_bool(false);
+			tempState.stRangedAttack = skills.attribute("stRangedAttack").as_bool(false);
 		}
 
 		// Load World State and Position
