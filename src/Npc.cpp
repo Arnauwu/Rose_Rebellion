@@ -7,6 +7,7 @@
 #include "Window.h"
 #include "DialogueManager.h"
 #include "LanguageManager.h"
+#include "GameManager.h"
 
 #include "EntityManager.h"
 #include "Log.h"
@@ -35,21 +36,34 @@ void Npc::ConfigNPC(const std::string& texPath, const std::string& dialogID, int
 }
 
 bool Npc::Start() {
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/NPCs/Npc1.png");
-
+    if (!texturePath.empty())
+    {
+        texture = Engine::GetInstance().textures->Load(texturePath.c_str());
+    }
+    
     if (!tsxPath.empty()) {
-        std::unordered_map<int, std::string> aliases = { {0, "idle"} };
+        std::unordered_map<int, std::string> aliases = { {0, "scared"},{8, "walk"},{16, "idle"} };
 
         anims.LoadFromTSX(tsxPath.c_str(), aliases);
-        anims.SetCurrent("idle");
+
+        if (GameManager::GetInstance().gameState.knightBossKilled)
+        {
+            anims.SetCurrent("idle");
+        }
+        else
+        {
+            anims.SetCurrent("scared");
+        }
     }
+
+    
     //TO DO: CAMBIAR TEXTURA
     interactIcon = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/Flecha.png");
     zOrder = -1;
     glowTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Glow.png");
    
 
-    pbody = Engine::GetInstance().physics->CreateRectangleSensor((int)position.getX() - texW /2, (int)position.getY() - texH /2, texW * 2, texH * 2, bodyType::STATIC);
+    pbody = Engine::GetInstance().physics->CreateRectangleSensor((int)position.getX() - texW /2, (int)position.getY() - texH /2, texW, texH, bodyType::STATIC);
 
     pbody->listener = this;
     pbody->ctype = ColliderType::NPC;
@@ -83,7 +97,7 @@ bool Npc::Update(float dt) {
 
             const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-            Engine::GetInstance().render->DrawRotatedTexture(texture, x - (texW), y - (texH / 2), &animFrame, SDL_FLIP_NONE, 1.0f);
+            Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, SDL_FLIP_NONE, 1.0f);
         }
         else {
             Engine::GetInstance().render->DrawTexture(texture, x - (texW), y - (texH / 2), nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
