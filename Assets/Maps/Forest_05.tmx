@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="37" nextobjectid="769">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="43" nextobjectid="769">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -29,39 +29,119 @@
  <tileset firstgid="69" name="F_Bosque_V6_03" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
   <image source="Forest/Fondo_Vigente/06_F_Ninfas/F_Bosque_V6_03.png" width="2304" height="1444"/>
  </tileset>
- <tileset firstgid="70" name="F_Bosque_V6_04" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
-  <image source="Forest/Fondo_Vigente/06_F_Ninfas/F_Bosque_V6_04.png" width="2304" height="1444"/>
- </tileset>
- <tileset firstgid="71" name="F_Bosque_V7_01" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
+ <tileset firstgid="70" name="F_Bosque_V7_01" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
   <image source="Forest/Fondo_Vigente/07_F_Boss/F_Bosque_V7_01.png" width="2304" height="1444"/>
  </tileset>
- <tileset firstgid="72" name="F_Bosque_V7_02" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
+ <tileset firstgid="71" name="F_Bosque_V7_02" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
   <image source="Forest/Fondo_Vigente/07_F_Boss/F_Bosque_V7_02.png" width="2304" height="1444"/>
  </tileset>
- <tileset firstgid="73" name="F_Bosque_V7_03" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
-  <image source="Forest/Fondo_Vigente/07_F_Boss/F_Bosque_V7_03.png" width="2304" height="1444"/>
- </tileset>
- <tileset firstgid="74" name="F_Bosque_V2_05" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
+ <tileset firstgid="72" name="F_Bosque_V2_05" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
   <image source="Forest/Fondo_Vigente/02_F_Repeticion/F_Bosque_V2_05.png" width="2304" height="1444"/>
  </tileset>
- <tileset firstgid="75" name="Tiles_Agua" tilewidth="128" tileheight="128" tilecount="64" columns="8">
-  <image source="Forest/Tiles_Agua.png" width="1024" height="1024"/>
+ <tileset firstgid="73" name="t_Sueltos_Arbustos_Esquinas" tilewidth="384" tileheight="384" tilecount="12" columns="3">
+  <image source="Forest/Fondo_Vigente/Arbustos/t_Sueltos_Arbustos_Esquinas.png" width="1152" height="1536"/>
  </tileset>
- <tileset firstgid="139" name="SS_cascada_prueva" tilewidth="384" tileheight="384" tilecount="1" columns="3">
-  <image source="Forest/SS_cascada_prueva.png" width="1531" height="768"/>
+ <tileset firstgid="85" name="t_Fila_Arbustos" tilewidth="1920" tileheight="640" tilecount="4" columns="1">
+  <image source="Forest/Fondo_Vigente/Arbustos/t_Fila_Arbustos.png" width="1920" height="2560"/>
+ </tileset>
+ <tileset firstgid="89" name="Plantitas" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Forest/Fondo_Vigente/Arbustos/Plantitas.png" width="1024" height="1024"/>
   <tile id="0">
    <animation>
-    <frame tileid="0" duration="100"/>
-    <frame tileid="1" duration="150"/>
-    <frame tileid="2" duration="150"/>
-    <frame tileid="3" duration="150"/>
-    <frame tileid="4" duration="150"/>
-    <frame tileid="5" duration="150"/>
+    <frame tileid="0" duration="300"/>
+    <frame tileid="1" duration="300"/>
+    <frame tileid="2" duration="300"/>
+   </animation>
+  </tile>
+  <tile id="3">
+   <animation>
+    <frame tileid="3" duration="250"/>
+    <frame tileid="4" duration="250"/>
+    <frame tileid="5" duration="250"/>
+   </animation>
+  </tile>
+  <tile id="6">
+   <animation>
+    <frame tileid="6" duration="350"/>
+    <frame tileid="7" duration="350"/>
+    <frame tileid="8" duration="350"/>
+   </animation>
+  </tile>
+  <tile id="9">
+   <animation>
+    <frame tileid="9" duration="350"/>
+    <frame tileid="10" duration="350"/>
+    <frame tileid="11" duration="350"/>
+   </animation>
+  </tile>
+  <tile id="12">
+   <animation>
+    <frame tileid="12" duration="250"/>
+    <frame tileid="13" duration="250"/>
+    <frame tileid="14" duration="250"/>
+   </animation>
+  </tile>
+  <tile id="15">
+   <animation>
+    <frame tileid="15" duration="300"/>
+    <frame tileid="16" duration="300"/>
+    <frame tileid="17" duration="300"/>
    </animation>
   </tile>
  </tileset>
- <tileset firstgid="140" name="t_Sueltos_Arbustos_Esquinas" tilewidth="384" tileheight="384" tilecount="12" columns="3">
-  <image source="Forest/Fondo_Vigente/Arbustos/t_Sueltos_Arbustos_Esquinas.png" width="1152" height="1536"/>
+ <tileset firstgid="153" name="F_Bosque_V2_02" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
+  <image source="Forest/Fondo_Vigente/02_F_Repeticion/F_Bosque_V2_02.png" width="2304" height="1444"/>
+ </tileset>
+ <tileset firstgid="154" name="Sprite Sheet_Agua_Transparente" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+  <image source="Forest/Aguas/Sprite Sheet_Agua_Transparente.png" width="1024" height="1024"/>
+  <tile id="0">
+   <animation>
+    <frame tileid="0" duration="300"/>
+    <frame tileid="3" duration="300"/>
+    <frame tileid="6" duration="300"/>
+    <frame tileid="24" duration="300"/>
+    <frame tileid="27" duration="300"/>
+   </animation>
+  </tile>
+  <tile id="1">
+   <animation>
+    <frame tileid="1" duration="300"/>
+    <frame tileid="4" duration="300"/>
+    <frame tileid="7" duration="300"/>
+    <frame tileid="25" duration="300"/>
+    <frame tileid="28" duration="300"/>
+   </animation>
+  </tile>
+  <tile id="8">
+   <animation>
+    <frame tileid="8" duration="300"/>
+    <frame tileid="11" duration="300"/>
+    <frame tileid="14" duration="300"/>
+    <frame tileid="32" duration="300"/>
+   </animation>
+  </tile>
+  <tile id="9">
+   <animation>
+    <frame tileid="9" duration="300"/>
+    <frame tileid="12" duration="300"/>
+    <frame tileid="15" duration="300"/>
+    <frame tileid="33" duration="300"/>
+    <frame tileid="36" duration="300"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="218" name="SS_cascada_Transparente" tilewidth="768" tileheight="768" tilecount="6" columns="3">
+  <image source="Forest/Aguas/SS_cascada_Transparente.png" width="2304" height="2048"/>
+  <tile id="0">
+   <animation>
+    <frame tileid="0" duration="300"/>
+    <frame tileid="1" duration="300"/>
+    <frame tileid="2" duration="300"/>
+    <frame tileid="3" duration="300"/>
+    <frame tileid="4" duration="300"/>
+    <frame tileid="5" duration="300"/>
+   </animation>
+  </tile>
  </tileset>
  <objectgroup id="18" name="Fondo1">
   <properties>
@@ -78,8 +158,20 @@
    <property name="Paralax" type="float" value="0.9"/>
   </properties>
   <object id="627" gid="68" x="4736" y="2688" width="3328" height="2560"/>
-  <object id="631" gid="72" x="896" y="2704" width="3712" height="1444"/>
-  <object id="710" gid="71" x="128" y="2688" width="4608" height="2560"/>
+  <object id="631" gid="71" x="896" y="2704" width="3712" height="1444"/>
+  <object id="710" gid="70" x="128" y="2688" width="4608" height="2560"/>
+ </objectgroup>
+ <objectgroup id="37" name="Plantas-Back">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
+ </objectgroup>
+ <objectgroup id="39" name="Fondo3-Luces">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
  </objectgroup>
  <objectgroup id="22" name="Fondo4">
   <properties>
@@ -87,8 +179,19 @@
    <property name="Draw" type="bool" value="true"/>
    <property name="Paralax" type="float" value="1"/>
   </properties>
-  <object id="633" gid="70" x="4736" y="2560" width="3840" height="2432"/>
-  <object id="717" gid="73" x="512" y="2560" width="4224" height="2432"/>
+ </objectgroup>
+ <objectgroup id="40" name="Cascada">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+   <property name="Paralax" type="float" value="1"/>
+  </properties>
+ </objectgroup>
+ <objectgroup id="38" name="Plantas-Front">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
  </objectgroup>
  <layer id="1" name="Map" width="45" height="21">
   <properties>
@@ -1042,13 +1145,967 @@
    <tile gid="31"/>
   </data>
  </layer>
- <objectgroup id="28" name="Fondo5    ">
+ <layer id="41" name="Aguafront" width="45" height="21">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+   <property name="Front" type="bool" value="true"/>
+  </properties>
+  <data>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+  </data>
+ </layer>
+ <objectgroup id="42" name="Fondo4 - F"/>
+ <objectgroup id="28" name="Fondo5 - F    ">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
    <property name="Paralax" type="float" value="1.1"/>
   </properties>
-  <object id="724" gid="74" x="4480" y="2688" width="2449.51" height="2694.17"/>
+  <object id="724" gid="72" x="4480" y="2688" width="2449.51" height="2694.17"/>
  </objectgroup>
  <objectgroup color="#aa0000" id="19" name="Spikes" visible="0">
   <properties>
