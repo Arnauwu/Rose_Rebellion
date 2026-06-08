@@ -33,6 +33,15 @@
 "// --- INTERACT TEXT ---": "",
     "INTERACT_NPC": "PARLAR {E}",
 
+"// --- GAMEPLAY TUTORIALS ---": "",
+    "TUTORIAL_WALK": "Mou-te cap a l'esquerra i la dreta",
+    "TUTORIAL_JUMP": "Salta",
+    "TUTORIAL_GLIDE": "Has obtingut la capa! Mantén premut per planejar",
+    "TUTORIAL_DASH": "Impuls desbloquejat! Avança ràpidament",
+    "TUTORIAL_ATTACK": "Has obtingut la falç! Ataca",
+    "TUTORIAL_DOUBLE_JUMP": "Doble salt desbloquejat! Prem dues vegades",
+    "TUTORIAL_WALL_JUMP": "Salt de paret desbloquejat! Salta des d'una paret",
+
 "// --- INVENTORY LORE ---": "",
     "INV_DEFAULT_SELECT": "Anotacions d'informació, selecciona un objecte per aprendre sobre ell.",
     "INV_UNKNOWN_ITEM": "Objecte desconegut. Diuen que està perdut pels racons d'aquest regne.",

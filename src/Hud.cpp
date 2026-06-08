@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Window.h"
 #include "Log.h"
+#include "LanguageManager.h"
 #include <string>
 #include "Physics.h"
 
@@ -315,36 +316,36 @@ void Hud::ShowTutorial(TutorialType type) {
 void Hud::DrawTutorial() {
 	if (currentTutorial == TutorialType::NONE || tutorialTimer <= 0.0f) return;
 
-	std::string instruction;
+	std::string instructionKey;
 	std::vector<std::string> keys;
 
 	switch (currentTutorial) {
 	case TutorialType::WALK:
-		instruction = "Move left and right";
+		instructionKey = "TUTORIAL_WALK";
 		keys = { "A", "D" };
 		break;
 	case TutorialType::JUMP:
-		instruction = "Jump";
+		instructionKey = "TUTORIAL_JUMP";
 		keys = { "SPACE" };
 		break;
 	case TutorialType::GLIDE:
-		instruction = "Cape obtained! Hold to glide";
+		instructionKey = "TUTORIAL_GLIDE";
 		keys = { "LSHIFT" };
 		break;
 	case TutorialType::DASH:
-		instruction = "Dash unlocked! Dash forward";
+		instructionKey = "TUTORIAL_DASH";
 		keys = { "K" };
 		break;
 	case TutorialType::ATTACK:
-		instruction = "Sickle obtained! Attack";
+		instructionKey = "TUTORIAL_ATTACK";
 		keys = { "J" };
 		break;
 	case TutorialType::DOUBLE_JUMP:
-		instruction = "Double jump unlocked! Press twice";
+		instructionKey = "TUTORIAL_DOUBLE_JUMP";
 		keys = { "SPACE", "SPACE" };
 		break;
 	case TutorialType::WALL_JUMP:
-		instruction = "Wall jump unlocked! Jump from a wall";
+		instructionKey = "TUTORIAL_WALL_JUMP";
 		keys = { "L", "+", "SPACE" };
 		break;
 	default:
@@ -352,6 +353,8 @@ void Hud::DrawTutorial() {
 	}
 
 	if (tutorialBoxTexture == nullptr) return;
+
+	std::string instruction = Engine::GetInstance().languageManager->GetString(instructionKey);
 
 	// Calcular el nivel de transparencia para el desvanecimiento final (el último segundo se borra poco a poco)
 	Uint8 alpha = 255;

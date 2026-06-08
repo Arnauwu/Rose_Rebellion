@@ -33,6 +33,15 @@
 "// --- INTERACT TEXT ---": "",
     "INTERACT_NPC": "TALK {E}",
 
+"// --- GAMEPLAY TUTORIALS ---": "",
+    "TUTORIAL_WALK": "Move left and right",
+    "TUTORIAL_JUMP": "Jump",
+    "TUTORIAL_GLIDE": "Cape obtained! Hold to glide",
+    "TUTORIAL_DASH": "Dash unlocked! Dash forward",
+    "TUTORIAL_ATTACK": "Sickle obtained! Attack",
+    "TUTORIAL_DOUBLE_JUMP": "Double jump unlocked! Press twice",
+    "TUTORIAL_WALL_JUMP": "Wall jump unlocked! Jump from a wall",
+
 "// --- INVENTORY LORE ---": "",
     "INV_DEFAULT_SELECT": "Information notes, select an item to learn about it.",
     "INV_UNKNOWN_ITEM": "Unknown item. They say it is lost in the corners of this kingdom.",
