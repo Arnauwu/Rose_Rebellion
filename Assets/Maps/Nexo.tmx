@@ -7723,14 +7723,6 @@
     <property name="DialogueID" value="Diàleg suelta 6"/>
    </properties>
   </object>
-  <object id="148" name="Minairon" type="Minairon" x="6026" y="1128">
-   <properties>
-    <property name="DialogueID" value="Diàleg 2: porc"/>
-    <property name="TexturePath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Cerdo.png"/>
-    <property name="TsxPath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Cerdo.tsx"/>
-   </properties>
-   <point/>
-  </object>
  </objectgroup>
  <objectgroup id="4" name="PlayerSpawns">
   <properties>
