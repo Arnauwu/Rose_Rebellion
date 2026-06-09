@@ -27,7 +27,13 @@ bool Hud::Start() {
 	LOG("Loading HUD");
 	lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
 
-	notificationBgTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Feebback_V2.png");
+	notificationBgTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.png");
+	std::unordered_map<int, std::string> notificationAliases = { {0, "idle"} };
+	notificationBgAnimation.LoadFromTSX(
+		"Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.tsx",
+		notificationAliases
+	);
+	notificationBgAnimation.SetCurrent("idle");
 
 	float imagenAnchoReal = 6144.0f;
 	float imagenAltoReal = 5109.0f;
@@ -130,6 +136,7 @@ bool Hud::Update(float dt) {
 	// ------------------------------------------
 
 	if (notificationTimer > 0.0f) {
+		notificationBgAnimation.Update(dt);
 		notificationTimer -= dt / 1000.0f;
 		if (notificationTimer < 0.0f) {
 			notificationTimer = 0.0f;
@@ -231,6 +238,9 @@ bool Hud::CleanUp() {
 void Hud::ShowNotification(const std::string& message) {
 	notificationText = message;
 	notificationTimer = NOTIFICATION_DURATION;
+	if (notificationBgAnimation.Has("idle")) {
+		notificationBgAnimation.GetAnim("idle")->Reset();
+	}
 }
 
 void Hud::DrawNotification() {
@@ -275,7 +285,12 @@ void Hud::DrawNotification() {
 		if (notificationBgTexture != nullptr) {
 			SDL_SetTextureBlendMode(notificationBgTexture, SDL_BLENDMODE_BLEND);
 			SDL_SetTextureAlphaMod(notificationBgTexture, alpha);
-			Engine::GetInstance().render->DrawTextureScaled(notificationBgTexture, bgRect);
+			const SDL_Rect& notificationFrame = notificationBgAnimation.GetCurrentFrame();
+			Engine::GetInstance().render->DrawTextureScaledSection(
+				notificationBgTexture,
+				notificationFrame,
+				bgRect
+			);
 			SDL_SetTextureAlphaMod(notificationBgTexture, 255);
 		}
 		else {

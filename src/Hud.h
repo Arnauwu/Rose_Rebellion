@@ -51,6 +51,7 @@ private:
     std::vector<SDL_Rect> lifeFrames;
 
     SDL_Texture* notificationBgTexture = nullptr;
+    AnimationSet notificationBgAnimation;
 
     // Dimensiones de un solo frame de la imagen Vides_V1.png
     int sectionWidth = 100;  // Ajusta segun el ancho real de tu PNG
