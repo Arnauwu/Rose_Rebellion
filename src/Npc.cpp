@@ -147,7 +147,7 @@ bool Npc::Update(float dt) {
             SDL_Rect measuredText = Engine::GetInstance().render->MeasureText(
                 interactText.c_str(), FontType::CUERPO);
 
-            int promptW = measuredText.w + 20;
+            int promptW = measuredText.w + 32;
             int promptH = std::max(screenH + 20, measuredText.h + 36);
             int promptCenterX = screenX + screenW / 2;
             int promptCenterY = screenY + screenH / 2;
