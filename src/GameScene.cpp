@@ -330,7 +330,7 @@ bool GameScene::Start() {
 	LoadTextureIfNull(introFrameTex, "Assets/Textures/UI/Buttons/Alas_Movimiento_V2.png");
 	LoadTextureIfNull(introGlowTex, "Assets/Textures/UI/glow.png");
 
-	std::unordered_map<int, std::string> introAliases = { {0, "focus"} };
+	std::unordered_map<int, std::string> introAliases = { {5, "focus"} };
 	introFrameAnim.LoadFromTSX("Assets/Textures/UI/Buttons/Alas_Movimiento_V2.tsx", introAliases);
 
 	introFrameAnim.SetCurrent("focus");
