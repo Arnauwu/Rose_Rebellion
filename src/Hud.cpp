@@ -253,7 +253,7 @@ void Hud::DrawNotification() {
 
 		SDL_Rect measuredText = Engine::GetInstance().render->MeasureText(
 			localizedText.c_str(),
-			FontType::DIALOGUE
+			FontType::CUERPO
 		);
 
 		int rectW = measuredText.w + horizontalPadding * 2;
@@ -286,16 +286,16 @@ void Hud::DrawNotification() {
 		SDL_Color color = { 45, 24, 16, alpha };
 		SDL_Rect textBounds = {
 			bgRect.x + horizontalPadding,
-			bgRect.y + 8,
+			bgRect.y,
 			bgRect.w - horizontalPadding * 2,
-			bgRect.h - 22
+			bgRect.h
 		};
 
 		Engine::GetInstance().render->DrawTextCenteredWrapped(
 			localizedText.c_str(),
 			textBounds,
 			color,
-			FontType::DIALOGUE
+			FontType::CUERPO
 		);
 	}
 }
