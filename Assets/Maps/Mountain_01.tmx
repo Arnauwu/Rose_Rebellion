@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="54" nextobjectid="2020">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="55" nextobjectid="2023">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -44341,6 +44341,15 @@
    </properties>
    <point/>
   </object>
+ </objectgroup>
+ <objectgroup id="54" name="MountainGatePlatformFront" locked="1">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+   <property name="Front" type="bool" value="true"/>
+  </properties>
+  <object id="2020" gid="94" x="20608" y="3712" width="128" height="128"/>
+  <object id="2021" gid="98" x="20736" y="3712" width="128" height="128"/>
+  <object id="2022" gid="2147483742" x="20864" y="3712" width="128" height="128"/>
  </objectgroup>
  <objectgroup id="29" name="KeyGate" visible="0" locked="1">
   <properties>
