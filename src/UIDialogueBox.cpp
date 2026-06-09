@@ -202,8 +202,8 @@ SDL_Rect UIDialogueBox::GetTutorialBoxRect() const {
 
 	float aspect = texH / texW;
 
-	int boxW = (int)(screenW * 0.38f);
-	boxW = std::max(420, std::min(boxW, 600));
+	int boxW = (int)(screenW * 0.48f);
+	boxW = std::max(520, std::min(boxW, 760));
 
 	int boxH = (int)(boxW * aspect);
 
@@ -253,10 +253,10 @@ void UIDialogueBox::DrawTutorialContent(const SDL_Rect& mainBox) const {
 	}
 
 	SDL_Rect instructionBounds = {
-	mainBox.x + (int)(mainBox.w * 0.18f),
-	mainBox.y + (int)(mainBox.h * 0.10f),
-	(int)(mainBox.w * 0.72f),
-	(int)(mainBox.h * 0.34f)
+	mainBox.x + (int)(mainBox.w * 0.16f),
+	mainBox.y + (int)(mainBox.h * 0.08f),
+	(int)(mainBox.w * 0.76f),
+	(int)(mainBox.h * 0.40f)
 	};
 
 	Engine::GetInstance().render->DrawTextCenteredWrapped(
@@ -264,20 +264,20 @@ void UIDialogueBox::DrawTutorialContent(const SDL_Rect& mainBox) const {
 
 	if (!keyText.empty()) {
 		SDL_Rect keyBounds = {
-		mainBox.x + (int)(mainBox.w * 0.18f),
-		mainBox.y + (int)(mainBox.h * 0.45f),
-		(int)(mainBox.w * 0.72f),
-		(int)(mainBox.h * 0.27f)
+		mainBox.x + (int)(mainBox.w * 0.16f),
+		mainBox.y + (int)(mainBox.h * 0.52f),
+		(int)(mainBox.w * 0.76f),
+		(int)(mainBox.h * 0.22f)
 		};
 		DrawTutorialKeys(keyText, keyBounds);
 	}
 
 	if (!confirmation.empty()) {
 		SDL_Rect confirmationBounds = {
-		mainBox.x + (int)(mainBox.w * 0.18f),
-		mainBox.y + (int)(mainBox.h * 0.76f),
-		(int)(mainBox.w * 0.72f),
-		(int)(mainBox.h * 0.16f)
+		mainBox.x + (int)(mainBox.w * 0.16f),
+		mainBox.y + (int)(mainBox.h * 0.80f),
+		(int)(mainBox.w * 0.76f),
+		(int)(mainBox.h * 0.12f)
 		};
 		Engine::GetInstance().render->DrawTextCentered(
 			confirmation.c_str(), confirmationBounds, textColor, FontType::CUERPO);
