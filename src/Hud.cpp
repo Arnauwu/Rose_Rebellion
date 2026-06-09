@@ -247,8 +247,8 @@ void Hud::DrawNotification() {
 		int screenW = Engine::GetInstance().window->windowWidth;
 		int screenH = Engine::GetInstance().window->windowHeight;
 
-		const int rectH = 110;
-		const int horizontalPadding = 45;
+		const int rectH = 80;
+		const int horizontalPadding = 65;
 		const int screenMargin = 40;
 
 		SDL_Rect measuredText = Engine::GetInstance().render->MeasureText(
@@ -257,7 +257,7 @@ void Hud::DrawNotification() {
 		);
 
 		int rectW = measuredText.w + horizontalPadding * 2;
-		const int minRectW = 260;
+		const int minRectW = 360;
 		const int maxRectW = screenW - screenMargin * 2;
 		if (rectW < minRectW) rectW = minRectW;
 		if (rectW > maxRectW) rectW = maxRectW;
@@ -288,7 +288,7 @@ void Hud::DrawNotification() {
 			bgRect.x + horizontalPadding,
 			bgRect.y,
 			bgRect.w - horizontalPadding * 2,
-			bgRect.h
+			(int)(bgRect.h * 0.78f)
 		};
 
 		Engine::GetInstance().render->DrawTextCenteredWrapped(
