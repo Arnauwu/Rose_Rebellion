@@ -28,6 +28,8 @@ private:
 	void Explode();
 
 	bool wasWalking = false;
+	static constexpr float explosionTriggerDistance = 70.0f;
+	static constexpr int explosionRadius = 256;
 
 public:
 

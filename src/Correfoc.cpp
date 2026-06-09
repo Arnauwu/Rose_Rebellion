@@ -160,19 +160,36 @@ void Correfoc::GetPhysicsValues() {
 void Correfoc::Move() {
 
 	Vector2D tilePos = GetTilePos();
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player == nullptr) return;
+
+	Vector2D pos = GetPosition();
+	Vector2D playerPos = player->GetPosition();
+	float distanceToPlayer = sqrt(pos.distanceSquared(playerPos));
+
+	if (isExploding)
+	{
+		velocity.x = 0;
+		Explode();
+		return;
+	}
+
+	// Start the only attack once Correfoc has actually reached the player.
+	if (distanceToPlayer <= explosionTriggerDistance)
+	{
+		velocity.x = 0;
+		Explode();
+		return;
+	}
 
 	// Move if player has been found
-	if (pathfinding->pathTiles.empty() && isExploding == false)
+	if (pathfinding->pathTiles.empty())
 	{
-		anims.SetCurrent("idle"); 
+		anims.SetCurrent("idle");
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist < 3 || isExploding)
-	{
-		Explode();
-	}
-	else if (playerTileDist >= 2 && isExploding == false)
+	else
 	{
 		if (anims.GetCurrentName() != "startSpin" && anims.GetCurrentName() != "spin")
 		{
@@ -284,10 +301,16 @@ void Correfoc::Explode()
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
 		pbody = nullptr;
 
-		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW * 2, bodyType::DYNAMIC);
+		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), explosionRadius, bodyType::DYNAMIC);
 		pbody->listener = this;
 		pbody->ctype = ColliderType::ENEMY_ATTACK;
 		Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
+
+		Player* player = Engine::GetInstance().entityManager->GetPlayer();
+		if (player != nullptr)
+		{
+			player->cameraController.StartShake(350.0f, 12.0f);
+		}
 
 		explosionCreated = true;
 		explosionDuration.Start();
