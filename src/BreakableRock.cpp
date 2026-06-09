@@ -165,7 +165,7 @@ void BreakableRock::SetSize(int width, int height)
 void BreakableRock::Configure(BreakableType type, int variant)
 {
 	breakableType = type;
-	this->variant = std::clamp(variant, 1, 2);
+	this->variant = variant == 2 ? 2 : 1;
 	name = breakableType == BreakableType::TRUNK
 		? "BreakableTrunk" + std::to_string(this->variant)
 		: "BreakableRock";
