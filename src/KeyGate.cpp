@@ -14,6 +14,7 @@ namespace
 {
     constexpr float MountainStaticFrameHeight = 384.0f;
     constexpr float MountainAnimationFrameHeight = 440.0f;
+    constexpr int MountainVisualSink = 32;
 
     struct GateVisualAssets
     {
@@ -130,6 +131,9 @@ bool KeyGate::Update(float dt)
     destRect.y = (int)(position.getY() + gateH / 2.0f);
     destRect.w = gateW;
     destRect.h = gateH;
+    if (requiredKey == KeyType::MOUNTAIN) {
+        destRect.y += MountainVisualSink;
+    }
 
     if (state == GateState::OPENING)
     {
