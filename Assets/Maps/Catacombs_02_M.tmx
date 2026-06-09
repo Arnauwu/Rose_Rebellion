@@ -420232,7 +420232,7 @@
    <property name="Sensor" type="bool" value="false"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="217" x="3382.67" y="9080" width="275.333" height="394"/>
+  <object id="217" x="3382.67" y="9096" width="275.333" height="368"/>
  </objectgroup>
  <objectgroup color="#ff557f" id="21" name="PlataformasRefHorizontal">
   <object id="168" x="34176" y="6528" width="512" height="128"/>

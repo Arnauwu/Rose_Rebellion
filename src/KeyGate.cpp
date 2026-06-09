@@ -62,6 +62,20 @@ namespace
         frame.h = visibleHeight;
     }
 
+    void TrimCatacumbaAnimationFrame(SDL_Rect& frame)
+    {
+        const int tileId = (frame.y / 384) * 5 + (frame.x / 256);
+
+        if (tileId == 0 || tileId == 1 || tileId == 4) {
+            frame.y += 3;
+            frame.h = 381;
+        }
+        else if (tileId == 2 || tileId == 3) {
+            frame.y += 2;
+            frame.h = 382;
+        }
+    }
+
     struct GateVisualAssets
     {
         const char* closedTexture;
@@ -177,7 +191,9 @@ bool KeyGate::Update(float dt)
     destRect.y = (int)(position.getY() + gateH / 2.0f);
     destRect.w = gateW;
     destRect.h = gateH;
-    if (requiredKey == KeyType::FOREST || requiredKey == KeyType::MOUNTAIN) {
+    if (requiredKey == KeyType::FOREST ||
+        requiredKey == KeyType::MOUNTAIN ||
+        requiredKey == KeyType::CATACUMBA) {
         destRect.y += GateVisualOverlap;
         destRect.h += GateVisualOverlap * 2;
     }
@@ -196,6 +212,9 @@ bool KeyGate::Update(float dt)
             }
             else if (requiredKey == KeyType::MOUNTAIN) {
                 TrimMountainAnimationFrame(frame);
+            }
+            else if (requiredKey == KeyType::CATACUMBA) {
+                TrimCatacumbaAnimationFrame(frame);
             }
 
             Engine::GetInstance().render->DrawRotatedImage(animTexture, &animationDest, &frame);

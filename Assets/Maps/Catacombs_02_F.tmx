@@ -420215,7 +420215,7 @@
   <object id="521" x="9856" y="14760" width="9600" height="88"/>
  </objectgroup>
  <objectgroup color="#00ffff" id="25" name="KeyGate">
-  <object id="556" x="28672" y="9860" width="132" height="380">
+  <object id="556" x="28672" y="9864" width="132" height="368">
    <properties>
     <property name="KeyGate" type="bool" value="true"/>
     <property name="KeyRegion" value="Catacumba"/>
