@@ -14,6 +14,8 @@ namespace
 	constexpr float NormalVisibleWidth = 175.0f;
 	constexpr float BossVisibleHeight = 252.0f;
 	constexpr float BossVisibleWidth = 180.0f;
+	constexpr float NexoBossExtraWidth = 24.0f;
+	constexpr float NexoBossExtraHeight = 72.0f;
 }
 
 DoorEntity::DoorEntity() : Entity(EntityType::DOOR)
@@ -59,8 +61,10 @@ bool DoorEntity::Update(float dt) {
 		const bool isBossDoor = animationName == "bossOpen";
 		const float visibleWidth = isBossDoor ? BossVisibleWidth : NormalVisibleWidth;
 		const float visibleHeight = isBossDoor ? BossVisibleHeight : NormalVisibleHeight;
-		float drawW = doorW * (256.0f / visibleWidth);
-		float drawH = doorH * (256.0f / visibleHeight);
+		const float visualWidth = doorW + (enlargeBossDoor ? NexoBossExtraWidth : 0.0f);
+		const float visualHeight = doorH + (enlargeBossDoor ? NexoBossExtraHeight : 0.0f);
+		float drawW = visualWidth * (256.0f / visibleWidth);
+		float drawH = visualHeight * (256.0f / visibleHeight);
 
 		SDL_Rect destRect;
 		destRect.x = (int)(cx - (drawW / 2.0f));
@@ -88,7 +92,7 @@ bool DoorEntity::CleanUp() {
 	return true;
 }
 
-void DoorEntity::OpenDoorAt(Vector2D pos, int width, int height, KeyType keyType) {
+void DoorEntity::OpenDoorAt(Vector2D pos, int width, int height, KeyType keyType, bool shouldEnlargeBossDoor) {
 	if (texture == nullptr) Start();
 
 	position = pos;
@@ -96,6 +100,7 @@ void DoorEntity::OpenDoorAt(Vector2D pos, int width, int height, KeyType keyType
 	doorW = width;
 	doorH = height;
 	animationName = keyType == KeyType::BOSS ? "bossOpen" : "open";
+	enlargeBossDoor = shouldEnlargeBossDoor && keyType == KeyType::BOSS;
 
 	isOpening = true;
 

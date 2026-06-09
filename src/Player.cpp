@@ -1037,7 +1037,14 @@ void Player::Interact()
 					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 					if (doorAnim != nullptr) {
 						doorAnim->zOrder = -1;
-						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH, doorKeyType);
+						const bool enlargeBossDoor =
+							Engine::GetInstance().map->mapFileName == "Nexo.tmx";
+						doorAnim->OpenDoorAt(
+							Vector2D(cx, cy),
+							doorW,
+							doorH,
+							doorKeyType,
+							enlargeBossDoor);
 					}
 					else {
 						isFrozen = false;

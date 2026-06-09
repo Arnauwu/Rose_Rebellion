@@ -18,13 +18,14 @@ public:
 	bool Update(float dt) override;
 	bool CleanUp() override;
 
-	void OpenDoorAt(Vector2D pos, int width, int height, KeyType keyType);
+	void OpenDoorAt(Vector2D pos, int width, int height, KeyType keyType, bool enlargeBossDoor);
 
 private:
 	SDL_Texture* texture = nullptr;
 	AnimationSet anims;
 	bool isOpening = false;
 	std::string animationName = "open";
+	bool enlargeBossDoor = false;
 
 	int doorW = 256;
 	int doorH = 256;
