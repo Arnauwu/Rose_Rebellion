@@ -32,6 +32,7 @@
 
   "// --- INTERACT TEXT ---": "",
   "INTERACT_NPC": "TALK {E}",
+  "INTERACT_ENTER": "ENTER {E}",
   "INTERACT_SAVE": "REST {E}",
 
   "// --- GAMEPLAY TUTORIALS ---": "",

@@ -18,7 +18,10 @@
 #include "Map.h"
 #include "SavePoint.h"
 #include "Door.h"
+#include "Window.h"
+#include "LanguageManager.h"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <unordered_map>
 
@@ -98,6 +101,15 @@ bool Player::Start()
 	auto physics = engine->physics;
 
 	Engine::GetInstance().entityManager->SetPlayer(this);
+
+	interactionBackgroundTexture = textures->Load("Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.png");
+	std::unordered_map<int, std::string> interactionBackgroundAliases = { {0, "idle"} };
+	interactionBackgroundAnimation.LoadFromTSX(
+		"Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.tsx",
+		interactionBackgroundAliases
+	);
+	interactionBackgroundAnimation.SetCurrent("idle");
+	interactIcon = textures->Load("Assets/Textures/UI/Buttons/Flecha.png");
 
 	jumpFx = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Jump.wav");
 	attackFx = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Ataque.wav");
@@ -1310,6 +1322,74 @@ void Player::Draw(float dt)
 	//	}
 
 	//}
+	DrawWellInteractionPrompt(dt);
+}
+
+void Player::DrawWellInteractionPrompt(float dt)
+{
+	auto& engine = Engine::GetInstance();
+	if (!canInteract || interactuableBody == nullptr ||
+		interactuableBody->ctype != ColliderType::DOOR ||
+		!engine.dialogueManager->CanInteract() ||
+		engine.map->DoorInfo(interactuableBody) != "Catacombs_Boss_Dead.tmx" ||
+		interactionBackgroundTexture == nullptr || interactIcon == nullptr)
+	{
+		interactionIconTimer = 0.0f;
+		return;
+	}
+
+	int x = 0;
+	int y = 0;
+	int doorWidth = 0;
+	int doorHeight = 0;
+	interactuableBody->GetPosition(x, y);
+	engine.map->GetDoorDimensions(interactuableBody, doorWidth, doorHeight);
+
+	interactionIconTimer += dt / 1000.0f;
+	const float offsetY = std::sin(interactionIconTimer * 5.0f) * 10.0f;
+
+	float fIconW = 0.0f;
+	float fIconH = 0.0f;
+	SDL_GetTextureSize(interactIcon, &fIconW, &fIconH);
+
+	const int iconW = static_cast<int>(fIconW);
+	const int iconH = static_cast<int>(fIconH);
+	const int drawX = x - iconW / 2;
+	const int drawY = y - doorHeight / 2 - iconH - 20 + static_cast<int>(offsetY);
+
+	const SDL_Rect camera = engine.render->camera;
+	const int scale = engine.window->GetScale();
+	const float zoomLevel = engine.render->GetZoom();
+	const int screenX = static_cast<int>((camera.x + (drawX - iconW) * scale) * zoomLevel);
+	const int screenY = static_cast<int>((camera.y + drawY * scale) * zoomLevel) - 35;
+	const int screenW = static_cast<int>((iconW * 3 * scale) * zoomLevel);
+	const int screenH = static_cast<int>((iconH * scale) * zoomLevel);
+
+	const std::string interactText = engine.languageManager->GetString("INTERACT_ENTER");
+	const SDL_Rect measuredText = engine.render->MeasureText(
+		interactText.c_str(), FontType::CUERPO);
+
+	const int promptW = measuredText.w + 80;
+	const int promptH = std::max(screenH + 20, measuredText.h + 36);
+	const int promptCenterX = screenX + screenW / 2;
+	const int promptCenterY = screenY + screenH / 2;
+	const SDL_Rect promptBounds = {
+		promptCenterX - promptW / 2,
+		promptCenterY - promptH / 2,
+		promptW,
+		promptH
+	};
+
+	interactionBackgroundAnimation.Update(dt);
+	const SDL_Rect& backgroundFrame = interactionBackgroundAnimation.GetCurrentFrame();
+	engine.render->DrawTextureScaledSection(
+		interactionBackgroundTexture, backgroundFrame, promptBounds);
+	engine.render->DrawTexture(
+		interactIcon, drawX, drawY, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
+
+	const SDL_Color textColor = { 45, 24, 16, 255 };
+	engine.render->DrawTextCentered(
+		interactText.c_str(), promptBounds, textColor, FontType::CUERPO);
 }
 
 void Player::CameraFollows()
@@ -1590,6 +1670,14 @@ bool Player::CleanUp()
 
 	canInteract = false;
 	interactuableBody = nullptr;
+	if (interactionBackgroundTexture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(interactionBackgroundTexture);
+		interactionBackgroundTexture = nullptr;
+	}
+	if (interactIcon != nullptr) {
+		Engine::GetInstance().textures->UnLoad(interactIcon);
+		interactIcon = nullptr;
+	}
 	if (pbody != nullptr) {
 		pbody->listener = nullptr;
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
