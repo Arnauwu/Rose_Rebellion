@@ -18,6 +18,7 @@
 #include "Map.h"
 #include "SavePoint.h"
 #include "Door.h"
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
 
@@ -27,6 +28,8 @@ using namespace std;
 
 namespace
 {
+	constexpr const char* FORCE_ORB_TUTORIAL_ID = "TUTORIAL_FORCE_ORB";
+
 	const char* GetRequiredKeyMessage(KeyType keyType)
 	{
 		switch (keyType) {
@@ -1740,7 +1743,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
-			Engine::GetInstance().hud->ShowNotification("NOTIFY_HEALTH_RECOVERED");
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
@@ -1753,7 +1755,21 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy();
-		Engine::GetInstance().hud->ShowNotification("NOTIFY_ORB_OBTAINED");
+
+		{
+			auto& triggeredDialogues = GameManager::GetInstance().gameState.triggeredDialogues;
+			const bool isInForest =
+				Engine::GetInstance().map->mapFileName.find("Forest") != std::string::npos;
+			const bool tutorialAlreadyShown =
+				std::find(triggeredDialogues.begin(), triggeredDialogues.end(), FORCE_ORB_TUTORIAL_ID)
+				!= triggeredDialogues.end();
+
+			if (isInForest && !tutorialAlreadyShown &&
+				!Engine::GetInstance().dialogueManager->IsDialogueActive()) {
+				Engine::GetInstance().dialogueManager->StartTutorial(FORCE_ORB_TUTORIAL_ID);
+				triggeredDialogues.push_back(FORCE_ORB_TUTORIAL_ID);
+			}
+		}
 		break;
 	case ColliderType::SAVEPOINT:
 	{

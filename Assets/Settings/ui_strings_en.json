@@ -41,6 +41,7 @@
   "TUTORIAL_ATTACK": "Sickle obtained! Attack\nJ",
   "TUTORIAL_DOUBLE_JUMP": "Double jump unlocked! Press twice\nSPACE x2",
   "TUTORIAL_WALL_JUMP": "Wall jump unlocked! Jump from a wall\nL + SPACE",
+  "TUTORIAL_FORCE_ORB": "Power Orbs can be spent in the skill tree to unlock upgrades.\nN",
   "TUTORIAL_CONFIRM": "Press E when you understand.",
 
   "// --- GAMEPLAY NOTIFICATIONS ---": "",
