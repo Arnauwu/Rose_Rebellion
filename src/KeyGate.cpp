@@ -12,9 +12,32 @@
 
 namespace
 {
-    constexpr float MountainStaticFrameHeight = 384.0f;
-    constexpr float MountainAnimationFrameHeight = 440.0f;
     constexpr int MountainVisualOverlap = 12;
+
+    void TrimMountainAnimationFrame(SDL_Rect& frame)
+    {
+        const int tileId = (frame.y / 440) * 8 + (frame.x / 256);
+
+        int trimTop = 0;
+        int visibleHeight = 384;
+        switch (tileId) {
+        case 0: trimTop = 1; visibleHeight = 383; break;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5: trimTop = 2; visibleHeight = 383; break;
+        case 8: trimTop = 9; visibleHeight = 383; break;
+        case 9:
+        case 10: trimTop = 10; visibleHeight = 383; break;
+        case 11:
+        case 12: trimTop = 7; visibleHeight = 386; break;
+        default: break;
+        }
+
+        frame.y += trimTop;
+        frame.h = visibleHeight;
+    }
 
     struct GateVisualAssets
     {
@@ -142,17 +165,11 @@ bool KeyGate::Update(float dt)
         SDL_Rect frame = anims.GetCurrentFrame();
 
         if (animTexture) {
-            SDL_Rect animationDest = destRect;
             if (requiredKey == KeyType::MOUNTAIN) {
-                const float animationScale = MountainAnimationFrameHeight / MountainStaticFrameHeight;
-                const int transparentBottom = (int)((MountainAnimationFrameHeight - MountainStaticFrameHeight)
-                    * destRect.h / MountainStaticFrameHeight);
-
-                animationDest.y += transparentBottom;
-                animationDest.h = (int)(destRect.h * animationScale);
+                TrimMountainAnimationFrame(frame);
             }
 
-            Engine::GetInstance().render->DrawRotatedImage(animTexture, &animationDest, &frame);
+            Engine::GetInstance().render->DrawRotatedImage(animTexture, &destRect, &frame);
         }
 
         if (!animationFinished &&
