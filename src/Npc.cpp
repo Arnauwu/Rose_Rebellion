@@ -58,6 +58,14 @@ bool Npc::Start() {
 
     
     //TO DO: CAMBIAR TEXTURA
+    interactionBackgroundTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.png");
+    std::unordered_map<int, std::string> interactionBackgroundAliases = { {0, "idle"} };
+    interactionBackgroundAnimation.LoadFromTSX(
+        "Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.tsx",
+        interactionBackgroundAliases
+    );
+    interactionBackgroundAnimation.SetCurrent("idle");
+
     interactIcon = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/Flecha.png");
     zOrder = -1;
     glowTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Glow.png");
@@ -89,6 +97,20 @@ bool Npc::Update(float dt) {
     pbody->GetPosition(x, y);
     position.setX((float)x);
     position.setY((float)y);
+
+    interactionBackgroundAnimation.Update(dt);
+    if (interactionBackgroundTexture != nullptr) {
+        const SDL_Rect& backgroundFrame = interactionBackgroundAnimation.GetCurrentFrame();
+        SDL_Rect backgroundRect;
+        if (!tsxPath.empty()) {
+            backgroundRect = { x, y, texW, texH };
+        }
+        else {
+            backgroundRect = { x - texW, y - texH / 2, texW, texH };
+        }
+        Engine::GetInstance().render->DrawWorldTextureScaledSection(
+            interactionBackgroundTexture, backgroundFrame, backgroundRect);
+    }
 
     // Dibujamos el NPC 
     if (texture != nullptr) {
@@ -169,6 +191,7 @@ bool Npc::Update(float dt) {
 
 bool Npc::CleanUp() {
     if (texture) Engine::GetInstance().textures->UnLoad(texture);
+    if (interactionBackgroundTexture) Engine::GetInstance().textures->UnLoad(interactionBackgroundTexture);
     if (interactIcon) Engine::GetInstance().textures->UnLoad(interactIcon);
     if (pbody) {
         Engine::GetInstance().physics->DeletePhysBody(pbody);
