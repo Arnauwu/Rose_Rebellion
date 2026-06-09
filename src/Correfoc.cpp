@@ -51,6 +51,7 @@ bool Correfoc::Start()
 	texW = 128;
 	texH = 128;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() - texW / 2, (int)position.getY() - texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
+	b2Body_SetFixedRotation(pbody->body, true);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -226,7 +227,7 @@ void Correfoc::Move() {
 
 		if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
 		{
-			velocity.x *= 5;
+			velocity.x *= 0.75f;
 		}
 	}
 
