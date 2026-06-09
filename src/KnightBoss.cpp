@@ -182,7 +182,7 @@ bool KnightBoss::Update(float dt)
 				player->isFrozen = false;
 				Engine::GetInstance().hud->isHidden = false;
 
-				Engine::GetInstance().dialogueManager->StartDialogue("Inici", false);
+				Engine::GetInstance().dialogueManager->StartDialogue("Cavaller", false);
 			}
 		}
 

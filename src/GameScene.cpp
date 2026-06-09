@@ -316,6 +316,7 @@ bool GameScene::Start() {
 			//	-Bosses
 	LoadTextureIfNull(bossNinfaPortrait, "Assets/Textures/UI/Dialogues/bossNinfa_portrait.png");
 	LoadTextureIfNull(bossDracPortrait, "Assets/Textures/UI/Dialogues/bossDrac_portrait.png");
+	LoadTextureIfNull(bossKnightPortrait, "Assets/Textures/UI/Dialogues/Portrait_Soldier.png");
 			//	-Npcs
 	LoadTextureIfNull(npcPortrait1, "Assets/Textures/UI/Dialogues/npc_portrait1.png"); // Cerdo
 	LoadTextureIfNull(npcPortrait2, "Assets/Textures/UI/Dialogues/npc_portrait2.png"); // Paloma
@@ -780,6 +781,7 @@ bool GameScene::CleanUp() {
 
 	UnloadTexture(bossNinfaPortrait);
 	UnloadTexture(bossDracPortrait);
+	UnloadTexture(bossKnightPortrait);
 
 	UnloadTexture(npcPortrait1);
 	UnloadTexture(npcPortrait2);
@@ -1289,6 +1291,10 @@ void GameScene::CreateDialogueUI() {
 		dBox->AddPortrait("Colomet", npcPortrait2);
 		dBox->AddPortrait("BeEa", npcPortrait3);
 		dBox->AddPortrait("Paca", npcPortrait4);
+
+		dBox->AddPortrait("Mediterrània", bossNinfaPortrait);
+		dBox->AddPortrait("Jordi", bossDracPortrait);
+		dBox->AddPortrait("Roc", bossKnightPortrait);
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);

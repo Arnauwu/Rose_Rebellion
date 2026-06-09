@@ -114,7 +114,7 @@ void UIDialogueBox::Draw() const {
 			nameBox.x = mainBox.x + (int)(mainBox.w * 0.05f);
 		}
 		else {
-			nameBox.x = (mainBox.x + mainBox.w) - nameBox.w - (int)(mainBox.w * 0.05f);
+			nameBox.x = (mainBox.x + mainBox.w) - nameBox.w - (int)(mainBox.w * 0.15f);
 		}
 
 		// Dibujamos el fondo del nombre

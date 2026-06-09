@@ -14,6 +14,7 @@
 #include "DashObj.h"
 #include "HealthOrb.h"
 #include "WaveProjectile.h"
+#include "DialogueManager.h"
 #include <cmath>
 
 #include "GameManager.h"
@@ -150,6 +151,8 @@ bool NinfaMare::Update(float dt)
                 introDone = 4;
 
                 player->cameraController.SetTargetZoom(0.5);
+
+                Engine::GetInstance().dialogueManager->StartDialogue("Ninfa");
 
                 stateTimer.Start();
             }
