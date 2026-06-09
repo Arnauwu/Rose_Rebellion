@@ -76,7 +76,7 @@ namespace
 		std::string normalizedRegion = NormalizeKeyRegion(region);
 
 		if (normalizedRegion == "forest" || normalizedRegion == "bosque") return KeyType::FOREST;
-		if (normalizedRegion == "mountain" || normalizedRegion == "montana" || normalizedRegion == "monta\xC3\xB1" "a") return KeyType::MOUNTAIN;
+		if (normalizedRegion == "mountain" || normalizedRegion == "montana" || normalizedRegion == "montanya" || normalizedRegion == "monta\xC3\xB1" "a") return KeyType::MOUNTAIN;
 		if (normalizedRegion == "catacumba" || normalizedRegion == "catacumbs" || normalizedRegion == "catacombs") return KeyType::CATACUMBA;
 		if (normalizedRegion == "boss") return KeyType::BOSS;
 		if (normalizedRegion == "castle") return KeyType::CASTLE;
@@ -798,6 +798,18 @@ bool Map::Load(std::string path, std::string fileName)
 
 						KeyType reqKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
+						if (reqKey == KeyType::MOUNTAIN) {
+							Engine::GetInstance().physics->DeletePhysBody(collider);
+							constexpr float MountainGateColliderWidthScale = 0.7f;
+							collider = Engine::GetInstance().physics->CreateRectangle(
+								obj->x + obj->width / 2,
+								obj->y + obj->height / 2,
+								(int)(obj->width * MountainGateColliderWidthScale),
+								(int)obj->height,
+								STATIC);
+							collider->ctype = ColliderType::KEY_GATE;
+						}
+
 						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY_GATE);
 						mapDynamicEntities.push_back(newEntity);
 						KeyGate* gate = (KeyGate*)newEntity.get();
@@ -1255,6 +1267,26 @@ void Map::SpawnEntities()
 					if (rock != nullptr) {
 						rock->position = Vector2D(x + w / 2.0f, y + h / 2.0f);
 						rock->SetSize((int)w, (int)h);
+					}
+				}
+				else if (entityType == std::string("Trunco") || entityType == std::string("Trunco1") ||
+					entityType == std::string("Tunco") || entityType == std::string("Tunco1") || entityType == std::string("Tunco2") ||
+					entityType == std::string("Trunco2") || entityType == std::string("Tronco") ||
+					entityType == std::string("Tronco1") || entityType == std::string("Tronco2") ||
+					entityType == std::string("BreakableTrunk")) {
+					std::shared_ptr<BreakableRock> trunk = std::dynamic_pointer_cast<BreakableRock>(Engine::GetInstance().entityManager->CreateEntity(EntityType::BREAKABLE_ROCK));
+					if (trunk != nullptr) {
+						Properties trunkProps;
+						LoadProperties(objectNode, trunkProps);
+
+						int variant = (entityType == "Trunco2" || entityType == "Tronco2" || entityType == "Tunco2") ? 2 : 1;
+						Properties::Property* variantProp = trunkProps.GetProperty("Variant");
+						if (variantProp == nullptr) variantProp = trunkProps.GetProperty("Tipo");
+						if (variantProp != nullptr) variant = variantProp->value2 == "2" ? 2 : (int)variantProp->value;
+
+						trunk->Configure(BreakableRock::BreakableType::TRUNK, variant);
+						trunk->position = Vector2D(x + w / 2.0f, y + h / 2.0f);
+						trunk->SetSize((int)w, (int)h);
 					}
 				}
 				else if (entityType == std::string("DialogueTrigger")) {

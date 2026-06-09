@@ -9740,7 +9740,7 @@
    <property name="Sensor" type="bool" value="false"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="725" x="4220" y="1268" width="308" height="532"/>
+  <object id="725" x="4220" y="1288" width="308" height="496"/>
  </objectgroup>
  <layer id="31" name="GroundNavLayer" width="153" height="19" visible="0">
   <properties>

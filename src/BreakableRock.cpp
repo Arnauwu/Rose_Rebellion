@@ -21,6 +21,7 @@ namespace
 	constexpr float RockBlockScale = 1.35f;
 	constexpr int RockMinBlockWidth = 520;
 	constexpr int RockMinBlockHeight = 520;
+	constexpr float TrunkHeightScale = 1.25f;
 }
 
 BreakableRock::BreakableRock() : Entity(EntityType::BREAKABLE_ROCK)
@@ -39,17 +40,32 @@ bool BreakableRock::Start()
 {
 	if (CheckIfDestroyed()) return true;
 
-	std::unordered_map<int, std::string> aliases = {
-		{0, "rock_0"},
-		{1, "rock_1"},
-		{2, "rock_2"},
-		{3, "rock_3"}
-	};
+	if (breakableType == BreakableType::TRUNK) {
+		const int rowStart = variant == 2 ? 10 : 0;
+		std::unordered_map<int, std::string> aliases = {
+			{rowStart, "trunk_2"},
+			{rowStart + 1, "trunk_1"},
+			{rowStart + 2, "trunk_0"}
+		};
 
-	anims.LoadFromTSX("Assets/Textures/Animation/Roca/Atlas_piedras_catacumbas.tsx", aliases);
-	anims.SetCurrent("rock_0");
+		anims.LoadFromTSX("Assets/Textures/Animation/Trunco/Atlas_troncos_romper_montana.tsx", aliases);
+		anims.SetCurrent("trunk_0");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Animation/Trunco/Atlas_troncos_romper_montana.png");
+		maxHits = 3;
+	}
+	else {
+		std::unordered_map<int, std::string> aliases = {
+			{0, "rock_0"},
+			{1, "rock_1"},
+			{2, "rock_2"},
+			{3, "rock_3"}
+		};
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Animation/Roca/Atlas_piedras_catacumbas.png");
+		anims.LoadFromTSX("Assets/Textures/Animation/Roca/Atlas_piedras_catacumbas.tsx", aliases);
+		anims.SetCurrent("rock_0");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/Animation/Roca/Atlas_piedras_catacumbas.png");
+		maxHits = 4;
+	}
 
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 	if (width <= 0) width = animFrame.w;
@@ -82,13 +98,24 @@ bool BreakableRock::Update(float dt)
 	}
 
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-	float renderScale = std::max(width / (float)animFrame.w, height / (float)animFrame.h);
-	SDL_Rect rockRect = {
-		x - (int)(animFrame.w * renderScale / 2.0f) + shakeOffsetX,
-		y - (int)(animFrame.h * renderScale / 2.0f) + shakeOffsetY,
-		(int)(animFrame.w * renderScale),
-		(int)(animFrame.h * renderScale)
-	};
+	SDL_Rect rockRect;
+	if (breakableType == BreakableType::TRUNK) {
+		rockRect = {
+			x - width / 2 + shakeOffsetX,
+			y - height / 2 + shakeOffsetY,
+			width,
+			height
+		};
+	}
+	else {
+		float renderScale = std::max(width / (float)animFrame.w, height / (float)animFrame.h);
+		rockRect = {
+			x - (int)(animFrame.w * renderScale / 2.0f) + shakeOffsetX,
+			y - (int)(animFrame.h * renderScale / 2.0f) + shakeOffsetY,
+			(int)(animFrame.w * renderScale),
+			(int)(animFrame.h * renderScale)
+		};
+	}
 
 	Engine::GetInstance().render->DrawWorldTextureScaledSection(
 		texture,
@@ -135,10 +162,25 @@ void BreakableRock::SetSize(int width, int height)
 	uniqueIDPosition = position;
 	hasUniqueIDPosition = true;
 
-	this->width = std::max(RockMinBlockWidth, (int)(width * RockBlockScale));
-	this->height = std::max(RockMinBlockHeight, (int)(height * RockBlockScale));
+	if (breakableType == BreakableType::TRUNK) {
+		this->width = width;
+		this->height = (int)(height * TrunkHeightScale);
+	}
+	else {
+		this->width = std::max(RockMinBlockWidth, (int)(width * RockBlockScale));
+		this->height = std::max(RockMinBlockHeight, (int)(height * RockBlockScale));
+	}
 
 	position.setY(position.getY() + (originalHeight - this->height) / 2.0f);
+}
+
+void BreakableRock::Configure(BreakableType type, int variant)
+{
+	breakableType = type;
+	this->variant = variant == 2 ? 2 : 1;
+	name = breakableType == BreakableType::TRUNK
+		? "BreakableTrunk" + std::to_string(this->variant)
+		: "BreakableRock";
 }
 
 void BreakableRock::ApplyHitFeedback()
@@ -196,6 +238,7 @@ void BreakableRock::ResetPlayerWallState()
 
 void BreakableRock::SetDamageFrame()
 {
-	std::string animName = "rock_" + std::to_string(hitsTaken);
+	const std::string prefix = breakableType == BreakableType::TRUNK ? "trunk_" : "rock_";
+	std::string animName = prefix + std::to_string(hitsTaken);
 	anims.SetCurrent(animName);
 }
