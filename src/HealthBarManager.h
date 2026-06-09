@@ -33,6 +33,9 @@ private:
     SDL_Texture* ninfaBaseTexture = nullptr;
     SDL_Texture* ninfaVidaTexture = nullptr;
 
+    SDL_Texture* lagartoBaseTexture = nullptr;
+    SDL_Texture* lagartoVidaTexture = nullptr;
+
     // Puntero al enemigo activo actualmente
     Enemy* currentBoss = nullptr;
 

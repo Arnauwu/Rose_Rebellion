@@ -24,14 +24,17 @@ bool HealthBarManager::Start() {
     knightBaseTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Base.png");
     knightVidaTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Vida.png");
 
-    // 2. Cargar imágenes Dragón (TODO: Cambia estas rutas por las tuyas)
+    // 2. Cargar imágenes Dragón
     dragonBaseTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Base_dragon.png");
     dragonVidaTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Vida_dragon.png");
     dragonExtraTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Separadores Vida.png");
 
-    // 3. Cargar imágenes Ninfa (TODO: Cambia estas rutas por las tuyas)
+    // 3. Cargar imágenes Ninfa
     ninfaBaseTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Base_ninfa.png");
     ninfaVidaTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Vida_ninfa.png");
+
+    lagartoBaseTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Borde2.png");
+    lagartoVidaTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/LifeBar/Vida_lagarto.png");
 
     return true;
 }
@@ -89,6 +92,17 @@ bool HealthBarManager::PostUpdate() {
         activeMargenIzq = 123;
         activeMargenDer = 123;
     }
+    else if (currentBoss->name == "GwellBoss") {
+        activeBase = lagartoBaseTexture;
+        activeVida = lagartoVidaTexture;
+        activeExtra = nullptr;
+
+        // TODO: Pon aquí las medidas de Borde2.png y Vida_lagarto.png
+        activeWidth = 1448; // Cambia esto por el ancho real en píxeles de Borde2.png
+        activeHeight = 98;  // Cambia esto por el alto real en píxeles de Borde2.png
+        activeMargenIzq = 123; // Ajusta cuántos píxeles de margen hay hasta que empieza el rojo
+        activeMargenDer = 123; // Ajusta el margen derecho
+    }
 
     // --- 1. POSICIÓN: Arriba y centrado ---
     int screenW = Engine::GetInstance().window->windowWidth;
@@ -131,6 +145,8 @@ bool HealthBarManager::CleanUp() {
     if (dragonExtraTexture) Engine::GetInstance().textures->UnLoad(dragonExtraTexture);
     if (ninfaBaseTexture) Engine::GetInstance().textures->UnLoad(ninfaBaseTexture);
     if (ninfaVidaTexture) Engine::GetInstance().textures->UnLoad(ninfaVidaTexture);
+    if (lagartoBaseTexture) Engine::GetInstance().textures->UnLoad(lagartoBaseTexture);
+    if (lagartoVidaTexture) Engine::GetInstance().textures->UnLoad(lagartoVidaTexture);
     return true;
 }
 

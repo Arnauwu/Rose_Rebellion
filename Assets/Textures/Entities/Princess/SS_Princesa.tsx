@@ -27,34 +27,34 @@
  </tile>
  <tile id="24">
   <animation>
-   <frame tileid="24" duration="110"/>
-   <frame tileid="25" duration="110"/>
-   <frame tileid="36" duration="110"/>
-   <frame tileid="37" duration="110"/>
-   <frame tileid="38" duration="110"/>
+   <frame tileid="24" duration="150"/>
+   <frame tileid="25" duration="150"/>
+   <frame tileid="36" duration="150"/>
+   <frame tileid="37" duration="150"/>
+   <frame tileid="38" duration="150"/>
   </animation>
  </tile>
  <tile id="36">
   <animation>
-   <frame tileid="36" duration="110"/>
-   <frame tileid="37" duration="110"/>
-   <frame tileid="38" duration="110"/>
+   <frame tileid="36" duration="150"/>
+   <frame tileid="37" duration="150"/>
+   <frame tileid="38" duration="150"/>
   </animation>
  </tile>
  <tile id="48">
   <animation>
-   <frame tileid="48" duration="110"/>
-   <frame tileid="49" duration="110"/>
-   <frame tileid="60" duration="110"/>
-   <frame tileid="61" duration="110"/>
-   <frame tileid="62" duration="110"/>
+   <frame tileid="48" duration="150"/>
+   <frame tileid="49" duration="150"/>
+   <frame tileid="60" duration="150"/>
+   <frame tileid="61" duration="150"/>
+   <frame tileid="62" duration="150"/>
   </animation>
  </tile>
  <tile id="60">
   <animation>
-   <frame tileid="60" duration="110"/>
-   <frame tileid="61" duration="110"/>
-   <frame tileid="62" duration="110"/>
+   <frame tileid="60" duration="150"/>
+   <frame tileid="61" duration="150"/>
+   <frame tileid="62" duration="150"/>
   </animation>
  </tile>
  <tile id="72">
@@ -91,91 +91,81 @@
  </tile>
  <tile id="96">
   <animation>
-   <frame tileid="216" duration="110"/>
-   <frame tileid="217" duration="110"/>
-   <frame tileid="218" duration="110"/>
-   <frame tileid="219" duration="110"/>
-   <frame tileid="220" duration="110"/>
-   <frame tileid="96" duration="110"/>
-   <frame tileid="97" duration="110"/>
-   <frame tileid="98" duration="110"/>
-   <frame tileid="99" duration="110"/>
-   <frame tileid="100" duration="110"/>
-   <frame tileid="101" duration="110"/>
-   <frame tileid="102" duration="110"/>
-   <frame tileid="103" duration="110"/>
-   <frame tileid="104" duration="110"/>
-   <frame tileid="105" duration="110"/>
-   <frame tileid="106" duration="110"/>
-   <frame tileid="107" duration="110"/>
-   <frame tileid="108" duration="110"/>
-   <frame tileid="109" duration="110"/>
-   <frame tileid="110" duration="110"/>
-   <frame tileid="111" duration="110"/>
-   <frame tileid="112" duration="110"/>
-   <frame tileid="113" duration="110"/>
+   <frame tileid="96" duration="150"/>
+   <frame tileid="97" duration="150"/>
+   <frame tileid="98" duration="150"/>
+   <frame tileid="99" duration="150"/>
+   <frame tileid="100" duration="150"/>
+   <frame tileid="101" duration="150"/>
+   <frame tileid="102" duration="150"/>
+   <frame tileid="103" duration="150"/>
+   <frame tileid="104" duration="150"/>
+   <frame tileid="105" duration="150"/>
+   <frame tileid="106" duration="150"/>
+   <frame tileid="107" duration="150"/>
+   <frame tileid="108" duration="150"/>
+   <frame tileid="109" duration="150"/>
+   <frame tileid="110" duration="150"/>
+   <frame tileid="111" duration="150"/>
+   <frame tileid="112" duration="150"/>
+   <frame tileid="113" duration="150"/>
   </animation>
  </tile>
  <tile id="120">
   <animation>
-   <frame tileid="228" duration="110"/>
-   <frame tileid="229" duration="110"/>
-   <frame tileid="230" duration="110"/>
-   <frame tileid="231" duration="110"/>
-   <frame tileid="232" duration="110"/>
-   <frame tileid="120" duration="110"/>
-   <frame tileid="121" duration="110"/>
-   <frame tileid="122" duration="110"/>
-   <frame tileid="123" duration="110"/>
-   <frame tileid="124" duration="110"/>
-   <frame tileid="125" duration="110"/>
-   <frame tileid="126" duration="110"/>
-   <frame tileid="127" duration="110"/>
-   <frame tileid="128" duration="110"/>
-   <frame tileid="129" duration="110"/>
-   <frame tileid="130" duration="110"/>
-   <frame tileid="131" duration="110"/>
-   <frame tileid="132" duration="110"/>
-   <frame tileid="133" duration="110"/>
-   <frame tileid="134" duration="110"/>
-   <frame tileid="135" duration="110"/>
-   <frame tileid="136" duration="110"/>
-   <frame tileid="137" duration="110"/>
+   <frame tileid="120" duration="150"/>
+   <frame tileid="121" duration="150"/>
+   <frame tileid="122" duration="150"/>
+   <frame tileid="123" duration="150"/>
+   <frame tileid="124" duration="150"/>
+   <frame tileid="125" duration="150"/>
+   <frame tileid="126" duration="150"/>
+   <frame tileid="127" duration="150"/>
+   <frame tileid="128" duration="150"/>
+   <frame tileid="129" duration="150"/>
+   <frame tileid="130" duration="150"/>
+   <frame tileid="131" duration="150"/>
+   <frame tileid="132" duration="150"/>
+   <frame tileid="133" duration="150"/>
+   <frame tileid="134" duration="150"/>
+   <frame tileid="135" duration="150"/>
+   <frame tileid="136" duration="150"/>
+   <frame tileid="137" duration="150"/>
   </animation>
  </tile>
  <tile id="168">
   <animation>
-   <frame tileid="168" duration="110"/>
-   <frame tileid="169" duration="110"/>
-   <frame tileid="170" duration="110"/>
-   <frame tileid="171" duration="110"/>
-   <frame tileid="172" duration="110"/>
-   <frame tileid="173" duration="110"/>
-   <frame tileid="174" duration="110"/>
-   <frame tileid="180" duration="110"/>
-   <frame tileid="181" duration="110"/>
-   <frame tileid="182" duration="110"/>
-   <frame tileid="183" duration="110"/>
-   <frame tileid="184" duration="110"/>
-   <frame tileid="185" duration="110"/>
-   <frame tileid="186" duration="110"/>
+   <frame tileid="168" duration="130"/>
+   <frame tileid="169" duration="130"/>
+   <frame tileid="170" duration="130"/>
+   <frame tileid="171" duration="130"/>
+   <frame tileid="172" duration="130"/>
+   <frame tileid="173" duration="130"/>
+   <frame tileid="174" duration="130"/>
+   <frame tileid="180" duration="130"/>
+   <frame tileid="181" duration="130"/>
+   <frame tileid="182" duration="130"/>
+   <frame tileid="183" duration="130"/>
+   <frame tileid="184" duration="130"/>
+   <frame tileid="185" duration="130"/>
+   <frame tileid="186" duration="130"/>
   </animation>
  </tile>
  <tile id="192">
   <animation>
-   <frame tileid="192" duration="110"/>
-   <frame tileid="193" duration="110"/>
-   <frame tileid="194" duration="110"/>
-   <frame tileid="195" duration="110"/>
-   <frame tileid="196" duration="110"/>
-   <frame tileid="197" duration="110"/>
-   <frame tileid="198" duration="110"/>
-   <frame tileid="204" duration="110"/>
-   <frame tileid="205" duration="110"/>
-   <frame tileid="206" duration="110"/>
-   <frame tileid="207" duration="110"/>
-   <frame tileid="208" duration="110"/>
-   <frame tileid="209" duration="110"/>
+   <frame tileid="192" duration="130"/>
+   <frame tileid="193" duration="130"/>
+   <frame tileid="194" duration="130"/>
+   <frame tileid="195" duration="130"/>
+   <frame tileid="196" duration="130"/>
+   <frame tileid="197" duration="130"/>
+   <frame tileid="198" duration="130"/>
+   <frame tileid="204" duration="130"/>
+   <frame tileid="205" duration="130"/>
+   <frame tileid="206" duration="130"/>
+   <frame tileid="207" duration="130"/>
+   <frame tileid="208" duration="130"/>
+   <frame tileid="209" duration="130"/>
   </animation>
  </tile>
 </tileset>

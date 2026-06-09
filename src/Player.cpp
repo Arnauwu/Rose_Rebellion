@@ -130,9 +130,16 @@ bool Player::Start()
 	if (!GameManager::GetInstance().gameState.glideUnlocked)
 	{
 		std::unordered_map<int, std::string> aliases = GetAliases("capeless");
-		anims.LoadFromTSX("Assets/Textures/Entities/Princess/Princess_Capeless.tsx", aliases);
-		anims.SetCurrent("idle_right");
-		texture = textures->Load("Assets/Textures/Entities/Princess/Princess_Capeless.png");
+		anims.LoadFromTSX("Assets/Textures/Entities/Princess/SS_Princesa.tsx", aliases);
+		texture = textures->Load("Assets/Textures/Entities/Princess/SS_Princesa.png");
+
+		if (anims.GetAnim("spawn_right") != nullptr) anims.GetAnim("spawn_right")->SetLoop(true);
+		if (anims.GetAnim("spawn_left") != nullptr) anims.GetAnim("spawn_left")->SetLoop(true);
+
+		isSpawning = true;
+		spawnTimer.Start(); // Arrancamos el cronómetro
+		currentAnimPriority = 10;
+		anims.SetCurrent(lookingRight ? "spawn_right" : "spawn_left");
 	}
 	else
 	{
@@ -250,6 +257,17 @@ bool Player::Update(float dt)
 	{
 		GetPhysicsValues();
 
+		if (isSpawning)
+		{
+			// Ajusta el 2200 según lo que tarden tus frames reales en dar 2 vueltas
+			if (spawnTimer.ReadMSec() >= 2700)
+			{
+				isSpawning = false;
+				currentAnimPriority = 0;
+				anims.SetCurrent(lookingRight ? "idle_right" : "idle_left");
+			}
+		}
+
 		if (isInvincible)
 		{
 		
@@ -278,7 +296,7 @@ bool Player::Update(float dt)
 		if (timeSinceLastAttack >= comboResetTime) {
 			comboStep = 0; // Reset combo
 		}
-		if (!isKnockedback) 
+		if (!isKnockedback && !isSpawning)
 		{
 			Move();
 
@@ -424,6 +442,8 @@ void Player::Move() {
 		lookingRight = (moveInput > 0.0f);
 		isMovingThisFrame = true;
 
+		idleTimer = 0.0f;
+
 		if (currentAnimPriority == 3)
 		{
 			anims.SetCurrent(lookingRight ? "fall_right" : "fall_left");
@@ -440,10 +460,41 @@ void Player::Move() {
 	}
 	else
 	{
+		// Si no nos movemos, comprobamos que no estemos haciendo otra cosa
 		if (!isAttacking && !isJumping && !isDashing && currentAnimPriority != 4)
 		{
-			anims.SetCurrent(lookingRight ? "idle_right" : "idle_left");
+			// Sumamos el tiempo que pasa quieta (dt viene en milisegundos)
+			idleTimer += Engine::GetInstance().GetDt() / 1000.0f;
+
+			if (idleTimer >= 7.0f)
+			{
+				std::string idleAnim = lookingRight ? "idle_right" : "idle_left";
+
+				// 1. Ponemos la animación de descanso (solo si no estaba ya puesta)
+				if (anims.GetCurrentName() != idleAnim) {
+					anims.SetCurrent(idleAnim);
+				}
+
+				// 2. ¡EL TRUCO! Si la animación larga ya ha dado una vuelta completa, 
+				// reiniciamos el reloj a 0. Esto hará que el código vuelva al 'else' de abajo.
+				if (anims.GetAnim(idleAnim) != nullptr && anims.GetAnim(idleAnim)->HasFinishedOnce())
+				{
+					idleTimer = 0.0f;
+				}
+			}
+			else
+			{
+				// Menos de 3 segundos: mantener la pose quieta que has metido
+				if (anims.GetCurrentName() != "stand") {
+					anims.SetCurrent("stand");
+				}
+			}
+
 			currentAnimPriority = 0;
+		}
+		else
+		{
+			idleTimer = 0.0f; // Reiniciamos el tiempo si salta, ataca, etc.
 		}
 	}
 
@@ -1241,7 +1292,7 @@ void Player::ApplyPhysics() {
 		}
 	}
 
-	if (velocity.y > 5 && currentAnimPriority != 3)
+	if (velocity.y > 5 && currentAnimPriority != 3 && !isSpawning)
 	{
 		if (lookingRight)
 		{
@@ -1497,7 +1548,10 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 										 {72,"death_right"},
 										 {84,"death_left" },
 										 {96,"idle_right" },
-										 {120,"idle_left" }
+										 {120,"idle_left" },
+										 {144,"stand" },
+										 {168,"spawn_left" },
+										 {192,"spawn_right" }
 		};
 	}
 	else if (name == "cape")
@@ -1780,7 +1834,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			isJumping = false;
 			secondJumpUsed = false;
 
-			if (currentAnimPriority > 1 && currentAnimPriority != 4)
+			if (currentAnimPriority > 1 && currentAnimPriority != 4 && !isSpawning)
 			{
 				if (lookingRight)
 				{

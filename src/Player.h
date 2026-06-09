@@ -232,6 +232,11 @@ public:
 
 	bool lastBreathUsed = false;
 
+	bool isSpawning = false;
+	Timer spawnTimer;
+
+	float idleTimer = 0.0f;
+
 private:
 	//Audio
 	int jumpFx;

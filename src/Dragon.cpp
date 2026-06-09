@@ -55,7 +55,7 @@ bool Dragon::Start() {
 	pathFindingCooldown.Start();
 
 	// Boss  Stats  // TO DO: AJUSTAR
-	vision = 30;
+	vision = 20;
 	speed = 1.5f;
 	knockbackForce = 0.0f; //Immune to knockback
 
