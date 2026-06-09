@@ -3,12 +3,14 @@
 #include "Entity.h"
 #include "Timer.h"
 #include "Animation.h"
+#include "Vector2D.h"
 #include <box2d/box2d.h>
 
 class WaveProjectile : public Entity
 {
 public:
-    WaveProjectile();
+    WaveProjectile();                   // Constructor predeterminado (evita el C2512)
+    WaveProjectile(Vector2D spawnPos);
     virtual ~WaveProjectile();
 
     bool Start() override;

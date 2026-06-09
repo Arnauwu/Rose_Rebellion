@@ -13,6 +13,7 @@
 #include "Audio.h"
 #include "DashObj.h"
 #include "HealthOrb.h"
+#include "WaveProjectile.h"
 #include <cmath>
 
 #include "GameManager.h"
@@ -49,7 +50,7 @@ bool NinfaMare::Start()
     // Animaciones (Usando el sistema de aliases de la ninfa base)[cite: 1]
     std::unordered_map<int, std::string> aliases = {
         {0, "idle"}, {20, "appear"},{21, "waiting"},{36, "scream"}, {40, "attack_shot"},
-        {60, "attack_rain"}, {60, "attack_wave"}, {80, "fly"},{100, "hurt"}, {120, "dead"}
+        {60, "attack_wave"}, {80, "fly"},{100, "hurt"}, {120, "dead"}
     };
     anims.LoadFromTSX("Assets/Textures/Entities/Enemies/NinfaBoss/NinfaMadre_spritesheet.tsx", aliases);
     anims.SetCurrent("idle");
@@ -314,12 +315,12 @@ void NinfaMare::Move() {
                 //    rainTimer.Start();
                 //}
 
-            //    currentState = NinfaMareState::ATTACK_WAVE;
-            //    anims.SetCurrent("attack_wave");
-            //    if (anims.GetAnim("attack_wave") != nullptr) anims.GetAnim("attack_wave")->Reset();
+                currentState = NinfaMareState::ATTACK_WAVE;
+                anims.SetCurrent("attack_wave");
+                if (anims.GetAnim("attack_wave") != nullptr) anims.GetAnim("attack_wave")->Reset();
 
-            //    // Cambiamos el interruptor para que el SIGUIENTE ataque especial sea el otro
-            //    nextSpecialIsWave = !nextSpecialIsWave;
+                // Cambiamos el interruptor para que el SIGUIENTE ataque especial sea el otro
+                //nextSpecialIsWave = !nextSpecialIsWave;
             }
             else {
                 // Si aún no lleva 10 disparos, vuelve a reproducir la animación de ataque para lanzar otro
@@ -331,19 +332,19 @@ void NinfaMare::Move() {
         }
         break;
 
-    //case NinfaMareState::ATTACK_WAVE:
-    //    velocity = { 0, 0 };
+    case NinfaMareState::ATTACK_WAVE:
+        velocity = { 0, 0 };
 
-    //    if (stateTimer.ReadMSec() > 800 && anims.GetCurrentName() == "attack_wave") {
-    //        LaunchWaterWave();
-    //        anims.SetCurrent("fly");
-    //    }
+        if (stateTimer.ReadMSec() > 800 && anims.GetCurrentName() == "attack_wave") {
+            LaunchWaterWave();
+            anims.SetCurrent("fly");
+        }
 
-    //    if (stateTimer.ReadMSec() >= 1500) {
-    //        currentState = NinfaMareState::COOLDOWN; // Descanso tras completar el combo completo
-    //        stateTimer.Start();
-    //    }
-    //    break;
+        if (stateTimer.ReadMSec() >= 1500) {
+            currentState = NinfaMareState::COOLDOWN; // Descanso tras completar el combo completo
+            stateTimer.Start();
+        }
+        break;
 
     //case NinfaMareState::ATTACK_RAIN:
     //    velocity = { 0, 0 }; // Se queda totalmente quieta canalizando
@@ -398,8 +399,38 @@ void NinfaMare::ShootHomingProjectile() {
 }
 
 void NinfaMare::LaunchWaterWave() {
-    // Aquí instanciarías tu entidad de Ola que recorre el suelo
-    LOG("Ninfa Mare lanza una OLA de agua!");
+    Player* player = Engine::GetInstance().entityManager->GetPlayer();
+    Vector2D playerPos = player->GetPosition();
+
+    // Configuración del ataque
+    int cantidadDeOlas = 4;           // Lanza 4 olas en total
+    float espaciadoHorizontal = 600.0f; // Distancia entre ola y ola para dar tiempo a esquivar
+
+    for (int i = 0; i < cantidadDeOlas; i++) {
+
+        // Cada ola se crea más a la izquierda que la anterior
+        float spawnX = playerPos.getX() - 700.0f - (i * espaciadoHorizontal);
+
+        float spawnY;
+
+        // Alternamos las alturas usando el eje Vertical (Y)
+        if (i % 2 == 0) {
+            // Olas PARES (0 y 2): Van por el SUELO. El jugador TIENE QUE SALTARLAS.
+            // (Ajusta este +40.0f según dónde estén los pies de tu jugador)
+            spawnY = playerPos.getY() + 40.0f;
+        }
+        else {
+            // Olas IMPARES (1 y 3): Van por el AIRE. El jugador NO DEBE SALTAR.
+            // (Ajusta este -60.0f para que pasen justo por encima de la cabeza del jugador)
+            spawnY = playerPos.getY() - 400.0f;
+        }
+
+        Vector2D spawnPos(spawnX, spawnY);
+
+        auto wave = std::make_shared<WaveProjectile>(spawnPos);
+        wave->Start();
+        Engine::GetInstance().entityManager->AddEntity(wave);
+    }
 }
 
 void NinfaMare::ApplyPhysics() {
