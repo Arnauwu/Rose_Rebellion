@@ -22,10 +22,14 @@
  </tile>
  <tile id="24">
   <animation>
-   <frame tileid="24" duration="150"/>
-   <frame tileid="25" duration="150"/>
-   <frame tileid="26" duration="150"/>
-   <frame tileid="27" duration="200"/>
+   <frame tileid="24" duration="100"/>
+   <frame tileid="25" duration="100"/>
+   <frame tileid="26" duration="100"/>
+   <frame tileid="27" duration="100"/>
+   <frame tileid="26" duration="100"/>
+   <frame tileid="25" duration="100"/>
+   <frame tileid="27" duration="100"/>
+   <frame tileid="25" duration="100"/>
   </animation>
  </tile>
  <tile id="36">
