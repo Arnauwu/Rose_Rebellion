@@ -22,6 +22,8 @@
 
 #include "tracy/Tracy.hpp"
 
+#define sizeMult 2
+
 GwellBoss::GwellBoss() : Enemy(EntityType::GWELL_BOSS)
 {
 	name = "GwellBoss";
@@ -45,8 +47,8 @@ bool GwellBoss::Start() {
 	tongueText = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Guell/SS_Proyectil_Lengua_Guell.png");
 
 	// Create Body
-	texW = 256;
-	texH = 256;
+	texW = 256 * sizeMult;
+	texH = 256 * sizeMult;
 	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW, texH, bodyType::DYNAMIC); // TO DO: Adjust Size & Geometric Shape
 
 	pbody->listener = this;
@@ -313,14 +315,14 @@ void GwellBoss::Draw(float dt)
 		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
 		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1 * sizeMult);
 
 		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
 		delete r; delete g; delete b;
 	}
 	else
 	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1 * sizeMult);
 	}
 
 	if (attackHitbox != nullptr && anims.GetCurrentName() == "tongue")
@@ -331,16 +333,16 @@ void GwellBoss::Draw(float dt)
 
 		if (!lookingRight)
 		{
-			tx -= texW / 2 - 10;
+			tx -= texW / 2 - 10 * sizeMult;
 		}
 		else
 		{
-			tx += texW / 2 - 10;
+			tx += texW / 2 - 10 * sizeMult;
 		}
 
-		ty -= 70; //Adjust Y
+		ty -= 70 * sizeMult; //Adjust Y
 
-		Engine::GetInstance().render->DrawRotatedTexture(tongueText, tx, ty, nullptr, sdlFlip, 0.5f);
+		Engine::GetInstance().render->DrawRotatedTexture(tongueText, tx, ty, nullptr, sdlFlip, 0.5f * sizeMult);
 	}
 
 }
@@ -373,9 +375,9 @@ void GwellBoss::Attack()
 			{
 				if (currentAttack == 1) // Tongue Attack
 				{
-					int attW = 400; int attH = 40;
+					int attW = 400 * sizeMult; int attH = 40 * sizeMult;
 					int hX = lookingRight ? position.getX() + texW/2 + attW /2 : position.getX() - texW/2 - attW/2;
-					int hY = position.getY() - 20; // Height of the mouth
+					int hY = position.getY() - 20 * sizeMult; // Height of the mouth
 
 					attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
 					attackHitbox->listener = this;
