@@ -14,6 +14,7 @@ namespace
 {
     constexpr float MountainStaticFrameHeight = 384.0f;
     constexpr float MountainAnimationFrameHeight = 440.0f;
+    constexpr int MountainVisualOverlap = 8;
 
     struct GateVisualAssets
     {
@@ -130,6 +131,10 @@ bool KeyGate::Update(float dt)
     destRect.y = (int)(position.getY() + gateH / 2.0f);
     destRect.w = gateW;
     destRect.h = gateH;
+    if (requiredKey == KeyType::MOUNTAIN) {
+        destRect.y += MountainVisualOverlap;
+        destRect.h += MountainVisualOverlap * 2;
+    }
 
     if (state == GateState::OPENING)
     {
@@ -141,10 +146,10 @@ bool KeyGate::Update(float dt)
             if (requiredKey == KeyType::MOUNTAIN) {
                 const float animationScale = MountainAnimationFrameHeight / MountainStaticFrameHeight;
                 const int transparentBottom = (int)((MountainAnimationFrameHeight - MountainStaticFrameHeight)
-                    * gateH / MountainStaticFrameHeight);
+                    * destRect.h / MountainStaticFrameHeight);
 
                 animationDest.y += transparentBottom;
-                animationDest.h = (int)(gateH * animationScale);
+                animationDest.h = (int)(destRect.h * animationScale);
             }
 
             Engine::GetInstance().render->DrawRotatedImage(animTexture, &animationDest, &frame);
