@@ -1,5 +1,8 @@
 #include "UIDialogueBox.h"
 #include "Engine.h"
+#include "EntityManager.h"
+#include "Player.h"
+#include "Render.h"
 #include "Window.h"
 #include "Textures.h"
 
@@ -15,6 +18,10 @@ UIDialogueBox::UIDialogueBox(int id, float anchorX, float anchorY, float wPercen
 UIDialogueBox::~UIDialogueBox() {}
 void UIDialogueBox::SetBackgroundTexture(SDL_Texture* bgTex) {
 	backgroundTex = bgTex;
+}
+
+void UIDialogueBox::SetTutorialBackgroundTexture(SDL_Texture* bgTex) {
+	tutorialBackgroundTex = bgTex;
 }
 
 bool UIDialogueBox::Update(float dt) {
@@ -48,6 +55,18 @@ void UIDialogueBox::Draw() const {
 	int screenW = Engine::GetInstance().window->windowWidth;
 	int screenH = Engine::GetInstance().window->windowHeight;
 
+	if (tutorialMode) {
+		SDL_Rect tutorialBox = GetTutorialBoxRect();
+		SDL_Texture* tutorialTexture =
+			tutorialBackgroundTex != nullptr ? tutorialBackgroundTex : backgroundTex;
+
+		Engine::GetInstance().render->DrawTextureScaled(tutorialTexture, tutorialBox);
+		if (!currentText.empty()) {
+			DrawTutorialContent(tutorialBox);
+		}
+		return;
+	}
+
 	SDL_Rect mainBox;
 	mainBox.w = (int)(screenW * 0.70f);
 	mainBox.h = (int)(screenH * 0.25f);
@@ -65,7 +84,7 @@ void UIDialogueBox::Draw() const {
 		nameBox.h = (int)(mainBox.h * 0.30f);
 		nameBox.y = mainBox.y - nameBox.h;
 
-		// LÓGICA DE POSICIÓN
+		// LÃ“GICA DE POSICIÃ“N
 		if (currentSpeaker == "Rose" || currentSpeaker == "Rose-") {
 			nameBox.x = mainBox.x + (int)(mainBox.w * 0.05f);
 		}
@@ -82,28 +101,23 @@ void UIDialogueBox::Draw() const {
 		Engine::GetInstance().render->DrawText(currentSpeaker.c_str(), nameTextX, nameTextY, 0, 0, speakerColor, FontType::DIALOGUE);
 	}
 
-	// CAJA DEL DIÁLOGO
+	// CAJA DEL DIÃLOGO
 	if (!currentText.empty()) {
-		if (tutorialMode) {
-			DrawTutorialContent(mainBox);
+		int textX = 0;
+		int textY = mainBox.y + (int)(mainBox.h * 0.2f);
+		int maxW = 0;
+		int maxH = (int)(mainBox.h * 0.85f);
+
+		if (currentSpeaker == "Rose" || currentSpeaker == "Rose-") {
+			textX = mainBox.x + (int)(mainBox.w * 0.15f);
+			maxW = (int)(mainBox.w * 0.8f);
 		}
 		else {
-			int textX = 0;
-			int textY = mainBox.y + (int)(mainBox.h * 0.2f);
-			int maxW = 0;
-			int maxH = (int)(mainBox.h * 0.85f);
-
-			if (currentSpeaker == "Rose" || currentSpeaker == "Rose-") {
-				textX = mainBox.x + (int)(mainBox.w * 0.15f);
-				maxW = (int)(mainBox.w * 0.8f);
-			}
-			else {
-				textX = mainBox.x + (int)(mainBox.w * 0.05f);
-				maxW = (int)(mainBox.w * 0.8f);
-			}
-
-			Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::CUERPO);
+			textX = mainBox.x + (int)(mainBox.w * 0.05f);
+			maxW = (int)(mainBox.w * 0.8f);
 		}
+
+		Engine::GetInstance().render->DrawText(currentText.c_str(), textX, textY, maxW, maxH, textColor, FontType::CUERPO);
 	}
 
 	// TEXTURA PORTRAIT
@@ -144,6 +158,38 @@ void UIDialogueBox::SetDialogueText(const std::string& text) { currentText = tex
 
 void UIDialogueBox::SetTutorialMode(bool enabled) {
 	tutorialMode = enabled;
+}
+
+SDL_Rect UIDialogueBox::GetTutorialBoxRect() const {
+	const int screenW = Engine::GetInstance().window->windowWidth;
+	const int screenH = Engine::GetInstance().window->windowHeight;
+	const int screenMargin = 20;
+
+	int boxW = (int)(screenW * 0.34f);
+	boxW = std::max(360, std::min(boxW, 500));
+	int boxH = (int)(boxW * (372.0f / 557.0f));
+
+	int centerX = screenW / 2;
+	int playerScreenY = screenH / 2;
+
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player != nullptr) {
+		Vector2D playerPosition = player->GetPosition();
+		const int scale = Engine::GetInstance().window->GetScale();
+		const float zoom = Engine::GetInstance().render->GetZoom();
+		const SDL_Rect& camera = Engine::GetInstance().render->camera;
+
+		centerX = (int)((camera.x + playerPosition.getX() * scale) * zoom);
+		playerScreenY = (int)((camera.y + playerPosition.getY() * scale) * zoom);
+	}
+
+	int boxX = centerX - boxW / 2;
+	int boxY = playerScreenY - boxH - 55;
+
+	boxX = std::max(screenMargin, std::min(boxX, screenW - boxW - screenMargin));
+	boxY = std::max(screenMargin, std::min(boxY, screenH - boxH - screenMargin));
+
+	return { boxX, boxY, boxW, boxH };
 }
 
 void UIDialogueBox::DrawTutorialContent(const SDL_Rect& mainBox) const {
