@@ -14,7 +14,7 @@ namespace
 {
     constexpr float MountainStaticFrameHeight = 384.0f;
     constexpr float MountainAnimationFrameHeight = 440.0f;
-    constexpr int MountainVisualOverlap = 8;
+    constexpr int MountainVisualOverlap = 12;
 
     struct GateVisualAssets
     {
