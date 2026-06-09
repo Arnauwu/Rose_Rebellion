@@ -110,6 +110,7 @@ private:
 
 	void ApplyPhysics();
 	void Draw(float dt);
+	void DrawWellInteractionPrompt(float dt);
 
 	//void TakeDamage(int damage) override;
 
@@ -260,6 +261,10 @@ private:
 	b2Vec2 velocity;
 
 	AnimationSet anims;
+	AnimationSet interactionBackgroundAnimation;
+	SDL_Texture* interactionBackgroundTexture = nullptr;
+	SDL_Texture* interactIcon = nullptr;
+	float interactionIconTimer = 0.0f;
 	int currentAnimPriority = 0;
 
 	/*

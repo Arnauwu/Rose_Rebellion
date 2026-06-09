@@ -41,7 +41,7 @@ bool BreakableRock::Start()
 	if (CheckIfDestroyed()) return true;
 
 	if (breakableType == BreakableType::TRUNK) {
-		const int rowStart = variant == 2 ? 10 : 0;
+		const int rowStart = variant == 2 ? 3 : 0;
 		std::unordered_map<int, std::string> aliases = {
 			{rowStart, "trunk_2"},
 			{rowStart + 1, "trunk_1"},

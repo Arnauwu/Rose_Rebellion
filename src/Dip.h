@@ -36,6 +36,8 @@ private:
 	int playerContacts = 0; // Contador para las m??ltiples colisiones del jugador
 	int groundContacts = 0;
 	bool leftGroundDuringSpecial = false;
+	bool hasImpactDrawY = false;
+	int impactDrawY = 0;
 	Timer patrolTimer; // Temporizador para controlar la patrulla
 public:
 	Timer startAttack;
@@ -49,7 +51,7 @@ public:
 	Timer specialAttackTimer; // Temporizador global de 6 segundos
 	Timer phaseTimer;         // Temporizador para cada fase del salto
 	bool isSpecialAttacking = false;
-	int specialPhase = 0;     // 1 = Saltar atr??s, 2 = Saltar al Player, 3 = Saltar de vuelta
+	int specialPhase = 0;     // 1 = jump back, 2 = dive, 3 = impact, 4 = return
 	Vector2D leapStartPos;    // Posici??n inicial antes del ataque
 	Vector2D lockedPlayerPos; // Posici??n del jugador bloqueada en el momento del salto
 
