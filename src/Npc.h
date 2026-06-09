@@ -36,6 +36,5 @@ private:
     AnimationSet interactionBackgroundAnimation;
     SDL_Texture* interactionBackgroundTexture = nullptr;
     SDL_Texture* interactIcon = nullptr;
-    SDL_Texture* glowTex = nullptr;
     float iconTimer = 0.0f;
 };
