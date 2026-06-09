@@ -1031,12 +1031,13 @@ void Player::Interact()
 					int cx, cy, doorW, doorH;
 					interactuableBody->GetPosition(cx, cy);
 					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					KeyType doorKeyType = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
 
 					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
 					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 					if (doorAnim != nullptr) {
 						doorAnim->zOrder = -1;
-						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH, doorKeyType);
 					}
 					else {
 						isFrozen = false;

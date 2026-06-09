@@ -15487,7 +15487,7 @@
   <object id="9" x="6525.21" y="3558.85" width="385.243" height="539.727">
    <properties>
     <property name="DoorClosed" type="bool" value="true"/>
-    <property name="NoAnimation" type="bool" value="true"/>
+    <property name="KeyRegion" value="boss"/>
     <property name="TeleportTo" type="file" value="Nexo.tmx"/>
     <property name="UnlockID" value="CastleNexoBossDoor"/>
    </properties>

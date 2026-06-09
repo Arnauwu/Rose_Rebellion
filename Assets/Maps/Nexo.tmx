@@ -7589,7 +7589,6 @@
    <properties>
     <property name="KeyRegion" value="boss"/>
     <property name="NeedsKey" type="bool" value="true"/>
-    <property name="NoAnimation" type="bool" value="true"/>
     <property name="SpawnID" value="NexoCastleBossDoor"/>
     <property name="TeleportTo" type="file" value="Castle_Inside.tmx"/>
     <property name="UnlockID" value="CastleNexoBossDoor"/>
