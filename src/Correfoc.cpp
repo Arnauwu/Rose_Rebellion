@@ -23,30 +23,40 @@ bool Correfoc::Awake() {
 	return true;
 }
 
+bool Correfoc::CleanUp()
+{
+	LOG("Cleanup Minairon");
+	active = false;
+	Engine::GetInstance().textures->UnLoad(texture);
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
+
+	return true;
+}
+
 bool Correfoc::Start()
 {
 	// Initialize enemy parameters
-	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} }; //TO DO CHANGE TEXTURES
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"idle"},{8,"startSpin"},{12,"spin"},{16,"explode"} }; 
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Correfoc/SS_Correfoc.tsx", aliases);
 	anims.SetCurrent("idle");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Correfoc/SS_Correfoc.png");
 
 	//Load Audio
-	morirCorrefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav"); //TO DO CHANGE AUDIOS
-	explotarCorefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
-	caminarCorrefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
+	//morirCorrefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav"); //TO DO: CHANGE AUDIOS
+	//explotarCorefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Rodar.wav");
+	//caminarCorrefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
 
 	//Add physics to the enemy - initialize physics body
-	texW = 64;
-	texH = 64;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
+	texW = 512;
+	texH = 512;
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() - texW / 2, (int)position.getY() - texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
 
 	//ssign collider type
-	pbody->ctype = ColliderType::ENEMY;
+	pbody->ctype = ColliderType::UNKNOWN; //No contact Damage
 
 	// Initialize pathfinding
 	pathfinding = std::make_shared<Pathfinding>(true);
@@ -98,23 +108,8 @@ bool Correfoc::Update(float dt)
 
 	if (isdead)
 	{
-		if (anims.GetCurrentName() != "dead")
-		{
-			Engine::GetInstance().audio->PlayFx(morirCorrefoc);
-
-			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-			anims.GetAnim("dead")->SetLoop(false);
-			anims.SetCurrent("dead");
-			pbody->ctype = ColliderType::UNKNOWN;
-			isKnockedback = false;
-		}
-
-		if (anims.GetAnim("dead")->HasFinishedOnce())
-		{
-			pendingToDelete = true;
-		}
+		pendingToDelete = true;
 	}
-
 
 	bool isWalking = (velocity.x != 0 && !isdead && !isExploding);
 
@@ -169,17 +164,25 @@ void Correfoc::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty() && isExploding == false)
 	{
-		anims.SetCurrent("walk"); //TO DO CHANGE
+		anims.SetCurrent("idle"); 
 		velocity.x = 0;
 		return;
 	}
-	else if (playerTileDist < 2 || isExploding)
+	else if (playerTileDist < 3 || isExploding)
 	{
 		Explode();
 	}
-	else if (playerTileDist >= 1 && isExploding == false)
+	else if (playerTileDist >= 2 && isExploding == false)
 	{
-		anims.SetCurrent("walk"); //TO DO CHANGE
+		if (anims.GetCurrentName() != "startSpin" && anims.GetCurrentName() != "spin")
+		{
+			anims.GetAnim("startSpin")->SetLoop(false);
+			anims.SetCurrent("startSpin");
+		}
+		if (anims.GetAnim("startSpin")->HasFinishedOnce())
+		{
+			anims.SetCurrent("spin");
+		}
 
 		if (pathfinding->pathTiles.back() == tilePos)
 		{
@@ -192,12 +195,12 @@ void Correfoc::Move() {
 		if (nextTile.getX() > tilePos.getX())
 		{
 			velocity.x = speed;
-			lookingRight = !true; // ! because Default anim looking left
+			lookingRight = true;
 		}
 		else if (nextTile.getX() < tilePos.getX())
 		{
 			velocity.x = -speed;
-			lookingRight = !false;
+			lookingRight = false;
 		}
 		else
 		{
@@ -252,20 +255,7 @@ void Correfoc::Draw(float dt)
 	}
 
 	//Draw using the texture and the current animation frame
-	if (isKnockedback)
-	{
-		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
-		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
-
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
-
-		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
-		delete r; delete g; delete b;
-	}
-	else
-	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
-	}
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1);
 }
 
 void Correfoc::Explode()
@@ -274,31 +264,34 @@ void Correfoc::Explode()
 	{
 		Engine::GetInstance().audio->PlayFx(explotarCorefoc);
 		isExploding = true;
-		anims.SetCurrent("startSpin"); //TO DO CHANGE
+		anims.GetAnim("explode")->SetLoop(false);
+		anims.SetCurrent("explode"); 
 		startExplosion.Start();
 		return;
 	}
 
 	if (startExplosion.ReadMSec() >= 250 && !explosionCreated) //Create Explosion
 	{
-		anims.SetCurrent("spin");//TO DO CHANGE
-
 		damage = 50;
-		pbody->ctype = ColliderType::ENEMY_ATTACK;
 		
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
 		pbody = nullptr;
 
-		pbody = Engine::GetInstance().physics->CreateCircleSensor((int)position.getX() + texW / 2, (int)position.getY() + texH / 2, texW * 5, bodyType::DYNAMIC);
+		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW * 5, bodyType::DYNAMIC);
+		pbody->listener = this;
+		pbody->ctype = ColliderType::ENEMY_ATTACK;
 		Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);
 
 		explosionCreated = true;
 		explosionDuration.Start();
 	}
 
-	if (explosionDuration.ReadMSec() >= 500 && explosionCreated)
+	if (explosionDuration.ReadMSec() >= 1500 && explosionCreated)
 	{
-		isdead = true;
+		if (anims.GetAnim("explode")->HasFinishedOnce())
+		{
+			isdead = true;
+		}
 	}
 }
 

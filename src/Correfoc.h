@@ -11,6 +11,7 @@ public:
 	Correfoc();
 	virtual ~Correfoc();
 	bool Awake();
+	bool CleanUp() override;
 	bool Start();
 	bool Update(float dt);
 	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
