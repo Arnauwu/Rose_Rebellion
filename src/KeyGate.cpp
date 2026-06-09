@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "tracy/Tracy.hpp"
 #include <algorithm>
+#include <cmath>
 
 namespace
 {
@@ -180,6 +181,14 @@ void KeyGate::OpenGate()
     }
 
     GameManager::GetInstance().gameState.openedDoors.push_back(gateID);
+}
+
+bool KeyGate::IsPlayerNear(const Vector2D& playerPosition, float margin) const
+{
+    const float distanceX = std::abs(playerPosition.getX() - position.getX());
+    const float distanceY = std::abs(playerPosition.getY() - position.getY());
+    return distanceX <= gateW / 2.0f + margin &&
+        distanceY <= gateH / 2.0f + margin;
 }
 
 bool KeyGate::Update(float dt)

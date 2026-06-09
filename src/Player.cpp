@@ -988,6 +988,31 @@ void Player::Interact()
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) interactPressed = true;
 	if (Engine::GetInstance().input->IsGamepadConnected() && Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_DOWN) interactPressed = true;
 
+	if (!interactPressed) return;
+
+	constexpr float KeyGateInteractionMargin = 160.0f;
+	KeyGate* nearbyGate = Engine::GetInstance().entityManager->GetNearbyKeyGate(
+		GetPosition(),
+		KeyGateInteractionMargin);
+
+	if (nearbyGate != nullptr)
+	{
+		if (nearbyGate->requiredKey == KeyType::NONE || HasKey(nearbyGate->requiredKey))
+		{
+			Engine::GetInstance().audio->PlayFx(openDoor);
+			isFrozen = true;
+			nearbyGate->OpenGate();
+			interactuableBody = nullptr;
+			canInteract = false;
+		}
+		else
+		{
+			Engine::GetInstance().audio->PlayFx(closedDoor);
+			Engine::GetInstance().hud->ShowNotification(GetRequiredKeyMessage(nearbyGate->requiredKey));
+		}
+		return;
+	}
+
 	if (canInteract && interactuableBody != nullptr && interactPressed)
 	{
 
@@ -1031,12 +1056,20 @@ void Player::Interact()
 					int cx, cy, doorW, doorH;
 					interactuableBody->GetPosition(cx, cy);
 					Engine::GetInstance().map->GetDoorDimensions(interactuableBody, doorW, doorH);
+					KeyType doorKeyType = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
 
 					auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::DOOR);
 					DoorEntity* doorAnim = (DoorEntity*)newEntity.get();
 					if (doorAnim != nullptr) {
 						doorAnim->zOrder = -1;
-						doorAnim->OpenDoorAt(Vector2D(cx, cy), doorW, doorH);
+						const bool enlargeBossDoor =
+							Engine::GetInstance().map->mapFileName == "Nexo.tmx";
+						doorAnim->OpenDoorAt(
+							Vector2D(cx, cy),
+							doorW,
+							doorH,
+							doorKeyType,
+							enlargeBossDoor);
 					}
 					else {
 						isFrozen = false;
@@ -1908,20 +1941,28 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 
 		break;
 	case ColliderType::DOOR:
-		canInteract = false;
-		interactuableBody = nullptr;
+		if (interactuableBody == physB) {
+			canInteract = false;
+			interactuableBody = nullptr;
+		}
 		break;
 	case ColliderType::KEY_GATE:
-		canInteract = false;
-		interactuableBody = nullptr;
+		if (interactuableBody == physB) {
+			canInteract = false;
+			interactuableBody = nullptr;
+		}
 		break;
 	case ColliderType::NPC:
-		canInteract = false;
-		interactuableBody = nullptr;
+		if (interactuableBody == physB) {
+			canInteract = false;
+			interactuableBody = nullptr;
+		}
 		break;
 	case ColliderType::SAVEPOINT:
-		canInteract = false;
-		interactuableBody = nullptr;
+		if (interactuableBody == physB) {
+			canInteract = false;
+			interactuableBody = nullptr;
+		}
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");

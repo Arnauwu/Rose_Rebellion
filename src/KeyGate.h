@@ -29,6 +29,7 @@ public:
     void Initialize(Vector2D pos, int width, int height, KeyType key, std::string id);
     void SetCollider(PhysBody* collider);
     void OpenGate();
+    bool IsPlayerNear(const Vector2D& playerPosition, float margin) const;
 
     KeyType requiredKey = KeyType::NONE;
     std::string gateID = "";

@@ -2,9 +2,11 @@
 
 #include "Module.h"
 #include "Entity.h"
+#include "Vector2D.h"
 #include <list>
 
 class Player;
+class KeyGate;
 class EntityManager : public Module
 {
 public:
@@ -38,6 +40,7 @@ public:
 
 	Player* GetPlayer() const { return playerPtr; }
 	void SetPlayer(Player* p) { playerPtr = p; }
+	KeyGate* GetNearbyKeyGate(const Vector2D& position, float margin) const;
 
 private:
 	bool requiresSort = false;
