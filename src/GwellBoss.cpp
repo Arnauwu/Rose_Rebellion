@@ -36,16 +36,17 @@ bool GwellBoss::Awake() {
 }
 
 bool GwellBoss::Start() {
-	std::unordered_map<int, std::string> aliases = { {0,"jump"},{24,"jump2"},{48,"hurt"},{72,"dead"},{84,"start_assault"},{96,"assault"},{108,"attack"},{120,"idle"},{132,"walk"} }; // TO DO: Add new_anims (0-48) & start asssault
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {0,"idle"},{8,"walk"},{16,"startScream"},{18,"scream"},{24,"jump"},{32,"claw"},{40,"shootAcid"},{48,"tongue"},{56,"dead"} }; 	
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Guell/SS_Guell.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png"); //TO DO: Cambiar a "Assets/Textures/Entities/Enemies/GwellBoss/GwellBoss.png"
-	
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Guell/SS_Guell.png");
+	tongueText = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Guell/SS_Proyectil_Lengua_Guell.png");
+
 	// Create Body
 	texW = 256;
-	texH = 170;
+	texH = 256;
 	pbody = Engine::GetInstance().physics->CreateRectangle((int)position.getX(), (int)position.getY(), texW, texH, bodyType::DYNAMIC); // TO DO: Adjust Size & Geometric Shape
 
 	pbody->listener = this;
@@ -119,18 +120,21 @@ bool GwellBoss::Update(float dt)
 		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 	}
 
-	if (isdead /*&& anims.GetCurrentName() != "dead"*/)
+	if (isdead && anims.GetCurrentName() != "dead")
 	{
 		isKnockedback = false;
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-		/*anims.GetAnim("dead")->SetLoop(false);
-		anims.SetCurrent("dead");*/
+		anims.GetAnim("dead")->SetLoop(false);
+		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 		Engine::GetInstance().physics->SetBodyType(pbody, bodyType::STATIC);
-		pendingToDelete = true;
 		GameManager::GetInstance().gameState.lizardBossKilled = true;
 	}
 
+	if (anims.GetAnim("dead")->HasFinishedOnce())
+	{
+		pendingToDelete = true;
+	}
 	Draw(dt);
 
 	return true;
@@ -247,7 +251,6 @@ void GwellBoss::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		//anims.SetCurrent("hurt"); //TO DO UNCOMENT
 		if (lookingRight)
 		{
 			velocity.x = knockbackForce;
@@ -289,7 +292,7 @@ void GwellBoss::Draw(float dt)
 
 	//SDLFlip
 	SDL_FlipMode sdlFlip = SDL_FLIP_NONE;
-	if (lookingRight) // Invertido
+	if (!lookingRight)
 	{
 		sdlFlip = SDL_FLIP_HORIZONTAL;
 	}
@@ -310,15 +313,36 @@ void GwellBoss::Draw(float dt)
 		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
 		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 255, 25, 25);
 
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 2, &animFrame, sdlFlip, 2);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1);
 
 		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
 		delete r; delete g; delete b;
 	}
 	else
 	{
-		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 2, &animFrame, sdlFlip, 2);
+		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1);
 	}
+
+	if (attackHitbox != nullptr && anims.GetCurrentName() == "tongue")
+	{
+		int tx, ty;
+
+		attackHitbox->GetPosition(tx,ty);
+
+		if (!lookingRight)
+		{
+			tx -= texW / 2 - 10;
+		}
+		else
+		{
+			tx += texW / 2 - 10;
+		}
+
+		ty -= 70; //Adjust Y
+
+		Engine::GetInstance().render->DrawRotatedTexture(tongueText, tx, ty, nullptr, sdlFlip, 0.5f);
+	}
+
 }
 
 void GwellBoss::Attack()
@@ -350,8 +374,8 @@ void GwellBoss::Attack()
 				if (currentAttack == 1) // Tongue Attack
 				{
 					int attW = 400; int attH = 40;
-					int hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
-					int hY = position.getY() + 30; // Height of the mouth
+					int hX = lookingRight ? position.getX() + texW/2 + attW /2 : position.getX() - texW/2 - attW/2;
+					int hY = position.getY() - 20; // Height of the mouth
 
 					attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, hY, attW, attH, bodyType::KINEMATIC);
 					attackHitbox->listener = this;
@@ -447,7 +471,7 @@ void GwellBoss::SelectAttack()
 	switch (currentPhase)
 	{
 	case GwellBossPhase::GROUNDD:
-		currentAttack = GenerateRandomNumber(1, 3);
+		currentAttack = GenerateRandomNumber(1, 1);//TO DO RESTORE
 		switch (currentAttack)		
 		{
 		case 1: // Tongue Lash (Long Range)
@@ -455,21 +479,21 @@ void GwellBoss::SelectAttack()
 			attackCooldownTime = 1500.0f;
 			attackWindupTime = 600.0f;
 			attackTileRange = 6;
-			currentAttackAnim = "idle"; // TO DO: Cambiar por el de la lengua
+			currentAttackAnim = "tongue"; 
 			break;
 		case 2: // Toxic Ball (Projectile)
 			damage = 20;
 			attackCooldownTime = 2000.0f;
 			attackWindupTime = 800.0f;
 			attackTileRange = 8;
-			currentAttackAnim = "idle"; // TO DO: Cambiar por el shoot
+			currentAttackAnim = "shootAcid";
 			break;
 		case 3: // Double Swipe (Short Range)
 			damage = 10;
 			attackCooldownTime = 1500.0f;
 			attackWindupTime = 400.0f;
 			attackTileRange = 2;
-			currentAttackAnim = "idle"; // TO DO: Cambiar por el claw
+			currentAttackAnim = "claw"; 
 			clawStep = 1; // Start combo
 			break;
 		}

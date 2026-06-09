@@ -29,12 +29,12 @@ bool GwellProjectile::Start()
 {
 	std::unordered_map<int, std::string> aliases = { {0, "bullet"} };
 	// TO DO: Usa la textura correcta para el proyectil tóxico
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.tsx", aliases);
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Guell/SS_Proyectil_Acido_Guell.tsx", aliases);
 	anims.SetCurrent("bullet");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Guell/SS_Proyectil_Acido_Guell.png");
 
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), 12, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), 32, bodyType::DYNAMIC);
 	pbody->listener = this;
 	pbody->ctype = ColliderType::ENEMY_ATTACK;
 
@@ -90,10 +90,9 @@ void GwellProjectile::Draw(float dt)
 	int x, y; pbody->GetPosition(x, y);
 	position.setX((float)x); position.setY((float)y);
 
-	SDL_FlipMode sdlFlip = velocity.getX() > 0 ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 	double angle = std::atan2(velocity.getY(), velocity.getX()) * (180.0 / PI);
 
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1, angle, animFrame.w / 2, animFrame.h / 2);
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, SDL_FLIP_NONE, 1, angle, animFrame.w / 2, animFrame.h / 2);
 }
 
 bool GwellProjectile::CleanUp()

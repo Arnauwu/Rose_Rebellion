@@ -36,7 +36,7 @@ private:
 	int GenerateRandomNumber(int minNumber, int maxNumber);
 
 public:
-
+	SDL_Texture* tongueText;
 	PhysBody* attackHitbox = nullptr;
 
 	// Boss parameters

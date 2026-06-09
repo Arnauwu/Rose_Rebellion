@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.2" name="DragonH" tilewidth="1024" tileheight="1024" tilecount="180" columns="15">
+<tileset version="1.10" tiledversion="1.12.2" name="DragonH" tilewidth="1024" tileheight="1024" tilecount="180" columns="15">
  <image source="DragonH.png" trans="ffffff" width="15360" height="12288"/>
  <tile id="0">
   <animation>
