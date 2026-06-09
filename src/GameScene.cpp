@@ -309,7 +309,7 @@ bool GameScene::Start() {
 
 	// Dialogue UI Load
 	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
-	LoadTextureIfNull(tutorialBoxLargeTex, "Assets/Textures/UI/Tutorial/Tutorial_BoxLarge.png");
+	LoadTextureIfNull(tutorialBoxLargeTex, "Assets/Textures/UI/Tutorial/Tutorial_Box.png");
 	LoadTextureIfNull(princessPortrait, "Assets/Textures/UI/Dialogues/princess_portrait.png");
 	LoadTextureIfNull(princessCaplessPortrait, "Assets/Textures/UI/Dialogues/princessCapless_portrait.png");
 			//	-Bosses

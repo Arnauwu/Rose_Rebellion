@@ -60,10 +60,35 @@ void UIDialogueBox::Draw() const {
 		SDL_Texture* tutorialTexture =
 			tutorialBackgroundTex != nullptr ? tutorialBackgroundTex : backgroundTex;
 
+		// 1. Draw tutorial box first.
 		Engine::GetInstance().render->DrawTextureScaled(tutorialTexture, tutorialBox);
+
+		// 2. Draw Rosa portrait after the box, so it appears in front.
+		if (currentPortrait != nullptr) {
+			int portraitSize = (int)(screenH * 0.34f);
+
+			int portraitX = tutorialBox.x - (int)(portraitSize / 1.9f);
+			int portraitY = tutorialBox.y + tutorialBox.h - portraitSize + (int)(screenH * 0.04f);
+
+			if (portraitX < 0) {
+				portraitX = 0;
+			}
+
+			SDL_Rect portraitRect = {
+				portraitX,
+				portraitY,
+				portraitSize,
+				portraitSize
+			};
+
+			Engine::GetInstance().render->DrawTextureScaled(currentPortrait, portraitRect);
+		}
+
+		// 3. Draw tutorial text last, so text is also on top.
 		if (!currentText.empty()) {
 			DrawTutorialContent(tutorialBox);
 		}
+
 		return;
 	}
 
@@ -165,9 +190,22 @@ SDL_Rect UIDialogueBox::GetTutorialBoxRect() const {
 	const int screenH = Engine::GetInstance().window->windowHeight;
 	const int screenMargin = 20;
 
-	int boxW = (int)(screenW * 0.34f);
-	boxW = std::max(360, std::min(boxW, 500));
-	int boxH = (int)(boxW * (372.0f / 557.0f));
+	SDL_Texture* tutorialTexture =
+		tutorialBackgroundTex != nullptr ? tutorialBackgroundTex : backgroundTex;
+
+	float texW = 557.0f;
+	float texH = 372.0f;
+
+	if (tutorialTexture != nullptr) {
+		SDL_GetTextureSize(tutorialTexture, &texW, &texH);
+	}
+
+	float aspect = texH / texW;
+
+	int boxW = (int)(screenW * 0.38f);
+	boxW = std::max(420, std::min(boxW, 600));
+
+	int boxH = (int)(boxW * aspect);
 
 	int centerX = screenW / 2;
 	int playerScreenY = screenH / 2;
@@ -183,10 +221,13 @@ SDL_Rect UIDialogueBox::GetTutorialBoxRect() const {
 		playerScreenY = (int)((camera.y + playerPosition.getY() * scale) * zoom);
 	}
 
-	int boxX = centerX - boxW / 2;
-	int boxY = playerScreenY - boxH - 55;
+	int portraitSize = (int)(screenH * 0.34f);
+	int leftReservedSpace = (int)(portraitSize * 0.50f);
 
-	boxX = std::max(screenMargin, std::min(boxX, screenW - boxW - screenMargin));
+	int boxX = centerX - boxW / 2 + leftReservedSpace / 2;
+	int boxY = playerScreenY - boxH - (int)(screenH * 0.24f);
+
+	boxX = std::max(screenMargin + leftReservedSpace, std::min(boxX, screenW - boxW - screenMargin));
 	boxY = std::max(screenMargin, std::min(boxY, screenH - boxH - screenMargin));
 
 	return { boxX, boxY, boxW, boxH };
@@ -212,30 +253,31 @@ void UIDialogueBox::DrawTutorialContent(const SDL_Rect& mainBox) const {
 	}
 
 	SDL_Rect instructionBounds = {
-		mainBox.x + (int)(mainBox.w * 0.10f),
-		mainBox.y + (int)(mainBox.h * 0.10f),
-		(int)(mainBox.w * 0.80f),
-		(int)(mainBox.h * 0.34f)
+	mainBox.x + (int)(mainBox.w * 0.18f),
+	mainBox.y + (int)(mainBox.h * 0.10f),
+	(int)(mainBox.w * 0.72f),
+	(int)(mainBox.h * 0.34f)
 	};
+
 	Engine::GetInstance().render->DrawTextCenteredWrapped(
 		instruction.c_str(), instructionBounds, textColor, FontType::CUERPO);
 
 	if (!keyText.empty()) {
 		SDL_Rect keyBounds = {
-			mainBox.x + (int)(mainBox.w * 0.10f),
-			mainBox.y + (int)(mainBox.h * 0.45f),
-			(int)(mainBox.w * 0.80f),
-			(int)(mainBox.h * 0.27f)
+		mainBox.x + (int)(mainBox.w * 0.18f),
+		mainBox.y + (int)(mainBox.h * 0.45f),
+		(int)(mainBox.w * 0.72f),
+		(int)(mainBox.h * 0.27f)
 		};
 		DrawTutorialKeys(keyText, keyBounds);
 	}
 
 	if (!confirmation.empty()) {
 		SDL_Rect confirmationBounds = {
-			mainBox.x + (int)(mainBox.w * 0.10f),
-			mainBox.y + (int)(mainBox.h * 0.76f),
-			(int)(mainBox.w * 0.80f),
-			(int)(mainBox.h * 0.16f)
+		mainBox.x + (int)(mainBox.w * 0.18f),
+		mainBox.y + (int)(mainBox.h * 0.76f),
+		(int)(mainBox.w * 0.72f),
+		(int)(mainBox.h * 0.16f)
 		};
 		Engine::GetInstance().render->DrawTextCentered(
 			confirmation.c_str(), confirmationBounds, textColor, FontType::CUERPO);
