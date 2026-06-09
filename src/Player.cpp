@@ -1098,6 +1098,33 @@ void Player::Interact()
 				openDoorAndTransition();
 			}
 		}
+		else if (interactuableBody->ctype == ColliderType::SAVEPOINT)
+		{
+			SavePoint* savePoint = (SavePoint*)interactuableBody->listener;
+			if (savePoint == nullptr) return;
+
+			Engine::GetInstance().audio->PlayFx(savePointFx);
+			savePoint->Activate();
+
+			int spX, spY;
+			interactuableBody->GetPosition(spX, spY);
+			respawnPosition = Vector2D((float)spX, (float)spY);
+
+			currentHealth = maxHealth;
+			lastBreathUsed = false;
+
+			auto& gameState = GameManager::GetInstance().gameState;
+			gameState.playerPosition = respawnPosition;
+			gameState.currentHealth = currentHealth;
+			gameState.currentMap = Engine::GetInstance().map->mapFileName;
+
+			if (GameManager::GetInstance().SaveGame("savegame.xml")) {
+				Engine::GetInstance().hud->ShowNotification("NOTIFY_GAME_SAVED");
+			}
+			else {
+				Engine::GetInstance().hud->ShowNotification("NOTIFY_SAVE_ERROR");
+			}
+		}
 	}
 }
 
@@ -1772,32 +1799,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		break;
 	case ColliderType::SAVEPOINT:
-	{
-		LOG("Collision SavePoint");
-		SavePoint* sp = (SavePoint*)physB->listener;
-		Engine::GetInstance().audio->PlayFx(savePointFx); //fx
-		sp->Activate();
-
-		int spX, spY;
-		physB->GetPosition(spX, spY);
-		respawnPosition = Vector2D((float)spX, (float)spY);
-
-		this->currentHealth = maxHealth;
-		lastBreathUsed = false;
-
-		auto& gameState = GameManager::GetInstance().gameState;
-		gameState.playerPosition = respawnPosition;
-		gameState.currentHealth = this->currentHealth;
-		gameState.currentMap = Engine::GetInstance().map->mapFileName;
-
-		if (GameManager::GetInstance().SaveGame("savegame.xml")) {
-			Engine::GetInstance().hud->ShowNotification("NOTIFY_GAME_SAVED");
-		}
-		else {
-			Engine::GetInstance().hud->ShowNotification("NOTIFY_SAVE_ERROR");
-		}
+		canInteract = true;
+		interactuableBody = physB;
 		break;
-	}
 	case ColliderType::NPC:
 		canInteract = true;
 		interactuableBody = physB;
@@ -1892,6 +1896,10 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		interactuableBody = nullptr;
 		break;
 	case ColliderType::NPC:
+		canInteract = false;
+		interactuableBody = nullptr;
+		break;
+	case ColliderType::SAVEPOINT:
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;

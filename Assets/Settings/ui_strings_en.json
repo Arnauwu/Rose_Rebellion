@@ -32,6 +32,7 @@
 
   "// --- INTERACT TEXT ---": "",
   "INTERACT_NPC": "TALK {E}",
+  "INTERACT_SAVE": "SAVE {E}",
 
   "// --- GAMEPLAY TUTORIALS ---": "",
   "TUTORIAL_WALK": "Move left and right\nA / D",
