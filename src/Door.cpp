@@ -15,7 +15,7 @@ namespace
 	constexpr float BossVisibleHeight = 252.0f;
 	constexpr float BossVisibleWidth = 180.0f;
 	constexpr float NexoBossExtraWidth = 24.0f;
-	constexpr float NexoBossExtraHeight = 72.0f;
+	constexpr float NexoBossExtraHeight = 36.0f;
 }
 
 DoorEntity::DoorEntity() : Entity(EntityType::DOOR)
