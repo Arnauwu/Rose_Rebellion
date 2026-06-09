@@ -3,10 +3,10 @@
  <image source="SS_FondoTexto_Interaccion.png" width="340" height="256"/>
  <tile id="0">
   <animation>
-   <frame tileid="0" duration="110"/>
-   <frame tileid="1" duration="110"/>
-   <frame tileid="2" duration="110"/>
-   <frame tileid="3" duration="110"/>
+   <frame tileid="0" duration="350"/>
+   <frame tileid="1" duration="350"/>
+   <frame tileid="2" duration="350"/>
+   <frame tileid="3" duration="350"/>
   </animation>
  </tile>
 </tileset>
