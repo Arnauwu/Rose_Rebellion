@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "UIDialogueBox.h"
 #include "SceneManager.h"
+#include "Physics.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -143,11 +144,11 @@ void DialogueManager::StartTutorial(const std::string& textKey) {
 	displayedText.reserve(tutorialConversation[0].text.length());
 
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
-	if (player != nullptr && !player->onGround) {
-		isWaitingForLanding = true;
-		if (uiBox) uiBox->visible = false;
-		return;
+	if (player != nullptr && player->pbody != nullptr) {
+		Engine::GetInstance().physics->SetLinearVelocity(player->pbody, { 0.0f, 0.0f });
 	}
+
+	Engine::GetInstance().sceneManager->isGamePaused = true;
 
 	if (uiBox) {
 		uiBox->SetTutorialMode(true);
@@ -155,7 +156,6 @@ void DialogueManager::StartTutorial(const std::string& textKey) {
 		uiBox->SetSpeakerName(tutorialConversation[0].speaker);
 		uiBox->SetDialogueText("");
 	}
-	Engine::GetInstance().sceneManager->isGamePaused = true;
 }
 
 bool DialogueManager::Update(float dt) {
