@@ -278,6 +278,31 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 	}
 }
 
+KeyGate* EntityManager::GetNearbyKeyGate(const Vector2D& position, float margin) const
+{
+	KeyGate* nearestGate = nullptr;
+	float nearestDistanceSquared = 0.0f;
+
+	for (const auto& entity : entities)
+	{
+		if (!entity || !entity->active || entity->type != EntityType::KEY_GATE) continue;
+
+		KeyGate* gate = static_cast<KeyGate*>(entity.get());
+		if (gate->state != GateState::CLOSED || !gate->IsPlayerNear(position, margin)) continue;
+
+		const float distanceX = gate->position.getX() - position.getX();
+		const float distanceY = gate->position.getY() - position.getY();
+		const float distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+		if (nearestGate == nullptr || distanceSquared < nearestDistanceSquared) {
+			nearestGate = gate;
+			nearestDistanceSquared = distanceSquared;
+		}
+	}
+
+	return nearestGate;
+}
+
 bool EntityManager::Update(float dt)
 {
 	ZoneScoped;
