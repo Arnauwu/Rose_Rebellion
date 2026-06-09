@@ -1239,6 +1239,26 @@ void Map::SpawnEntities()
 						rock->SetSize((int)w, (int)h);
 					}
 				}
+				else if (entityType == std::string("Trunco") || entityType == std::string("Trunco1") ||
+					entityType == std::string("Tunco") || entityType == std::string("Tunco1") || entityType == std::string("Tunco2") ||
+					entityType == std::string("Trunco2") || entityType == std::string("Tronco") ||
+					entityType == std::string("Tronco1") || entityType == std::string("Tronco2") ||
+					entityType == std::string("BreakableTrunk")) {
+					std::shared_ptr<BreakableRock> trunk = std::dynamic_pointer_cast<BreakableRock>(Engine::GetInstance().entityManager->CreateEntity(EntityType::BREAKABLE_ROCK));
+					if (trunk != nullptr) {
+						Properties trunkProps;
+						LoadProperties(objectNode, trunkProps);
+
+						int variant = (entityType == "Trunco2" || entityType == "Tronco2" || entityType == "Tunco2") ? 2 : 1;
+						Properties::Property* variantProp = trunkProps.GetProperty("Variant");
+						if (variantProp == nullptr) variantProp = trunkProps.GetProperty("Tipo");
+						if (variantProp != nullptr) variant = variantProp->value2 == "2" ? 2 : (int)variantProp->value;
+
+						trunk->Configure(BreakableRock::BreakableType::TRUNK, variant);
+						trunk->position = Vector2D(x + w / 2.0f, y + h / 2.0f);
+						trunk->SetSize((int)w, (int)h);
+					}
+				}
 				else if (entityType == std::string("DialogueTrigger")) {
 					std::shared_ptr<DialogueTrigger> trigger = std::dynamic_pointer_cast<DialogueTrigger>(Engine::GetInstance().entityManager->CreateEntity(EntityType::DIALOGUE_TRIGGER));
 					if (trigger != nullptr)

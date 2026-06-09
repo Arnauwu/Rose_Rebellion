@@ -7,6 +7,12 @@
 class BreakableRock : public Entity
 {
 public:
+	enum class BreakableType
+	{
+		ROCK,
+		TRUNK
+	};
+
 	BreakableRock();
 	virtual ~BreakableRock();
 
@@ -17,6 +23,7 @@ public:
 
 	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
 
+	void Configure(BreakableType type, int variant = 1);
 	void SetSize(int width, int height);
 
 private:
@@ -36,6 +43,8 @@ private:
 	int height = 0;
 	int hitsTaken = 0;
 	int maxHits = 4;
+	BreakableType breakableType = BreakableType::ROCK;
+	int variant = 1;
 	std::string uniqueID;
 	Vector2D uniqueIDPosition;
 	bool hasUniqueIDPosition = false;
