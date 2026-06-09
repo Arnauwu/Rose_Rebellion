@@ -12,6 +12,9 @@
 
 namespace
 {
+    constexpr float MountainStaticFrameHeight = 384.0f;
+    constexpr float MountainAnimationFrameHeight = 440.0f;
+
     struct GateVisualAssets
     {
         const char* closedTexture;
@@ -134,7 +137,17 @@ bool KeyGate::Update(float dt)
         SDL_Rect frame = anims.GetCurrentFrame();
 
         if (animTexture) {
-            Engine::GetInstance().render->DrawRotatedImage(animTexture, &destRect, &frame);
+            SDL_Rect animationDest = destRect;
+            if (requiredKey == KeyType::MOUNTAIN) {
+                const float animationScale = MountainAnimationFrameHeight / MountainStaticFrameHeight;
+                const int transparentBottom = (int)((MountainAnimationFrameHeight - MountainStaticFrameHeight)
+                    * gateH / MountainStaticFrameHeight);
+
+                animationDest.y += transparentBottom;
+                animationDest.h = (int)(gateH * animationScale);
+            }
+
+            Engine::GetInstance().render->DrawRotatedImage(animTexture, &animationDest, &frame);
         }
 
         if (!animationFinished &&

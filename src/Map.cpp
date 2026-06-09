@@ -798,6 +798,18 @@ bool Map::Load(std::string path, std::string fileName)
 
 						KeyType reqKey = ReadKeyType(obj->properties, &objectsGroups->properties);
 
+						if (reqKey == KeyType::MOUNTAIN) {
+							Engine::GetInstance().physics->DeletePhysBody(collider);
+							constexpr float MountainGateColliderWidthScale = 0.7f;
+							collider = Engine::GetInstance().physics->CreateRectangle(
+								obj->x + obj->width / 2,
+								obj->y + obj->height / 2,
+								(int)(obj->width * MountainGateColliderWidthScale),
+								(int)obj->height,
+								STATIC);
+							collider->ctype = ColliderType::KEY_GATE;
+						}
+
 						auto newEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::KEY_GATE);
 						mapDynamicEntities.push_back(newEntity);
 						KeyGate* gate = (KeyGate*)newEntity.get();
