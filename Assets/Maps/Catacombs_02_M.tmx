@@ -420873,12 +420873,6 @@
   <object id="598" name="Bat" type="Bat" x="21504" y="8704">
    <point/>
   </object>
-  <object id="599" name="ToxicBall" type="ToxicBall" x="22664" y="5288">
-   <properties>
-    <property name="Jump" type="int" value="1280"/>
-   </properties>
-   <point/>
-  </object>
   <object id="600" name="ToxicBall" type="ToxicBall" x="5888" y="4352">
    <properties>
     <property name="Jump" type="int" value="6"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="46" nextobjectid="612">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="280" height="125" tilewidth="128" tileheight="128" infinite="0" nextlayerid="46" nextobjectid="613">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -31577,7 +31577,7 @@
    <tile gid="23"/>
    <tile gid="24"/>
    <tile gid="25"/>
-   <tile gid="23"/>
+   <tile/>
    <tile gid="24"/>
    <tile gid="25"/>
    <tile gid="23"/>
@@ -162310,7 +162310,7 @@
    <tile/>
    <tile gid="40"/>
    <tile gid="47"/>
-   <tile gid="48"/>
+   <tile gid="62"/>
    <tile gid="56"/>
    <tile gid="57"/>
    <tile gid="58"/>
@@ -420215,14 +420215,7 @@
   <object id="521" x="9856" y="14760" width="9600" height="88"/>
  </objectgroup>
  <objectgroup color="#00ffff" id="25" name="KeyGate">
-  <object id="556" x="28672" y="9864" width="132" height="368">
-   <properties>
-    <property name="KeyGate" type="bool" value="true"/>
-    <property name="KeyRegion" value="Catacumba"/>
-    <property name="Sensor" type="bool" value="false"/>
-    <property name="Square" type="bool" value="true"/>
-   </properties>
-  </object>
+  <object id="612" x="28583.4" y="9868.12" width="275.333" height="368"/>
  </objectgroup>
  <objectgroup color="#aa0000" id="26" name="PlataformasRefGiro">
   <object id="220" x="26368" y="9984" width="512" height="128"/>
