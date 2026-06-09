@@ -24,12 +24,12 @@ bool ParticleManager::Start() {
     dustSpriteSheet = Engine::GetInstance().textures->Load("Assets/Textures/Particles/SS_particulas_polvo.png");
 
     AnimationSet dustAnimSet;
-    std::unordered_map<int, std::string> dustAliases = { {0,"andar"}, {8,"jump"}, {16,"dash"} };
+    std::unordered_map<int, std::string> dustAliases = { {0,"andar"}, {8,"jump"} };
 
     if (dustAnimSet.LoadFromTSX("Assets/Textures/Particles/SS_particulas_polvo.tsx", dustAliases)) {
         if (dustAnimSet.Has("andar")) animWalkDust = *dustAnimSet.GetAnim("andar");
         if (dustAnimSet.Has("jump"))  animJumpDust = *dustAnimSet.GetAnim("jump");
-        if (dustAnimSet.Has("dash"))  animDashDust = *dustAnimSet.GetAnim("dash");
+   
     }
 
     // 2. Cargar texturas de los dem¨¢s efectos (Impactos, Sangre, Pickups)
