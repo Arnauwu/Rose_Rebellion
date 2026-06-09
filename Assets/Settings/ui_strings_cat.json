@@ -26,9 +26,9 @@
 
   "// --- LOADING LEVELS ---": "",
   "TXT_LOADING": "Carregant",
-  "INTRO_FOREST": "BOSC",
-  "INTRO_MOUNTAIN": "MUNTANYA",
-  "INTRO_CATACOMBS": "CATACUMBES",
+  "INTRO_FOREST": "Capçada Baixa",
+  "INTRO_MOUNTAIN": "Pic Quadrat",
+  "INTRO_CATACOMBS": "Mines Fangoses",
 
   "// --- INTERACT TEXT ---": "",
   "INTERACT_NPC": "PARLAR {E}",
@@ -67,7 +67,7 @@
   "INV_DEFAULT_SELECT": "Anotacions d'informació, selecciona un objecte per aprendre sobre ell.",
   "INV_UNKNOWN_ITEM": "Objecte desconegut. Diuen que està perdut pels racons d'aquest regne.",
 
-  "ITEM_WEAPON_NAME": "Hoz de la Guarda",
+  "ITEM_WEAPON_NAME": "Falç de la Guarda",
   "ITEM_WEAPON_DESC": "Una fulla esmolada forjada als peus del castell. J per obrir-se pas entre la malesa i defensar-se dels intrusos.",
 
   "ITEM_GLIDE_NAME": "Capa de Vent",
