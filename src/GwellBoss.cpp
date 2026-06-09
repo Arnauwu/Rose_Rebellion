@@ -13,6 +13,8 @@
 #include "Physics.h"
 #include "GwellProjectile.h"
 #include "Player.h"
+#include "HealthBarManager.h"
+
 
 #include <random>
 
@@ -55,8 +57,8 @@ bool GwellBoss::Start() {
 	pathFindingCooldown.Start();
 
 	//Map
-	minFloorX = position.getX() - 600.0f; //Floor
-	maxFloorX = position.getX() + 600.0f;
+	minFloorX = position.getX() - 1000.0f; //Floor
+	maxFloorX = position.getX() + 1000.0f;
 	leftWallClingPos = Vector2D(minFloorX - 100.0f, position.getY() - 400.0f); // Left Wall
 	rightWallClingPos = Vector2D(maxFloorX + 100.0f, position.getY() - 400.0f); // Right Wall
 
@@ -84,12 +86,25 @@ bool GwellBoss::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 100, 0, 400)) {
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
+		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+
+		return true;
+	}
+
 	if (Engine::GetInstance().sceneManager->isGamePaused == false && isdead == false)
 	{
 		if (pathFindingCooldown.ReadMSec() > 500)
 		{
 			PerformPathfinding();
 			pathFindingCooldown.Start();
+		}
+
+		if (playerTileDist <= vision)
+		{
+			// Si nos detecta, le pasamos este boss al manager para mostrar la barra
+			Engine::GetInstance().healthBarManager->SetBoss(this);
 		}
 		SelectAttack();
 		GetPhysicsValues();
@@ -98,17 +113,23 @@ bool GwellBoss::Update(float dt)
 		ApplyPhysics();
 	}
 
-	if (isdead && anims.GetCurrentName() != "dead")
+	if (currentHealth <= 0 && !isdead) {
+		isdead = true;
+		currentHealth = 0;
+		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+	}
+
+	if (isdead /*&& anims.GetCurrentName() != "dead"*/)
 	{
 		isKnockedback = false;
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-		anims.GetAnim("dead")->SetLoop(false);
-		anims.SetCurrent("dead");
+		/*anims.GetAnim("dead")->SetLoop(false);
+		anims.SetCurrent("dead");*/
 		pbody->ctype = ColliderType::UNKNOWN;
 		Engine::GetInstance().physics->SetBodyType(pbody, bodyType::STATIC);
+		pendingToDelete = true;
+		GameManager::GetInstance().gameState.lizardBossKilled = true;
 	}
-
-	GameManager::GetInstance().gameState.lizardBossKilled = true;
 
 	Draw(dt);
 
@@ -176,7 +197,7 @@ void GwellBoss::Move()
 		return;
 	}
 
-	// Movement normal en suelo
+	// Movimiento normal en suelo
 	if (pathfinding->pathTiles.empty() || playerTileDist > vision) {
 		anims.SetCurrent("idle");
 		velocity.x = 0;
@@ -483,7 +504,7 @@ void GwellBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER_ATTACK:
-		if (isInvincible == false)
+		if (isInvincible == false && !isdead)
 		{
 			if (currentPhase == GwellBossPhase::WALL_CLING)
 			{
@@ -502,23 +523,23 @@ void GwellBoss::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 				TakeDamage(physB->listener->damage);
 				isKnockedback = true;
 
-				// If health <50% jump to the wall
-				if (currentHealth <= maxHealth * 0.5f && !hasDoneWallPhase && currentPhase == GwellBossPhase::GROUNDD)
-				{
-					currentPhase = GwellBossPhase::TRANSITION_TO_WALL;
-					isInvincible = true;
+				//// If health <50% jump to the wall //TO DO: Hacer bien las fases
+				//if (currentHealth <= maxHealth * 0.5f && !hasDoneWallPhase && currentPhase == GwellBossPhase::GROUNDD)
+				//{
+				//	currentPhase = GwellBossPhase::TRANSITION_TO_WALL;
+				//	isInvincible = true;
 
-					// Wall more near
-					float distLeft = abs(position.getX() - leftWallClingPos.getX());
-					float distRight = abs(position.getX() - rightWallClingPos.getX());
-					targetWallPos = (distLeft < distRight) ? leftWallClingPos : rightWallClingPos;
+				//	// Wall more near
+				//	float distLeft = abs(position.getX() - leftWallClingPos.getX());
+				//	float distRight = abs(position.getX() - rightWallClingPos.getX());
+				//	targetWallPos = (distLeft < distRight) ? leftWallClingPos : rightWallClingPos;
 
-					if (attackHitbox != nullptr) {
-						b2DestroyBody(attackHitbox->body);
-						attackHitbox = nullptr;
-					}
-					isAttacking = false;
-				}
+				//	if (attackHitbox != nullptr) {
+				//		b2DestroyBody(attackHitbox->body);
+				//		attackHitbox = nullptr;
+				//	}
+				//	isAttacking = false;
+				//}
 			}
 		}
 		break;
@@ -550,5 +571,6 @@ bool GwellBoss::CleanUp()
 		b2DestroyBody(attackHitbox->body);
 		attackHitbox = nullptr;
 	}
+	Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 	return true;
 }

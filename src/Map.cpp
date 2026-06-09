@@ -816,7 +816,11 @@ bool Map::Load(std::string path, std::string fileName)
 
 						Door newDoor;
 						newDoor.body = collider;
-						newDoor.teleportTo = obj->properties.GetProperty("TeleportTo") ? obj->properties.GetProperty("TeleportTo")->value2 : "";
+
+						if (GameManager::GetInstance().gameState.lizardBossKilled && obj->properties.GetProperty("TeleportTo2") != NULL && (mapFileName == "Catacombs_02_F.tmx" || mapFileName == "Catacombs_02_M.tmx")) {
+							newDoor.teleportTo = obj->properties.GetProperty("TeleportTo2") ? obj->properties.GetProperty("TeleportTo2")->value2 : "";
+						}
+						else { newDoor.teleportTo = obj->properties.GetProperty("TeleportTo") ? obj->properties.GetProperty("TeleportTo")->value2 : ""; }
 						newDoor.x = obj->x;
 						newDoor.y = obj->y;
 
