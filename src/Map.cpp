@@ -76,7 +76,7 @@ namespace
 		std::string normalizedRegion = NormalizeKeyRegion(region);
 
 		if (normalizedRegion == "forest" || normalizedRegion == "bosque") return KeyType::FOREST;
-		if (normalizedRegion == "mountain" || normalizedRegion == "montana" || normalizedRegion == "monta\xC3\xB1" "a") return KeyType::MOUNTAIN;
+		if (normalizedRegion == "mountain" || normalizedRegion == "montana" || normalizedRegion == "montanya" || normalizedRegion == "monta\xC3\xB1" "a") return KeyType::MOUNTAIN;
 		if (normalizedRegion == "catacumba" || normalizedRegion == "catacumbs" || normalizedRegion == "catacombs") return KeyType::CATACUMBA;
 		if (normalizedRegion == "boss") return KeyType::BOSS;
 		if (normalizedRegion == "castle") return KeyType::CASTLE;
