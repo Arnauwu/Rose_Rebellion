@@ -18,8 +18,9 @@ namespace
         case KeyType::CATACUMBA:
             return "CatacumbsKey";
         case KeyType::BOSS:
-            return "CastleKey";
+            return "BossKey";
         case KeyType::CASTLE:
+            return "CastleKey";
         case KeyType::NONE:
         default:
             return "CastleKey";
@@ -40,8 +41,12 @@ bool Keys::Awake() {
 bool Keys::Start() {
     if (CheckIfCollected()) return true;
 
-    std::unordered_map<int, std::string> aliases = {
-    {0, "ForestKey"}, {8, "CastleKey"}, {16, "MountainKey"},{24, "CatacumbsKey"},{32,"BossKey"}
+    const std::unordered_map<int, std::string> aliases = {
+        {0, "ForestKey"},
+        {8, "CastleKey"},
+        {16, "MountainKey"},
+        {24, "CatacumbsKey"},
+        {32, "BossKey"}
     };
     anims.LoadFromTSX("Assets/Textures/Items/Keys/SS_obj_llaves.tsx", aliases);
     anims.SetCurrent(GetKeyAnimationName(keyType));
