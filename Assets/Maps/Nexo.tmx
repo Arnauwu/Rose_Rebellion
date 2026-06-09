@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="25" nextobjectid="139">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="72" height="13" tilewidth="128" tileheight="128" infinite="0" nextlayerid="25" nextobjectid="148">
  <tileset firstgid="1" name="Atlas_Exterior_Castillo" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Castle/Exterior/Atlas_Exterior_Castillo.png" width="1024" height="1024"/>
  </tileset>
@@ -7678,11 +7678,50 @@
   </object>
   <object id="117" name="Npc" type="Npc" x="7040" y="1280">
    <properties>
-    <property name="DialogueID" value="npc_01"/>
+    <property name="DialogueID" value="Diàleg 2: porc"/>
     <property name="TexturePath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Cerdo.png"/>
     <property name="TsxPath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Cerdo.tsx"/>
    </properties>
    <point/>
+  </object>
+  <object id="139" name="Npc" type="Npc" x="7472" y="1272">
+   <properties>
+    <property name="DialogueID" value="dialeg_vaca_1"/>
+    <property name="TexturePath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Vaca.png"/>
+    <property name="TsxPath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Vaca.tsx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="140" name="Npc" type="Npc" x="8206.3" y="1269.03">
+   <properties>
+    <property name="DialogueID" value="Diàleg 3: ovella"/>
+    <property name="TexturePath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Oveja.png"/>
+    <property name="TsxPath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Oveja.tsx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="142" name="Npc" type="Npc" x="8591.21" y="1267.94">
+   <properties>
+    <property name="DialogueID" value="Diàleg 4: Colom"/>
+    <property name="TexturePath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Paloma.png"/>
+    <property name="TsxPath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Paloma.tsx"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="145" name="DialogueTrigger" type="DialogueTrigger" x="5757.27" y="190.364" width="140" height="1092">
+   <properties>
+    <property name="DialogueID" value="Diàleg suelta 1"/>
+   </properties>
+  </object>
+  <object id="146" name="DialogueTrigger" type="DialogueTrigger" x="7796.67" y="181.273" width="140" height="1092">
+   <properties>
+    <property name="DialogueID" value="Diàleg suelta 4"/>
+   </properties>
+  </object>
+  <object id="147" name="DialogueTrigger" type="DialogueTrigger" x="8787.58" y="181.273" width="140" height="1092">
+   <properties>
+    <property name="DialogueID" value="Diàleg suelta 6"/>
+   </properties>
   </object>
  </objectgroup>
  <objectgroup id="4" name="PlayerSpawns">

@@ -48,25 +48,29 @@ void DialogueManager::LoadDialogues(Language lang) {
 		return;
 	}
 
-	json j;
-	file >> j;
+	try {
+		json j;
+		file >> j;
 
-	for (auto& element : j.items()) {
-		std::string dialogueID = element.key();
-		auto linesArray = element.value();
-		std::vector<DialogueLine> lines;
-		for (auto& lineObj : linesArray) {
-			DialogueLine dl;
-			// Use direct assignment to avoid ambiguous initialization in Visual Studio.
-			dl.speaker = lineObj["speaker"];
-			dl.text = lineObj["text"];
-
-			lines.push_back(dl);
+		for (auto& element : j.items()) {
+			std::string dialogueID = element.key();
+			auto linesArray = element.value();
+			std::vector<DialogueLine> lines;
+			for (auto& lineObj : linesArray) {
+				DialogueLine dl;
+				dl.speaker = lineObj["speaker"];
+				dl.text = lineObj["text"];
+				lines.push_back(dl);
+			}
+			dialogueDB[dialogueID] = lines;
 		}
-		dialogueDB[dialogueID] = lines;
-	}
 
-	LOG("DialogueManager: Dialogos cargados correctamente desde %s", filePath.c_str());
+		LOG("DialogueManager: Dialogos cargados correctamente desde %s", filePath.c_str());
+	}
+	catch (const json::parse_error& e) {
+		// ¡ESTO ES CLAVE! Si el JSON tiene un error de formato, te lo dirá aquí.
+		LOG("ERROR LEYENDO EL JSON: %s", e.what());
+	}
 
 	// NUEVO: Guardamos el estado para el Lazy Loading
 	lastLoadedLanguage = lang;

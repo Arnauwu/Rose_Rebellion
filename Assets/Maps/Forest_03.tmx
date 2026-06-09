@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="176" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="52" nextobjectid="1983">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="176" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="52" nextobjectid="1985">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -150,7 +150,7 @@
    </animation>
   </tile>
  </tileset>
- <objectgroup id="18" name="Fondo1" visible="0">
+ <objectgroup id="18" name="Fondo1">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -179,7 +179,7 @@
   <object id="731" gid="133" x="19584" y="2688" width="2844" height="2688"/>
   <object id="732" gid="133" x="22400" y="2688" width="2816" height="2704"/>
  </objectgroup>
- <objectgroup id="45" name="Plantas_Back" visible="0">
+ <objectgroup id="45" name="Plantas_Back">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -320,7 +320,7 @@
   <object id="1952" gid="1073742067" x="20988" y="2400" width="128" height="128"/>
   <object id="1958" gid="1073742067" x="20869" y="2416" width="128" height="128"/>
  </objectgroup>
- <objectgroup id="44" name="Fondo2-Agua" visible="0">
+ <objectgroup id="44" name="Fondo2-Agua">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -335,7 +335,7 @@
   <object id="1364" gid="135" x="5634" y="2712" width="2304" height="1444"/>
   <object id="1365" gid="1073741959" x="5633.33" y="1270.67" width="2304" height="1444"/>
  </objectgroup>
- <objectgroup id="21" name="Fondo3" visible="0">
+ <objectgroup id="21" name="Fondo3">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -359,7 +359,7 @@
   <object id="1371" gid="227" x="18944" y="1536" width="2304" height="1444"/>
   <object id="1372" gid="227" x="512" y="1536" width="2304" height="1444"/>
  </objectgroup>
- <objectgroup id="51" name="Fondo3-Luces Fijas" visible="0">
+ <objectgroup id="51" name="Fondo3-Luces Fijas">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -371,7 +371,7 @@
   <object id="1688" gid="3221225699" x="16963.3" y="2787.43" width="680.042" height="490.348"/>
   <object id="1689" gid="3221225699" x="16955.9" y="2775.18" width="680.042" height="490.348"/>
  </objectgroup>
- <objectgroup id="38" name="Fondo4" visible="0">
+ <objectgroup id="38" name="Fondo4">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -477,7 +477,7 @@
   <object id="1378" gid="1073742038" x="5310" y="2090" width="502" height="502"/>
   <object id="1506" gid="214" x="3831" y="999" width="231" height="231"/>
  </objectgroup>
- <objectgroup id="41" name="Cascadas" visible="0">
+ <objectgroup id="41" name="Cascadas">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -485,7 +485,7 @@
   </properties>
   <object id="1191" gid="200" x="8960" y="2607.41" width="1814.68" height="2603.55"/>
  </objectgroup>
- <objectgroup id="48" name="Deco-Cascadas-Back-Plantas" visible="0">
+ <objectgroup id="48" name="Deco-Cascadas-Back-Plantas">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -495,7 +495,7 @@
   <object id="1621" gid="231" x="9775.36" y="1811.28" width="128" height="128"/>
   <object id="1622" gid="2147483891" x="10276" y="2196.61" width="128" height="128"/>
  </objectgroup>
- <objectgroup id="42" name="Deco-Cascadas-Front" visible="0">
+ <objectgroup id="42" name="Deco-Cascadas-Front">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -507,7 +507,7 @@
   <object id="1252" gid="213" x="9128.74" y="2202.85" width="384" height="384"/>
   <object id="1253" gid="215" x="10310.5" y="2182.55" width="384" height="384"/>
  </objectgroup>
- <objectgroup id="46" name="Plantitas" visible="0">
+ <objectgroup id="46" name="Plantitas">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -598,7 +598,7 @@
   <object id="1981" gid="228" x="14306" y="1734" width="128" height="128"/>
   <object id="1982" gid="228" x="21354.2" y="1985.21" width="128" height="128"/>
  </objectgroup>
- <layer id="1" name="Map" width="176" height="21" visible="0">
+ <layer id="1" name="Map" width="176" height="21">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -4301,7 +4301,7 @@
    <tile gid="7"/>
   </data>
  </layer>
- <layer id="33" name="Agua-Front" width="176" height="21" visible="0" locked="1">
+ <layer id="33" name="Agua-Front" width="176" height="21" locked="1">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
@@ -8005,7 +8005,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="43" name="Cascadas-F" visible="0">
+ <objectgroup id="43" name="Cascadas-F">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -8014,7 +8014,7 @@
   </properties>
   <object id="1277" gid="200" x="3072" y="2688" width="1216.24" height="1250.14"/>
  </objectgroup>
- <objectgroup id="39" name="Fondo4-F" visible="0">
+ <objectgroup id="39" name="Fondo4-F">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -8195,7 +8195,7 @@
   <object id="1610" gid="216" x="9845.31" y="2698.63" width="373.387" height="386.747"/>
   <object id="1611" gid="216" x="10001.3" y="2696.63" width="373.387" height="386.747"/>
  </objectgroup>
- <objectgroup id="28" name="Fondo5-F" visible="0">
+ <objectgroup id="28" name="Fondo5-F">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
@@ -15778,6 +15778,14 @@
    <point/>
   </object>
   <object id="1325" name="SkillPointOrb" type="SkillPointOrb" x="387.03" y="1252.61">
+   <point/>
+  </object>
+  <object id="1984" name="Npc" type="Npc" x="1000" y="2556">
+   <properties>
+    <property name="DialogueID" value="Ovella Espantant-se"/>
+    <property name="TexturePath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Oveja.png"/>
+    <property name="TsxPath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Oveja.tsx"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>
