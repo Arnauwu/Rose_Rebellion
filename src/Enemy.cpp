@@ -83,7 +83,11 @@ bool Enemy::CleanUp()
 	LOG("Cleanup enemy");
 	active = false;
 	Engine::GetInstance().textures->UnLoad(texture);
-	Engine::GetInstance().physics->DeletePhysBody(pbody);
+	if (pbody != nullptr)
+	{
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
 	return true;
 }
 
