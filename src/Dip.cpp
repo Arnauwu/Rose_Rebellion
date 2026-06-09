@@ -42,6 +42,7 @@ bool Dip::Start()
 	anims.SetCurrent("Idle");
 	anims.GetAnim("Jump")->SetLoop(false);
 	anims.GetAnim("DiveImpact")->SetLoop(false);
+	anims.GetAnim("Hit")->SetLoop(false);
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dip/SS_Dip.png");
 
@@ -73,8 +74,11 @@ bool Dip::Start()
 	vision = 20;
 	speed = 8.0f;
 	knockbackForce = 5.0f;
-	maxHealth = 20;
-	currentHealth = 20;
+
+	maxHealth = 50;
+	currentHealth = maxHealth;
+	deathStarted = false;
+
 
 	attackDamage = 5;
 	startAttack.Start();
@@ -102,15 +106,15 @@ bool Dip::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
-	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH,10))
-	{
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
-		return true;
-	}
-
 	if (isdead)
 	{
 		Draw(dt);
+		return true;
+	}
+
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH,10))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
 		return true;
 	}
 
@@ -123,33 +127,18 @@ bool Dip::Update(float dt)
 		}
 
 		GetPhysicsValues();
+
+		if (isKnockedback && anims.GetAnim("Hit")->HasFinishedOnce())
+		{
+			isKnockedback = false;
+			anims.SetCurrent("Idle");
+		}
+
 		Move();
 		ApplyPhysics();
 
 		if (isAttackingVisual && attackVisualTimer.ReadMSec() > 200) {
 			isAttackingVisual = false;
-		}
-	}
-
-	if (isdead) {
-		if (anims.GetCurrentName() != "Dead") {
-			// Parar de correr por si murió mientras caminaba
-			Engine::GetInstance().audio->StopFx(caminarDip);
-
-			// Reproducir sonido y animación
-			Engine::GetInstance().audio->PlayFx(morirDip);
-			anims.SetCurrent("Dead");
-			if (anims.GetAnim("Dead") != nullptr) anims.GetAnim("Dead")->SetLoop(false);
-
-			Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-			pbody->ctype = ColliderType::UNKNOWN; // Hacerlo fantasma
-
-			SpawnHealthOrb(40);
-		}
-
-		// Desaparecer cuando termine la animación de muerte
-		if (anims.GetAnim("Dead") != nullptr && anims.GetAnim("Dead")->HasFinishedOnce()) {
-			pendingToDelete = true;
 		}
 	}
 
@@ -198,6 +187,61 @@ void Dip::FinishSpecialAttack()
 	{
 		anims.SetCurrent(isTouchingPlayer ? "Attack" : "Idle");
 	}
+}
+
+void Dip::BeginHit()
+{
+	isKnockedback = true;
+	velocity.x = 0.0f;
+
+	if (anims.GetCurrentName() == "Move")
+	{
+		Engine::GetInstance().audio->StopFx(caminarDip);
+	}
+
+	anims.SetCurrent("Hit");
+	anims.GetAnim("Hit")->Reset();
+}
+
+void Dip::BeginDeath()
+{
+	if (deathStarted)
+		return;
+
+	deathStarted = true;
+	isdead = true;
+	currentHealth = 0;
+	isSpecialAttacking = false;
+	specialPhase = 0;
+	leftGroundDuringSpecial = false;
+	hasImpactDrawY = false;
+	isKnockedback = false;
+	isAttackingVisual = false;
+	isTouchingPlayer = false;
+	playerContacts = 0;
+	damage = 0;
+
+	Engine::GetInstance().audio->StopFx(caminarDip);
+	Engine::GetInstance().audio->PlayFx(morirDip);
+
+	anims.SetCurrent("Dead");
+	Animation* deathAnim = anims.GetAnim("Dead");
+	if (deathAnim != nullptr)
+	{
+		deathAnim->SetLoop(false);
+		deathAnim->Reset();
+	}
+
+	if (pbody != nullptr)
+	{
+		pbody->GetPosition(deathDrawX, deathDrawY);
+		position.setX((float)deathDrawX);
+		position.setY((float)deathDrawY);
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
+
+	SpawnHealthOrb(40);
 }
 
 bool Dip::HasLandedAfterSpecialJump() const
@@ -524,10 +568,14 @@ void Dip::Draw(float dt)
 	SDL_Rect animFrame = anims.GetCurrentFrame();
 	SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
-	int x, y;
-	pbody->GetPosition(x, y);
-	position.setX((float)x);
-	position.setY((float)y);
+	int x = deathDrawX;
+	int y = deathDrawY;
+	if (pbody != nullptr)
+	{
+		pbody->GetPosition(x, y);
+		position.setX((float)x);
+		position.setY((float)y);
+	}
 
 	int drawX = x;
 	int drawY = y;
@@ -570,17 +618,25 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 	case ColliderType::PLAYER_ATTACK:
 		LOG("Dip hit! Damage = %d", physB->listener->damage);
 		Entity::TakeDamage(physB->listener->damage);
-		isKnockedback = true;
-		if (anims.GetCurrentName() == "Move") Engine::GetInstance().audio->StopFx(caminarDip);
-		anims.SetCurrent("Hit");
-
-		if (currentHealth <= 0) {
-			isdead = true;
-			currentHealth = 0;
+		if (currentHealth <= 0)
+		{
+			BeginDeath();
+		}
+		else
+		{
+			BeginHit();
 		}
 		break;
 	case ColliderType::PLAYER_PROJECTILE:
 		TakeDamage(physB->listener->damage);
+		if (currentHealth <= 0)
+		{
+			BeginDeath();
+		}
+		else
+		{
+			BeginHit();
+		}
 		break;
 	case ColliderType::PLAYER:
 

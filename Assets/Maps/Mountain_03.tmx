@@ -57,10 +57,10 @@
  <tileset firstgid="240" name="T_Luz (1)" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
   <image source="Montain/luces/T_Luz (1).png" width="4096" height="3025"/>
  </tileset>
- <tileset firstgid="241" name="T_Luz_2" tilewidth="4096" tileheight="3025" tilecount="0" columns="1">
+ <tileset firstgid="241" name="T_Luz_2" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
   <image source="Montain/luces/T_Luz_2.png" width="4096" height="3025"/>
  </tileset>
- <tileset firstgid="241" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="64" columns="8">
+ <tileset firstgid="242" name="Atlas_plataformaMovil" tilewidth="128" tileheight="128" tilecount="64" columns="8">
   <image source="Catacombs/Atlas_plataformaMovil.png" width="1024" height="1024"/>
  </tileset>
  <objectgroup id="23" name="Fondo_01">
@@ -7799,6 +7799,9 @@
   </data>
  </layer>
  <layer id="28" name="Railes" width="127" height="60">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <data>
    <tile/>
    <tile/>
@@ -13431,26 +13434,26 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="249"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
    <tile gid="250"/>
    <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="252"/>
    <tile/>
    <tile/>
    <tile/>
@@ -13584,26 +13587,26 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="249"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
-   <tile gid="250"/>
    <tile gid="250"/>
    <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="251"/>
+   <tile gid="252"/>
    <tile/>
    <tile/>
    <tile/>
@@ -30836,10 +30839,10 @@
     <property name="WaitTime" type="int" value="2000"/>
    </properties>
   </object>
-  <object id="697" type="HorizontalFloor" x="7680" y="5632" width="512" height="128">
+  <object id="697" type="HorizontalFloor" x="5376" y="5632" width="512" height="128">
    <properties>
     <property name="ActivationOnTouch" type="bool" value="false"/>
-    <property name="Direction" type="int" value="-1"/>
+    <property name="Direction" type="int" value="1"/>
     <property name="Distance" type="int" value="2304"/>
     <property name="Speed" type="int" value="4"/>
     <property name="WaitTime" type="int" value="2000"/>

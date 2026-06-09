@@ -379,7 +379,10 @@ bool Physics::PostUpdate()
 
     // Process bodies to delete after the world step
     for (PhysBody* physBody : bodiesToDelete) {
-        b2DestroyBody(physBody->body);
+        if (physBody != nullptr && b2Body_IsValid(physBody->body)) {
+            b2DestroyBody(physBody->body);
+            physBody->body = b2_nullBodyId;
+        }
     }
     bodiesToDelete.clear();
 
@@ -437,12 +440,11 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
-    if (B2_IS_NULL(world)) return;
-    if (physBody && !B2_IS_NULL(physBody->body))
-    {
-        b2Body_SetUserData(physBody->body, nullptr);
-        physBody->listener = nullptr;
-    }
+    if (B2_IS_NULL(world) || physBody == nullptr || B2_IS_NULL(physBody->body)) return;
+    if (IsPendingToDelete(physBody)) return;
+
+    b2Body_SetUserData(physBody->body, nullptr);
+    physBody->listener = nullptr;
     bodiesToDelete.push_back(physBody);
 }
 
