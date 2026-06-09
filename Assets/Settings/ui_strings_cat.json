@@ -113,9 +113,9 @@
   "SKILL_FASTDASH_NAME": "Apòcrifs del desplaçament",
   "SKILL_FASTDASH_DESC": "Escrits prohibits que ensenyen a doblegar l'espai. Millora dràsticament la força i distància del teu Impuls d'Ombra.",
 
-  "SKILL_UPATTACK_NAME": "Volum I Tècniques de combat: Aire",
-  "SKILL_UPATTACK_DESC": "Llibre de combat contra enemics aeris escrit pels generals del castell, desbloqueja un àgil atac ascendent.",
+  "SKILL_UPDOWNATTACK_NAME": "Volum I Tècniques de combat: Aire i Terra",
+  "SKILL_UPDOWNATTACK_DESC": "Llibre de combat que profunditza en el control omnidireccional de l'arma, escrit pels generals del castell, desbloqueja àgils atacs ascendents i descendents.",
 
-  "SKILL_DOWNATTACK_NAME": "Volum II Tècniques de combat: Terrestre",
-  "SKILL_DOWNATTACK_DESC": "Volum extens d'atac cos a cos, atorga el coneixement per realitzar un atac descendent."
+  "SKILL_RANGEDATTACK_NAME": "Volum II Tècniques de combat: Ull del Falcó",
+  "SKILL_RANGEDATTACK_DESC": "Volum extens sobre el llançament i control d'armes llancívoles, atorga el coneixement per realitzar un atac a distància a canvi de disminuir la teva vitalitat."
 }

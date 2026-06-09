@@ -397,7 +397,7 @@ bool GameScene::Update(float dt) {
 	if (dialogueMgr->IsDialogueActive()) {
 		return true;
 	}
-	
+
 	// --- SUB-MENU INPUT HANDLING ---
 	RefreshMenuUI();
 	if (currentMenuTab == GameMenuTab::INVENTORY || currentMenuTab == GameMenuTab::MAP || currentMenuTab == GameMenuTab::SKILL_TREE) {
@@ -429,7 +429,7 @@ bool GameScene::Update(float dt) {
 	bool isCinematicActive = (player != nullptr && player->isFrozen);
 	bool isMapTransitioning = (mapState != MapTransitionState::NONE);
 
-	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE) 
+	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE)
 	{
 		if (!inSkillPopUp) {
 			if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
@@ -442,13 +442,6 @@ bool GameScene::Update(float dt) {
 				ToggleGameMenu(GameMenuTab::INVENTORY);
 			}
 		}
-	}
-
-	// AÑADIR ESTO - SELECT button para Inventory
-	if (input->IsGamepadConnected() &&
-		input->GetGamepadButton(GAMEPAD_BACK) == KEY_DOWN)
-	{
-		ToggleGameMenu(GameMenuTab::INVENTORY);
 	}
 
 	if (mapState == MapTransitionState::FADING_OUT) {
@@ -526,7 +519,7 @@ bool GameScene::Update(float dt) {
 	}
 
 	// Pause Menu - ESC o START del gamepad
-	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE) 
+	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE)
 	{
 		bool pauseInput = input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
 
