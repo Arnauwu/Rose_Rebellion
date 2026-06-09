@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="34" nextobjectid="754">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="36" nextobjectid="817">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -54,7 +54,10 @@
  <tileset firstgid="142" name="T_Arbustos" tilewidth="384" tileheight="307" tilecount="35" columns="7">
   <image source="Montain/Arbustos y Rocas/T_Arbustos.png" width="2688" height="1536"/>
  </tileset>
- <objectgroup id="23" name="Fondo-Azul" tintcolor="#97bdc6">
+ <tileset firstgid="177" name="t_filas" tilewidth="1024" tileheight="341" tilecount="3" columns="1">
+  <image source="Montain/Arbustos y Rocas/t_filas.png" width="1024" height="1024"/>
+ </tileset>
+ <objectgroup id="23" name="Fondo-Azul">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
@@ -66,30 +69,31 @@
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="565" gid="132" x="1024" y="9984" width="1156" height="264"/>
+  <object id="565" gid="132" x="896" y="9984" width="1156" height="264"/>
  </objectgroup>
  <objectgroup id="30" name="M-Fondo_01">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="722" gid="134" x="2048" y="10240" width="10720" height="7916.99"/>
+  <object id="722" gid="134" x="1536" y="10880" width="11296" height="8342.38"/>
  </objectgroup>
  <objectgroup id="31" name="M-Fondo_02">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="724" gid="134" x="5632" y="3584" width="4096" height="3025"/>
-  <object id="727" gid="134" x="13568" y="10240" width="14300.1" height="10561"/>
-  <object id="728" gid="135" x="7296" y="10112" width="13152" height="9713.09"/>
-  <object id="744" gid="1073741959" x="13440" y="6528" width="6704" height="4951.07"/>
-  <object id="745" gid="1073741959" x="16000" y="6656" width="6704" height="4951.07"/>
+  <object id="724" gid="134" x="5504" y="3840" width="4704" height="3474.02"/>
+  <object id="727" gid="134" x="13696" y="11008" width="14300.1" height="10561"/>
+  <object id="728" gid="135" x="7296" y="10880" width="13152" height="9713.09"/>
+  <object id="744" gid="1073741959" x="12544" y="7552" width="8464" height="6250.87"/>
+  <object id="745" gid="1073741959" x="15632" y="7680" width="8263.87" height="6103.07"/>
  </objectgroup>
  <objectgroup id="32" name="M-Fondo_03">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
+   <property name="ParalaxY" type="float" value="0.95"/>
   </properties>
   <object id="734" gid="2147483782" x="10624" y="4864" width="3200" height="2304"/>
   <object id="739" gid="1073741958" x="10752" y="7520" width="3359.4" height="2481"/>
@@ -110,12 +114,34 @@
   <object id="498" gid="2147483781" x="9984" y="11392" width="2304" height="2304"/>
   <object id="751" gid="133" x="18176" y="7808" width="1688" height="1688"/>
  </objectgroup>
+ <objectgroup id="34" name="Sol">
+  <object id="795" gid="137" x="256" y="3968" width="3856" height="3856"/>
+ </objectgroup>
  <objectgroup id="26" name="Nuves">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
-  <object id="753" gid="137" x="512" y="3840" width="3280" height="3280"/>
+  <object id="776" gid="139" x="2036" y="9456" width="1152" height="384"/>
+  <object id="778" gid="139" x="2176" y="8728" width="1152" height="384"/>
+  <object id="780" gid="140" x="1280" y="9088" width="1152" height="384"/>
+  <object id="781" gid="141" x="408" y="8872" width="1368" height="456"/>
+  <object id="782" gid="139" x="-128" y="9216" width="1152" height="384"/>
+  <object id="783" gid="138" x="-576" y="7280" width="2136" height="712"/>
+  <object id="784" gid="138" x="2432" y="6272" width="2224" height="741.333"/>
+  <object id="786" gid="139" x="-240" y="3392" width="4727" height="1575.67"/>
+  <object id="787" gid="139" x="2598" y="4103" width="2727" height="909"/>
+  <object id="789" gid="138" x="784" y="5912" width="2448" height="816"/>
+  <object id="790" gid="138" x="1360" y="3448" width="3511" height="1170.33"/>
+  <object id="791" gid="2147483787" x="2008" y="7136" width="1824" height="608"/>
+  <object id="792" gid="2147483787" x="768" y="7632" width="1808" height="602.667"/>
+  <object id="793" gid="3221225611" x="2176" y="4992" width="1984" height="661.333"/>
+  <object id="794" gid="138" x="-640" y="4992" width="3415" height="1138.33"/>
+  <object id="796" gid="1073741963" x="-408" y="6245.33" width="1984" height="661.333"/>
+  <object id="797" gid="141" x="523.697" y="6759.44" width="2692.3" height="897.434"/>
+  <object id="798" gid="139" x="-912" y="3360" width="4727" height="1575.67"/>
+  <object id="799" gid="2147483787" x="-144" y="7962.67" width="1630.29" height="543.429"/>
+  <object id="800" gid="138" x="2032" y="7978.67" width="1640" height="546.667"/>
  </objectgroup>
  <objectgroup id="25" name="Fondo_04">
   <properties>
@@ -14530,13 +14556,25 @@
    <tile gid="103"/>
   </data>
  </layer>
+ <objectgroup id="35" name="NuvesFront">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+   <property name="Front" type="bool" value="true"/>
+  </properties>
+  <object id="809" gid="138" x="1763.39" y="9595.03" width="1733.82" height="577.939"/>
+  <object id="812" gid="138" x="1076" y="9178.67" width="1536" height="512"/>
+  <object id="813" gid="2147483786" x="-307.394" y="9310.67" width="1536" height="512"/>
+  <object id="814" gid="140" x="563.394" y="8828.36" width="1070.18" height="356.727"/>
+  <object id="816" gid="2147483788" x="1967.94" y="8772.14" width="1512.61" height="504.202"/>
+ </objectgroup>
  <objectgroup id="22" name="Fondo_05" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
   </properties>
  </objectgroup>
- <objectgroup color="#aa0000" id="21" name="Spikes" visible="0">
+ <objectgroup color="#aa0000" id="21" name="Spikes">
   <properties>
    <property name="Danger" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -14547,9 +14585,9 @@
   <object id="398" x="20864" y="10024" width="768" height="88"/>
   <object id="399" x="22016" y="10028" width="896" height="84"/>
   <object id="401" x="16384" y="6060" width="4608" height="84"/>
-  <object id="411" x="1075.88" y="9746" width="972.121" height="110"/>
+  <object id="411" x="971.88" y="9746" width="972.121" height="110"/>
  </objectgroup>
- <objectgroup id="13" name="Path" visible="0">
+ <objectgroup id="13" name="Path">
   <properties>
    <property name="Path" type="bool" value="true"/>
    <property name="Sensor" type="bool" value="true"/>
@@ -14571,7 +14609,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="28" name="Rampa" visible="0">
+ <objectgroup id="28" name="Rampa">
   <properties>
    <property name="Polygon" type="bool" value="true"/>
   </properties>
@@ -14604,6 +14642,21 @@
   </object>
   <object id="752" x="3200" y="8576">
    <polygon points="0,0 256,-128 256,0"/>
+  </object>
+  <object id="801" x="2304" y="9296">
+   <polygon points="0,0 332,-84 628,32"/>
+  </object>
+  <object id="802" x="1548" y="8956">
+   <polygon points="0,0 296,-136 596,-12"/>
+  </object>
+  <object id="803" x="2416" y="8572">
+   <polygon points="0,0 380,-112 656,12"/>
+  </object>
+  <object id="806" x="136" y="9056">
+   <polygon points="0,0 376,-96 632,32"/>
+  </object>
+  <object id="807" x="904" y="8696">
+   <polygon points="0,0 200,-76 352,4"/>
   </object>
  </objectgroup>
  <objectgroup color="#000000" id="20" name="Map" visible="0">
