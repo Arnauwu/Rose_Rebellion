@@ -69,28 +69,67 @@ bool Hud::Update(float dt) {
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player == nullptr) return true;
 
-	if (player->maxHealth > 0) {
+	// --- LÓGICA DE ANIMACIÓN DE VIDA CON ÚLTIMO ALIENTO ---
+	if (player->maxHealth > 0 && !lifeFrames.empty()) {
 		int hp = player->currentHealth;
+		int maxHp = player->maxHealth;
 
-		// dead
-		if (player->isdead || hp <= 0) {
-			currentVisualFrame = 9;
-		}
-		// max life
-		else if (hp >= 100) {
-			currentVisualFrame = 0;
-		}
+		int targetFrame = 0;
+		float dtSeconds = dt / 1000.0f;
 
+		// 1. EL JUGADOR ESTÁ MUERTO (0 HP)
+		if (hp <= 0 || player->isdead) {
+			targetFrame = 43; // Se queda en la barra negra
+		}
+		// 2. ÚLTIMO ALIENTO (1 HP)
+		else if (hp == 1) {
+			// Iniciar la secuencia si no estaba activa
+			if (!isLastBreathAnimating) {
+				isLastBreathAnimating = true;
+				lastBreathPauseTimer = 0.5f; // Medio segundo de pausa en negro (ajusta a tu gusto)
+			}
+
+			if (displayedFrame < 43.0f) {
+				// Paso 1: Forzar a que la animación llegue al frame negro (43)
+				targetFrame = 43;
+			}
+			else {
+				// Paso 2: Pausa en el frame negro
+				if (lastBreathPauseTimer > 0.0f) {
+					targetFrame = 43;
+					lastBreathPauseTimer -= dtSeconds;
+				}
+				else {
+					// Paso 3: Termina la pausa, animar la última fila hasta el frame 48
+					targetFrame = 48;
+				}
+			}
+		}
+		// 3. VIDA NORMAL (> 1 HP)
 		else {
-			float hpPercent = (float)hp / 100.0f;
+			isLastBreathAnimating = false; // Resetear por si se cura
 
-			// calculate frame with current life
-			currentVisualFrame = 9 - (int)(hpPercent * 9.0f);
+			// Mapeamos la vida restante (del 2 al maxHp) entre los frames 0 y 41
+			float percent = (float)(hp - 1) / (float)(maxHp - 1);
+			targetFrame = (int)((1.0f - percent) * 41.0f);
 
-			if (currentVisualFrame <= 0) currentVisualFrame = 1;
-			if (currentVisualFrame >= 9) currentVisualFrame = 8;
+			// Límites de seguridad para vida normal
+			if (targetFrame < 0) targetFrame = 0;
+			if (targetFrame > 41) targetFrame = 41;
+		}
+
+		// --- CÓDIGO QUE MUEVE EL DISPLAYED FRAME HACIA EL TARGET ---
+		if (displayedFrame < targetFrame) {
+			displayedFrame += animSpeed * dtSeconds;
+			if (displayedFrame > targetFrame) displayedFrame = targetFrame;
+		}
+		else if (displayedFrame > targetFrame) {
+			displayedFrame -= animSpeed * dtSeconds;
+			if (displayedFrame < targetFrame) displayedFrame = targetFrame;
 		}
 	}
+	// -----------------------------------------------------------
+	// ------------------------------------------
 
 	if (notificationTimer > 0.0f) {
 		notificationTimer -= dt / 1000.0f;
@@ -103,7 +142,7 @@ bool Hud::Update(float dt) {
 		tutorialTimer -= dt / 1000.0f;
 		if (tutorialTimer < 0.0f) {
 			tutorialTimer = 0.0f;
-			currentTutorial = TutorialType::NONE; // Lo ocultamos al acabar
+			currentTutorial = TutorialType::NONE;
 		}
 	}
 
@@ -146,39 +185,12 @@ void Hud::DrawPlayerHealthBar() {
 	Player* player = Engine::GetInstance().entityManager->GetPlayer();
 	if (player == nullptr) return;
 
-	int hp = player->currentHealth;
-	int maxHp = player->maxHealth;
-	if (maxHp <= 0) return;
+	// Obtenemos el frame actual truncando los decimales
+	int frameActual = (int)displayedFrame;
 
-	int totalFrames = lifeFrames.size(); // Esto será 51
-	int frameActual = 0;
-
-	// --- NUEVA LÓGICA ESTRICTA DE VIDA ---
-	// 1. REGLA ESTRICTA: 0 Vida = Último frame (Barra vacía)
-	if (hp <= 0 || player->isdead) {
-		frameActual = totalFrames - 1;
-	}
-	// 2. REGLA ESTRICTA: 100% Vida = Primer frame (Barra llena)
-	else if (hp >= maxHp) {
-		frameActual = 0;
-	}
-	// 3. ESTADOS INTERMEDIOS (Barra bajando)
-	else {
-		float hpPercent = (float)hp / (float)maxHp;
-
-		// Calculamos qué frame le toca
-		frameActual = (int)((1.0f - hpPercent) * (totalFrames - 1));
-
-		// Evitamos que muestre la barra vacía si aún le queda 1 punto de vida
-		if (frameActual >= totalFrames - 1) {
-			frameActual = totalFrames - 2;
-		}
-		// Evitamos que muestre la barra llena si ya le han hecho daño
-		if (frameActual <= 0) {
-			frameActual = 1;
-		}
-	}
-	// ------------------------------------
+	// Seguridad total: Evitar salirnos del array (Crash prevention)
+	if (frameActual < 0) frameActual = 0;
+	if (frameActual >= lifeFrames.size()) frameActual = lifeFrames.size() - 1;
 
 	// 3. Obtener el recorte precalculado y dibujarlo
 	SDL_Rect srcRect = lifeFrames[frameActual];
@@ -187,24 +199,18 @@ void Hud::DrawPlayerHealthBar() {
 	int scale = Engine::GetInstance().window->GetScale();
 	float zoomLevel = Engine::GetInstance().render->GetZoom();
 
-	// Queremos que esté a 40 píxeles de margen en un espacio virtual normal.
-	// Al dividir por zoomLevel, evitamos que el zoom del motor empuje la barra hacia arriba o abajo.
 	float marginX = 30.0f;
 	float marginY = -300.0f;
 
-	// SDL3 nos obliga a pasar los rectángulos en formato float (SDL_FRect)
 	SDL_FRect srcFRect = { (float)srcRect.x, (float)srcRect.y, (float)srcRect.w, (float)srcRect.h };
 
 	SDL_FRect dstFRect;
-	// Replicamos con precisión milimétrica la fórmula de tu Render.cpp para la posición
 	dstFRect.x = (float)(marginX * scale) * zoomLevel;
 	dstFRect.y = (float)(marginY * scale) * zoomLevel;
 
-	// ¡AQUÍ ESTÁ LA MAGIA! Multiplicamos el ancho y el alto por 1.5f para agrandarla
 	dstFRect.w = (float)(srcRect.w * scale) * zoomLevel * 1.5f;
 	dstFRect.h = (float)(srcRect.h * scale) * zoomLevel * 1.5f;
 
-	// Invocamos la función nativa de SDL3 que estira la sección elegida sin rotarla
 	SDL_RenderTexture(renderer, lifeBarTexture, &srcFRect, &dstFRect);
 }
 

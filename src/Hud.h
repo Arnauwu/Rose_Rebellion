@@ -63,11 +63,17 @@ private:
     int sectionWidth = 100;  // Ajusta según el ancho real de tu PNG
     int sectionHeight = 25;  // Ajusta según (Alto total del PNG / 8)
 
-    int targetStateFrame = 0;   // El frame al que queremos llegar
-    int currentVisualFrame = 0; // El frame que se dibuja actualmente
+    //int targetStateFrame = 0;   // El frame al que queremos llegar
+    //int currentVisualFrame = 0; // El frame que se dibuja actualmente
 
-    bool isAnimating = false;
-    Timer transitionTimer;
+    //bool isAnimating = false;
+    //Timer transitionTimer;
+
+    float displayedFrame = 0.0f; // El frame que se está dibujando (en decimales)
+    float animSpeed = 20.0f;
+
+    bool isLastBreathAnimating = false;
+    float lastBreathPauseTimer = 0.0f;
 
     // Configuración ventana TODO: Revisar parametros
     const float BASE_SCREEN_WIDTH = 1280.0f;

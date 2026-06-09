@@ -102,7 +102,7 @@ public:
 		}
 	}
 
-	void TakeDamage(int damage)
+	virtual void TakeDamage(int damage)
 	{
 		if (godMode || isdead) return;
 
