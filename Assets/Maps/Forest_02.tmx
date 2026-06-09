@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="40" nextobjectid="1465">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="88" height="19" tilewidth="128" tileheight="128" infinite="0" nextlayerid="40" nextobjectid="1466">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -5657,6 +5657,14 @@
    <point/>
   </object>
   <object id="701" name="Ninfa" type="Ninfa" x="1920" y="1536">
+   <point/>
+  </object>
+  <object id="1465" name="Npc" type="Npc" x="884" y="1780">
+   <properties>
+    <property name="DialogueID" value="Ovella Dialeg1"/>
+    <property name="TexturePath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Oveja.png"/>
+    <property name="TsxPath" value="Assets/Textures/Entities/NPCs/SS_Pueblerino_Oveja.tsx"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

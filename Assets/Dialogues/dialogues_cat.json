@@ -3,128 +3,129 @@
     { "speaker": "Aldeano 1", "text": "Ens ataquen!" },
     { "speaker": "Aldeano 2", "text": "El mur de l’oest ha caigut!" },
     { "speaker": "Aldeano 3", "text": "AJUDA!" },
-{ "speaker": "Aldeano 4", "text": "Monstres… S’han convertit en monstres… I ens havien de salvar…" }
-  ]
-}
-
-{
-  "Diàleg 1: vaca": [
+    { "speaker": "Aldeano 4", "text": "Monstres… S’han convertit en monstres… I ens havien de salvar…" }
+  ],
+  "dialeg_vaca_1": [
     { "speaker": "Paca", "text": "Quina pau, oi?" },
     { "speaker": "Rose", "text": "Pau? Però si el drac segueix aquí al costat" },
-{ "speaker": "Paca", "text": "A mi no m’han escollit encara i si surto, doncs mira, espero ser la més sabrosa" }
-  ]
-}
-
-{
+    { "speaker": "Paca", "text": "A mi no m’han escollit encara i si surto, doncs mira, espero ser la més sabrosa" }
+  ],
   "Diàleg 2: porc": [
     { "speaker": "Pep", "text": "Qui serà la següent donzella? Bé, tampoc m’afecta." },
     { "speaker": "Rose", "text": "Què vols dir que no t’afecta?" },
-{ "speaker": "Pep", "text": "Veus que sigui una donzella? El meu nom no sortirà pas. El drac no se’m cruspirà hahaha." },
-{ "speaker": "Rose", "text": "... A costa de la mort de moltíssimes donzelles. Quan ja no quedi ningú que faràs?" },
-{ "speaker": "Pep", "text": "El nostre rei ja pensarà alguna cosa tal i com va fer l’últim cop. No és problema meu." }
-  ]
-}
-
-{
+    { "speaker": "Pep", "text": "Veus que sigui una donzella? El meu nom no sortirà pas. El drac no se’m cruspirà hahaha." },
+    { "speaker": "Rose", "text": "... A costa de la mort de moltíssimes donzelles. Quan ja no quedi ningú que faràs?" },
+    { "speaker": "Pep", "text": "El nostre rei ja pensarà alguna cosa tal i com va fer l’últim cop. No és problema meu." }
+  ],
   "Diàleg 3: ovella": [
     { "speaker": "BeEa", "text": "Si soc la següent, que hi farem?" },
     { "speaker": "Rose", "text": "No vols lluitar contra aquesta injustícia?" },
-{ "speaker": "BeEa", "text": “Lluitar? Jo? No diguis bajanades, es el que hi ha. Quan m’arribi, ja m’arribarà." },
-{ "speaker": "Rose", "text": "..." }
-  ]
-}
-
-{ 
- "Diàleg 4: Colom": [
+    { "speaker": "BeEa", "text": "Lluitar? Jo? No diguis bajanades, es el que hi ha. Quan m’arribi, ja m’arribarà." },
+    { "speaker": "Rose", "text": "..." }
+  ],
+  "Diàleg 4: Colom": [
     { "speaker": "Colomet", "text": "Ja no tinc cap carta per ningú, puc passejar tranquilament" },
     { "speaker": "Rose", "text": "Tranquilament?" },
-{ "speaker": "Colomet", "text": “Qui voldrà enviar cap carta sabent que el drac es cruspirà totes les donzelles? L’amor ja no importa. I aquells que els importava es van sacrificar amb la seva estimada. Quina ximpleria més gran. Però bé, ara sóc lliure gràcies a aquests ximplets." },
-{ "speaker": "Rose", "text": "I ara de què viuràs?" },
-{ "speaker": "Colomet", "text": "T’has tornat orni? Amb tota la gent que es cruspeix el drac tenim provisions de sobres!" }
-  ]
-}
-
-
-//Frases sueltas:
-{ 
- "Diàleg suelta 1": [
-    { "speaker": "NPC","text": "Algú ha salvat el mur de l’oest" }
-  ]
-}
-
-{ 
- "Diàleg suelta 2": [
+    { "speaker": "Colomet", "text": "Qui voldrà enviar cap carta sabent que el drac es cruspirà totes les donzelles? L’amor ja no importa. I aquells que els importava es van sacrificar amb la seva estimada. Quina ximpleria més gran. Però bé, ara sóc lliure gràcies a aquests ximplets." },
+    { "speaker": "Rose", "text": "I ara de què viuràs?" },
+    { "speaker": "Colomet", "text": "T’has tornat orni? Amb tota la gent que es cruspeix el drac tenim provisions de sobres!" }
+  ],
+  "Diàleg suelta 1": [
+    { "speaker": "NPC", "text": "Algú ha salvat el mur de l’oest" }
+  ],
+  "Diàleg suelta 2": [
     { "speaker": "NPC", "text": "Diuen que ningú ha vist a la princesa des que van sacrificar a la reina" }
-  ]
-}
-
-{ 
- "Diàleg suelta 3": [
+  ],
+  "Diàleg suelta 3": [
     { "speaker": "NPC", "text": "Ei tu… Em sona haver-te vist algun cop" }
-  ]
-}
-
-{ 
- "Diàleg suelta 4": [
+  ],
+  "Diàleg suelta 4": [
     { "speaker": "NPC", "text": "M’agrada la teva capa. Així que amb una manta jo també podria fer-me’n una…" }
-  ]
-}
-
-{ 
- "Diàleg suelta 5": [
+  ],
+  "Diàleg suelta 5": [
     { "speaker": "NPC", "text": "Compte amb la falç! A treballar al camp, acabarás matant a algú!" }
-  ]
-}
-
-{ 
- "Diàleg suelta 6": [
+  ],
+  "Diàleg suelta 6": [
     { "speaker": "NPC", "text": "L’última lluna plena el drac va fer molt de soroll… " },
-{ "speaker": "NPC", "text": "La donzella debia saber horrible perquè es va cruspir també la meitat de les collites." }
-  ]
-}
-
-{ 
- "Diàleg suelta 7": [
+    { "speaker": "NPC", "text": "La donzella debia saber horrible perquè es va cruspir també la meitat de les collites." }
+  ],
+  "Diàleg suelta 7": [
     { "speaker": "NPC", "text": "M’ha donat per la poesia últimament… " },
-{ "speaker": "NPC", "text": Vejam: 
-“Lluna plena, panxa plena”
-pel drac esclar, hahaha" }
-  ]
-}
-
-//Quan la Rose arriba al bosc
-{ 
- "Quan la Rose arriba al bosc 1": [
+    { "speaker": "NPC", "text": "Vejam:\n\"Lluna plena, panxa plena\"\npel drac esclar, hahaha" }
+  ],
+  "Diàleg Lily (està a l’habitació) ": [
+    { "speaker": "Lily", "text": "C-casi moro… S-si no f-fos per t-tu j-jo ara… (plora)" },
+    { "speaker": "Rose", "text": "Estas segura aquí, descansa. Tornaré. " },
+    { "speaker": "Lily", "text": "M-M’havia fet a l-la i-idea q-que ja n-no et v-veuria m-més… G-gràcies p-per s-salvar-me." },
+    { "speaker": "Rose", "text": "No aguantava més aquesta injustícia. No podia deixar-te morir a tu també…" },
+    { "speaker": "Lily", "text": "N-no s-sortiré. N-no et p-preocupis p-per m-mi" },
+    { "speaker": "Rose", "text": "Cuida’t" }
+  ],
+  "Cavaller": [
+    { "speaker": "Roc", "text": "Quan trobes un mur, no pots passar. Quan trobes en Roc, ja pots resar. Aquest és el teu últim pas!" }
+  ],
+  "Ninfa": [
+    { "speaker": "Mediterrània", "text": "Les meves nenes, les meves aigües… Miserable! Has vingut a remoure tota la pau i tranquilitat del meu bosc, ara et remouré a tu!" }
+  ],
+  "Salamandra": [
+    { "speaker": "Güell", "text": "Hola. Amic o rata? Amic o rata? AMIC??? RATA!!!" }
+  ],
+  "Drac": [
+    { "speaker": "Jordi", "text": "Us penseu que portar-me una princesa serà suficient per compensar la VERGONYA de l’altre dia? TENÍEM UN PACTE!" },
+    { "speaker": "Rose", "text": "Si et penses que sóc un sacrifici més, pots esperar assegut! Penso venjar totes les donzelles que has matat! Les meves amigues… La meva mare… Cauràs aquí davant meu!" },
+    { "speaker": "Jordi", "text": "Oh, pobreta. Creus que ets res més que un sacrifici? De debò creus que em POTS matar? Absurd. Penso fer-te patir per fer-me esperar i després aniré al poble a per una altra!" },
+    { "speaker": "Rose", "text": "No em sap greu dir-te que seré l’última donzella que insultaràs. Prepara’t per morir." },
+    { "speaker": "Jordi", "text": "Mira que n’ets de ruca!" }
+  ],
+  "A l’inici": [
+    { "speaker": "Colomet", "text": "Pensava que era l’únic que podia arribar fins aquí!" }
+  ],
+  "Abans de fer parkours": [
+    { "speaker": "Colomet", "text": "A vegades només cal saltar i obrir les ales per veure què hi ha més enllà" }
+  ],
+  "Adalt de la muntanya": [
+    { "speaker": "Colomet", "text": "Era feliç pensant que sense cartes per entregar era més lliure… Quan ho miro tot des d’aquí dalt em fa pensar en els viatges, la gent, les alegries les penes… On ha anat a parar tot això?" }
+  ],
+  "Porc Dialeg 1": [
+    { "speaker": "Pep", "text": "A tu també t’agrada aquesta olor? Hehehe." }
+  ],
+  "Porc Dialeg 2": [
+    { "speaker": "Pep", "text": "He vist una clau quan passejava. Qui ha sigut el capsigrany que s’ha deixat una cosa així per aquí?" }
+  ],
+  "Porc Dialeg 3": [
+    { "speaker": "Pep", "text": "Aquest lloc és un paradís" }
+  ],
+  "Ovella Dialeg1": [
+    { "speaker": "BeEa", "text": "BeEé, ara que no hi ha enemics al castell i que ha quedat el mur obert he vingut a donar una volta" }
+  ],
+  "Ovella Espantant-se": [
+    { "speaker": "BeEa", "text": "A vegades e-escolto s-sorolls entre e-els arbustos… J-jo que volia r-relaxar-me" }
+  ],
+  "Quan la Rose arriba al bosc 1": [
     { "speaker": "Rose", "text": "Aquest poble no té salvació…" }
-  ]
-}
-
-{ 
- "Quan la Rose arriba al bosc 2": [
+  ],
+  "Quan la Rose arriba al bosc 2": [
     { "speaker": "Rose", "text": "Uaa... Què bonic és aquest lloc!" }
+  ],
+  "Quan la Rose arriba a la muntanya": [
+    { "speaker": "Rose", "text": "La cova del drac està al damunt d’aquesta muntanya…" }
+  ],
+  "Quan la Rose arriba a la cova": [
+    { "speaker": "Rose", "text": "Ecoooo…" },
+    { "speaker": "Eco", "text": "(Ecooo - Ecoo - Eco…)" }
+  ],
+  "Quan la Rose arriba a les Catacumbes": [
+    { "speaker": "Rose", "text": "Verdes son les plantes i les plantes ens donen vida… Així que espero que aquest aire verd no em mati…" }
+  ],
+  "Tutorial Menu": [
+    { "speaker": "Rose", "text": "Estic preparada per anar a matar el drac, ja n’estic farta de quedar-me aquí veient com moren totes les donzelles i esperant a que m’arribi a mi. Si miro dins meu" },
+    { "speaker": "Tutorial", "text": "Prem \"i\" per obrir l’inventari." },
+    { "speaker": "Rose", "text": "sé tot el que sóc capaç de fer i el que porto amb mi. En aquest viatge sé que aprendré coses noves. Trobaré la FORÇA per seguir endavant." }
+  ],
+  "Quan troba orbe de força": [
+    { "speaker": "Rose", "text": "Què és aquesta força?!" }
+  ],
+  "Quan troba orbe de vida": [
+    { "speaker": "Rose", "text": "Sento que puc tornar a respirar, quin descans!" }
   ]
 }
-
-//Quan la Rose arriba a la muntanya
-{ 
- "Quan la Rose arriba a la muntanya": [
-    { "speaker": "Rose", "text": “La cova del drac està al damunt d’aquesta muntanya…" }
-  ]
-}
-
-//Quan la Rose arriba a la cova
-{ 
- "Quan la Rose arriba a la cova": [
-    { "speaker": "Rose", "text": “Ecoooo…" },
- {"speaker": "Eco", "text": “(Ecooo - Ecoo - Eco…)" }
-  ]
-}
-
-//Quan la Rose arriba a les Catacumbes
-{ 
- "Quan la Rose arriba a les Catacumbes": [
-    { "speaker": "Rose", "text": “Verdes son les plantes i les plantes ens donen vida… Així que espero que aquest aire verd no em mati…" }
-  ]
-}
-
-
