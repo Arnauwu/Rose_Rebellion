@@ -260,7 +260,7 @@ bool Player::Update(float dt)
 		if (isSpawning)
 		{
 			// Ajusta el 2200 según lo que tarden tus frames reales en dar 2 vueltas
-			if (spawnTimer.ReadMSec() >= 2700)
+			if (spawnTimer.ReadMSec() >= 2800)
 			{
 				isSpawning = false;
 				currentAnimPriority = 0;
