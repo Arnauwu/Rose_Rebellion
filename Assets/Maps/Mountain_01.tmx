@@ -44348,6 +44348,6 @@
    <property name="KeyRegion" value="Montanya"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="701" x="20568" y="3020" width="344" height="592"/>
+  <object id="701" x="20568" y="3080" width="344" height="496"/>
  </objectgroup>
 </map>
