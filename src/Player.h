@@ -111,6 +111,8 @@ private:
 	void ApplyPhysics();
 	void Draw(float dt);
 
+	//void TakeDamage(int damage) override;
+
 	void CameraFollows();
 	CameraMode currentCameraMode = CameraMode::DYNAMIC;
 
@@ -125,6 +127,8 @@ private:
 	std::set<KeyType> heldKeys;
 
 public:
+	void TakeDamage(int damage) override;
+
 	float speed = 10.0f;
 	int dmgbuff = 0;
 	int defbuff = 0;
@@ -224,6 +228,8 @@ public:
 	int hpCostPerShot = 10;
 	Timer rangedAttackCooldownTimer;
 	float rangedAttackCooldownMS = 1000.0f; // 1 second between shots
+
+	bool lastBreathUsed = false;
 
 private:
 	//Audio

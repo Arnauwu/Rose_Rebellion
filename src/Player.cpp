@@ -509,6 +509,7 @@ void Player::Respawn()
 
 		// Use RespawnPosition
 		currentHealth = maxHealth;
+		lastBreathUsed = false;
 		Engine::GetInstance().audio->PlayFx(respawnFx);
 		isJumping = false;
 		isdead = false;
@@ -1732,6 +1733,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			{
 				currentHealth = maxHealth;
 			}
+			lastBreathUsed = false;
 			int orbX, orbY;
 			physB->GetPosition(orbX, orbY);
 			Engine::GetInstance().particleManager->EmitItemPickup(orbX, orbY);
@@ -1765,6 +1767,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		respawnPosition = Vector2D((float)spX, (float)spY);
 
 		this->currentHealth = maxHealth;
+		lastBreathUsed = false;
 
 		auto& gameState = GameManager::GetInstance().gameState;
 		gameState.playerPosition = respawnPosition;
@@ -2002,4 +2005,26 @@ void Player::GodModeMove(float dt)
 	}
 
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, godVelocity);
+}
+
+void Player::TakeDamage(int damage)
+{
+	if (godMode || isdead) return;
+
+	currentHealth -= damage;
+
+	// LÓGICA DE ÚLTIMO ALIENTO EXCLUSIVA DE LA PRINCESA
+	if (currentHealth <= 0) {
+		if (!lastBreathUsed) {
+			// Se salva por los pelos
+			currentHealth = 1;
+			lastBreathUsed = true;
+			LOG("¡Último aliento activado! Vida a 1.");
+		}
+		else {
+			// Ya gastó su último aliento, muere de verdad
+			currentHealth = 0;
+			isdead = true;
+		}
+	}
 }
