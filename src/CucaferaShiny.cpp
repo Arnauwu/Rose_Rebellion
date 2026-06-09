@@ -31,10 +31,10 @@ bool CucaferaShiny::Start()
 
 	// Initialize Player parameters
 	std::unordered_map<int, std::string> aliases = { {0,"startSpin"},{4,"spin"},{9,"dead"},{18,"walk"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.tsx", aliases);
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Cucafera/SS_Cucafera_Shiny.tsx", aliases);
 	anims.SetCurrent("idle");
 
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/Cucafera.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Cucafera/SS_Cucafera_Shiny.png");
 
 	//Load Audio
 	morirCucaferaShiny = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Muerte.wav");
@@ -297,13 +297,7 @@ void CucaferaShiny::Draw(float dt)
 	}
 	else
 	{
-		Uint8* r = new Uint8; Uint8* g = new Uint8; Uint8* b = new Uint8;
-		Engine::GetInstance().render->SetColorMod(texture, r, g, b, 196, 134, 0);
-
 		Engine::GetInstance().render->DrawRotatedTexture(texture, x, y - animFrame.h / 3, &animFrame, sdlFlip, 1);
-		
-		Engine::GetInstance().render->SetColorMod(texture, nullptr, nullptr, nullptr, *r, *g, *b);
-		delete r; delete g; delete b;
 	}
 }
 
