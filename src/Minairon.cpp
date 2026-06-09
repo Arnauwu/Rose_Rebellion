@@ -74,10 +74,10 @@ bool Minairon::Start()
 
 	//Stats
 	vision = 10;
-	speed = 1.0f;
+	speed = 5.0f;
 	knockbackForce = 6.0f;
 
-	maxHealth = 50;
+	maxHealth = 40;
 	currentHealth = maxHealth;
 
 	int x, y;
@@ -325,7 +325,7 @@ void Minairon::Draw(float dt)
 void Minairon::Attack()
 {
 
-	if (isAttacking == false && attackCooldown.ReadMSec() >= 500 && !isKnockedback)
+	if (isAttacking == false && attackCooldown.ReadMSec() >= 250 && !isKnockedback)
 	{
 		isAttacking = true;
 		anims.GetAnim("sword_attack")->SetLoop(false);

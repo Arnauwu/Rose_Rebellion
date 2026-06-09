@@ -31,7 +31,7 @@ struct GameState {
     bool stRangedAttack = false;
 
     // World
-    std::string currentMap = "Catacombs_02_F.tmx";
+    std::string currentMap = "Nexo.tmx";
     Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
 
     // Bosses
