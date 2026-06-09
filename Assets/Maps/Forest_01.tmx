@@ -108,7 +108,7 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="0.8"/>
+   <property name="ParalaxX" type="float" value="0.8"/>
   </properties>
   <object id="410" gid="131" x="10752" y="2829.71" width="2447.43" height="1677.71"/>
   <object id="559" gid="139" x="-256" y="1920" width="3712" height="1920"/>
@@ -125,7 +125,7 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="0.95"/>
+   <property name="ParalaxX" type="float" value="0.95"/>
   </properties>
   <object id="697" gid="137" x="3456" y="2944" width="2450.18" height="3072"/>
   <object id="709" gid="133" x="13172" y="2816" width="2439.43" height="1664"/>
@@ -137,7 +137,7 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="1"/>
+   <property name="ParalaxX" type="float" value="1"/>
   </properties>
   <object id="411" gid="132" x="8136" y="2656" width="2427.43" height="1497.79"/>
   <object id="560" gid="140" x="256" y="2210.94" width="2804.51" height="1884.57"/>
@@ -202,7 +202,7 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="1"/>
+   <property name="ParalaxX" type="float" value="1"/>
   </properties>
   <object id="770" gid="149" x="1203.52" y="1950.91" width="852" height="852"/>
   <object id="771" gid="150" x="2304" y="1920" width="828" height="828"/>
@@ -2745,7 +2745,7 @@
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="1"/>
+   <property name="ParalaxX" type="float" value="1"/>
   </properties>
   <object id="733" gid="144" x="9856.07" y="3129.68" width="5736.29" height="1991.26"/>
   <object id="734" gid="143" x="5825.73" y="2229.7" width="4014.4" height="1338.13"/>
@@ -2811,7 +2811,7 @@
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="1.1"/>
+   <property name="ParalaxX" type="float" value="1.1"/>
   </properties>
   <object id="515" gid="134" x="11776" y="3072" width="3077.97" height="2308.48"/>
   <object id="688" gid="138" x="5760" y="3072" width="2304" height="3072"/>

@@ -203,14 +203,26 @@ bool Map::Update(float dt)
 							SDL_FPoint center = { tileRect.w / 2.0f, tileRect.h / 2.0f };
 
 							//Parallax
-							float paralax = 1.0f;
+							float paralaxX = 1.0f;
+							float paralaxY = 1.0f;
 
-							if (objectGroup->properties.GetProperty("Paralax") != nullptr)
-							{
-								paralax = objectGroup->properties.GetProperty("Paralax")->value;
+							// Compatibilidad con tu propiedad anterior
+							if (objectGroup->properties.GetProperty("Paralax") != nullptr) {
+								paralaxX = objectGroup->properties.GetProperty("Paralax")->value;
+								paralaxY = objectGroup->properties.GetProperty("Paralax")->value; 
 							}
 
-							tileRect.x += (Engine::GetInstance().render->camera.x * (1.0f - paralax));
+							// Propiedades separadas (Recomendado)
+							if (objectGroup->properties.GetProperty("ParalaxX") != nullptr) {
+								paralaxX = objectGroup->properties.GetProperty("ParalaxX")->value;
+							}
+							if (objectGroup->properties.GetProperty("ParalaxY") != nullptr) {
+								paralaxY = objectGroup->properties.GetProperty("ParalaxY")->value;
+							}
+
+							// Aplicar a ambos ejes (mantengo tu '+=' original para el BG)
+							tileRect.x += (Engine::GetInstance().render->camera.x * (1.0f - paralaxX));
+							tileRect.y += (Engine::GetInstance().render->camera.y * (1.0f - paralaxY));
 
 							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
 						}
@@ -481,14 +493,23 @@ bool Map::PostUpdate()
 							SDL_FPoint center = { tileRect.w / 2.0f, tileRect.h / 2.0f };
 
 							//Parallax
-							float paralax = 1.0f;
+							float paralaxX = 1.0f;
+							float paralaxY = 1.0f;
 
-							if (objectGroup->properties.GetProperty("Paralax") != nullptr)
-							{
-								paralax = objectGroup->properties.GetProperty("Paralax")->value;
+							if (objectGroup->properties.GetProperty("Paralax") != nullptr) {
+								paralaxX = objectGroup->properties.GetProperty("Paralax")->value;
+								paralaxY = objectGroup->properties.GetProperty("Paralax")->value;
 							}
 
-							tileRect.x -= (Engine::GetInstance().render->camera.x * (1.0f - paralax));
+							if (objectGroup->properties.GetProperty("ParalaxX") != nullptr) {
+								paralaxX = objectGroup->properties.GetProperty("ParalaxX")->value;
+							}
+							if (objectGroup->properties.GetProperty("ParalaxY") != nullptr) {
+								paralaxY = objectGroup->properties.GetProperty("ParalaxY")->value;
+							}
+
+							tileRect.x -= (Engine::GetInstance().render->camera.x * (1.0f - paralaxX));
+							tileRect.y -= (Engine::GetInstance().render->camera.y * (1.0f - paralaxY));
 
 							Engine::GetInstance().render->DrawRotatedImage(tileSet->texture, &tileRect, &dstRect, sdlFlip, 1, rotation, center.x, center.y);
 						}
@@ -1139,7 +1160,7 @@ void Map::SpawnEntities()
 
 					if (toxicBallProps.GetProperty("Jump") != nullptr) toxicBall->jumpDistanceTiles = toxicBallProps.GetProperty("Jump")->value;
 				}
-			/*	else if (entityType == std::string("KnightBoss"))
+				else if (entityType == std::string("KnightBoss"))
 				{
 					if (GameManager::GetInstance().gameState.knightBossKilled) { continue; }
 					std::shared_ptr<KnightBoss> knightBoss = std::dynamic_pointer_cast<KnightBoss>(Engine::GetInstance().entityManager->CreateEntity(EntityType::KNIGHT_BOSS));
@@ -1150,7 +1171,7 @@ void Map::SpawnEntities()
 					if (GameManager::GetInstance().gameState.ninfaBossKilled) { continue; }
 					std::shared_ptr<NinfaMare> ninfaBoss = std::dynamic_pointer_cast<NinfaMare>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA_MARE));
 					if (ninfaBoss != nullptr) ninfaBoss->position = Vector2D(x, y);
-				}*/
+				}
 				else if (entityType == std::string("GwellBoss"))
 				{
 					if (GameManager::GetInstance().gameState.lizardBossKilled) { continue; }
