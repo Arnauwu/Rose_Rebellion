@@ -326,11 +326,11 @@ bool GameScene::Start() {
 	
 
 	//Load level intro textures
-	LoadTextureIfNull(introFrameTex, "Assets/Textures/UI/Buttons/frameTex.png");
+	LoadTextureIfNull(introFrameTex, "Assets/Textures/UI/Buttons/Alas_Movimiento_V2.png");
 	LoadTextureIfNull(introGlowTex, "Assets/Textures/UI/glow.png");
 
 	std::unordered_map<int, std::string> introAliases = { {0, "focus"} };
-	introFrameAnim.LoadFromTSX("Assets/Textures/UI/Buttons/frameTex_LI.tsx", introAliases);
+	introFrameAnim.LoadFromTSX("Assets/Textures/UI/Buttons/Alas_Movimiento_V2.tsx", introAliases);
 
 	introFrameAnim.SetCurrent("focus");
 
@@ -465,24 +465,29 @@ bool GameScene::Update(float dt) {
 		if (render->IsFadeComplete()) {
 
 			bool showIntro = false;
-			if (asyncMapFile.find("Forest_01") != std::string::npos &&
-				asyncPreviousMap.find("Forest_02") == std::string::npos)
+
+			if (asyncPreviousMap != "")
 			{
-				showIntro = true;
-				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_FOREST");
+				if (asyncMapFile.find("Forest_01") != std::string::npos &&
+					asyncPreviousMap.find("Forest_02") == std::string::npos)
+				{
+					showIntro = true;
+					levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_FOREST");
+				}
+				else if (asyncMapFile.find("Mountain_01") != std::string::npos &&
+					asyncPreviousMap.find("Mountain_02") == std::string::npos)
+				{
+					showIntro = true;
+					levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_MOUNTAIN");
+				}
+				else if ((asyncMapFile.find("Catacombs_01_M") != std::string::npos && asyncPreviousMap.find("Catacombs_02_M") == std::string::npos || asyncMapFile.find("Catacombs_01_F") != std::string::npos) &&
+					asyncPreviousMap.find("Catacombs_02_F") == std::string::npos)
+				{
+					showIntro = true;
+					levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_CATACOMBS");
+				}
 			}
-			else if (asyncMapFile.find("Mountain_01") != std::string::npos &&
-				asyncPreviousMap.find("Mountain_02") == std::string::npos)
-			{
-				showIntro = true;
-				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_MOUNTAIN");
-			}
-			else if ((asyncMapFile.find("Catacombs_01_M") != std::string::npos && asyncPreviousMap.find("Catacombs_02_M") == std::string::npos || asyncMapFile.find("Catacombs_01_F") != std::string::npos) &&
-				asyncPreviousMap.find("Catacombs_02_F") == std::string::npos)
-			{
-				showIntro = true;
-				levelIntroText = Engine::GetInstance().languageManager->GetString("INTRO_CATACOMBS");
-			}
+
 			if (showIntro)
 			{
 				mapState = MapTransitionState::LEVEL_INTRO;
@@ -684,8 +689,8 @@ bool GameScene::PostUpdate() {
 
 			SDL_Rect exactBounds = Engine::GetInstance().render->GetTextRenderedBounds(levelIntroText.c_str(), textRect, FontType::MENU);
 
-			int paddingVertical = (int)(exactBounds.h * 0.5f);
-			int paddingHorizontal = (int)(exactBounds.h * 2.5f);
+			int paddingVertical = (int)(exactBounds.h * 0.4f);
+			int paddingHorizontal = (int)(exactBounds.h * 3.5f);
 
 			exactBounds.x -= paddingHorizontal;
 			exactBounds.w += paddingHorizontal * 2;
@@ -700,7 +705,7 @@ bool GameScene::PostUpdate() {
 			SDL_SetTextureAlphaMod(introFrameTex, textAlpha);
 			SDL_RenderTexture(Engine::GetInstance().render->renderer, introFrameTex, &srcFRect, &dstFRect);
 
-			if (introGlowTex != nullptr) {
+			/*if (introGlowTex != nullptr) {
 				SDL_SetTextureBlendMode(introGlowTex, SDL_BLENDMODE_ADD);
 				SDL_SetTextureAlphaMod(introGlowTex, textAlpha);
 				SDL_SetTextureColorMod(introGlowTex, 255, 200, 100);
@@ -714,7 +719,7 @@ bool GameScene::PostUpdate() {
 				};
 
 				SDL_RenderTexture(Engine::GetInstance().render->renderer, introGlowTex, nullptr, &dstGlow);
-			}
+			}*/
 			SDL_Color textColor = { 255, 255, 255, textAlpha };
 			Engine::GetInstance().render->DrawTextCentered(levelIntroText.c_str(), textRect, textColor, FontType::MENU);
 		}
