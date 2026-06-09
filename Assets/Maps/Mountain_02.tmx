@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="104" height="72" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="943">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="104" height="72" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="946">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -769,7 +769,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="119"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -873,7 +873,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="119"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -977,7 +977,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="119"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1081,7 +1081,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="119"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1185,7 +1185,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="119"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -1289,7 +1289,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="119"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -15410,12 +15410,6 @@
   <object id="927" name="Correfoc" type="Correfoc" x="11520" y="8064">
    <point/>
   </object>
-  <object id="928" name="Dip" type="Dip" x="10112" y="5632">
-   <point/>
-  </object>
-  <object id="929" name="Dip" type="Dip" x="12928" y="3712">
-   <point/>
-  </object>
   <object id="931" name="Ninfa" type="Ninfa" x="384" y="6784">
    <properties>
     <property name="Mud" type="bool" value="false"/>
@@ -15452,9 +15446,6 @@
   <object id="937" name="Correfoc" type="Correfoc" x="12160" y="6528">
    <point/>
   </object>
-  <object id="938" name="Dip" type="Dip" x="11520" y="4736">
-   <point/>
-  </object>
   <object id="939" name="Ninfa" type="Ninfa" x="9984" y="4352">
    <properties>
     <property name="Mud" type="bool" value="false"/>
@@ -15477,6 +15468,15 @@
    <properties>
     <property name="Mud" type="bool" value="false"/>
    </properties>
+   <point/>
+  </object>
+  <object id="943" name="Correfoc" type="Correfoc" x="9856" y="5632">
+   <point/>
+  </object>
+  <object id="944" name="Correfoc" type="Correfoc" x="11520" y="4736">
+   <point/>
+  </object>
+  <object id="945" name="Correfoc" type="Correfoc" x="12928" y="3712">
    <point/>
   </object>
  </objectgroup>
