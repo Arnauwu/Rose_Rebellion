@@ -79,6 +79,11 @@ bool HealthBarManager::PostUpdate() {
         extraHeight = 98;
         extraOffsetX = 0;
         extraOffsetY = 0;
+
+        const int screenH = Engine::GetInstance().window->windowHeight;
+        const float zoom = Engine::GetInstance().render->GetZoom();
+        const int bottomMargin = 30;
+        posY = (int)((screenH - activeHeight * zoom - bottomMargin) / zoom);
     }
     else if (currentBoss->name == "NinfaMare") {
         activeBase = ninfaBaseTexture;
