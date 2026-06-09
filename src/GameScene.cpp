@@ -543,6 +543,16 @@ bool GameScene::Update(float dt) {
 		}
 	}
 
+
+	if (input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN) {
+		static bool hideUI = false;
+		hideUI = !hideUI;
+
+		if (Engine::GetInstance().hud != nullptr) {
+			Engine::GetInstance().hud->isHidden = hideUI;
+		}
+	}
+
 	if (dialogueMgr->IsDialogueActive()) {
 		return true;
 	}
