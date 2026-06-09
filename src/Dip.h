@@ -30,11 +30,14 @@ private:
 	void AttackPlayer();
 	void ExecuteSpecialAttack(Vector2D playerPos);
 	void FinishSpecialAttack();
+	void BeginHit();
 	void BeginDeath();
 	bool HasLandedAfterSpecialJump() const;
 
 	bool isTouchingPlayer = false;
 	bool deathStarted = false;
+	int deathDrawX = 0;
+	int deathDrawY = 0;
 	int playerContacts = 0; // Contador para las m??ltiples colisiones del jugador
 	int groundContacts = 0;
 	bool leftGroundDuringSpecial = false;

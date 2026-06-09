@@ -42,6 +42,7 @@ bool Dip::Start()
 	anims.SetCurrent("Idle");
 	anims.GetAnim("Jump")->SetLoop(false);
 	anims.GetAnim("DiveImpact")->SetLoop(false);
+	anims.GetAnim("Hit")->SetLoop(false);
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dip/SS_Dip.png");
 
@@ -105,15 +106,15 @@ bool Dip::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
-	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH,10))
-	{
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
-		return true;
-	}
-
 	if (isdead)
 	{
 		Draw(dt);
+		return true;
+	}
+
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH,10))
+	{
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
 		return true;
 	}
 
@@ -126,6 +127,13 @@ bool Dip::Update(float dt)
 		}
 
 		GetPhysicsValues();
+
+		if (isKnockedback && anims.GetAnim("Hit")->HasFinishedOnce())
+		{
+			isKnockedback = false;
+			anims.SetCurrent("Idle");
+		}
+
 		Move();
 		ApplyPhysics();
 
@@ -181,6 +189,20 @@ void Dip::FinishSpecialAttack()
 	}
 }
 
+void Dip::BeginHit()
+{
+	isKnockedback = true;
+	velocity.x = 0.0f;
+
+	if (anims.GetCurrentName() == "Move")
+	{
+		Engine::GetInstance().audio->StopFx(caminarDip);
+	}
+
+	anims.SetCurrent("Hit");
+	anims.GetAnim("Hit")->Reset();
+}
+
 void Dip::BeginDeath()
 {
 	if (deathStarted)
@@ -212,8 +234,11 @@ void Dip::BeginDeath()
 
 	if (pbody != nullptr)
 	{
-		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
-		pbody->ctype = ColliderType::UNKNOWN;
+		pbody->GetPosition(deathDrawX, deathDrawY);
+		position.setX((float)deathDrawX);
+		position.setY((float)deathDrawY);
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
 	}
 
 	SpawnHealthOrb(40);
@@ -543,10 +568,14 @@ void Dip::Draw(float dt)
 	SDL_Rect animFrame = anims.GetCurrentFrame();
 	SDL_FlipMode sdlFlip = lookingRight ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
-	int x, y;
-	pbody->GetPosition(x, y);
-	position.setX((float)x);
-	position.setY((float)y);
+	int x = deathDrawX;
+	int y = deathDrawY;
+	if (pbody != nullptr)
+	{
+		pbody->GetPosition(x, y);
+		position.setX((float)x);
+		position.setY((float)y);
+	}
 
 	int drawX = x;
 	int drawY = y;
@@ -595,9 +624,7 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 		}
 		else
 		{
-			isKnockedback = true;
-			if (anims.GetCurrentName() == "Move") Engine::GetInstance().audio->StopFx(caminarDip);
-			anims.SetCurrent("Hit");
+			BeginHit();
 		}
 		break;
 	case ColliderType::PLAYER_PROJECTILE:
@@ -605,6 +632,10 @@ void Dip::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2Shap
 		if (currentHealth <= 0)
 		{
 			BeginDeath();
+		}
+		else
+		{
+			BeginHit();
 		}
 		break;
 	case ColliderType::PLAYER:
