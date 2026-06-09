@@ -5,6 +5,9 @@
 #include "Animation.h"
 #include <box2d/box2d.h>
 
+
+enum textureType;
+
 class HomingProjectile : public Entity
 {
 public:
@@ -26,6 +29,8 @@ public:
     Vector2D currentVelocity;
 
     SDL_Texture* texture = nullptr;
+    textureType texType;
+
     PhysBody* pbody = nullptr;
 
     //Si tenemos sprite para bala
