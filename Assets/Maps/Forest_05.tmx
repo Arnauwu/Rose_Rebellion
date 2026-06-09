@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="43" nextobjectid="769">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="45" height="21" tilewidth="128" tileheight="128" infinite="0" nextlayerid="43" nextobjectid="871">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -143,6 +143,12 @@
    </animation>
   </tile>
  </tileset>
+ <tileset firstgid="224" name="F_Bosque_02" tilewidth="2304" tileheight="1444" tilecount="1" columns="1">
+  <image source="Forest/Fondo_Vigente/01_F_Inicio/F_Bosque_02.png" width="2304" height="1444"/>
+ </tileset>
+ <tileset firstgid="225" name="t_Fila_Arbustos_02" tilewidth="960" tileheight="640" tilecount="8" columns="2">
+  <image source="Forest/Fondo_Vigente/Arbustos/t_Fila_Arbustos_02.png" width="1920" height="2560"/>
+ </tileset>
  <objectgroup id="18" name="Fondo1">
   <properties>
    <property name="BG" type="bool" value="true"/>
@@ -160,25 +166,7 @@
   <object id="627" gid="68" x="4736" y="2688" width="3328" height="2560"/>
   <object id="631" gid="71" x="896" y="2704" width="3712" height="1444"/>
   <object id="710" gid="70" x="128" y="2688" width="4608" height="2560"/>
- </objectgroup>
- <objectgroup id="37" name="Plantas-Back">
-  <properties>
-   <property name="BG" type="bool" value="true"/>
-   <property name="Draw" type="bool" value="true"/>
-  </properties>
- </objectgroup>
- <objectgroup id="39" name="Fondo3-Luces">
-  <properties>
-   <property name="BG" type="bool" value="true"/>
-   <property name="Draw" type="bool" value="true"/>
-  </properties>
- </objectgroup>
- <objectgroup id="22" name="Fondo4">
-  <properties>
-   <property name="BG" type="bool" value="true"/>
-   <property name="Draw" type="bool" value="true"/>
-   <property name="ParalaxX" type="float" value="1"/>
-  </properties>
+  <object id="784" gid="80" x="2211.03" y="1180.73" width="384" height="384"/>
  </objectgroup>
  <objectgroup id="40" name="Cascada">
   <properties>
@@ -186,12 +174,83 @@
    <property name="Draw" type="bool" value="true"/>
    <property name="ParalaxX" type="float" value="1"/>
   </properties>
+  <object id="851" gid="218" x="1407.64" y="2690.3" width="2719.88" height="2696"/>
+ </objectgroup>
+ <objectgroup id="37" name="Plantas-Back">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
+  <object id="787" gid="101" x="1237.03" y="2185.45" width="128" height="128"/>
+  <object id="788" gid="101" x="2817.82" y="2432.97" width="128" height="128"/>
+  <object id="789" gid="101" x="2372.36" y="2566.3" width="128" height="128"/>
+  <object id="791" gid="92" x="2147.03" y="2437.94" width="128" height="128"/>
+  <object id="792" gid="92" x="1098" y="2172" width="128" height="128"/>
+  <object id="794" gid="92" x="3670" y="2184" width="128" height="128"/>
+  <object id="795" gid="89" x="1922" y="2440" width="128" height="128"/>
+  <object id="796" gid="89" x="3476" y="2556" width="128" height="128"/>
+  <object id="797" gid="89" x="3168" y="2562" width="128" height="128"/>
+  <object id="798" gid="89" x="712" y="2066" width="128" height="128"/>
+  <object id="805" gid="89" x="4240" y="2114" width="128" height="128"/>
+  <object id="806" gid="89" x="4158" y="2152" width="128" height="128"/>
+  <object id="807" gid="89" x="4068" y="2214" width="128" height="128"/>
+  <object id="810" gid="89" x="4638" y="2032" width="128" height="128"/>
+  <object id="811" gid="89" x="5618" y="1860" width="128" height="128"/>
+  <object id="812" gid="89" x="5352" y="1924" width="128" height="128"/>
+  <object id="816" gid="101" x="1796" y="2506" width="128" height="128"/>
+  <object id="818" gid="1073741919" x="1671" y="2135" width="167.333" height="167.333"/>
+  <object id="819" gid="1073741919" x="3300.33" y="2128.33" width="167.333" height="167.333"/>
+  <object id="823" gid="1073741913" x="3198.67" y="2094.67" width="128" height="128"/>
+  <object id="824" gid="1073741913" x="1914.67" y="2100" width="128" height="128"/>
+  <object id="825" gid="89" x="830.667" y="2088" width="128" height="128"/>
+  <object id="826" gid="89" x="930" y="2141.33" width="128" height="128"/>
+  <object id="827" gid="89" x="1032.67" y="2188" width="128" height="128"/>
+  <object id="828" gid="89" x="1276" y="2189" width="128" height="128"/>
+  <object id="835" gid="3221225564" x="1837.33" y="2113.33" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="39" name="Fondo3-Luces">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
+  <object id="829" gid="224" x="-8" y="1414" width="2304" height="1444"/>
+  <object id="830" gid="224" x="1512" y="1438" width="2304" height="1444"/>
+  <object id="831" gid="224" x="2992" y="1422" width="2304" height="1444"/>
+  <object id="832" gid="224" x="608" y="1438" width="2304" height="1444"/>
+  <object id="833" gid="224" x="1968" y="1502" width="2304" height="1444"/>
+  <object id="834" gid="224" x="3812" y="1446" width="2304" height="1444"/>
+ </objectgroup>
+ <objectgroup id="22" name="Fondo4">
+  <properties>
+   <property name="BG" type="bool" value="true"/>
+   <property name="Draw" type="bool" value="true"/>
+   <property name="ParalaxX" type="float" value="1"/>
+  </properties>
+  <object id="772" gid="76" x="1058.48" y="2191.82" width="384" height="384"/>
+  <object id="773" gid="76" x="2198.91" y="2576.61" width="384" height="384"/>
+  <object id="774" gid="79" x="3208" y="2573.58" width="384" height="384"/>
+  <object id="775" gid="79" x="4335.27" y="2060.42" width="384" height="384"/>
+  <object id="776" gid="2147483728" x="456.485" y="2065.58" width="384" height="384"/>
+  <object id="777" gid="2147483728" x="1908" y="2455.27" width="384" height="384"/>
+  <object id="778" gid="83" x="2838.3" y="2446.24" width="384" height="384"/>
+  <object id="785" gid="80" x="3650.42" y="2190.73" width="384" height="384"/>
+  <object id="786" gid="83" x="5459.52" y="1930.06" width="384" height="384"/>
+  <object id="817" gid="2147483728" x="1620" y="2576" width="384" height="384"/>
+  <object id="820" gid="73" x="1749.33" y="2264" width="306.667" height="294.667"/>
+  <object id="821" gid="75" x="3204" y="2368" width="384" height="384"/>
+  <object id="836" gid="1073741911" x="1499.59" y="2621.53" width="1736.82" height="316.94"/>
  </objectgroup>
  <objectgroup id="38" name="Plantas-Front">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
   </properties>
+  <object id="769" gid="101" x="637" y="2061" width="126" height="126"/>
+  <object id="770" gid="101" x="5379.42" y="1915.79" width="126" height="126"/>
+  <object id="771" gid="101" x="3970.33" y="2173.36" width="126" height="126"/>
+  <object id="813" gid="92" x="3586" y="2434" width="128" height="128"/>
+  <object id="814" gid="101" x="1410" y="2456" width="128" height="128"/>
+  <object id="815" gid="101" x="1534" y="2582" width="128" height="128"/>
  </objectgroup>
  <layer id="1" name="Map" width="45" height="21">
   <properties>
@@ -2098,7 +2157,24 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="42" name="Fondo4 - F"/>
+ <objectgroup id="42" name="Fondo4 - F">
+  <object id="838" gid="2147483875" x="1298.79" y="2701.21" width="960" height="640"/>
+  <object id="839" gid="2147483875" x="2935.15" y="2704.24" width="960" height="640"/>
+  <object id="840" gid="228" x="2132.97" y="2713.03" width="928" height="580"/>
+  <object id="841" gid="228" x="5069.33" y="1985.76" width="928" height="580"/>
+  <object id="843" gid="88" x="3698.91" y="3022.67" width="1920" height="640"/>
+  <object id="847" gid="88" x="1400.61" y="2137.58" width="1850.3" height="573.333" rotation="180"/>
+  <object id="848" gid="88" x="5621.82" y="1761.82" width="1920" height="640" rotation="180"/>
+  <object id="854" gid="82" x="2710.09" y="1422.28" width="550.477" height="456.781"/>
+  <object id="859" gid="82" x="240.095" y="2138.28" width="666.477" height="526.114"/>
+  <object id="861" gid="88" x="-518" y="2885.33" width="1920" height="640"/>
+  <object id="862" gid="79" x="700.808" y="2226.81" width="451.717" height="451.717"/>
+  <object id="863" gid="79" x="971.475" y="2272.81" width="451.717" height="375.717"/>
+  <object id="865" gid="88" x="-875.333" y="2754.67" width="1920" height="640"/>
+  <object id="867" gid="79" x="378.141" y="2372.14" width="451.717" height="451.717"/>
+  <object id="868" gid="79" x="-133.859" y="2380.14" width="451.717" height="451.717"/>
+  <object id="870" gid="88" x="5128" y="2608" width="1920" height="640"/>
+ </objectgroup>
  <objectgroup id="28" name="Fondo5 - F    ">
   <properties>
    <property name="Draw" type="bool" value="true"/>
