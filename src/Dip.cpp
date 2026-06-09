@@ -34,9 +34,14 @@ bool Dip::Start()
 	// TODO(Art): Cargar animaciones 
 	// ==========================================
 	// Inicializar parámetros del enemigo
-	std::unordered_map<int, std::string> aliases = { {0,"Attack"},{22,"Dead"},{44,"Hit"},{66,"Still"},{88,"Idle"},{110,"Move"},{132,"Jump"} };
+	std::unordered_map<int, std::string> aliases = {
+		{0,"Attack"},{22,"Dead"},{44,"Hit"},{66,"Still"},{88,"Idle"},
+		{110,"Move"},{132,"Jump"},{143,"DiveImpact"}
+	};
 	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dip/SS_Dip.tsx", aliases);
 	anims.SetCurrent("Idle");
+	anims.GetAnim("Jump")->SetLoop(false);
+	anims.GetAnim("DiveImpact")->SetLoop(false);
 
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dip/SS_Dip.png");
 
@@ -80,6 +85,7 @@ bool Dip::Start()
 	playerContacts = 0;
 	groundContacts = 0;
 	leftGroundDuringSpecial = false;
+	hasImpactDrawY = false;
 	specialAttackTimer.Start();
 	patrolTimer.Start(); // Iniciar temporizador de patrulla
 
@@ -182,12 +188,13 @@ void Dip::FinishSpecialAttack()
 	isSpecialAttacking = false;
 	specialPhase = 0;
 	leftGroundDuringSpecial = false;
+	hasImpactDrawY = false;
 	specialAttackTimer.Start();
 	this->damage = attackDamage;
 	if (pbody != nullptr) pbody->ctype = ColliderType::ENEMY;
 	velocity.x = 0;
 
-	if (anims.GetCurrentName() == "Jump")
+	if (anims.GetCurrentName() == "Jump" || anims.GetCurrentName() == "DiveImpact")
 	{
 		anims.SetCurrent(isTouchingPlayer ? "Attack" : "Idle");
 	}
@@ -224,45 +231,67 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 			leapStartPos = GetPosition();
 			lockedPlayerPos = playerPos;
 			specialPhase = 2;
+			leftGroundDuringSpecial = false;
 			phaseTimer.Start();
+			anims.SetCurrent("Jump");
+			anims.GetAnim("Jump")->Reset();
 			Engine::GetInstance().physics->SetYVelocity(pbody, -8.0f);
 		}
 	}
 	else if (specialPhase == 2)
 	{
-		if (phaseTimer.ReadMSec() < 500)
+		anims.SetCurrent("Jump");
+		bool jumpRight = (lockedPlayerPos.getX() > leapStartPos.getX());
+
+		velocity.x = jumpRight ? (speed * 4.0f) : -(speed * 4.0f);
+		lookingRight = jumpRight;
+
+		float targetX = jumpRight ? (lockedPlayerPos.getX() - attackOffset) : (lockedPlayerPos.getX() + attackOffset);
+
+		if ((jumpRight && pos.getX() >= targetX) ||
+			(!jumpRight && pos.getX() <= targetX))
 		{
-			if (HasLandedAfterSpecialJump())
-			{
-				velocity.x = 0;
-				anims.SetCurrent("Idle");
-			}
-			else
-			{
-				anims.SetCurrent("Jump");
-				bool jumpRight = (lockedPlayerPos.getX() > leapStartPos.getX());
-
-				velocity.x = jumpRight ? (speed * 4.0f) : -(speed * 4.0f);
-				lookingRight = jumpRight;
-
-				float targetX = jumpRight ? (lockedPlayerPos.getX() - attackOffset) : (lockedPlayerPos.getX() + attackOffset);
-
-				if ((jumpRight && pos.getX() >= targetX) ||
-					(!jumpRight && pos.getX() <= targetX))
-				{
-					velocity.x = 0;
-				}
-			}
+			velocity.x = 0;
 		}
-		else
+
+		if (HasLandedAfterSpecialJump())
 		{
 			specialPhase = 3;
 			phaseTimer.Start();
-			Engine::GetInstance().physics->SetYVelocity(pbody, -8.0f);
-			lockedPlayerPos = GetPosition();
+			velocity.x = 0;
+			impactDrawY = static_cast<int>(pos.getY());
+			hasImpactDrawY = true;
+			anims.SetCurrent("DiveImpact");
+			anims.GetAnim("DiveImpact")->Reset();
+			return;
+		}
+
+		if (phaseTimer.ReadMSec() > 1600)
+		{
+			FinishSpecialAttack();
+			return;
 		}
 	}
 	else if (specialPhase == 3)
+	{
+		velocity.x = 0;
+
+		if (anims.GetAnim("DiveImpact")->HasFinishedOnce() || phaseTimer.ReadMSec() > 1400)
+		{
+			specialPhase = 4;
+			phaseTimer.Start();
+			lockedPlayerPos = GetPosition();
+			leftGroundDuringSpecial = false;
+			hasImpactDrawY = false;
+			anims.SetCurrent("Jump");
+			anims.GetAnim("Jump")->Reset();
+			Engine::GetInstance().physics->SetYVelocity(pbody, -8.0f);
+			return;
+		}
+
+		anims.SetCurrent("DiveImpact");
+	}
+	else if (specialPhase == 4)
 	{
 		if (HasLandedAfterSpecialJump() && phaseTimer.ReadMSec() > 250)
 		{
@@ -270,7 +299,7 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 			return;
 		}
 
-		if (phaseTimer.ReadMSec() > 1200)
+		if (phaseTimer.ReadMSec() > 1600)
 		{
 			FinishSpecialAttack();
 			return;
@@ -279,7 +308,7 @@ void Dip::ExecuteSpecialAttack(Vector2D playerPos)
 		anims.SetCurrent("Jump");
 		bool returnRight = (leapStartPos.getX() > lockedPlayerPos.getX());
 		velocity.x = returnRight ? (speed * 4.0f) : -(speed * 4.0f);
-		lookingRight = (playerPos.getX() > pos.getX());
+		lookingRight = returnRight;
 
 		if ((returnRight && pos.getX() >= leapStartPos.getX()) ||
 			(!returnRight && pos.getX() <= leapStartPos.getX()) ||
@@ -312,6 +341,7 @@ void Dip::Move() {
 		isSpecialAttacking = true;
 		specialPhase = 1;
 		leftGroundDuringSpecial = false;
+		hasImpactDrawY = false;
 		phaseTimer.Start();
 
 		// Configurar daño a 1 y cambiar ctype a ATAQUE para el impacto
@@ -501,6 +531,10 @@ void Dip::Draw(float dt)
 
 	int drawX = x;
 	int drawY = y;
+	if (anims.GetCurrentName() == "DiveImpact" && hasImpactDrawY)
+	{
+		drawY = impactDrawY;
+	}
 
 	// ==========================================
 	///DIBUJAR DEBUG DEL PATHFINDING (F9)

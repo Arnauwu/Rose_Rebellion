@@ -66,17 +66,17 @@
  </tile>
  <tile id="132">
   <animation>
-   <frame tileid="132" duration="100"/>
-   <frame tileid="133" duration="100"/>
-   <frame tileid="134" duration="100"/>
-   <frame tileid="135" duration="100"/>
-   <frame tileid="136" duration="100"/>
-   <frame tileid="137" duration="100"/>
-   <frame tileid="138" duration="100"/>
-   <frame tileid="139" duration="100"/>
-   <frame tileid="140" duration="100"/>
-   <frame tileid="141" duration="100"/>
-   <frame tileid="142" duration="100"/>
+   <frame tileid="132" duration="70"/>
+   <frame tileid="133" duration="70"/>
+   <frame tileid="134" duration="70"/>
+   <frame tileid="135" duration="70"/>
+   <frame tileid="136" duration="70"/>
+   <frame tileid="137" duration="70"/>
+   <frame tileid="138" duration="70"/>
+   <frame tileid="139" duration="70"/>
+   <frame tileid="140" duration="70"/>
+   <frame tileid="141" duration="70"/>
+   <frame tileid="142" duration="120"/>
   </animation>
  </tile>
  <tile id="143">
