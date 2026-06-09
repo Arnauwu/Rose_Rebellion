@@ -21,8 +21,7 @@ namespace
 	constexpr float RockBlockScale = 1.35f;
 	constexpr int RockMinBlockWidth = 520;
 	constexpr int RockMinBlockHeight = 520;
-	constexpr int TrunkMinWidth = 256;
-	constexpr int TrunkMinHeight = 772;
+	constexpr float TrunkHeightScale = 1.25f;
 }
 
 BreakableRock::BreakableRock() : Entity(EntityType::BREAKABLE_ROCK)
@@ -164,8 +163,8 @@ void BreakableRock::SetSize(int width, int height)
 	hasUniqueIDPosition = true;
 
 	if (breakableType == BreakableType::TRUNK) {
-		this->width = std::max(TrunkMinWidth, width);
-		this->height = std::max(TrunkMinHeight, height);
+		this->width = width;
+		this->height = (int)(height * TrunkHeightScale);
 	}
 	else {
 		this->width = std::max(RockMinBlockWidth, (int)(width * RockBlockScale));
