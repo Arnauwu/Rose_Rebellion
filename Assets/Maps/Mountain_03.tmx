@@ -7885,13 +7885,13 @@
    <property name="Polygon" type="bool" value="true"/>
   </properties>
   <object id="693" x="3968" y="4864">
-   <polyline points="0,0 256,0 256,-128 0,0"/>
+   <polygon points="0,0 256,0 256,-128"/>
   </object>
   <object id="694" x="15360" y="4352">
-   <polyline points="0,0 0,-128 256,-128 0,0"/>
+   <polygon points="0,0 0,-128 256,-128"/>
   </object>
   <object id="695" x="15104" y="4480">
-   <polyline points="0,0 0,-256 -512,-256 0,0"/>
+   <polygon points="0,0 0,-256 -512,-256"/>
   </object>
  </objectgroup>
  <objectgroup color="#aa0000" id="21" name="Spikes" visible="0">
