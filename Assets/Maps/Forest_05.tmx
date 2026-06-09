@@ -147,7 +147,7 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="0.8"/>
+   <property name="ParalaxX" type="float" value="0.8"/>
   </properties>
   <object id="709" gid="67" x="4736" y="3072" width="3840" height="2944"/>
  </objectgroup>
@@ -155,7 +155,7 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="0.9"/>
+   <property name="ParalaxX" type="float" value="0.9"/>
   </properties>
   <object id="627" gid="68" x="4736" y="2688" width="3328" height="2560"/>
   <object id="631" gid="71" x="896" y="2704" width="3712" height="1444"/>
@@ -177,14 +177,14 @@
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="1"/>
+   <property name="ParalaxX" type="float" value="1"/>
   </properties>
  </objectgroup>
  <objectgroup id="40" name="Cascada">
   <properties>
    <property name="BG" type="bool" value="true"/>
    <property name="Draw" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="1"/>
+   <property name="ParalaxX" type="float" value="1"/>
   </properties>
  </objectgroup>
  <objectgroup id="38" name="Plantas-Front">
@@ -2103,7 +2103,7 @@
   <properties>
    <property name="Draw" type="bool" value="true"/>
    <property name="Front" type="bool" value="true"/>
-   <property name="Paralax" type="float" value="1.1"/>
+   <property name="ParalaxX" type="float" value="1.1"/>
   </properties>
   <object id="724" gid="72" x="4480" y="2688" width="2449.51" height="2694.17"/>
  </objectgroup>
