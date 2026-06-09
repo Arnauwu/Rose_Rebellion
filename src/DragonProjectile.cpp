@@ -14,6 +14,8 @@
 
 //PI
 constexpr double PI = 3.14159265358979323846;
+constexpr float DRAGON_PROJECTILE_RENDER_SCALE = 3.5f;
+constexpr int DRAGON_PROJECTILE_COLLISION_RADIUS = 70;
 
 DragonProjectile::DragonProjectile() : Entity(EntityType::DRAGON_PROJECTILE)
 {
@@ -32,14 +34,17 @@ bool DragonProjectile::Start()
     std::unordered_map<int, std::string> aliases = {
         {0, "bullet"}
     };
-    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.tsx", aliases);
+    anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Dragon/proyectilDragonImprovisado.tsx", aliases);
     anims.SetCurrent("bullet");
 
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.png");
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dragon/proyectilDragonImprovisado.png");
 
     //Physics
-    int radius = 12;
-    pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), radius, bodyType::DYNAMIC);
+    pbody = Engine::GetInstance().physics->CreateCircle(
+        (int)position.getX(),
+        (int)position.getY(),
+        DRAGON_PROJECTILE_COLLISION_RADIUS,
+        bodyType::DYNAMIC);
 
     pbody->listener = this;
     pbody->ctype = ColliderType::ENEMY_ATTACK;
@@ -122,7 +127,7 @@ void DragonProjectile::Draw(float dt)
     // Girar la textura para que apunte hacia la dirección de movimiento
     double angle = std::atan2(currentVelocity.getY(), currentVelocity.getX()) * (180.0 / PI);
 
-    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1, angle, animFrame.w / 2, animFrame.h / 2);
+    Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, DRAGON_PROJECTILE_RENDER_SCALE, angle, animFrame.w / 2, animFrame.h / 2);
 }
 
 Vector2D DragonProjectile::GetPosition()
