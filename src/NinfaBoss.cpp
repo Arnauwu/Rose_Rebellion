@@ -173,15 +173,19 @@ bool NinfaMare::Update(float dt)
     }
     if (Engine::GetInstance().sceneManager->isGamePaused == false && !isdead)
     {
-        Player* player = Engine::GetInstance().entityManager->GetPlayer();
+        /*Player* player = Engine::GetInstance().entityManager->GetPlayer();
         float distToPlayer = (player->GetPosition() - GetPosition()).magnitude();
+
+        float healthBarVisibilityRange = 2500.0f;
 
         if (distToPlayer <= attackRange) {
             Engine::GetInstance().healthBarManager->SetBoss(this);
         }
         else {
             Engine::GetInstance().healthBarManager->SetBoss(nullptr);
-        }
+        }*/
+
+        Engine::GetInstance().healthBarManager->SetBoss(this);
 
         Move();
         Knockback();
