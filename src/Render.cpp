@@ -161,8 +161,8 @@ bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin)
 	float camLeft = -camera.x - margin * tileSize;
 	float camTop = -camera.y - margin * tileSize;
 
-	float camRight = camLeft + camera.w + margin * tileSize;
-	float camBott = camTop + camera.h + margin * tileSize;
+	float camRight = camLeft + camera.w + margin * tileSize * 2;
+	float camBott = camTop + camera.h + margin * tileSize * 2;
 
 	float objRight = x + w;
 	float objBott = y + h;
@@ -178,23 +178,26 @@ bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin)
 	return result;
 }
 
-bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int marginX, int marginTop, int marginBottom) const {
+bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int marginX, int marginTop, int marginBottom) const 
+{
+	int tileSize = Engine::GetInstance().map->GetTileHeight();
+
 	bool result = false;
 
 	// Límite izquierdo y superior reales
 	float camLeft = -camera.x - marginX;
-	float camTop = -camera.y - marginBottom; 
+	float camTop = -camera.y - marginBottom * tileSize; 
 
 	// Límite derecho e inferior reales (corregido)
 	float camRight = -camera.x + camera.w + marginX;
-	float camBott = -camera.y + camera.h + marginTop;
+	float camBott = -camera.y + camera.h + marginTop * tileSize;
 
 	float objRight = x + w;
 	float objBott = y + h;
 
-	if (objRight >= camLeft && x <= camRight)
+	if (objRight >= camLeft && (x-w) <= camRight)
 	{
-		if (objBott >= camTop && y <= camBott)
+		if (objBott >= camTop && (y-h) <= camBott)
 		{
 			result = true;
 		}

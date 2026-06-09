@@ -40,18 +40,18 @@ bool Minairon::CleanUp()
 
 bool Minairon::Start()
 {
-	//caminarMinairon = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
-	//morirMinairon = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
-	//atacarMinairon = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
-	std::unordered_map<int, std::string> aliases = { {0,"dead"},{16,"defend"},{24,"run"},{32,"sword_attack"},{48,"idle"},{56,"assault"} };
-	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Knight/Knight.tsx", aliases);
+
+	std::unordered_map<int, std::string> aliases = { {36,"dead"},{0,"run"},{24,"sword_attack"},{12,"idle"}};
+	anims.LoadFromTSX("Assets/Textures/Entities/Enemies/Minairon/SS_Minairon.tsx", aliases);
 	anims.SetCurrent("idle");
 
 	// Initialize parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Knight/Knight.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Minairon/SS_Minairon.png");
 
 	//Load Audio
-
+	//caminarMinairon = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav"); // TO DO: CHANGE AUDIO
+	//morirMinairon = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	//atacarMinairon = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Ataque.wav");
 
 	//Add physics to the enemy - initialize physics body
 	texW = 256;
@@ -247,7 +247,6 @@ void Minairon::Knockback()
 	if (isKnockedback)
 	{
 		isAttacking = false;
-		anims.SetCurrent("hurt"); //TO DO: Add the animation for taking damage
 		if (attackHitbox != nullptr) {
 			Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
 			attackHitbox = nullptr;
@@ -329,21 +328,23 @@ void Minairon::Attack()
 	if (isAttacking == false && attackCooldown.ReadMSec() >= 500 && !isKnockedback)
 	{
 		isAttacking = true;
+		anims.GetAnim("sword_attack")->SetLoop(false);
+		anims.SetCurrent("sword_attack"); //Attack
 		startAttack.Start();
 		return;
 	}
-	else if (attackDuration.ReadMSec() >= 800 && attackHitbox != nullptr)
+	else if (attackDuration.ReadMSec() >= 800  && attackHitbox != nullptr)
 	{
 		Engine::GetInstance().physics->DeletePhysBody(attackHitbox);
 		attackHitbox = nullptr;
 
 		attackCooldown.Start();
 		isAttacking = false;
+		anims.SetCurrent("idle");
 	}
-	else if (startAttack.ReadMSec() >= 250 && isAttacking == true && attackHitbox == nullptr && !isKnockedback)
+	else if (startAttack.ReadMSec() >= 300 && isAttacking == true && attackHitbox == nullptr && !isKnockedback)
 	{
 		Engine::GetInstance().audio->PlayFx(atacarMinairon);
-		anims.SetCurrent("sword_attack"); //Attack
 		
 		//CreateHitbox
 		float attackX = position.getX();
