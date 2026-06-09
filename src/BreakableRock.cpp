@@ -21,6 +21,8 @@ namespace
 	constexpr float RockBlockScale = 1.35f;
 	constexpr int RockMinBlockWidth = 520;
 	constexpr int RockMinBlockHeight = 520;
+	constexpr float TrunkWidthScale = 1.2f;
+	constexpr float TrunkHeightScale = 1.5f;
 }
 
 BreakableRock::BreakableRock() : Entity(EntityType::BREAKABLE_ROCK)
@@ -97,13 +99,24 @@ bool BreakableRock::Update(float dt)
 	}
 
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-	float renderScale = std::max(width / (float)animFrame.w, height / (float)animFrame.h);
-	SDL_Rect rockRect = {
-		x - (int)(animFrame.w * renderScale / 2.0f) + shakeOffsetX,
-		y - (int)(animFrame.h * renderScale / 2.0f) + shakeOffsetY,
-		(int)(animFrame.w * renderScale),
-		(int)(animFrame.h * renderScale)
-	};
+	SDL_Rect rockRect;
+	if (breakableType == BreakableType::TRUNK) {
+		rockRect = {
+			x - width / 2 + shakeOffsetX,
+			y - height / 2 + shakeOffsetY,
+			width,
+			height
+		};
+	}
+	else {
+		float renderScale = std::max(width / (float)animFrame.w, height / (float)animFrame.h);
+		rockRect = {
+			x - (int)(animFrame.w * renderScale / 2.0f) + shakeOffsetX,
+			y - (int)(animFrame.h * renderScale / 2.0f) + shakeOffsetY,
+			(int)(animFrame.w * renderScale),
+			(int)(animFrame.h * renderScale)
+		};
+	}
 
 	Engine::GetInstance().render->DrawWorldTextureScaledSection(
 		texture,
@@ -151,8 +164,8 @@ void BreakableRock::SetSize(int width, int height)
 	hasUniqueIDPosition = true;
 
 	if (breakableType == BreakableType::TRUNK) {
-		this->width = width;
-		this->height = height;
+		this->width = (int)(width * TrunkWidthScale);
+		this->height = (int)(height * TrunkHeightScale);
 	}
 	else {
 		this->width = std::max(RockMinBlockWidth, (int)(width * RockBlockScale));
