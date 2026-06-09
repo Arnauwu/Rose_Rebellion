@@ -73,7 +73,7 @@ bool Dip::Start()
 	vision = 20;
 	speed = 8.0f;
 	knockbackForce = 5.0f;
-	maxHealth = 20;
+	maxHealth = 50;
 	currentHealth = 20;
 
 	attackDamage = 5;
