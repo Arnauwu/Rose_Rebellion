@@ -101,13 +101,19 @@ bool Npc::Update(float dt) {
     interactionBackgroundAnimation.Update(dt);
     if (interactionBackgroundTexture != nullptr) {
         const SDL_Rect& backgroundFrame = interactionBackgroundAnimation.GetCurrentFrame();
-        SDL_Rect backgroundRect;
-        if (!tsxPath.empty()) {
-            backgroundRect = { x, y, texW, texH };
+        const int backgroundW = (int)(texW * 1.4f);
+        const int backgroundH = (int)(texH * 1.2f);
+        int centerX = x;
+        int centerY = y;
+        if (tsxPath.empty()) {
+            centerX = x - texW / 2;
         }
-        else {
-            backgroundRect = { x - texW, y - texH / 2, texW, texH };
-        }
+        SDL_Rect backgroundRect = {
+            centerX - backgroundW / 2,
+            centerY - backgroundH / 2,
+            backgroundW,
+            backgroundH
+        };
         Engine::GetInstance().render->DrawWorldTextureScaledSection(
             interactionBackgroundTexture, backgroundFrame, backgroundRect);
     }
