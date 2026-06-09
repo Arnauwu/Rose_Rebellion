@@ -12,6 +12,8 @@
 #include "DialogueManager.h"
 #include <string>
 #include "Physics.h"
+#include "GameManager.h"
+#include <algorithm>
 
 #include "tracy/Tracy.hpp"
 
@@ -344,7 +346,19 @@ void Hud::ShowTutorial(TutorialType type) {
 		return;
 	}
 
+	auto& triggeredTutorials =
+		GameManager::GetInstance().gameState.triggeredDialogues;
+
+	if (std::find(
+		triggeredTutorials.begin(),
+		triggeredTutorials.end(),
+		instructionKey
+	) != triggeredTutorials.end()) {
+		return;
+	}
+
 	Engine::GetInstance().dialogueManager->StartTutorial(instructionKey);
+	triggeredTutorials.push_back(instructionKey);
 }
 
 void Hud::TriggerBossIntro(SDL_Texture* portraitTex, AnimationSet* anim, float duration) {

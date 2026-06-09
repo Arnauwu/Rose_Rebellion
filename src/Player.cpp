@@ -1438,26 +1438,41 @@ void Player::UnlockSickle()
 	AddItem(ItemID::WEAPON, 1);
 	LOG("Sickle Unlocked! You can attack now if you have the cape.");
 }
-void Player::UnlockDoubleJump() {
+void Player::UnlockDoubleJump(bool showTutorial) {
 	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
-	Engine::GetInstance().hud->ShowTutorial(TutorialType::DOUBLE_JUMP);
-	LOG("Double Jump Unlocked! You can do a double jump");
 
+	if (showTutorial) {
+		Engine::GetInstance().hud->ShowTutorial(
+			TutorialType::DOUBLE_JUMP
+		);
+	}
+
+	LOG("Double Jump Unlocked! You can do a double jump");
 }
-void Player::UnlockDash() {
+
+void Player::UnlockDash(bool showTutorial) {
 	GameManager::GetInstance().gameState.dashUnlocked = true;
 	AddItem(ItemID::DASH_OBJ, 1);
-	Engine::GetInstance().hud->ShowTutorial(TutorialType::DASH);
+
+	if (showTutorial) {
+		Engine::GetInstance().hud->ShowTutorial(TutorialType::DASH);
+	}
 
 	LOG("Dash Unlocked! You can dash");
 	LOG("Dash Unlocked! You can do a dash");
 }
 
-void Player::UnlockWallJump() {
+void Player::UnlockWallJump(bool showTutorial) {
 	GameManager::GetInstance().gameState.wallJumpUnlocked = true;
 	AddItem(ItemID::WALLJUMP_OBJ, 1);
-	Engine::GetInstance().hud->ShowTutorial(TutorialType::WALL_JUMP);
+
+	if (showTutorial) {
+		Engine::GetInstance().hud->ShowTutorial(
+			TutorialType::WALL_JUMP
+		);
+	}
+
 	LOG("Wall Jump Unlocked! You can now wall jump");
 }
 
@@ -1978,9 +1993,9 @@ void Player::DevTools(float dt)
 	{
 		UnlockCape();
 		UnlockSickle();
-		UnlockDash();
-		UnlockDoubleJump();
-		UnlockWallJump();
+		UnlockDash(false);
+		UnlockDoubleJump(false);
+		UnlockWallJump(false);
 
 		// Sincronización redundante de seguridad para el GameManager
 		GameManager::GetInstance().gameState.hasSickle = true;

@@ -180,7 +180,8 @@ void GameScene::FinishMapLoad()
 		if (asyncMapFile == "Castle_Room_Princess.tmx") {
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::WALK);
 		}
-		else if (asyncMapFile == "Castle_Inside.tmx") {
+		else if (asyncMapFile == "Castle_Inside.tmx" &&
+			asyncPreviousMap == "Castle_Room_Princess.tmx") {
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::JUMP);
 		}
 	}

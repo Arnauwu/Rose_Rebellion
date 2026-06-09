@@ -69,9 +69,9 @@ public:
 	// Unlocks
 	void UnlockCape();
 	void UnlockSickle();
-	void UnlockDash();
-	void UnlockDoubleJump();
-	void UnlockWallJump();
+	void UnlockDash(bool showTutorial = true);
+	void UnlockDoubleJump(bool showTutorial = true);
+	void UnlockWallJump(bool showTutorial = true);
 
 	void UnlockSkill(SkillTree skill, int cost);
 
