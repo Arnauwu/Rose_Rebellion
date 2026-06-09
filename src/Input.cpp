@@ -119,8 +119,6 @@ bool Input::PreUpdate()
 			mouseButtons[i] = KEY_IDLE;
 	}
 
-	UpdateGamepadButtons();
-
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
@@ -274,22 +272,32 @@ void Input::UpdateUINavigation()
 
 	if (fabs(stickX) > stickThresholdX || fabs(stickY) > stickThresholdY)
 	{
-		int screenW = Engine::GetInstance().window->windowWidth;
-		int screenH = Engine::GetInstance().window->windowHeight;
-		
-		int moveX = (int)(stickX * 15.0f);
-		int moveY = (int)(stickY * 15.0f);
-		
-		mouseX += moveX;
-		mouseY += moveY;
-		
-		mouseX = std::max(0, std::min(mouseX, screenW - 1));
-		mouseY = std::max(0, std::min(mouseY, screenH - 1));
+		int screenW = 0, screenH = 0;
+		SDL_GetWindowSize(Engine::GetInstance().window->window, &screenW, &screenH);
 
-		SDL_WarpMouseInWindow(Engine::GetInstance().window->window, (float)mouseX, (float)mouseY);
+		float currentMouseX = 0.0f, currentMouseY = 0.0f;
+		SDL_GetMouseState(&currentMouseX, &currentMouseY);
+
+		float moveX = stickX * 15.0f;
+		float moveY = stickY * 15.0f;
+
+		currentMouseX += moveX;
+		currentMouseY += moveY;
+
+		if (currentMouseX < 0.0f) currentMouseX = 0.0f;
+		if (currentMouseX >= screenW) currentMouseX = (float)(screenW - 1);
+
+		if (currentMouseY < 0.0f) currentMouseY = 0.0f;
+		if (currentMouseY >= screenH) currentMouseY = (float)(screenH - 1);
+
+		int scale = Engine::GetInstance().window->GetScale();
+		if (scale <= 0) scale = 1;
+		mouseX = (int)(currentMouseX / scale);
+		mouseY = (int)(currentMouseY / scale);
+
+		SDL_WarpMouseInWindow(Engine::GetInstance().window->window, currentMouseX, currentMouseY);
 	}
 
-	// Botón A simula click izquierdo - SIN SDL_PushEvent
 	if (GetGamepadButton(GAMEPAD_A) == KEY_DOWN)
 	{
 		mouseButtons[0] = KEY_DOWN;

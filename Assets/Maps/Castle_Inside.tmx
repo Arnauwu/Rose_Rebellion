@@ -10176,36 +10176,36 @@
    <tile gid="2147483850"/>
    <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="5"/>
    <tile gid="2"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
    <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="3"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
    <tile gid="2"/>
    <tile gid="3"/>
    <tile gid="4"/>
@@ -10232,12 +10232,12 @@
    <tile gid="202"/>
    <tile gid="203"/>
    <tile gid="206"/>
-   <tile gid="9"/>
    <tile gid="10"/>
    <tile gid="11"/>
    <tile gid="11"/>
    <tile gid="9"/>
    <tile gid="10"/>
+   <tile gid="11"/>
    <tile gid="11"/>
    <tile gid="9"/>
    <tile gid="10"/>
@@ -10290,23 +10290,12 @@
    <tile gid="2147483854"/>
    <tile gid="2147483851"/>
    <tile gid="2147483850"/>
-   <tile gid="17"/>
    <tile gid="18"/>
    <tile gid="19"/>
    <tile gid="19"/>
    <tile gid="17"/>
    <tile gid="18"/>
    <tile gid="19"/>
-   <tile gid="17"/>
-   <tile gid="18"/>
-   <tile gid="17"/>
-   <tile gid="18"/>
-   <tile gid="19"/>
-   <tile gid="17"/>
-   <tile gid="18"/>
-   <tile gid="19"/>
-   <tile gid="17"/>
-   <tile gid="18"/>
    <tile gid="19"/>
    <tile gid="17"/>
    <tile gid="18"/>
@@ -10321,11 +10310,22 @@
    <tile gid="19"/>
    <tile gid="17"/>
    <tile gid="18"/>
+   <tile gid="17"/>
+   <tile gid="18"/>
    <tile gid="19"/>
    <tile gid="17"/>
    <tile gid="18"/>
+   <tile gid="19"/>
+   <tile gid="17"/>
+   <tile gid="18"/>
+   <tile gid="19"/>
+   <tile gid="17"/>
+   <tile gid="18"/>
+   <tile gid="19"/>
+   <tile gid="17"/>
+   <tile gid="18"/>
+   <tile gid="19"/>
    <tile gid="20"/>
-   <tile gid="9"/>
    <tile gid="10"/>
    <tile gid="12"/>
    <tile/>
@@ -10912,7 +10912,7 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="3"/>
    <tile gid="2147483660"/>
    <tile gid="9"/>
    <tile gid="11"/>
@@ -15402,7 +15402,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup color="#000000" id="18" name="Map">
+ <objectgroup color="#000000" id="18" name="Map" visible="0">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -15446,7 +15446,7 @@
   <object id="111" x="128" y="-128" width="512" height="128"/>
   <object id="115" x="6400" y="128" width="1536" height="128"/>
  </objectgroup>
- <objectgroup color="#000000" id="19" name="Stairs">
+ <objectgroup color="#000000" id="19" name="Stairs" visible="0">
   <properties>
    <property name="Polygon" type="bool" value="true"/>
   </properties>

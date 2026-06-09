@@ -48,8 +48,8 @@ bool Correfoc::Start()
 	//caminarCorrefoc = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Cucafera_Caminar.wav");
 
 	//Add physics to the enemy - initialize physics body
-	texW = 512;
-	texH = 512;
+	texW = 128;
+	texH = 128;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX() - texW / 2, (int)position.getY() - texH / 2, (texW * 2) / 5, bodyType::DYNAMIC);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
@@ -70,8 +70,8 @@ bool Correfoc::Start()
 	vision = 15;
 	speed = 8.0f;
 
-	maxHealth = 30;
-	currentHealth = 30;
+	maxHealth = 60;
+	currentHealth = 60;
 
 	int x, y;
 	pbody->GetPosition(x, y);
@@ -255,7 +255,14 @@ void Correfoc::Draw(float dt)
 	}
 
 	//Draw using the texture and the current animation frame
-	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, 1);
+
+	float scale = 0.25f;
+	if (explosionCreated)
+	{
+		scale = 1;
+	}
+
+	Engine::GetInstance().render->DrawRotatedTexture(texture, x, y, &animFrame, sdlFlip, scale);
 }
 
 void Correfoc::Explode()
@@ -277,7 +284,7 @@ void Correfoc::Explode()
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
 		pbody = nullptr;
 
-		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW * 5, bodyType::DYNAMIC);
+		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW * 2, bodyType::DYNAMIC);
 		pbody->listener = this;
 		pbody->ctype = ColliderType::ENEMY_ATTACK;
 		Engine::GetInstance().physics->SetGravityScale(pbody, 0.0f);

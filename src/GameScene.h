@@ -174,6 +174,7 @@ public:
 	SDL_Texture* princessCaplessPortrait = nullptr;
 	SDL_Texture* bossNinfaPortrait = nullptr;
 	SDL_Texture* bossDracPortrait = nullptr;
+	SDL_Texture* bossKnightPortrait = nullptr;
 	SDL_Texture* npcPortrait1 = nullptr;
 	SDL_Texture* npcPortrait2 = nullptr;
 	SDL_Texture* npcPortrait3 = nullptr;

@@ -1215,6 +1215,11 @@ void Player::ApplyPhysics() {
 
 void Player::Draw(float dt)
 {
+	// HACK DEBUG: F8 oculta/muestra al personaje de forma local
+	static bool hidePlayer = false;
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN) hidePlayer = !hidePlayer;
+	if (hidePlayer) return; // Si está oculto, dejamos de dibujar inmediatamente
+
 	bool isDialogueActive = Engine::GetInstance().dialogueManager->IsDialogueActive();
 
 	if (Engine::GetInstance().sceneManager->isGamePaused == false || isDialogueActive)

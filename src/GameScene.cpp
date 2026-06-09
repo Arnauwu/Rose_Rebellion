@@ -316,6 +316,7 @@ bool GameScene::Start() {
 			//	-Bosses
 	LoadTextureIfNull(bossNinfaPortrait, "Assets/Textures/UI/Dialogues/bossNinfa_portrait.png");
 	LoadTextureIfNull(bossDracPortrait, "Assets/Textures/UI/Dialogues/bossDrac_portrait.png");
+	LoadTextureIfNull(bossKnightPortrait, "Assets/Textures/UI/Dialogues/Portrait_Soldier.png");
 			//	-Npcs
 	LoadTextureIfNull(npcPortrait1, "Assets/Textures/UI/Dialogues/npc_portrait1.png"); // Cerdo
 	LoadTextureIfNull(npcPortrait2, "Assets/Textures/UI/Dialogues/npc_portrait2.png"); // Paloma
@@ -396,7 +397,7 @@ bool GameScene::Update(float dt) {
 	if (dialogueMgr->IsDialogueActive()) {
 		return true;
 	}
-	
+
 	// --- SUB-MENU INPUT HANDLING ---
 	RefreshMenuUI();
 	if (currentMenuTab == GameMenuTab::INVENTORY || currentMenuTab == GameMenuTab::MAP || currentMenuTab == GameMenuTab::SKILL_TREE) {
@@ -428,7 +429,7 @@ bool GameScene::Update(float dt) {
 	bool isCinematicActive = (player != nullptr && player->isFrozen);
 	bool isMapTransitioning = (mapState != MapTransitionState::NONE);
 
-	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE) 
+	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE)
 	{
 		if (!inSkillPopUp) {
 			if (input->GetKey(SDL_SCANCODE_I) == KEY_DOWN) ToggleGameMenu(GameMenuTab::INVENTORY);
@@ -441,13 +442,6 @@ bool GameScene::Update(float dt) {
 				ToggleGameMenu(GameMenuTab::INVENTORY);
 			}
 		}
-	}
-
-	// AÑADIR ESTO - SELECT button para Inventory
-	if (input->IsGamepadConnected() &&
-		input->GetGamepadButton(GAMEPAD_BACK) == KEY_DOWN)
-	{
-		ToggleGameMenu(GameMenuTab::INVENTORY);
 	}
 
 	if (mapState == MapTransitionState::FADING_OUT) {
@@ -525,7 +519,7 @@ bool GameScene::Update(float dt) {
 	}
 
 	// Pause Menu - ESC o START del gamepad
-	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE) 
+	if ((!isCinematicActive && !isMapTransitioning) || currentMenuTab != GameMenuTab::NONE)
 	{
 		bool pauseInput = input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN;
 
@@ -546,6 +540,16 @@ bool GameScene::Update(float dt) {
 			else {
 				ToggleGameMenu(GameMenuTab::PAUSE_MENU);
 			}
+		}
+	}
+
+
+	if (input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN) {
+		static bool hideUI = false;
+		hideUI = !hideUI;
+
+		if (Engine::GetInstance().hud != nullptr) {
+			Engine::GetInstance().hud->isHidden = hideUI;
 		}
 	}
 
@@ -780,6 +784,7 @@ bool GameScene::CleanUp() {
 
 	UnloadTexture(bossNinfaPortrait);
 	UnloadTexture(bossDracPortrait);
+	UnloadTexture(bossKnightPortrait);
 
 	UnloadTexture(npcPortrait1);
 	UnloadTexture(npcPortrait2);
@@ -1289,6 +1294,10 @@ void GameScene::CreateDialogueUI() {
 		dBox->AddPortrait("Colomet", npcPortrait2);
 		dBox->AddPortrait("BeEa", npcPortrait3);
 		dBox->AddPortrait("Paca", npcPortrait4);
+
+		dBox->AddPortrait("Mediterrània", bossNinfaPortrait);
+		dBox->AddPortrait("Jordi", bossDracPortrait);
+		dBox->AddPortrait("Roc", bossKnightPortrait);
 
 		// Vincular con el Manager
 		Engine::GetInstance().dialogueManager->SetDialogueUI(dBox);

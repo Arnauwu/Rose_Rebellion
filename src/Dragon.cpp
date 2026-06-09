@@ -59,7 +59,7 @@ bool Dragon::Start() {
 	speed = 1.5f;
 	knockbackForce = 0.0f; //Immune to knockback
 
-	maxHealth = 500;
+	maxHealth = 300;
 	currentHealth = maxHealth;
 
 	int x, y;

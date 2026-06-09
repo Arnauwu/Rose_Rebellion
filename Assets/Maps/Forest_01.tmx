@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="37" nextobjectid="1053">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="103" height="24" tilewidth="128" tileheight="128" infinite="0" nextlayerid="37" nextobjectid="1057">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -7836,7 +7836,7 @@
   <object id="162" name="Cucafera" type="Cucafera" x="7296" y="2560">
    <point/>
   </object>
-  <object id="163" name="Cucafera" type="Cucafera" x="10368" y="2560">
+  <object id="163" name="Cucafera" type="Cucafera" x="9644" y="2620">
    <point/>
   </object>
   <object id="514" name="KnightBoss" type="KnightBoss" x="128" y="1280">
@@ -7844,6 +7844,21 @@
   </object>
   <object id="554" name="SavePoint" type="SavePoint" x="11448" y="2562.67">
    <point/>
+  </object>
+  <object id="1053" name="DialogueTrigger" type="DialogueTrigger" x="11104" y="1592" width="140" height="1092">
+   <properties>
+    <property name="DialogueID" value="Quan la Rose arriba al bosc 1"/>
+   </properties>
+  </object>
+  <object id="1055" name="DialogueTrigger" type="DialogueTrigger" x="6630" y="1470" width="140" height="1092">
+   <properties>
+    <property name="DialogueID" value="Quan la Rose arriba al bosc 2"/>
+   </properties>
+  </object>
+  <object id="1056" name="DialogueTrigger" type="DialogueTrigger" x="8062" y="1466" width="140" height="1092">
+   <properties>
+    <property name="DialogueID" value="Quan troba orbe de força"/>
+   </properties>
   </object>
  </objectgroup>
  <objectgroup id="15" name="PlayerSpawns" visible="0">

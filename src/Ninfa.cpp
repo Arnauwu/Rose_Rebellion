@@ -51,8 +51,19 @@ bool Ninfa::Start()
     anims.SetCurrent("idle");
  
 
-    // Textura temporal para pruebas (testear)
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
+    // Texture
+    switch (texType)
+    {
+    case NORMAL:
+        texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/Ninfa.png");
+        break;
+    case ACID:
+        texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/SS_Ninfa_Joven_Acido.png");
+        break;
+    case MUD:
+        texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/SS_Ninfa_Joven_Barro.png");
+        break;
+    }
    
    // Physic Body
     texW = 64; 
@@ -372,6 +383,7 @@ void Ninfa::ShootProjectile() {
     spawnPos.setX(lookingRight ? spawnPos.getX() + 20.0f : spawnPos.getX() - 20.0f);
 
     std::shared_ptr<HomingProjectile> bullet = std::make_shared<HomingProjectile>(spawnPos);
+    bullet->texType = this->texType;
     bullet->Start();
     Engine::GetInstance().entityManager->AddEntity(bullet);
 }

@@ -1150,6 +1150,24 @@ void Map::SpawnEntities()
 				{
 					std::shared_ptr<Ninfa> ninfa = std::dynamic_pointer_cast<Ninfa>(Engine::GetInstance().entityManager->CreateEntity(EntityType::NINFA));
 					if (ninfa != nullptr) ninfa->position = Vector2D(x, y);
+
+					Properties ninfProp;
+					LoadProperties(objectNode, ninfProp);
+
+					if (ninfProp.GetProperty("Mud") != nullptr)
+					{
+						ninfa->texType = textureType::MUD;
+					}
+					else if (ninfProp.GetProperty("Acid") != nullptr)
+					{
+						ninfa->texType = textureType::ACID;
+					}
+					else
+					{
+						ninfa->texType = textureType::NORMAL;
+					}
+
+
 				}
 				else if (entityType == std::string("Demon"))
 				{

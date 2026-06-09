@@ -12,6 +12,8 @@
 
 #include "tracy/Tracy.hpp"
 
+#include "Ninfa.h"
+
 //PI
 constexpr double PI = 3.14159265358979323846;
 
@@ -38,8 +40,20 @@ bool HomingProjectile::Start()
     anims.SetCurrent("bullet");
 
 
-    // Textura temporal para pruebas (testear)
-    texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.png");
+    // Texture
+    switch (texType)
+    {
+    case NORMAL:
+        texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/ninfa_projectile.png");
+        break;
+    case ACID:
+        texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/SS_Proyectil_Ninfa_Joven_Acido.png");
+        break;
+    case MUD:
+        texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Ninfa/SS_Proyectil_Ninfa_Joven_Barro.png");
+        break;
+    }
+
 
    //Fisica
     int radius = 6; // El área de impacto de las balas es más pequeña, lo que da a los jugadores más margen para esquivarlas.
