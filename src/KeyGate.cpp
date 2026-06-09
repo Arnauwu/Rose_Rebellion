@@ -12,7 +12,30 @@
 
 namespace
 {
-    constexpr int MountainVisualOverlap = 12;
+    constexpr int GateVisualOverlap = 12;
+    constexpr float ForestStaticFrameWidth = 216.0f;
+    constexpr float ForestAnimationFrameWidth = 256.0f;
+
+    void TrimForestAnimationFrame(SDL_Rect& frame)
+    {
+        const int tileId = (frame.y / 386) * 5 + (frame.x / 256);
+
+        int trimTop = 0;
+        int visibleHeight = 385;
+        switch (tileId) {
+        case 3: trimTop = 2; visibleHeight = 383; break;
+        case 4: visibleHeight = 384; break;
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9: trimTop = 62; visibleHeight = 324; break;
+        default: break;
+        }
+
+        frame.y += trimTop;
+        frame.h = visibleHeight;
+    }
 
     void TrimMountainAnimationFrame(SDL_Rect& frame)
     {
@@ -154,9 +177,9 @@ bool KeyGate::Update(float dt)
     destRect.y = (int)(position.getY() + gateH / 2.0f);
     destRect.w = gateW;
     destRect.h = gateH;
-    if (requiredKey == KeyType::MOUNTAIN) {
-        destRect.y += MountainVisualOverlap;
-        destRect.h += MountainVisualOverlap * 2;
+    if (requiredKey == KeyType::FOREST || requiredKey == KeyType::MOUNTAIN) {
+        destRect.y += GateVisualOverlap;
+        destRect.h += GateVisualOverlap * 2;
     }
 
     if (state == GateState::OPENING)
@@ -165,11 +188,17 @@ bool KeyGate::Update(float dt)
         SDL_Rect frame = anims.GetCurrentFrame();
 
         if (animTexture) {
-            if (requiredKey == KeyType::MOUNTAIN) {
+            SDL_Rect animationDest = destRect;
+            if (requiredKey == KeyType::FOREST) {
+                TrimForestAnimationFrame(frame);
+                animationDest.w = (int)(destRect.w * ForestAnimationFrameWidth / ForestStaticFrameWidth);
+                animationDest.x = destRect.x - (animationDest.w - destRect.w) / 2;
+            }
+            else if (requiredKey == KeyType::MOUNTAIN) {
                 TrimMountainAnimationFrame(frame);
             }
 
-            Engine::GetInstance().render->DrawRotatedImage(animTexture, &destRect, &frame);
+            Engine::GetInstance().render->DrawRotatedImage(animTexture, &animationDest, &frame);
         }
 
         if (!animationFinished &&
