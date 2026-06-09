@@ -5,6 +5,8 @@
 #include <SDL3/SDL.h>
 #include "Pathfinding.h"
 
+enum textureType { NORMAL, ACID, MUD };
+
 enum class NinfaState{
 	IDLE,
 	CHASE,
@@ -38,6 +40,8 @@ private:
 
 public:
 	NinfaState currentState;
+
+	textureType texType;
 
 	float targetOffsetX = 0.0f;
 	float targetOffsetY = 0.0f;
