@@ -136,15 +136,6 @@ bool Hud::Update(float dt) {
 		}
 	}
 
-
-	if (tutorialTimer > 0.0f) {
-		tutorialTimer -= dt / 1000.0f;
-		if (tutorialTimer < 0.0f) {
-			tutorialTimer = 0.0f;
-			currentTutorial = TutorialType::NONE;
-		}
-	}
-
 	return true;
 }
 

@@ -62,7 +62,7 @@ private:
     //bool isAnimating = false;
     //Timer transitionTimer;
 
-    float displayedFrame = 0.0f; // El frame que se está dibujando (en decimales)
+    float displayedFrame = 0.0f; // El frame que se est?dibujando (en decimales)
     float animSpeed = 20.0f;
 
     bool isLastBreathAnimating = false;
