@@ -14,6 +14,8 @@
 
 #include "tracy/Tracy.hpp"
 
+#include <algorithm>
+
 Npc::Npc() : Entity(EntityType::NPC) {
     name = "Npc";
     pbody = nullptr;
@@ -58,9 +60,16 @@ bool Npc::Start() {
 
     
     //TO DO: CAMBIAR TEXTURA
+    interactionBackgroundTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.png");
+    std::unordered_map<int, std::string> interactionBackgroundAliases = { {0, "idle"} };
+    interactionBackgroundAnimation.LoadFromTSX(
+        "Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.tsx",
+        interactionBackgroundAliases
+    );
+    interactionBackgroundAnimation.SetCurrent("idle");
+
     interactIcon = Engine::GetInstance().textures->Load("Assets/Textures/UI/Buttons/Flecha.png");
     zOrder = -1;
-    glowTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Glow.png");
    
 
     pbody = Engine::GetInstance().physics->CreateRectangleSensor((int)position.getX() - texW /2, (int)position.getY() - texH /2, texW, texH, bodyType::STATIC);
@@ -75,7 +84,7 @@ bool Npc::Update(float dt) {
     if (!active) return true;
     ZoneScoped;
 
-    // Si el jugador está cerca y no está activo
+    // Si el jugador est?cerca y no est?activo
     if (isPlayerInRange && Engine::GetInstance().dialogueManager->CanInteract()) {
         // Si el jugador pulsa 'E' 
         if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
@@ -121,8 +130,6 @@ bool Npc::Update(float dt) {
             int drawX = x - (iconW / 2);
             int drawY = y - (texH / 2) - iconH - 20 + (int)offsetY;
 
-            Engine::GetInstance().render->DrawTexture(interactIcon, drawX, drawY, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
-            
             SDL_Rect cam = Engine::GetInstance().render->camera;
             int scale = Engine::GetInstance().window->GetScale();
             float zoomLevel = Engine::GetInstance().render->GetZoom();
@@ -136,31 +143,34 @@ bool Npc::Update(float dt) {
             SDL_Color shadowColor = { 0, 0, 0, 255 };
             Engine::GetInstance().render->DrawTextCentered("PARLAR {E}", shadowBounds, shadowColor, FontType::CUERPO);*/
             
-            //Text
-            SDL_Rect textBoundsScreen = { screenX, screenY, screenW, screenH };
-            SDL_Color textColor = { 255, 255,255, 255 };
             std::string interactText = Engine::GetInstance().languageManager->GetString("INTERACT_NPC");
-            Engine::GetInstance().render->DrawTextCentered(interactText.c_str(), textBoundsScreen, textColor, FontType::CUERPO);
+            SDL_Rect measuredText = Engine::GetInstance().render->MeasureText(
+                interactText.c_str(), FontType::CUERPO);
 
-            //Efecto glow
-            if (glowTex != nullptr) {
-                SDL_SetTextureBlendMode(glowTex, SDL_BLENDMODE_ADD);
+            int promptW = measuredText.w + 80;
+            int promptH = std::max(screenH + 20, measuredText.h + 36);
+            int promptCenterX = screenX + screenW / 2;
+            int promptCenterY = screenY + screenH / 2;
+            SDL_Rect promptBounds = {
+                promptCenterX - promptW / 2,
+                promptCenterY - promptH / 2,
+                promptW,
+                promptH
+            };
 
-                SDL_SetTextureColorMod(glowTex, 150, 150, 150);
-
-                // Palpito del brillo
-                Uint8 glowAlpha = (Uint8)(150 + sin(iconTimer * 5.0f) * 50);
-                SDL_SetTextureAlphaMod(glowTex, glowAlpha);
-
-                int glowW = iconW * 3;
-                int glowH = iconH * 2.3;
-                int glowX = screenX - (glowW / 2) + (screenW / 2);
-                int glowY = screenY - (glowH / 2) + (screenH / 2) + 5;
-
-                SDL_FRect dstGlow = { (float)glowX, (float)glowY, (float)glowW, (float)glowH };
-
-                SDL_RenderTexture(Engine::GetInstance().render->renderer, glowTex, nullptr, &dstGlow);
+            interactionBackgroundAnimation.Update(dt);
+            if (interactionBackgroundTexture != nullptr) {
+                const SDL_Rect& backgroundFrame = interactionBackgroundAnimation.GetCurrentFrame();
+                Engine::GetInstance().render->DrawTextureScaledSection(
+                    interactionBackgroundTexture, backgroundFrame, promptBounds);
             }
+
+            Engine::GetInstance().render->DrawTexture(
+                interactIcon, drawX, drawY, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
+
+            SDL_Color textColor = { 45, 24, 16, 255 };
+            Engine::GetInstance().render->DrawTextCentered(
+                interactText.c_str(), promptBounds, textColor, FontType::CUERPO);
         }
     }
 
@@ -169,6 +179,7 @@ bool Npc::Update(float dt) {
 
 bool Npc::CleanUp() {
     if (texture) Engine::GetInstance().textures->UnLoad(texture);
+    if (interactionBackgroundTexture) Engine::GetInstance().textures->UnLoad(interactionBackgroundTexture);
     if (interactIcon) Engine::GetInstance().textures->UnLoad(interactIcon);
     if (pbody) {
         Engine::GetInstance().physics->DeletePhysBody(pbody);

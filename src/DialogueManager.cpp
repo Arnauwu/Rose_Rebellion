@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "UIDialogueBox.h"
 #include "SceneManager.h"
+#include "Physics.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -56,8 +57,7 @@ void DialogueManager::LoadDialogues(Language lang) {
 		std::vector<DialogueLine> lines;
 		for (auto& lineObj : linesArray) {
 			DialogueLine dl;
-
-			// CORRECCIÓN SINTAXIS: Usamos asignación directa para no confundir a Visual Studio
+			// Use direct assignment to avoid ambiguous initialization in Visual Studio.
 			dl.speaker = lineObj["speaker"];
 			dl.text = lineObj["text"];
 
@@ -75,13 +75,11 @@ void DialogueManager::LoadDialogues(Language lang) {
 
 void DialogueManager::StartDialogue(const std::string& dialogueID, bool isMonologue) {
 	Language currentLang = Engine::GetInstance().languageManager->GetCurrentLanguage();
-
-	// Si no hemos cargado nada aún, o si el idioma del juego ha cambiado desde la última vez...
+	// Reload dialogue data when the selected language changes.
 	if (!isDialoguesLoaded || currentLang != lastLoadedLanguage) {
 		LoadDialogues(currentLang);
 	}
-
-	// 2. Evitar reiniciar una conversación ya activa
+	// Do not restart a conversation that is already active.
 	if (isActive) { return; }
 
 	LOG("Intentando cargar el dialogo con ID: '[%s]'", dialogueID.c_str());
@@ -91,9 +89,8 @@ void DialogueManager::StartDialogue(const std::string& dialogueID, bool isMonolo
 		currentConversation = &dialogueDB[dialogueID];
 		currentLineIndex = 0;
 		isActive = true;
-		inputLocked = !currentIsMonologue;
-
 		currentIsMonologue = isMonologue;
+		inputLocked = !currentIsMonologue;
 		monologueReadTimer = 0.0f;
 
 		charIndex = 0;
@@ -112,6 +109,7 @@ void DialogueManager::StartDialogue(const std::string& dialogueID, bool isMonolo
 		}
 		else {
 			if (uiBox) {
+				uiBox->SetTutorialMode(false);
 				uiBox->visible = true;
 				uiBox->SetSpeakerName((*currentConversation)[0].speaker);
 				uiBox->SetDialogueText("");
@@ -123,6 +121,43 @@ void DialogueManager::StartDialogue(const std::string& dialogueID, bool isMonolo
 		}
 	}
 }
+
+void DialogueManager::StartTutorial(const std::string& textKey) {
+	if (isActive) return;
+
+	std::string tutorialText = Engine::GetInstance().languageManager->GetString(textKey);
+	std::string confirmText = Engine::GetInstance().languageManager->GetString("TUTORIAL_CONFIRM");
+
+	tutorialConversation.clear();
+	tutorialConversation.push_back({ "Rose", tutorialText + "\n\n" + confirmText });
+
+	currentConversation = &tutorialConversation;
+	currentLineIndex = 0;
+	currentIsMonologue = false;
+	isActive = true;
+	inputLocked = true;
+	isWaitingForLanding = false;
+	monologueReadTimer = 0.0f;
+	charIndex = 0;
+	typeTimer = 0.0f;
+	displayedText.clear();
+	displayedText.reserve(tutorialConversation[0].text.length());
+
+	Player* player = Engine::GetInstance().entityManager->GetPlayer();
+	if (player != nullptr && player->pbody != nullptr) {
+		Engine::GetInstance().physics->SetLinearVelocity(player->pbody, { 0.0f, 0.0f });
+	}
+
+	Engine::GetInstance().sceneManager->isGamePaused = true;
+
+	if (uiBox) {
+		uiBox->SetTutorialMode(true);
+		uiBox->visible = true;
+		uiBox->SetSpeakerName(tutorialConversation[0].speaker);
+		uiBox->SetDialogueText("");
+	}
+}
+
 bool DialogueManager::Update(float dt) {
 	if (!isActive) {
 		if (interactionCooldown > 0.0f) {
@@ -139,6 +174,7 @@ bool DialogueManager::Update(float dt) {
 			Engine::GetInstance().sceneManager->isGamePaused = true;
 
 			if (uiBox) {
+				uiBox->SetTutorialMode(currentConversation == &tutorialConversation);
 				uiBox->visible = true;
 				uiBox->SetSpeakerName((*currentConversation)[0].speaker);
 				uiBox->SetDialogueText("");
@@ -149,7 +185,7 @@ bool DialogueManager::Update(float dt) {
 		}
 	}
 	if (!currentIsMonologue) {
-		// Lógica antigua: Esperar a que el jugador pulse 'E'
+		// Blocking dialogue waits for the player to press E.
 		if (inputLocked) {
 			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_UP ||
 				Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_IDLE) {
@@ -217,7 +253,10 @@ void DialogueManager::NextLine() {
 		else {
 			isActive = false;
 			interactionCooldown = 1.0f;
-			if (uiBox) uiBox->visible = false;
+			if (uiBox) {
+				uiBox->visible = false;
+				uiBox->SetTutorialMode(false);
+			}
 			Engine::GetInstance().sceneManager->isGamePaused = false;
 		}
 	}
@@ -231,6 +270,7 @@ void DialogueManager::EndDialogue() {
 
 	if (uiBox) {
 		uiBox->visible = false;
+		uiBox->SetTutorialMode(false);
 		uiBox->SetDialogueText("");
 		uiBox->SetSpeakerName("");
 	}

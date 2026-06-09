@@ -168,6 +168,7 @@ public:
 
 	//Dialogue UI Textures 
 	SDL_Texture* UIDialogueBoxTex = nullptr;
+	SDL_Texture* tutorialBoxLargeTex = nullptr;
 	SDL_Texture* UIDialogueBoxNpc1 = nullptr;
 	SDL_Texture* princessPortrait = nullptr;
 	SDL_Texture* princessCaplessPortrait = nullptr;

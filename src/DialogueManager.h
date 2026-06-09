@@ -24,6 +24,7 @@ public:
     bool CleanUp() override;
 
     void StartDialogue(const std::string& dialogueID, bool isMonologue = false);
+    void StartTutorial(const std::string& textKey);
     bool IsBlockingDialogueActive() const { return isActive && !currentIsMonologue; }
 
     void NextLine();
@@ -42,6 +43,7 @@ private:
     std::map<std::string, std::vector<DialogueLine>> dialogueDB;
     UIDialogueBox* uiBox = nullptr;
     const std::vector<DialogueLine>* currentConversation = nullptr;
+    std::vector<DialogueLine> tutorialConversation;
 
     int currentLineIndex = 0;
     bool isActive = false;
@@ -51,7 +53,7 @@ private:
 
     // Monologos
     bool currentIsMonologue = false;
-    float monologueReadTimer = 0.0f; 
+    float monologueReadTimer = 0.0f;
     float timeToRead = 3.0f;
 
     // Efecto Typewriter

@@ -180,7 +180,8 @@ void GameScene::FinishMapLoad()
 		if (asyncMapFile == "Castle_Room_Princess.tmx") {
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::WALK);
 		}
-		else if (asyncMapFile == "Castle_Inside.tmx") {
+		else if (asyncMapFile == "Castle_Inside.tmx" &&
+			asyncPreviousMap == "Castle_Room_Princess.tmx") {
 			Engine::GetInstance().hud->ShowTutorial(TutorialType::JUMP);
 		}
 	}
@@ -309,6 +310,7 @@ bool GameScene::Start() {
 
 	// Dialogue UI Load
 	LoadTextureIfNull(UIDialogueBoxTex, "Assets/Textures/UI/Dialogues/UIDialogueBoxTex.png");
+	LoadTextureIfNull(tutorialBoxLargeTex, "Assets/Textures/UI/Tutorial/Tutorial_Box.png");
 	LoadTextureIfNull(princessPortrait, "Assets/Textures/UI/Dialogues/princess_portrait.png");
 	LoadTextureIfNull(princessCaplessPortrait, "Assets/Textures/UI/Dialogues/princessCapless_portrait.png");
 			//	-Bosses
@@ -767,6 +769,7 @@ bool GameScene::CleanUp() {
 
 	//Unload Dialogue UI
 	UnloadTexture(UIDialogueBoxTex);
+	UnloadTexture(tutorialBoxLargeTex);
 	UnloadTexture(princessPortrait);
 	UnloadTexture(princessCaplessPortrait);
 
@@ -1272,6 +1275,7 @@ void GameScene::CreateDialogueUI() {
 	UIDialogueBox* dBox = dynamic_cast<UIDialogueBox*>(rawDialogueBox.get());
 	if (dBox != nullptr) {
 		dBox->SetBackgroundTexture(UIDialogueBoxTex);
+		dBox->SetTutorialBackgroundTexture(tutorialBoxLargeTex);
 
 		dBox->AddPortrait("Rose", princessPortrait);
 		dBox->AddPortrait("Rose-", princessCaplessPortrait);

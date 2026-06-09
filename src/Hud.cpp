@@ -1,4 +1,4 @@
-﻿#include "Hud.h"
+#include "Hud.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Render.h"
@@ -8,8 +8,12 @@
 #include "Player.h"
 #include "Window.h"
 #include "Log.h"
+#include "LanguageManager.h"
+#include "DialogueManager.h"
 #include <string>
 #include "Physics.h"
+#include "GameManager.h"
+#include <algorithm>
 
 #include "tracy/Tracy.hpp"
 
@@ -25,11 +29,13 @@ bool Hud::Start() {
 	LOG("Loading HUD");
 	lifeBarTexture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Princess/SS_Vida_Princesa.png");
 
-	tutWalkTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Caminar_V1.png");
-	tutJumpTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Saltar_V1.png");
-	tutGlideTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Planear_V1.png");
-	tutDashTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Dash_V1.png");
-	tutAttackTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/Atacar-V1.png");
+	notificationBgTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.png");
+	std::unordered_map<int, std::string> notificationAliases = { {0, "idle"} };
+	notificationBgAnimation.LoadFromTSX(
+		"Assets/Textures/UI/Tutorial/SS_FondoTexto_Interaccion.tsx",
+		notificationAliases
+	);
+	notificationBgAnimation.SetCurrent("idle");
 
 	float imagenAnchoReal = 6144.0f;
 	float imagenAltoReal = 5109.0f;
@@ -132,17 +138,10 @@ bool Hud::Update(float dt) {
 	// ------------------------------------------
 
 	if (notificationTimer > 0.0f) {
+		notificationBgAnimation.Update(dt);
 		notificationTimer -= dt / 1000.0f;
 		if (notificationTimer < 0.0f) {
 			notificationTimer = 0.0f;
-		}
-	}
-
-	if (tutorialTimer > 0.0f) {
-		tutorialTimer -= dt / 1000.0f;
-		if (tutorialTimer < 0.0f) {
-			tutorialTimer = 0.0f;
-			currentTutorial = TutorialType::NONE;
 		}
 	}
 
@@ -168,7 +167,6 @@ bool Hud::PostUpdate() {
 	DrawMineralIndicator();
 	DrawDiamondCounter();
 	DrawNotification();
-	DrawTutorial();
 	return true;
 }
 
@@ -232,113 +230,135 @@ bool Hud::CleanUp() {
 		Engine::GetInstance().textures->UnLoad(lifeBarTexture);
 		lifeBarTexture = nullptr;
 	}
-	if (tutWalkTex != nullptr) Engine::GetInstance().textures->UnLoad(tutWalkTex);
-	if (tutJumpTex != nullptr) Engine::GetInstance().textures->UnLoad(tutJumpTex);
-	if (tutGlideTex != nullptr) Engine::GetInstance().textures->UnLoad(tutGlideTex);
-	if (tutDashTex != nullptr) Engine::GetInstance().textures->UnLoad(tutDashTex);
-	if (tutAttackTex != nullptr) Engine::GetInstance().textures->UnLoad(tutAttackTex);
+	if (notificationBgTexture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(notificationBgTexture);
+		notificationBgTexture = nullptr;
+	}
 	return true;
 }
 
 void Hud::ShowNotification(const std::string& message) {
 	notificationText = message;
 	notificationTimer = NOTIFICATION_DURATION;
+	if (notificationBgAnimation.Has("idle")) {
+		notificationBgAnimation.GetAnim("idle")->Reset();
+	}
 }
 
 void Hud::DrawNotification() {
 	if (notificationTimer > 0.0f && !notificationText.empty()) {
-		Uint8 alphaText = 255;
-		Uint8 alphaBg = 160;
+		std::string localizedText = Engine::GetInstance().languageManager->GetString(notificationText);
+		Uint8 alpha = 255;
 
 		// Desapareciendo lentamente
 		if (notificationTimer < 1.0f) {
-			alphaText = (Uint8)(255.0f * notificationTimer);
-			alphaBg = (Uint8)(160.0f * notificationTimer);
+			alpha = (Uint8)(255.0f * notificationTimer);
 		}
 
 		// Tamaño de pantalla
-		int screenW, screenH;
-		screenW = Engine::GetInstance().window->windowWidth;
+		int screenW = Engine::GetInstance().window->windowWidth;
+		int screenH = Engine::GetInstance().window->windowHeight;
 
-		screenH = Engine::GetInstance().window->windowHeight;
+		const int rectH = 80;
+		const int horizontalPadding = 65;
+		const int screenMargin = 40;
 
-		// Tamaño del cuadro de solicitud
-		int rectW = 600;
-		int rectH = 70;
+		SDL_Rect measuredText = Engine::GetInstance().render->MeasureText(
+			localizedText.c_str(),
+			FontType::CUERPO
+		);
+
+		int rectW = measuredText.w + horizontalPadding * 2;
+		const int minRectW = 360;
+		const int maxRectW = screenW - screenMargin * 2;
+		if (rectW < minRectW) rectW = minRectW;
+		if (rectW > maxRectW) rectW = maxRectW;
 
 		// Ubicación del aviso
 		int posY = screenH / 8;
 
 		SDL_Rect bgRect = {
 			screenW / 2 - rectW / 2,
-			posY + 60,
+			posY,
 			rectW,
 			rectH
 		};
 
-		// Draw
-		Engine::GetInstance().render->DrawRectangleUnscaled(bgRect, 220, 220, 220, alphaBg, true, false);
+		if (notificationBgTexture != nullptr) {
+			SDL_SetTextureBlendMode(notificationBgTexture, SDL_BLENDMODE_BLEND);
+			SDL_SetTextureAlphaMod(notificationBgTexture, alpha);
+			const SDL_Rect& notificationFrame = notificationBgAnimation.GetCurrentFrame();
+			Engine::GetInstance().render->DrawTextureScaledSection(
+				notificationBgTexture,
+				notificationFrame,
+				bgRect
+			);
+			SDL_SetTextureAlphaMod(notificationBgTexture, 255);
+		}
+		else {
+			Engine::GetInstance().render->DrawRectangleUnscaled(bgRect, 220, 220, 220, alpha, true, false);
+		}
 
-		// Draw txto
-		SDL_Color color = { 0, 0, 0, alphaText }; // color negro
-		SDL_Rect textBounds = { bgRect.x + 10, bgRect.y + 5, bgRect.w - 20, bgRect.h - 10 };
+		// Draw texto
+		SDL_Color color = { 45, 24, 16, alpha };
+		SDL_Rect textBounds = {
+			bgRect.x + horizontalPadding,
+			bgRect.y,
+			bgRect.w - horizontalPadding * 2,
+			(int)(bgRect.h * 0.78f)
+		};
 
-		Engine::GetInstance().render->DrawTextCentered(notificationText.c_str(), textBounds, color, FontType::MENU);
+		Engine::GetInstance().render->DrawTextCenteredWrapped(
+			localizedText.c_str(),
+			textBounds,
+			color,
+			FontType::CUERPO
+		);
 	}
 }
 
 void Hud::ShowTutorial(TutorialType type) {
-	currentTutorial = type;
-	tutorialTimer = TUTORIAL_DURATION; // Reinicia el temporizador
-}
+	std::string instructionKey;
 
-void Hud::DrawTutorial() {
-	if (currentTutorial == TutorialType::NONE || tutorialTimer <= 0.0f) return;
-
-	SDL_Texture* textureToDraw = nullptr;
-
-	switch (currentTutorial) {
-	case TutorialType::WALK:   textureToDraw = tutWalkTex; break;
-	case TutorialType::JUMP:   textureToDraw = tutJumpTex; break;
-	case TutorialType::GLIDE:  textureToDraw = tutGlideTex; break;
-	case TutorialType::DASH:   textureToDraw = tutDashTex; break;
-	case TutorialType::ATTACK: textureToDraw = tutAttackTex; break;
-	default: return;
+	switch (type) {
+	case TutorialType::WALK:
+		instructionKey = "TUTORIAL_WALK";
+		break;
+	case TutorialType::JUMP:
+		instructionKey = "TUTORIAL_JUMP";
+		break;
+	case TutorialType::GLIDE:
+		instructionKey = "TUTORIAL_GLIDE";
+		break;
+	case TutorialType::DASH:
+		instructionKey = "TUTORIAL_DASH";
+		break;
+	case TutorialType::ATTACK:
+		instructionKey = "TUTORIAL_ATTACK";
+		break;
+	case TutorialType::DOUBLE_JUMP:
+		instructionKey = "TUTORIAL_DOUBLE_JUMP";
+		break;
+	case TutorialType::WALL_JUMP:
+		instructionKey = "TUTORIAL_WALL_JUMP";
+		break;
+	default:
+		return;
 	}
 
-	if (textureToDraw == nullptr) return;
+	auto& triggeredTutorials =
+		GameManager::GetInstance().gameState.triggeredDialogues;
 
-	// Calcular el nivel de transparencia para el desvanecimiento final (el último segundo se borra poco a poco)
-	Uint8 alpha = 255;
-	if (tutorialTimer < 1.0f) {
-		alpha = (Uint8)(255.0f * tutorialTimer);
+	if (std::find(
+		triggeredTutorials.begin(),
+		triggeredTutorials.end(),
+		instructionKey
+	) != triggeredTutorials.end()) {
+		return;
 	}
-	SDL_SetTextureAlphaMod(textureToDraw, alpha);
 
-	// Obtener dimensiones reales de la textura
-	float texW, texH;
-	SDL_GetTextureSize(textureToDraw, &texW, &texH);
-
-	// Dónde y a qué tamaño dibujarlo
-	SDL_Renderer* renderer = Engine::GetInstance().render->renderer;
-	int screenW = Engine::GetInstance().window->windowWidth;
-	int screenH = Engine::GetInstance().window->windowHeight;
-
-	// Puedes multiplicar el texW y texH por un factor si la imagen es muy grande o pequeña
-	float scale = 0.8f;
-
-	SDL_FRect dstFRect;
-	dstFRect.w = texW * scale;
-	dstFRect.h = texH * scale;
-	// Centrado horizontal
-	dstFRect.x = (screenW - dstFRect.w) / 2.0f;
-	// Posicionado en la parte inferior de la pantalla (a 100 px del borde)
-	dstFRect.y = 60.0f;
-
-	SDL_RenderTexture(renderer, textureToDraw, nullptr, &dstFRect);
-
-	// Restaurar el alpha a 255 por seguridad
-	SDL_SetTextureAlphaMod(textureToDraw, 255);
+	Engine::GetInstance().dialogueManager->StartTutorial(instructionKey);
+	triggeredTutorials.push_back(instructionKey);
 }
 
 void Hud::TriggerBossIntro(SDL_Texture* portraitTex, AnimationSet* anim, float duration) {

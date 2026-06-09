@@ -18,6 +18,7 @@
 #include "Map.h"
 #include "SavePoint.h"
 #include "Door.h"
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
 
@@ -27,22 +28,24 @@ using namespace std;
 
 namespace
 {
+	constexpr const char* FORCE_ORB_TUTORIAL_ID = "TUTORIAL_FORCE_ORB";
+
 	const char* GetRequiredKeyMessage(KeyType keyType)
 	{
 		switch (keyType) {
 		case KeyType::FOREST:
-			return "You need to find the Forest Key.";
+			return "NOTIFY_NEED_FOREST_KEY";
 		case KeyType::MOUNTAIN:
-			return "You need to find the Mountain Key.";
+			return "NOTIFY_NEED_MOUNTAIN_KEY";
 		case KeyType::CATACUMBA:
-			return "You need to find the Catacombs Key.";
+			return "NOTIFY_NEED_CATACOMBS_KEY";
 		case KeyType::BOSS:
-			return "You need to find the Castle Key.";
+			return "NOTIFY_NEED_CASTLE_KEY";
 		case KeyType::CASTLE:
-			return "You need to find the Castle Key.";
+			return "NOTIFY_NEED_CASTLE_KEY";
 		case KeyType::NONE:
 		default:
-			return "You need to find the key for this door.";
+			return "NOTIFY_NEED_DOOR_KEY";
 		}
 	}
 }
@@ -1044,21 +1047,21 @@ void Player::Interact()
 			bool requiresDoubleJump = Engine::GetInstance().map->DoorRequiresDoubleJump(interactuableBody);
 			if (requiresDoubleJump && !GameManager::GetInstance().gameState.doubleJumpUnlocked) {
 				Engine::GetInstance().audio->PlayFx(closedDoor);
-				Engine::GetInstance().hud->ShowNotification("You need to unlock Double Jump to enter.");
+				Engine::GetInstance().hud->ShowNotification("NOTIFY_NEED_DOUBLE_JUMP");
 				return;
 			}
 
 			bool isMaintenance = Engine::GetInstance().map->DoorUnderMaintenance(interactuableBody);
 			if (isMaintenance) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
-				Engine::GetInstance().hud->ShowNotification("The room is under maintenance. You cannot enter.");
+				Engine::GetInstance().hud->ShowNotification("NOTIFY_ROOM_MAINTENANCE");
 				return;
 			}
 
 			bool isClosed = Engine::GetInstance().map->DoorClosed(interactuableBody);
 			if (isClosed) {
 				Engine::GetInstance().audio->PlayFx(pickItemFx);
-				Engine::GetInstance().hud->ShowNotification("The room is closed. You cannot enter.");
+				Engine::GetInstance().hud->ShowNotification("NOTIFY_ROOM_CLOSED");
 				return;
 			}
 
@@ -1069,7 +1072,7 @@ void Player::Interact()
 				KeyType requiredKey = Engine::GetInstance().map->GetDoorKeyType(interactuableBody);
 				if (requiredKey == KeyType::NONE) {
 					Engine::GetInstance().audio->PlayFx(closedDoor);
-					Engine::GetInstance().hud->ShowNotification("The door is locked. (Configuration Error)");
+					Engine::GetInstance().hud->ShowNotification("NOTIFY_DOOR_CONFIG_ERROR");
 					return;
 				}
 
@@ -1093,6 +1096,33 @@ void Player::Interact()
 			else
 			{
 				openDoorAndTransition();
+			}
+		}
+		else if (interactuableBody->ctype == ColliderType::SAVEPOINT)
+		{
+			SavePoint* savePoint = (SavePoint*)interactuableBody->listener;
+			if (savePoint == nullptr) return;
+
+			Engine::GetInstance().audio->PlayFx(savePointFx);
+			savePoint->Activate();
+
+			int spX, spY;
+			interactuableBody->GetPosition(spX, spY);
+			respawnPosition = Vector2D((float)spX, (float)spY);
+
+			currentHealth = maxHealth;
+			lastBreathUsed = false;
+
+			auto& gameState = GameManager::GetInstance().gameState;
+			gameState.playerPosition = respawnPosition;
+			gameState.currentHealth = currentHealth;
+			gameState.currentMap = Engine::GetInstance().map->mapFileName;
+
+			if (GameManager::GetInstance().SaveGame("savegame.xml")) {
+				Engine::GetInstance().hud->ShowNotification("NOTIFY_GAME_SAVED");
+			}
+			else {
+				Engine::GetInstance().hud->ShowNotification("NOTIFY_SAVE_ERROR");
 			}
 		}
 	}
@@ -1408,27 +1438,41 @@ void Player::UnlockSickle()
 	AddItem(ItemID::WEAPON, 1);
 	LOG("Sickle Unlocked! You can attack now if you have the cape.");
 }
-void Player::UnlockDoubleJump() {
+void Player::UnlockDoubleJump(bool showTutorial) {
 	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
-	Engine::GetInstance().hud->ShowNotification("You have unlocked DoubleJump!");
-	LOG("Double Jump Unlocked! You can do a double jump");
 
+	if (showTutorial) {
+		Engine::GetInstance().hud->ShowTutorial(
+			TutorialType::DOUBLE_JUMP
+		);
+	}
+
+	LOG("Double Jump Unlocked! You can do a double jump");
 }
-void Player::UnlockDash() {
+
+void Player::UnlockDash(bool showTutorial) {
 	GameManager::GetInstance().gameState.dashUnlocked = true;
 	AddItem(ItemID::DASH_OBJ, 1);
-	//Engine::GetInstance().hud->ShowNotification("You have unlocked Dash!");
-	Engine::GetInstance().hud->ShowTutorial(TutorialType::DASH);
+
+	if (showTutorial) {
+		Engine::GetInstance().hud->ShowTutorial(TutorialType::DASH);
+	}
 
 	LOG("Dash Unlocked! You can dash");
 	LOG("Dash Unlocked! You can do a dash");
 }
 
-void Player::UnlockWallJump() {
+void Player::UnlockWallJump(bool showTutorial) {
 	GameManager::GetInstance().gameState.wallJumpUnlocked = true;
 	AddItem(ItemID::WALLJUMP_OBJ, 1);
-	Engine::GetInstance().hud->ShowNotification("You have unlocked Wall Jump!");
+
+	if (showTutorial) {
+		Engine::GetInstance().hud->ShowTutorial(
+			TutorialType::WALL_JUMP
+		);
+	}
+
 	LOG("Wall Jump Unlocked! You can now wall jump");
 }
 
@@ -1662,7 +1706,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			
 		if (requiresGlide && !GameManager::GetInstance().gameState.glideUnlocked)
 		{
-			Engine::GetInstance().hud->ShowNotification("Quieres morir estampada contra el suelo?");
+			Engine::GetInstance().hud->ShowNotification("NOTIFY_NEED_GLIDE");
 
 			velocity = { 0.0f, 0.0f };
 			Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
@@ -1703,7 +1747,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 		}
 		else if (physB->listener->name == "Key") {
 			LOG("Collision ITEM (Key Picked Up)");
-			Engine::GetInstance().hud->ShowNotification("You have obtained a Key.");
+			Engine::GetInstance().hud->ShowNotification("NOTIFY_KEY_OBTAINED");
 		}
 		else if (physB->listener->name == "Sickle") {
 			LOG("Collision ITEM (Sickle Picked Up)");
@@ -1741,7 +1785,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 			Engine::GetInstance().audio->PlayFx(orbFx);
 			physB->listener->Destroy();
-			Engine::GetInstance().hud->ShowNotification("You have recovered your health.");
 		}
 		break;
 	case ColliderType::SKILL_POINT_ORB:
@@ -1754,35 +1797,26 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 
 		Engine::GetInstance().audio->PlayFx(orbFx);
 		physB->listener->Destroy();
-		Engine::GetInstance().hud->ShowNotification("You have obtained an Orb of Power.");
+
+		{
+			auto& triggeredDialogues = GameManager::GetInstance().gameState.triggeredDialogues;
+			const bool isInForest =
+				Engine::GetInstance().map->mapFileName.find("Forest") != std::string::npos;
+			const bool tutorialAlreadyShown =
+				std::find(triggeredDialogues.begin(), triggeredDialogues.end(), FORCE_ORB_TUTORIAL_ID)
+				!= triggeredDialogues.end();
+
+			if (isInForest && !tutorialAlreadyShown &&
+				!Engine::GetInstance().dialogueManager->IsDialogueActive()) {
+				Engine::GetInstance().dialogueManager->StartTutorial(FORCE_ORB_TUTORIAL_ID);
+				triggeredDialogues.push_back(FORCE_ORB_TUTORIAL_ID);
+			}
+		}
 		break;
 	case ColliderType::SAVEPOINT:
-	{
-		LOG("Collision SavePoint");
-		SavePoint* sp = (SavePoint*)physB->listener;
-		Engine::GetInstance().audio->PlayFx(savePointFx); //fx
-		sp->Activate();
-
-		int spX, spY;
-		physB->GetPosition(spX, spY);
-		respawnPosition = Vector2D((float)spX, (float)spY);
-
-		this->currentHealth = maxHealth;
-		lastBreathUsed = false;
-
-		auto& gameState = GameManager::GetInstance().gameState;
-		gameState.playerPosition = respawnPosition;
-		gameState.currentHealth = this->currentHealth;
-		gameState.currentMap = Engine::GetInstance().map->mapFileName;
-
-		if (GameManager::GetInstance().SaveGame("savegame.xml")) {
-			Engine::GetInstance().hud->ShowNotification("Partida Guardada");
-		}
-		else {
-			Engine::GetInstance().hud->ShowNotification("Error al guardar partida");
-		}
+		canInteract = true;
+		interactuableBody = physB;
 		break;
-	}
 	case ColliderType::NPC:
 		canInteract = true;
 		interactuableBody = physB;
@@ -1880,6 +1914,10 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		canInteract = false;
 		interactuableBody = nullptr;
 		break;
+	case ColliderType::SAVEPOINT:
+		canInteract = false;
+		interactuableBody = nullptr;
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
 		break;
@@ -1955,9 +1993,9 @@ void Player::DevTools(float dt)
 	{
 		UnlockCape();
 		UnlockSickle();
-		UnlockDash();
-		UnlockDoubleJump();
-		UnlockWallJump();
+		UnlockDash(false);
+		UnlockDoubleJump(false);
+		UnlockWallJump(false);
 
 		// Sincronización redundante de seguridad para el GameManager
 		GameManager::GetInstance().gameState.hasSickle = true;

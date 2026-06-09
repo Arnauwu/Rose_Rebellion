@@ -1,5 +1,6 @@
 #pragma once
 #include "Item.h"
+#include "Animation.h"
 
 class Manta :public Item {
 public:
@@ -15,6 +16,8 @@ public:
 
 private:
 	SDL_Texture* texture = nullptr;
+	SDL_Texture* interactionBackgroundTexture = nullptr;
+	AnimationSet interactionBackgroundAnimation;
 	PhysBody* pbody=nullptr;
 	
 	bool isPicked = false;
