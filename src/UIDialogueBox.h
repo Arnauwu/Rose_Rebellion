@@ -16,9 +16,11 @@ public:
     void SetSpeakerName(const std::string& name);
     void SetDialogueText(const std::string& text);
     void SetBackgroundTexture(SDL_Texture* bgTex);
+    void SetTutorialBackgroundTexture(SDL_Texture* bgTex);
     void SetTutorialMode(bool enabled);
 
 private:
+    SDL_Rect GetTutorialBoxRect() const;
     void DrawTutorialContent(const SDL_Rect& mainBox) const;
     void DrawTutorialKeys(const std::string& keyText, const SDL_Rect& bounds) const;
 
@@ -29,6 +31,7 @@ private:
     std::unordered_map<std::string, SDL_Texture*> portraits;
     SDL_Texture* currentPortrait = nullptr;
     SDL_Texture* backgroundTex = nullptr;
+    SDL_Texture* tutorialBackgroundTex = nullptr;
 
     SDL_Rect cachedNameTextRect = { 0, 0, 0, 0 };
     SDL_Color textColor = { 66, 38, 0, 255 };
