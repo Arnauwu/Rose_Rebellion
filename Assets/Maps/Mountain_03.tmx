@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="127" height="60" tilewidth="128" tileheight="128" infinite="0" nextlayerid="27" nextobjectid="693">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="127" height="60" tilewidth="128" tileheight="128" infinite="0" nextlayerid="28" nextobjectid="696">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -7795,7 +7795,7 @@
    <tile gid="167"/>
   </data>
  </layer>
- <objectgroup color="#000000" id="20" name="Map" visible="0">
+ <objectgroup color="#000000" id="20" name="Map">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -7879,6 +7879,20 @@
   <object id="530" x="128" y="0" width="8320" height="128"/>
   <object id="567" x="8320" y="2816" width="4864" height="256"/>
   <object id="568" x="4992" y="2816" width="3328" height="128"/>
+ </objectgroup>
+ <objectgroup id="27" name="Rampa">
+  <properties>
+   <property name="Polygon" type="bool" value="true"/>
+  </properties>
+  <object id="693" x="3968" y="4864">
+   <polyline points="0,0 256,0 256,-128 0,0"/>
+  </object>
+  <object id="694" x="15360" y="4352">
+   <polyline points="0,0 0,-128 256,-128 0,0"/>
+  </object>
+  <object id="695" x="15104" y="4480">
+   <polyline points="0,0 0,-256 -512,-256 0,0"/>
+  </object>
  </objectgroup>
  <objectgroup color="#aa0000" id="21" name="Spikes" visible="0">
   <properties>
