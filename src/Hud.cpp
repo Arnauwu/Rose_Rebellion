@@ -267,7 +267,7 @@ void Hud::DrawNotification() {
 
 		SDL_Rect bgRect = {
 			screenW / 2 - rectW / 2,
-			posY + 60,
+			posY,
 			rectW,
 			rectH
 		};
