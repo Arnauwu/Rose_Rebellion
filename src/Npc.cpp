@@ -147,7 +147,7 @@ bool Npc::Update(float dt) {
             SDL_Rect measuredText = Engine::GetInstance().render->MeasureText(
                 interactText.c_str(), FontType::CUERPO);
 
-            int promptW = std::max(screenW, measuredText.w + 80);
+            int promptW = std::max(screenW, measuredText.w + 40);
             int promptH = std::max(screenH + 20, measuredText.h + 36);
             int promptCenterX = screenX + screenW / 2;
             int promptCenterY = screenY + screenH / 2;
@@ -168,7 +168,7 @@ bool Npc::Update(float dt) {
             Engine::GetInstance().render->DrawTexture(
                 interactIcon, drawX, drawY, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX);
 
-            SDL_Color textColor = { 255, 255, 255, 255 };
+            SDL_Color textColor = { 45, 24, 16, 255 };
             Engine::GetInstance().render->DrawTextCentered(
                 interactText.c_str(), promptBounds, textColor, FontType::CUERPO);
         }
