@@ -65,10 +65,14 @@ public:
 	float hoverAmplitude = 4.0f;
 	float hoverSpeed = 1.5f;
 
+	bool hasRoared = false;
+
 	// Fade
 	bool isFadingOut = false;
 	// Sounds
 	int deathSoundId;
+
+	int caminarFx, atacarFx, morirFx, gritoFx, hurtFx, atacarDistanciaFx;
 };
 
 

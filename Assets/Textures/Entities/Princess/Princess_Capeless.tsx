@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.2" name="player" tilewidth="256" tileheight="256" tilecount="132" columns="12">
+<tileset version="1.10" tiledversion="1.11.2" name="player" tilewidth="256" tileheight="256" tilecount="132" columns="12">
  <image source="Princess_Capeless.PNG" width="3072" height="3071"/>
  <tile id="0">
   <animation>

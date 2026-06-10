@@ -246,6 +246,7 @@ private:
 	int planearPrincesa;
 	int recibirDamage;
 	int caminarPrincesa;
+	int walljump;
 
 	int pickItemFx;
 	int savePointFx;
