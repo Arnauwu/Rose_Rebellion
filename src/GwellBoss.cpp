@@ -46,6 +46,13 @@ bool GwellBoss::Start() {
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Guell/SS_Guell.png");
 	tongueText = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Guell/SS_Proyectil_Lengua_Guell.png");
 
+	morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	caminarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
+	atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Lengua_Lagarto.wav");
+	//gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	hurtFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
+	atacarDistanciaFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Bola_Fuego_Dragon.wav");
+
 	// Create Body
 	texW = 256 * sizeMult;
 	texH = 256 * sizeMult;
@@ -124,6 +131,7 @@ bool GwellBoss::Update(float dt)
 
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
+		Engine::GetInstance().audio->PlayFx(morirFx);
 		isKnockedback = false;
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false);
@@ -375,6 +383,7 @@ void GwellBoss::Attack()
 			{
 				if (currentAttack == 1) // Tongue Attack
 				{
+					Engine::GetInstance().audio->PlayFx(atacarFx);
 					int attW = 400 * sizeMult; int attH = 40 * sizeMult;
 					int hX = lookingRight ? position.getX() + texW/2 + attW /2 : position.getX() - texW/2 - attW/2;
 					int hY = position.getY() - 20 * sizeMult; // Height of the mouth
@@ -385,6 +394,7 @@ void GwellBoss::Attack()
 				}
 				else if (currentAttack == 2) // Toxic Ball Projectile
 				{
+					Engine::GetInstance().audio->PlayFx(atacarDistanciaFx);
 					auto projEntity = Engine::GetInstance().entityManager->CreateEntity(EntityType::GWELL_PROJECTILE);
 					GwellProjectile* proj = dynamic_cast<GwellProjectile*>(projEntity.get());
 					if (proj) {

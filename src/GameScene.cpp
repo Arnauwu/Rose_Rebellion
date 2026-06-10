@@ -58,11 +58,11 @@ void GameScene::LoadMap(std::string mapFile)
 	}
 	else if (mapFile.find("Mountain") != std::string::npos) {
 		// Esto cubrirá Mountain_01, Mountain_02...
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav");
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Fondo_Montaña.wav");
 	}
 	else if (mapFile.find("Catacombs") != std::string::npos) {
 		// Añade la música para tus catacumbas aquí
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MusicaBosque.wav");
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Fondo_Catacumbas.wav");
 	}
 
 	Engine::GetInstance().sceneManager->setNewMap = false;

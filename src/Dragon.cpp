@@ -41,6 +41,13 @@ bool Dragon::Start() {
 	// Initialize parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/Entities/Enemies/Dragon/DragonH.png");
 
+	morirFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Muerte.wav");
+	caminarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Soldado_Correr.wav");
+	atacarFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Garra_Dragon.wav");
+	gritoFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Sonido_Growl_Dragon.wav");
+	hurtFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
+	atacarDistanciaFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Bola_Fuego_Dragon.wav");
+
 	// Create Body
 	texW = 768;
 	texH = 768*2/3;
@@ -87,6 +94,10 @@ bool Dragon::Update(float dt)
 		}
 		if (playerTileDist <= vision) {
 			Engine::GetInstance().healthBarManager->SetBoss(this);
+			if (!hasRoared) {
+				Engine::GetInstance().audio->PlayFx(gritoFx);
+				hasRoared = true; // Marcamos como rugido para que no vuelva a entrar aquí
+			}
 		}
 		else {
 			Engine::GetInstance().healthBarManager->SetBoss(nullptr);
@@ -100,6 +111,7 @@ bool Dragon::Update(float dt)
 
 	if (isdead && anims.GetCurrentName() != "dead")
 	{
+		Engine::GetInstance().audio->PlayFx(morirFx);
 		isKnockedback = false;
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
 		anims.GetAnim("dead")->SetLoop(false); 
@@ -466,6 +478,7 @@ void Dragon::Attack()
 			if (attackWindUp.ReadMSec() >= attackWindupTime) 
 			{
 				isAttacking = true;
+				Engine::GetInstance().audio->PlayFx(atacarFx);
 
 				// Delete Hitbox (In case it didn't correctly delete)
 				if (attackHitbox != nullptr) {
@@ -541,6 +554,7 @@ void Dragon::Attack()
 			if (attackWindUp.ReadMSec() >= attackWindupTime)
 			{
 				isAttacking = true;
+				Engine::GetInstance().audio->PlayFx(atacarDistanciaFx);
 
 				if (currentAttack == 1)
 				{

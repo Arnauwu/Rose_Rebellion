@@ -118,6 +118,7 @@ bool Player::Start()
 	planearPrincesa = audio->LoadFx("Assets/Audio/Fx/SE_Planear.wav");
 	recibirDamage = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_getDamage.wav");
 	caminarPrincesa = audio->LoadFx("Assets/Audio/Fx/SE_Princesa_Caminar_Piedra.wav");
+	walljump = audio->LoadFx("Assets/Audio/Fx/WallJump_Princesa.wav");
 
 	pickItemFx = audio->LoadFx("Assets/Audio/Fx/SE_Llave_Item.wav");
 	savePointFx = audio->LoadFx("Assets/Audio/Fx/Respawn.wav");
@@ -246,8 +247,19 @@ bool Player::Update(float dt)
 		else 
 		{
 			// DORMIR
-			if (lookingRight) anims.SetCurrent("idle_right");
-			else anims.SetCurrent("idle_left");
+			if (isSpawning)
+			{
+				// Esperamos a que la animación de spawn termine su primer ciclo
+				if (anims.GetAnim(lookingRight ? "spawn_right" : "spawn_left") != nullptr &&
+					anims.GetAnim(lookingRight ? "spawn_right" : "spawn_left")->HasFinishedOnce())
+				{
+					isSpawning = false;
+					currentAnimPriority = 0;
+
+					// Al terminar, pasamos a idle
+					anims.SetCurrent(lookingRight ? "idle_right" : "idle_left");
+				}
+			}
 			Draw(dt);
 		}
 		return true;
@@ -463,30 +475,45 @@ void Player::Move() {
 		// Si no nos movemos, comprobamos que no estemos haciendo otra cosa
 		if (!isAttacking && !isJumping && !isDashing && currentAnimPriority != 4)
 		{
-			// Sumamos el tiempo que pasa quieta (dt viene en milisegundos)
+			std::string idleAnim = lookingRight ? "idle_right" : "idle_left";
+
+			// Si acabamos de cambiar a idle, reseteamos el temporizador
+			if (anims.GetCurrentName() != idleAnim) {
+				anims.SetCurrent(idleAnim);
+				idleTimer = 0.0f;
+
+				if (anims.GetAnim(idleAnim) != nullptr) {
+					anims.GetAnim(idleAnim)->SetLoop(false);
+				}
+			}
+
+			// Sumamos el tiempo que pasa quieta
 			idleTimer += Engine::GetInstance().GetDt() / 1000.0f;
 
-			if (idleTimer >= 7.0f)
+			// 👇 SEPARAMOS LOS TIEMPOS SEGÚN EL ESTADO 👇
+			float tiempoDePausa = 0.0f;
+			if (GameManager::GetInstance().gameState.glideUnlocked) {
+				// TIENE CAPA: Pausa más corta
+				tiempoDePausa = 0.5f;
+			}
+			else {
+				// SIN CAPA: Pausa más larga (los 5s originales)
+				tiempoDePausa = 5.0f;
+			}
+
+			if (idleTimer < tiempoDePausa)
 			{
-				std::string idleAnim = lookingRight ? "idle_right" : "idle_left";
-
-				// 1. Ponemos la animación de descanso (solo si no estaba ya puesta)
-				if (anims.GetCurrentName() != idleAnim) {
-					anims.SetCurrent(idleAnim);
-				}
-
-				// 2. ¡EL TRUCO! Si la animación larga ya ha dado una vuelta completa, 
-				// reiniciamos el reloj a 0. Esto hará que el código vuelva al 'else' de abajo.
-				if (anims.GetAnim(idleAnim) != nullptr && anims.GetAnim(idleAnim)->HasFinishedOnce())
-				{
-					idleTimer = 0.0f;
+				// CONGELAR: Mantenemos la animación en el primer frame
+				if (anims.GetAnim(idleAnim) != nullptr) {
+					anims.GetAnim(idleAnim)->Reset();
 				}
 			}
 			else
 			{
-				// Menos de 3 segundos: mantener la pose quieta que has metido
-				if (anims.GetCurrentName() != "stand") {
-					anims.SetCurrent("stand");
+				// REPRODUCIR: Dejamos que avance de forma normal
+				if (anims.GetAnim(idleAnim) != nullptr && anims.GetAnim(idleAnim)->HasFinishedOnce()) {
+					// Al terminar, reiniciamos el reloj
+					idleTimer = 0.0f;
 				}
 			}
 
@@ -494,7 +521,7 @@ void Player::Move() {
 		}
 		else
 		{
-			idleTimer = 0.0f; // Reiniciamos el tiempo si salta, ataca, etc.
+			idleTimer = 0.0f; // Reiniciamos si salta, ataca, etc.
 		}
 	}
 
@@ -1234,6 +1261,7 @@ void Player::ApplyPhysics() {
 	// Si estamos en medio del rebote, FORZAMOS la velocidad horizontal
 	// Esto evita que Box2D mate el impulso por la fricción contra la pared
 	if (isWallJumping) {
+		//Engine::GetInstance().audio->PlayFx(walljump);
 		float wJumpForceX = speed * 1.0f;
 		if (wallDirection == 1) {
 			velocity.x = -wJumpForceX; // Empuje continuo a la izquierda

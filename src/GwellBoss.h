@@ -74,4 +74,6 @@ public:
 
 	// Sounds
 	int deathSoundId;
+
+	int caminarFx, atacarFx, morirFx, gritoFx, hurtFx, atacarDistanciaFx;
 };
