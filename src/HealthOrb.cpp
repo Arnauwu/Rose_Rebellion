@@ -30,7 +30,7 @@ bool HealthOrb::Start() {
 	std::string currentMap = Engine::GetInstance().map->mapFileName;
 	uniqueID = currentMap + "_" + name + "_" + std::to_string((int)position.getX()) + "_" + std::to_string((int)position.getY());
 
-	if (GameManager::GetInstance().gameState.collectedItems.count(uniqueID) > 0) {
+	if (persistent && GameManager::GetInstance().gameState.collectedItems.count(uniqueID) > 0) {
 		this->Destroy();
 		return true;
 	}
@@ -95,7 +95,9 @@ bool HealthOrb::Destroy()
 void HealthOrb::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB)
 {
 	if (physB->ctype == ColliderType::PLAYER) {
-		GameManager::GetInstance().gameState.collectedItems.insert(uniqueID);
+		if (persistent) {
+			GameManager::GetInstance().gameState.collectedItems.insert(uniqueID);
+		}
 		this->Destroy();
 	}
 }
