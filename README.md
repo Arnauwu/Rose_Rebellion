@@ -34,18 +34,17 @@ This release represents the vertical slice of the project.
 
 ### 🌟 New Features
 
-* **Complete UI System:** Implemented inventory and skill tree UI and a little map UI.
-* **HUD Integration:** Added a new dynamic HUD displaying the player's health and dynamic HUD displaying diferents boss's health.
-* **New Maps And Update Old Maps:** Creation of new maps, like mountain, new forest, catacombs. Each map with their Specefic music and objects, decorations, special door with their animation and special enemies.
-* **Save & Load System:** Implemented persistence. Players can save their progress (F5) and continue from the last save point (F6), even after closing the game and with savepoint animation.
-* **Player:** Added a **Vertical attack** **Wall jump** for the player. 
+* **Complete UI System:** update in inventory and skill tree UI and a map UI.
+* **HUD Integration:** Added a new HUD when we walk to the forest, mountain and catacombs.
+* **New Maps And Update Old Maps:** Update in all the maps. Each map with their new Specefic music, objects, decorations, special door with their animation and special enemies.
+* **Player:** Added a **large distance attack** for the player, more animations and update the code. 
 * **Audios:** New audios system, with fx sound to each entity and background music.
-* **Enemies:** Implementation of new enemies dip, bat, cucafera shiny and 2 new boss, ninfa and dragon. And update old enemies textures and animations,
+* **Enemies:** update in old enemies dip, bat, cucafera shiny, and implementation of 1 boss, Gwell and diferents enemies more. And update old enemies textures and animations.
 * **New Item interaction:** Proper management of existing items in the game, to provide diversity.
-* **Dialogue System** Implemented a dialogue system with the NPC's to apport life to the game and know what happends in the history.
-* **Cinematic system** Add a cinematic when enter the game to apport a principal idea for the gameplay.
-* **Controller compatibility** Posibility to play the game with controller, without keyboard.
-* **Effect particles** Implemented a particles to the player's action and enemies actions.
+* **Dialogue System** Update in dialogue system with the NPC's, monologue and boss to apport life to the game.
+* **Cinematic system** Add a cinematic when kill the final boss to complete all the narrative.
+* **Controller compatibility** Update with controller, without keyboard to play the game.
+* **Effect particles** Update in particles to the player's action and enemies actions.
 
 ---
 
