@@ -1640,81 +1640,81 @@
    <tile gid="122"/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="197"/>
+   <tile gid="193"/>
+   <tile gid="194"/>
+   <tile gid="195"/>
+   <tile gid="197"/>
+   <tile gid="193"/>
+   <tile gid="194"/>
+   <tile gid="195"/>
+   <tile gid="197"/>
+   <tile gid="193"/>
+   <tile gid="194"/>
+   <tile gid="195"/>
+   <tile gid="197"/>
+   <tile gid="193"/>
+   <tile gid="194"/>
+   <tile gid="195"/>
+   <tile gid="197"/>
+   <tile gid="193"/>
+   <tile gid="194"/>
+   <tile gid="195"/>
+   <tile gid="197"/>
+   <tile gid="193"/>
+   <tile gid="194"/>
+   <tile gid="195"/>
+   <tile gid="197"/>
+   <tile gid="201"/>
+   <tile gid="201"/>
+   <tile gid="202"/>
+   <tile gid="203"/>
+   <tile gid="201"/>
+   <tile gid="201"/>
+   <tile gid="202"/>
+   <tile gid="203"/>
+   <tile gid="201"/>
+   <tile gid="201"/>
+   <tile gid="202"/>
+   <tile gid="203"/>
+   <tile gid="201"/>
+   <tile gid="201"/>
+   <tile gid="202"/>
+   <tile gid="203"/>
+   <tile gid="201"/>
+   <tile gid="201"/>
+   <tile gid="202"/>
+   <tile gid="203"/>
+   <tile gid="201"/>
+   <tile gid="201"/>
+   <tile gid="202"/>
+   <tile gid="203"/>
+   <tile gid="201"/>
+   <tile gid="209"/>
+   <tile gid="209"/>
+   <tile gid="210"/>
+   <tile gid="211"/>
+   <tile gid="209"/>
+   <tile gid="209"/>
+   <tile gid="210"/>
+   <tile gid="211"/>
+   <tile gid="209"/>
+   <tile gid="209"/>
+   <tile gid="210"/>
+   <tile gid="211"/>
+   <tile gid="209"/>
+   <tile gid="209"/>
+   <tile gid="210"/>
+   <tile gid="211"/>
+   <tile gid="209"/>
+   <tile gid="209"/>
+   <tile gid="210"/>
+   <tile gid="211"/>
+   <tile gid="209"/>
+   <tile gid="209"/>
+   <tile gid="210"/>
+   <tile gid="211"/>
+   <tile gid="209"/>
   </data>
  </layer>
  <objectgroup id="3" name="Door">
