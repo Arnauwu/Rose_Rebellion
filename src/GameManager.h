@@ -32,7 +32,7 @@ struct GameState {
 
     // World
     std::string currentMap = "Castle_Room_Princess.tmx";
-    Vector2D playerPosition = { 2147.0f, 912.0f }; // Spawn inicial por defecto
+    Vector2D playerPosition = { 2147.0f, 950.0f }; // Spawn inicial por defecto
 
     // Bosses
     bool knightBossKilled = false;
