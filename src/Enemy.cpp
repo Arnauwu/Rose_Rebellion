@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "HealthOrb.h"
 
 #include <random>
 
@@ -141,7 +142,11 @@ void Enemy::SpawnHealthOrb(int chance, Vector2D positionModification)
 	if (chance >= randomNumber)
 	{
 		//Create Health Orb 
-		std::shared_ptr<Entity> healthOrb = Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB);
+		std::shared_ptr<HealthOrb> healthOrb = std::dynamic_pointer_cast<HealthOrb>(
+			Engine::GetInstance().entityManager->CreateEntity(EntityType::HEALTH_ORB));
+		if (healthOrb == nullptr) return;
+
+		healthOrb->SetPersistent(false);
 		healthOrb->position.setX(this->position.getX() + positionModification.getX());
 		healthOrb->position.setY(this->position.getY() + positionModification.getY());
 		healthOrb->Start();

@@ -241,7 +241,7 @@ void Dip::BeginDeath()
 		pbody = nullptr;
 	}
 
-	SpawnHealthOrb(40);
+	SpawnHealthOrb(50, { 0, -64 });
 }
 
 bool Dip::HasLandedAfterSpecialJump() const

@@ -16,6 +16,7 @@ public:
 	bool Update(float dt) override;
 	bool CleanUp() override;
 	bool Destroy();
+	void SetPersistent(bool value) { persistent = value; }
 
 	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB) override;
 
@@ -25,6 +26,7 @@ private:
 
 	SDL_Texture* texture;
 	int texW, texH;
+	bool persistent = true;
 
 	// Add a physics to an item
 	PhysBody* pbody;
