@@ -67,7 +67,7 @@ This release represents the vertical slice of the project.
 | :--- | :--- |
 | Move Left | A |
 | Move Right | D |
-| Open door | W |
+| Interact | E |
 | Jump | Space |
 | Attack | J |
 | Wall jump | L |
