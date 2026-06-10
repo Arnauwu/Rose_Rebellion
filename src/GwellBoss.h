@@ -19,6 +19,7 @@ public:
 	bool Awake();
 	bool Start();
 	bool Update(float dt);
+	bool PostUpdate() override;
 	bool CleanUp();
 	void OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2ShapeId shapeB);
@@ -64,6 +65,12 @@ public:
 	Vector2D targetWallPos;
 	Vector2D leftWallClingPos;
 	Vector2D rightWallClingPos;
+
+	// Death sequence
+	int collapseFxId = -1;
+	float fadeAlpha = 0.0f;
+	int deathStep = 0; // 0: Live, 1: Animation, 2: Fade to black, 3: Static black screen + Audio
+	Timer deathSequenceTimer;
 
 	// Wall Mechanics
 	int wallHitsTaken = 0;

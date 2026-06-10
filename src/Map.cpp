@@ -1436,6 +1436,9 @@ std::string Map::DoorInfo(PhysBody* door)
 	{
 		if (ndoor.body == door) return ndoor.teleportTo;
 	}
+
+	if (mapFileName == "Catacombs_Boss_Dead.tmx") return mapFileName;
+
 	return std::string();
 }
 

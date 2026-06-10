@@ -12,7 +12,6 @@
 #include "Timer.h"
 #include "Physics.h"
 #include "GwellProjectile.h"
-#include "DoubleJumpObj.h"
 #include "Player.h"
 #include "HealthBarManager.h"
 
@@ -68,8 +67,8 @@ bool GwellBoss::Start() {
 	pathFindingCooldown.Start();
 
 	//Map
-	minFloorX = position.getX() - 1000.0f; //Floor
-	maxFloorX = position.getX() + 1000.0f;
+	minFloorX = position.getX() - 1700.0f; //Floor
+	maxFloorX = position.getX() + 1700.0f;
 	leftWallClingPos = Vector2D(minFloorX - 100.0f, position.getY() - 400.0f); // Left Wall
 	rightWallClingPos = Vector2D(maxFloorX + 100.0f, position.getY() - 400.0f); // Right Wall
 
@@ -89,6 +88,9 @@ bool GwellBoss::Start() {
 	//Start Timers
 	attackCooldown.Start();
 	
+	// Loading of the collapse effect
+	collapseFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/SE_Derrumbe_Catacumbas.wav");
+
 	return true;
 }
 
@@ -97,7 +99,7 @@ bool GwellBoss::Update(float dt)
 	if (!active) return true;
 	ZoneScoped;
 
-	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 100, 0, 400)) {
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), texW, texH, 100, 0, 400) && !isdead) {
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, b2Vec2_zero);
 		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
 
@@ -124,48 +126,73 @@ bool GwellBoss::Update(float dt)
 		ApplyPhysics();
 	}
 
-	if (currentHealth <= 0 && !isdead) {
-		isdead = true;
+	if (currentHealth <= 0 && deathStep == 0) {
 		currentHealth = 0;
 		Engine::GetInstance().healthBarManager->SetBoss(nullptr);
+
+		deathStep = 1; // Start death animation
+		Engine::GetInstance().audio->PlayFx(morirFx);
+		deathSequenceTimer.Start();
 	}
 
-	if (isdead && anims.GetCurrentName() != "dead")
+	if (isdead)
 	{
-		Engine::GetInstance().audio->PlayFx(morirFx);
+		//Engine::GetInstance().audio->StopFx(morirFx);
 		isKnockedback = false;
 		Engine::GetInstance().physics->SetLinearVelocity(pbody, { 0, 0 });
-		anims.GetAnim("dead")->SetLoop(false);
-		anims.SetCurrent("dead");
 		pbody->ctype = ColliderType::UNKNOWN;
 		Engine::GetInstance().physics->SetBodyType(pbody, bodyType::STATIC);
-		GameManager::GetInstance().gameState.lizardBossKilled = true;
-	}
 
-	if (anims.GetAnim("dead")->HasFinishedOnce())
-	{
-		pendingToDelete = true;
-			Vector2D dropPos = GetPosition();
-
-			dropPos.setY(dropPos.getY() + 50.0f);
-			// 2. Instanciamos el Orbe de Dash
-			auto orb = std::make_shared<DoubleJumpObj>();
-
-			// 3. Le pasamos la posición manualmente (ya que tu constructor no la pide)
-			orb->position = dropPos;
-
-			// 4. Inicializamos el orbe y lo metemos en el juego
-			orb->Start();
-			Engine::GetInstance().entityManager->AddEntity(orb);
-
-			//Health Orbs
-			for (int i = 0; i < 3; ++i) {
-				SpawnHealthOrb(100, { (i - 1) * 80.0f, 100 });
+		if (deathStep == 1)
+		{
+			if (anims.GetCurrentName() != "dead") {
+				anims.GetAnim("dead")->SetLoop(false);
+				anims.SetCurrent("dead");
 			}
-			GameManager::GetInstance().gameState.ninfaBossKilled = true;
-			pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame
+
+			if (anims.GetAnim("dead")->HasFinishedOnce()) {
+				deathStep = 2;
+				deathSequenceTimer.Start();
+			}
+		}
+
+		else if (deathStep == 2)
+		{
+			fadeAlpha += 170.0f * (dt / 1000.0f);
+
+			if (fadeAlpha >= 255.0f)
+			{
+				fadeAlpha = 255.0f;
+				deathStep = 3;
+				deathSequenceTimer.Start();
+
+				Engine::GetInstance().audio->PlayFx(collapseFxId);
+			}
+		}
+		else if (deathStep == 3)
+		{
+			if (deathSequenceTimer.ReadMSec() >= 4000)
+			{
+				GameManager::GetInstance().gameState.lizardBossKilled = true;
+				Engine::GetInstance().map->mapFileName = "Catacombs_Boss_Dead.tmx";
+				Engine::GetInstance().entityManager->GetPlayer()->interactuableBody = pbody;
+				Engine::GetInstance().sceneManager->setNewMap = true;
+			}
+		}
 	}
 	Draw(dt);
+
+	return true;
+}
+
+bool GwellBoss::PostUpdate()
+{
+	if (isdead && fadeAlpha > 0.0f)
+	{
+		SDL_Rect camera = Engine::GetInstance().render->camera;
+		SDL_Rect screenRect = { -camera.x, -camera.y, camera.w, camera.h };
+		Engine::GetInstance().render->DrawRectangle(screenRect, 0, 0, 0, (Uint8)fadeAlpha);
+	}
 
 	return true;
 }
@@ -200,8 +227,6 @@ void GwellBoss::Move()
 	if (isInvincible) 
 	{
 		velocity = b2Vec2_zero; // Stays Put
-		
-		//if (anims.GetCurrentName() != "takeOff") anims.SetCurrent("takeOff");
 
 		if (currentPhase == GwellBossPhase::TRANSITION_TO_WALL)
 		{
@@ -372,7 +397,6 @@ void GwellBoss::Draw(float dt)
 
 		Engine::GetInstance().render->DrawRotatedTexture(tongueText, tx, ty, nullptr, sdlFlip, 0.5f * sizeMult);
 	}
-
 }
 
 void GwellBoss::Attack()
@@ -429,7 +453,7 @@ void GwellBoss::Attack()
 				}
 				else if (currentAttack == 3) // Double Swipe
 				{
-					int attW = 140; int attH = 150;
+					int attW = 150; int attH = 512;
 					int hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
 
 					attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, position.getY(), attW, attH, bodyType::KINEMATIC);
@@ -471,7 +495,7 @@ void GwellBoss::Attack()
 
 				if (attackHitbox != nullptr) b2DestroyBody(attackHitbox->body);
 
-				int attW = 160; int attH = 160;
+				int attW = 170; int attH = 512;
 				int hX = lookingRight ? position.getX() + texW / 2 + attW / 2 : position.getX() - texW / 2 - attW / 2;
 				attackHitbox = Engine::GetInstance().physics->CreateRectangleSensor(hX, position.getY(), attW, attH, bodyType::KINEMATIC);
 				attackHitbox->listener = this;
@@ -503,7 +527,7 @@ void GwellBoss::SelectAttack()
 	switch (currentPhase)
 	{
 	case GwellBossPhase::GROUNDD:
-		currentAttack = GenerateRandomNumber(1, 1);//TO DO RESTORE
+		currentAttack = GenerateRandomNumber(1, 3);//TO DO RESTORE
 		switch (currentAttack)		
 		{
 		case 1: // Tongue Lash (Long Range)
@@ -524,7 +548,7 @@ void GwellBoss::SelectAttack()
 			damage = 10;
 			attackCooldownTime = 1500.0f;
 			attackWindupTime = 400.0f;
-			attackTileRange = 2;
+			attackTileRange = 4;
 			currentAttackAnim = "claw"; 
 			clawStep = 1; // Start combo
 			break;
@@ -620,6 +644,7 @@ void GwellBoss::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shape
 
 bool GwellBoss::CleanUp()
 {
+	pendingToDelete = true;
 	active = false;
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().physics->DeletePhysBody(pbody);
