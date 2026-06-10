@@ -45,6 +45,9 @@ This release represents the vertical slice of the project.
 * **Cinematic system** Add a cinematic when kill the final boss to complete all the narrative.
 * **Controller compatibility** Update with controller, without keyboard to play the game.
 * **Effect particles** Update in particles to the player's action and enemies actions.
+* **Parallax efect** Add a parallax efect to the maps to apport nature to the game.
+* **Loading screen** Implemented loading screen for don't look the game bland when we wait.
+* **Boss fight camera** Implemented boss fight camera to motivate the player to destroy the enemies.
 
 ---
 
