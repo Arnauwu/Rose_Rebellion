@@ -48,49 +48,77 @@
 //Frases sueltas:
 { 
  "Diàleg suelta 1": [
-    { "speaker": "NPC","text": "Someone saved the western wall" }
+    { "speaker": "Villager","text": "Someone saved the western wall" }
   ]
 }
 
 { 
  "Diàleg suelta 2": [
-    { "speaker": "NPC", "text": "They say no one has seen the princess since the sacrifice of the queen" }
+  {
+    "speaker": "Villager",
+    "text": "They say no one has seen the princess since the sacrifice of the queen"
+  }
   ]
 }
 
 
 { 
  "Diàleg suelta 3": [
-    { "speaker": "NPC", "text": "Your face feels familiar…" }
+  {
+    "speaker": "Villager",
+    "text": "Your face feels familiar…"
+  }
   ]
 }
 
 
 { 
  "Diàleg suelta 4": [
-    { "speaker": "NPC", "text": "I like your coat. I see, so I can make one with a blanket…" }
+  {
+    "speaker": "Villager",
+    "text": "I like your coat. I see, so I can make one with a blanket…"
+  }
   ]
 }
 
 { 
  "Diàleg suelta 5": [
-    { "speaker": "NPC", "text": "Be careful with the sickle! You are gonna kill somebody!" }
+  {
+    "speaker": "Villager",
+    "text": "Be careful with the sickle! You are gonna kill somebody!"
+  }
   ]
 }
 
 { 
  "Diàleg suelta 6": [
-    { "speaker": "NPC", "text": "Last full moon the dragon made a fuzz… " },
-{ "speaker": "NPC", "text": "The maiden must have tasted horrible because he ate half of our harvest." }
+  {
+    "speaker": "Villager",
+    "text": "Last full moon the dragon made a fuzz… "
+  },
+  {
+    "speaker": "Villager",
+    "text": "The maiden must have tasted horrible because he ate half of our harvest."
+  }
   ]
 }
 
 { 
  "Diàleg suelta 7": [
-    { "speaker": "NPC", "text": "I’ve been writing poetry lately… " },
-{ "speaker": "NPC", "text": “Let’s see: 
-“full moon, full belly”
-from the dragon’s perspective, of course, hahaha" }
+  {
+    "speaker": "Villager",
+    "text": "I’ve been writing poetry lately… "
+  },
+  {
+    "speaker": "Villager",
+    "text": "“Let’s",
+    "see": "“full",
+    "moon",
+    "full" "belly”",
+    "from" "the",
+    "dragon’s" "perspective",
+    "of" "course",
+    "hahaha\" }"
   ]
 }
 

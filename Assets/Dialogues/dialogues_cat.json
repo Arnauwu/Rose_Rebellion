@@ -1,9 +1,11 @@
 {
   "Inici": [
-    { "speaker": "Aldeano 1", "text": "Ens ataquen!" },
-    { "speaker": "Aldeano 2", "text": "El mur de l’oest ha caigut!" },
-    { "speaker": "Aldeano 3", "text": "AJUDA!" },
-    { "speaker": "Aldeano 4", "text": "Monstres… S’han convertit en monstres… I ens havien de salvar…" }
+    {
+      "speaker": "Pagès","text": "Ens ataquen!"
+    },
+    { "speaker": "Vilatà", "text": "El mur de l’oest ha caigut!" },
+    { "speaker": "Camperol", "text": "AJUDA!" },
+    { "speaker": "Pobletà", "text": "Monstres… S’han convertit en monstres… I ens havien de salvar…" }
   ],
   "dialeg_vaca_1": [
     { "speaker": "Paca", "text": "Quina pau, oi?" },
@@ -31,27 +33,51 @@
     { "speaker": "Colomet", "text": "T’has tornat orni? Amb tota la gent que es cruspeix el drac tenim provisions de sobres!" }
   ],
   "Diàleg suelta 1": [
-    { "speaker": "NPC", "text": "Algú ha salvat el mur de l’oest" }
+    { "speaker": "Pagès", "text": "Algú ha salvat el mur de l’oest" }
   ],
   "Diàleg suelta 2": [
-    { "speaker": "NPC", "text": "Diuen que ningú ha vist a la princesa des que van sacrificar a la reina" }
+    {
+      "speaker": "Pagès",
+      "text": "Diuen que ningú ha vist a la princesa des que van sacrificar a la reina"
+    }
   ],
   "Diàleg suelta 3": [
-    { "speaker": "NPC", "text": "Ei tu… Em sona haver-te vist algun cop" }
+    {
+      "speaker": "Pagès",
+      "text": "Ei tu… Em sona haver-te vist algun cop"
+    }
   ],
   "Diàleg suelta 4": [
-    { "speaker": "NPC", "text": "M’agrada la teva capa. Així que amb una manta jo també podria fer-me’n una…" }
+    {
+      "speaker": "Pagès",
+      "text": "M’agrada la teva capa. Així que amb una manta jo també podria fer-me’n una…"
+    }
   ],
   "Diàleg suelta 5": [
-    { "speaker": "NPC", "text": "Compte amb la falç! A treballar al camp, acabarás matant a algú!" }
+    {
+      "speaker": "Pagès",
+      "text": "Compte amb la falç! A treballar al camp, acabarás matant a algú!"
+    }
   ],
   "Diàleg suelta 6": [
-    { "speaker": "NPC", "text": "L’última lluna plena el drac va fer molt de soroll… " },
-    { "speaker": "NPC", "text": "La donzella debia saber horrible perquè es va cruspir també la meitat de les collites." }
+    {
+      "speaker": "Pagès",
+      "text": "L’última lluna plena el drac va fer molt de soroll… "
+    },
+    {
+      "speaker": "Pagès",
+      "text": "La donzella debia saber horrible perquè es va cruspir també la meitat de les collites."
+    }
   ],
   "Diàleg suelta 7": [
-    { "speaker": "NPC", "text": "M’ha donat per la poesia últimament… " },
-    { "speaker": "NPC", "text": "Vejam:\n\"Lluna plena, panxa plena\"\npel drac esclar, hahaha" }
+    {
+      "speaker": "Pagès",
+      "text": "M’ha donat per la poesia últimament… "
+    },
+    {
+      "speaker": "Pagès",
+      "text": "Vejam:\n\"Lluna plena, panxa plena\"\npel drac esclar, hahaha"
+    }
   ],
   "Diàleg Lily (està a l’habitació) ": [
     { "speaker": "Lily", "text": "C-casi moro… S-si no f-fos per t-tu j-jo ara… (plora)" },
@@ -65,7 +91,7 @@
     { "speaker": "Roc", "text": "Quan trobes un mur, no pots passar. Quan trobes en Roc, ja pots resar. Aquest és el teu últim pas!" }
   ],
   "Ninfa": [
-    { "speaker": "Mediterrània", "text": "Les meves nenes, les meves aigües… Miserable! Has vingut a remoure tota la pau i tranquilitat del meu bosc, ara et remouré a tu!" }
+    { "speaker": "   Mediterrània", "text": "Les meves nenes, les meves aigües… Miserable! Has vingut a remoure tota la pau i tranquilitat del meu bosc, ara et remouré a tu!" }
   ],
   "Salamandra": [
     { "speaker": "Güell", "text": "Hola. Amic o rata? Amic o rata? AMIC??? RATA!!!" }

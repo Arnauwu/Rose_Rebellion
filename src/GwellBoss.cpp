@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "Physics.h"
 #include "GwellProjectile.h"
+#include "DoubleJumpObj.h"
 #include "Player.h"
 #include "HealthBarManager.h"
 
@@ -144,6 +145,25 @@ bool GwellBoss::Update(float dt)
 	if (anims.GetAnim("dead")->HasFinishedOnce())
 	{
 		pendingToDelete = true;
+			Vector2D dropPos = GetPosition();
+
+			dropPos.setY(dropPos.getY() + 50.0f);
+			// 2. Instanciamos el Orbe de Dash
+			auto orb = std::make_shared<DoubleJumpObj>();
+
+			// 3. Le pasamos la posición manualmente (ya que tu constructor no la pide)
+			orb->position = dropPos;
+
+			// 4. Inicializamos el orbe y lo metemos en el juego
+			orb->Start();
+			Engine::GetInstance().entityManager->AddEntity(orb);
+
+			//Health Orbs
+			for (int i = 0; i < 3; ++i) {
+				SpawnHealthOrb(100, { (i - 1) * 80.0f, 100 });
+			}
+			GameManager::GetInstance().gameState.ninfaBossKilled = true;
+			pendingToDelete = true; // El EntityManager lo borrará de forma segura en el siguiente frame
 	}
 	Draw(dt);
 

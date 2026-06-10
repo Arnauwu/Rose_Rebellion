@@ -586,7 +586,6 @@ void NinfaMare::StartRainAttack() {
     // 3. Dejamos que haga su Start() (el cual crea el hitbox equivocadamente dentro del boss)
     raindrop->Start();
 
-    // 4. ¡EL TRUCO CON TU MOTOR! 
     // Borramos su colisionador atascado y se lo recreamos en el cielo
     if (raindrop->pbody != nullptr) {
 

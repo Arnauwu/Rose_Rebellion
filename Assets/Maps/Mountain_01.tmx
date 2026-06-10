@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="66" nextobjectid="3340">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="66" nextobjectid="3342">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -69,7 +69,7 @@
  <tileset firstgid="183" name="T_Luz_4" tilewidth="4096" tileheight="3025" tilecount="1" columns="1">
   <image source="Montain/luces/T_Luz_4.png" width="4096" height="3025"/>
  </tileset>
- <tileset firstgid="184" name="Atl_Vegetación" tilewidth="256" tileheight="256" tilecount="16" columns="4">
+ <tileset firstgid="184" name="Atl_Vegetación" tilewidth="256" tileheight="256" tilecount="4" columns="4">
   <image source="../../../../../Downloads/Atl_Vegetación.png" width="1024" height="1024"/>
   <tile id="0">
    <animation>
@@ -13655,7 +13655,7 @@
    <tile gid="103"/>
    <tile gid="112"/>
    <tile/>
-   <tile/>
+   <tile gid="124"/>
    <tile/>
    <tile/>
    <tile/>
@@ -14018,7 +14018,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="124"/>
    <tile/>
    <tile/>
    <tile/>
@@ -16186,7 +16186,7 @@
    <polygon points="0,0 1557.09,-256 1557.09,256"/>
   </object>
  </objectgroup>
- <objectgroup color="#000000" id="20" name="Map" visible="0">
+ <objectgroup color="#000000" id="20" name="Map">
   <properties>
    <property name="Map" type="bool" value="true"/>
    <property name="Square" type="bool" value="true"/>
@@ -16384,6 +16384,8 @@
   <object id="2184" x="17280" y="4352" width="256" height="512"/>
   <object id="2188" x="9088" y="2816" width="256" height="128"/>
   <object id="2333" x="8320" y="7936" width="128" height="256"/>
+  <object id="3340" x="13440" y="8960" width="128" height="128"/>
+  <object id="3341" x="13824" y="9216" width="128" height="128"/>
  </objectgroup>
  <layer id="10" name="GroundNavLayer" width="180" height="80" visible="0">
   <properties>
