@@ -420221,7 +420221,7 @@
    <property name="Sensor" type="bool" value="false"/>
    <property name="Square" type="bool" value="true"/>
   </properties>
-  <object id="556" x="28672" y="9864" width="132" height="368"/>
+  <object id="556" x="28616" y="9866" width="275.333" height="368"/>
  </objectgroup>
  <objectgroup color="#aa0000" id="26" name="PlataformasRefGiro">
   <object id="220" x="26368" y="9984" width="512" height="128"/>
