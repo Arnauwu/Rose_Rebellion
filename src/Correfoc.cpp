@@ -185,17 +185,8 @@ void Correfoc::Move() {
 	// Move if player has been found
 	if (pathfinding->pathTiles.empty())
 	{
-		if (playerTileDist < vision && std::abs(playerPos.getY() - pos.getY()) <= 192.0f)
-		{
-			anims.SetCurrent("spin");
-			lookingRight = playerPos.getX() > pos.getX();
-			velocity.x = lookingRight ? speed : -speed;
-		}
-		else
-		{
-			anims.SetCurrent("idle");
-			velocity.x = 0;
-		}
+		anims.SetCurrent("idle");
+		velocity.x = 0;
 		return;
 	}
 	else
@@ -217,6 +208,17 @@ void Correfoc::Move() {
 		}
 
 		Vector2D nextTile = pathfinding->pathTiles.back();
+		bool currentGroundWalkable = pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1);
+		bool nextGroundWalkable = pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1);
+
+		// Correfoc only chases on flat ground; it does not enter slopes.
+		if (nextTile.getY() != tilePos.getY() ||
+			currentGroundWalkable != nextGroundWalkable)
+		{
+			velocity.x = 0;
+			anims.SetCurrent("idle");
+			return;
+		}
 
 		if (nextTile.getX() > tilePos.getX())
 		{
@@ -231,11 +233,6 @@ void Correfoc::Move() {
 		else
 		{
 			velocity.x = 0;
-		}
-
-		if (pathfinding->IsWalkable(nextTile.getX(), nextTile.getY() + 1) && !pathfinding->IsWalkable(tilePos.getX(), tilePos.getY() + 1))
-		{
-			velocity.x *= 2.0f;
 		}
 	}
 
