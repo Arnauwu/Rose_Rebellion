@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="66" nextobjectid="3329">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="180" height="80" tilewidth="128" tileheight="128" infinite="0" nextlayerid="66" nextobjectid="3340">
  <properties>
   <property name="Ground" type="bool" value="true"/>
   <property name="Navigation" type="bool" value="true"/>
@@ -621,7 +621,7 @@
   <object id="3288" gid="184" x="21014.4" y="5346.18" width="256" height="256"/>
   <object id="3291" gid="184" x="21002.3" y="6073.45" width="256" height="256"/>
   <object id="3294" gid="196" x="17156.8" y="4818.91" width="256" height="256"/>
-  <object id="3295" gid="188" x="6528" y="3584" width="256" height="256"/>
+  <object id="3295" gid="188" x="6272" y="3584" width="256" height="256"/>
  </objectgroup>
  <objectgroup id="63" name="ELIMINAR RAPIDO ENTREGA">
   <properties>
@@ -813,11 +813,9 @@
   <object id="3101" gid="167" x="22008" y="7722" width="384" height="307"/>
   <object id="3102" gid="167" x="21408" y="7698" width="384" height="307"/>
   <object id="3103" gid="167" x="20372" y="7706" width="384" height="307"/>
-  <object id="3104" gid="184" x="3912" y="8464" width="256" height="256"/>
   <object id="3105" gid="184" x="5504" y="8456" width="256" height="256"/>
   <object id="3106" gid="188" x="6212" y="8464" width="256" height="256"/>
   <object id="3107" gid="188" x="5400" y="8480" width="256" height="256"/>
-  <object id="3108" gid="188" x="4076" y="8476" width="256" height="256"/>
   <object id="3109" gid="188" x="2344" y="10008" width="256" height="256"/>
   <object id="3110" gid="188" x="724" y="10008" width="256" height="256"/>
   <object id="3111" gid="196" x="2068" y="10028" width="334.788" height="334.788"/>
@@ -16387,7 +16385,7 @@
   <object id="2188" x="9088" y="2816" width="256" height="128"/>
   <object id="2333" x="8320" y="7936" width="128" height="256"/>
  </objectgroup>
- <layer id="10" name="GroundNavLayer" width="180" height="80">
+ <layer id="10" name="GroundNavLayer" width="180" height="80" visible="0">
   <properties>
    <property name="Ground" type="bool" value="true"/>
    <property name="Navigation" type="bool" value="true"/>
@@ -45219,7 +45217,7 @@
   <object id="625" name="Dip" type="Dip" x="11904" y="8320">
    <point/>
   </object>
-  <object id="626" name="Dip" type="Dip" x="16640" y="9728">
+  <object id="626" name="Dip" type="Dip" x="16512" y="9600">
    <point/>
   </object>
   <object id="627" name="Dip" type="Dip" x="21616" y="7556">
@@ -45262,13 +45260,13 @@
   <object id="3313" name="Correfoc" type="Correfoc" x="8704" y="8960">
    <point/>
   </object>
-  <object id="3314" name="Correfoc" type="Correfoc" x="6016" y="8320">
+  <object id="3314" name="Correfoc" type="Correfoc" x="6344" y="8376">
    <point/>
   </object>
   <object id="3315" name="Correfoc" type="Correfoc" x="9772.73" y="6784.85">
    <point/>
   </object>
-  <object id="3316" name="Correfoc" type="Correfoc" x="11316" y="6772">
+  <object id="3316" name="Correfoc" type="Correfoc" x="11520" y="6784">
    <point/>
   </object>
   <object id="3317" name="Correfoc" type="Correfoc" x="11892" y="4720">
@@ -45292,11 +45290,29 @@
   <object id="3328" name="BreakableRock" type="BreakableRock" x="19942.1" y="2459.27">
    <point/>
   </object>
+  <object id="3329" name="SavePoint" type="SavePoint" x="4096" y="8320">
+   <point/>
+  </object>
+  <object id="3335" name="SavePoint" type="SavePoint" x="21760" y="3584">
+   <point/>
+  </object>
+  <object id="3336" name="SavePoint" type="SavePoint" x="16128" y="7552">
+   <point/>
+  </object>
+  <object id="3337" name="SavePoint" type="SavePoint" x="6656" y="3456">
+   <point/>
+  </object>
+  <object id="3338" name="SavePoint" type="SavePoint" x="10880" y="6400">
+   <point/>
+  </object>
+  <object id="3339" name="BreakableRock" type="BreakableRock" x="9728" y="3712">
+   <point/>
+  </object>
  </objectgroup>
- <objectgroup color="#ffaaff" id="54" name="PlataformaHorizontal">
+ <objectgroup color="#ffaaff" id="54" name="PlataformaHorizontal" visible="0">
   <object id="2133" name="PlataformasRefHorizontal" x="20352" y="5760" width="512" height="128"/>
  </objectgroup>
- <objectgroup id="15" name="PlayerSpawns">
+ <objectgroup id="15" name="PlayerSpawns" visible="0">
   <properties>
    <property name="PlayerSpawns" type="bool" value="true"/>
   </properties>
@@ -45319,7 +45335,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="29" name="KeyGate">
+ <objectgroup id="29" name="KeyGate" visible="0">
   <properties>
    <property name="KeyGate" type="bool" value="true"/>
    <property name="KeyRegion" value="Montanya"/>
