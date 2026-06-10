@@ -922,8 +922,8 @@ void Player::RangedAttack(float dt)
 	//anims.GetAnim(lookingRight ? "ranged_attack_right" : "ranged_attack_left")->SetLoop(false);
 	//anims.SetCurrent(lookingRight ? "ranged_attack_right" : "ranged_attack_left");
 	//currentAnimPriority = 4;
-
-	// Gastar mana
+	Engine::GetInstance().audio->PlayFx(attackFx);
+	// Gastar vida
 	currentHealth -= hpCostPerShot;
 
 	// Determinar dirección base
