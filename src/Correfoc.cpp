@@ -70,8 +70,8 @@ bool Correfoc::Start()
 	vision = 15;
 	speed = 8.0f;
 
-	maxHealth = 60;
-	currentHealth = 60;
+	maxHealth = 20;
+	currentHealth = 20;
 
 	int x, y;
 	pbody->GetPosition(x, y);
