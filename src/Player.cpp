@@ -919,9 +919,9 @@ void Player::RangedAttack(float dt)
 		return;
 	}
 
-	anims.GetAnim(lookingRight ? "ranged_attack_right" : "ranged_attack_left")->SetLoop(false);
-	anims.SetCurrent(lookingRight ? "ranged_attack_right" : "ranged_attack_left");
-	currentAnimPriority = 4;
+	//anims.GetAnim(lookingRight ? "ranged_attack_right" : "ranged_attack_left")->SetLoop(false);
+	//anims.SetCurrent(lookingRight ? "ranged_attack_right" : "ranged_attack_left");
+	//currentAnimPriority = 4;
 
 	// Gastar mana
 	currentHealth -= hpCostPerShot;
