@@ -295,6 +295,11 @@ bool Player::Update(float dt)
 			}
 		}
 
+		if (!isJumping && !onWall && !onGround)
+		{
+			onGround = true;
+		}
+
 		if (isWallJumping) {
 			wallJumpTimer -= dt / 1000.0f;
 			if (wallJumpTimer <= 0.0f) {
@@ -325,7 +330,7 @@ bool Player::Update(float dt)
 
 		ApplyPhysics();
 
-		if (onGround && !onWall && !onAir && !isdead) //Save LastSafePosition
+		if (onGround && !onWall && !isdead) //Save LastSafePosition
 		{
 			dashUsed = false;
 
@@ -649,6 +654,14 @@ void Player::Jump(float dt)
 
 	if (jumpPressed)
 	{
+		LOG(
+			"Jump pressed | onGround=%d onWall=%d isJumping=%d secondJump=%d",
+			onGround,
+			onWall,
+			isJumping,
+			secondJumpUsed
+		);
+
 		// WALL JUMP
 		bool wallJumpInput = false;
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
@@ -662,7 +675,6 @@ void Player::Jump(float dt)
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			isJumping = true;
 			onWall = false;
-			onAir = true;
 
 			isWallJumping = true;
 			wallJumpTimer = 0.30f;
@@ -720,7 +732,7 @@ void Player::Jump(float dt)
 		}
 		// DOUBLE JUMP
 		else if (GameManager::GetInstance().gameState.doubleJumpUnlocked && 
-			(isJumping == true || onAir == true) && secondJumpUsed == false)
+			(isJumping == true || (onGround == false && onWall == false)) && secondJumpUsed == false)
 		{
 			Engine::GetInstance().audio->PlayFx(jumpFx);
 			secondJumpUsed = true;
@@ -992,7 +1004,7 @@ void Player::Glide()
 			Engine::GetInstance().input->GetGamepadAxis(GAMEPAD_AXIS_LT) > 0.5f)
 			glidePressed = true;
 
-		if (onAir == true && onGround == false && glidePressed)
+		if (onWall == false && onGround == false && glidePressed)
 		{
 			if (!isGliding) {
 				Engine::GetInstance().audio->PlayFx(planearPrincesa);
@@ -1285,7 +1297,6 @@ void Player::ApplyPhysics() {
 			// Recargamos estados
 			isJumping = false;
 			secondJumpUsed = false;
-			onAir = false;
 
 			// Animación
 			if (anims.GetCurrentName() != "onWall_right" || anims.GetCurrentName() != "onWall_left") {
@@ -1615,7 +1626,6 @@ std::unordered_map<int, std::string> Player::GetAliases(string name)
 	return aliases;
 }
 
-
 void Player::UnlockCape()
 {
 	Engine::GetInstance().textures->UnLoad(texture);
@@ -1638,6 +1648,7 @@ void Player::UnlockSickle()
 	AddItem(ItemID::WEAPON, 1);
 	LOG("Sickle Unlocked! You can attack now if you have the cape.");
 }
+
 void Player::UnlockDoubleJump(bool showTutorial) {
 	GameManager::GetInstance().gameState.doubleJumpUnlocked = true;
 	AddItem(ItemID::DOUBLEJUMP_OBJ, 1);
@@ -1876,8 +1887,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, b2S
 			}
 
 			onGround = true;
-			onAir = false;
-			onWall = false;
 		}
 		else if (typeA == ShapeType::SHAPE_MIDDLE)
 		{
@@ -2094,15 +2103,12 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB, b2ShapeId shapeA, 
 		if (typeA == ShapeType::SHAPE_BOTTOM)
 		{
 			onGround = false;
-			onAir = true;
 			LOG("On Air");
 		}
 		else if (typeA == ShapeType::SHAPE_MIDDLE)
 		{
 			LOG("Off WALL");
-			onAir = true;
 			onWall = false;
-
 		}
 		else if (typeA == ShapeType::SHAPE_TOP)
 		{

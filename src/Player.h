@@ -152,8 +152,6 @@ public:
 	/*--- PLAYER STATES INFO --- */
 	// Ground
 	bool onGround = false;
-	// Air
-	bool onAir = false;
 	// Wall
 	bool onWall = false;
 
