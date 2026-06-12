@@ -1421,7 +1421,6 @@ void Player::DrawWellInteractionPrompt(float dt)
 	if (!canInteract || interactuableBody == nullptr ||
 		interactuableBody->ctype != ColliderType::DOOR ||
 		!engine.dialogueManager->CanInteract() ||
-		engine.map->DoorInfo(interactuableBody) != "Catacombs_Boss_Dead.tmx" ||
 		interactionBackgroundTexture == nullptr || interactIcon == nullptr)
 	{
 		interactionIconTimer = 0.0f;
