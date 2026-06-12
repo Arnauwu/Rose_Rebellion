@@ -195,9 +195,18 @@ bool DialogueManager::Update(float dt) {
 				Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_IDLE) {
 				inputLocked = false;
 			}
+			if (Engine::GetInstance().input->IsGamepadConnected() &&
+				Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_UP == Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_IDLE) {
+				inputLocked = false;
+			}
 		}
 		else {
 			if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) {
+				NextLine();
+				return true;
+			}
+			if (Engine::GetInstance().input->IsGamepadConnected() &&
+				Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_DOWN) {
 				NextLine();
 				return true;
 			}

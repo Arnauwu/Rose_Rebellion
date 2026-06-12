@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <SaveGame>
-	<PlayerStats currentHealth="100" maxHealth="100" currentForceOrbs="13" />
+	<PlayerStats currentHealth="110" maxHealth="110" currentForceOrbs="0" />
 	<Keys castle="true" forest="true" mountain="true" catacombs="true" boss="true" />
 	<Unlockables hasSickle="true" glideUnlocked="true" dashUnlocked="true" doubleJumpUnlocked="true" wallJumpUnlocked="true" />
-	<SkillTree stHealthUp="false" stIframesUp="true" stSpeedUp="true" stFastDash="true" stUpDownAttack="true" stRangedAttack="true" />
-	<WorldState currentMap="Mountain_03.tmx">
-		<Position x="6016" y="2048" />
+	<SkillTree stHealthUp="true" stIframesUp="true" stSpeedUp="true" stFastDash="true" stUpDownAttack="true" stRangedAttack="true" />
+	<WorldState currentMap="Forest_03.tmx">
+		<Position x="7936" y="2432" />
 	</WorldState>
 	<Bosses>
 		<KnightBossKilled bool="true" />
@@ -13,31 +13,20 @@
 		<LizardBossKilled bool="false" />
 		<DragonBossKilled bool="false" />
 	</Bosses>
-	<OpenedDoors>
-		<Door id="Forest_04.tmx_725" />
-	</OpenedDoors>
+	<OpenedDoors />
 	<CollectedItems>
 		<Item id="Forest_01.tmx_SkillPointOrb_8376_2201" />
-		<Item id="Nexo.tmx_Sickle_3876_1118" />
-		<Item id="Forest_01.tmx_Key_2729_1792" />
-		<Item id="Forest_03.tmx_SkillPointOrb_9906_790" />
-		<Item id="Forest_03.tmx_Key_1536_896" />
-		<Item id="Forest_03.tmx_SkillPointOrb_387_1252" />
-		<Item id="Mountain_01.tmx_Key_10670_2444" />
+		<Item id="Forest_01.tmx_Key_2535_1792" />
 	</CollectedItems>
 	<TriggeredDialogues>
 		<Dialogue id="TUTORIAL_WALK" />
 		<Dialogue id="Tutorial Menu" />
 		<Dialogue id="TUTORIAL_JUMP" />
 		<Dialogue id="Inici" />
-		<Dialogue id="TUTORIAL_ATTACK" />
 		<Dialogue id="Quan la Rose arriba al bosc 1" />
-		<Dialogue id="TUTORIAL_FORCE_ORB" />
 		<Dialogue id="Quan troba orbe de força" />
 		<Dialogue id="Quan la Rose arriba al bosc 2" />
 		<Dialogue id="Diàleg suelta 1" />
-		<Dialogue id="Diàleg suelta 4" />
-		<Dialogue id="Diàleg suelta 6" />
 	</TriggeredDialogues>
 	<Minimap>
 		<Room id="Castle_Room_Princess.tmx" />
@@ -47,9 +36,5 @@
 		<Room id="Forest_01.tmx" />
 		<Room id="Forest_02.tmx" />
 		<Room id="Forest_03.tmx" />
-		<Room id="Forest_04.tmx" />
-		<Room id="Mountain_01.tmx" />
-		<Room id="Mountain_02.tmx" />
-		<Room id="Mountain_03.tmx" />
 	</Minimap>
 </SaveGame>

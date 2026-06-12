@@ -529,6 +529,8 @@ bool GameScene::Update(float dt) {
 			pauseInput = true;
 		}
 
+
+
 		if (pauseInput) {
 			if (inSkillPopUp) {
 				SetUIGroupVisible(skillPopupUI, false);

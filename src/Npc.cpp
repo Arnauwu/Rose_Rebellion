@@ -92,6 +92,10 @@ bool Npc::Update(float dt) {
             Engine::GetInstance().input->ClearMouseInput(); // Limpiar inputs residuales
 
         }
+        if (Engine::GetInstance().input->IsGamepadConnected() &&
+            Engine::GetInstance().input->GetGamepadButton(GAMEPAD_Y) == KEY_DOWN) {
+            Engine::GetInstance().dialogueManager->StartDialogue(dialogueID);
+        }
     }
 
     int x, y;
